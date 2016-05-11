@@ -35,7 +35,7 @@ public class MapStateRender extends MapState {
         for(Attack attack: Game.player.attackList){
             String s=attack.getName();
             try {
-                attIcon.add(new Texture(Gdx.files.internal("images/icons/attacks/ic" + s + ".png")));
+                attackIconList.add(new Texture(Gdx.files.internal("images/icons/attacks/ic" + s + ".png")));
             }
             catch (GdxRuntimeException e){
 
@@ -192,9 +192,9 @@ public class MapStateRender extends MapState {
     public static void drawAttackMenu(SpriteBatch sb) {
         int xoffset= (int) (viewX+(Game.WIDTH/2)-(52*4));
         sb.begin();
-        for(int i=0;i<attIcon.size();i++){
+        for(int i = 0; i< attackIconList.size(); i++){
             if(Game.player.getMana()>= Game.player.attackList.get(i).getCost()) {
-                sb.draw(attIcon.get(i), xoffset  + (i * 52), viewY + 48);
+                sb.draw(attackIconList.get(i), xoffset  + (i * 52), viewY + 48);
                 if(i<=7) Game.getFont().draw(sb,(i+1)+"",xoffset+ (i * 52), viewY + 58);
             }
             Game.getFont().draw(sb,"Lv."+(Game.player.attackList.get(i).getLevel()+1),xoffset + (i * 52), viewY + 48);

@@ -50,7 +50,7 @@ public class MainMenuState extends State {
         titlePosX =(int)((Game.WIDTH/2)-(gl.width/2));
         titlePosY=(Game.HEIGHT/3)*2;
         effect.setPosition(Game.WIDTH/2,0);
-        selectorPosX=(Game.WIDTH/2)-75;
+        selectorPosX=(Game.WIDTH/2)-100;
         optionsPosX =(int)((Game.WIDTH/2)-(gl.width/2));
         optionsPosY =(Game.HEIGHT/3);
     }
@@ -61,6 +61,7 @@ public class MainMenuState extends State {
                 case(0):{
                     System.out.println("Fucking fucks");
                     gsm.push(new MapState(gsm));
+                    dispose();
                     break;
                 }
                 case(1):{

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeType;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
@@ -17,6 +18,8 @@ import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.ColorConverter;
 import com.quadx.dungeons.tools.FontHandler;
 import sun.security.provider.SHA;
+
+import static com.quadx.dungeons.tools.FontHandler.generator;
 
 public class Game extends ApplicationAdapter {
 	//public FontHandler font = new FontHandler();
@@ -33,6 +36,7 @@ public class Game extends ApplicationAdapter {
 	public static ShapeRenderer shapeR;
 
 
+
 	//public static boolean replot=false;
 	//public static FreeTypeFontGenerator generator;
 //	public static FreeTypeFontGenerator.FreeTypeFontParameter parameter;
@@ -45,20 +49,55 @@ public class Game extends ApplicationAdapter {
 		player.addSpell();
 		System.out.println("!");
 		Gdx.graphics.setWindowedMode(WIDTH,HEIGHT);
+		//font=new BitmapFont();
+		//setFontSize(20);
 
-		font=new BitmapFont();
+		try {
+			FreeTypeFontGenerator generator= new FreeTypeFontGenerator(Gdx.files.internal("fonts\\prstart.ttf"));;
+			FreeTypeFontGenerator.FreeTypeFontParameter parameter= new FreeTypeFontGenerator.FreeTypeFontParameter();
+			parameter.size = 20;
+			font = generator.generateFont(parameter);
+			console("Font Generated");
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
 		System.out.println("@");
 
 		spriteBatch = new SpriteBatch();
 		gameStateManager.push(new MainMenuState(gameStateManager));
-
-//		img = new Texture("badlogic.jpg");
 	}
 	public static BitmapFont getFont(){
 
-		BitmapFont f=new BitmapFont();
-		return f;
+		return font;
 	}
+	public static void console(String s){
+		System.out.println(s);
+	}
+	/*public static void setFontSize(int x){
+
+		try{
+			font.dispose();
+			generator.dispose();
+		}
+		catch (NullPointerException e)
+		{
+			console("Null pointer disposing generator or font");
+		}
+		try {
+			generator= new FreeTypeFontGenerator(Gdx.files.internal("fonts/prstart.ttf"));
+			parameter= new FreeTypeFontGenerator.FreeTypeFontParameter();
+			parameter.size=x;
+
+			font = generator.generateFont(parameter);
+		}
+		catch (NullPointerException e)
+		{
+			console("Null pointer loading generator or font");
+
+		}
+	}*/
+
 	public static void getColor(ColorConverter c){
 		font.setColor(c.getLIBGDXColor());
 	}

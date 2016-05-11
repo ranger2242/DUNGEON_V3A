@@ -27,7 +27,7 @@ public class MapState extends State {
     public static ShapeRenderer shapeR;
     public static ArrayList<String> output;
     public static ArrayList<QButton> qButtonList =new ArrayList<>();
-    public static ArrayList<Texture> attIcon=new ArrayList<>();
+    public static ArrayList<Texture> attackIconList =new ArrayList<>();
     public static ArrayList<Texture> invIcon=new ArrayList<>();
     public static ArrayList<Texture> equipIcon=new ArrayList<>();
     public static ArrayList<Integer> invSize=new ArrayList<>();
@@ -78,13 +78,12 @@ public class MapState extends State {
 
     public MapState(GameStateManager gsm) {
         super(gsm);
-        System.out.println("$$");
         gm = new GridManager();
         shapeR = new ShapeRenderer();
         output= new ArrayList<>();
         MapStateRender.loadAttackIcons();
         bufferOutput();
-        //Game.setFontSize(12);
+        ///Game.setFontSize(12);
         attack=new Flame();//Game.player.attackList.get(0);
         cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT);
         gm.initializeGrid();
@@ -96,6 +95,9 @@ public class MapState extends State {
     public void handleInput() {
     }
     public void update(float dt) {
+        if(output.size()>11){
+            output.remove(0);
+        }
         MapStateUpdater.buttonHandler();
         MapStateUpdater.collisionHandler();
         MapStateUpdater.moveMonsters();
@@ -126,7 +128,11 @@ public class MapState extends State {
         Gdx.gl.glDisable(Gdx.gl.GL_BLEND);
     }
     public void dispose() {
-
+        //unload attack icons
+        for(Texture t : attackIconList){
+            t.dispose();
+        }
+        attackIconList.clear();
     }
     public static void out(String s){
         //System.out.println(s);
