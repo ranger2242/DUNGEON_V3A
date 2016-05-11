@@ -6,13 +6,13 @@ import com.quadx.dungeons.Game;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
-		System.out.println("1");
+		//System.out.println("1");
 
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		System.out.println("2");
+		//System.out.println("2");
 
 		new LwjglApplication(new Game(), config);
-		System.out.println("3");
+		//System.out.println("3");
 
 	}
 }

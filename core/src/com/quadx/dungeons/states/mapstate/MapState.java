@@ -83,7 +83,7 @@ public class MapState extends State {
         output= new ArrayList<>();
         MapStateRender.loadAttackIcons();
         bufferOutput();
-        ///Game.setFontSize(12);
+        Game.setFontSize(12);
         attack=new Flame();//Game.player.attackList.get(0);
         cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT);
         gm.initializeGrid();
