@@ -1,0 +1,66 @@
+///////////////////////////////////////
+Tooltips
+///////////////////////////////////////
+-add tooltip to attack icons
+-add tooltip to equipment area icons
+-add tooltip to monsters to show stats
+///////////////////////////////////////
+
+///////////////////////////////////////
+Equipment
+///////////////////////////////////////
+-finish player equipment
+-fix arms missing buff
+-add more than one buff per item
+-add icon border color to show rarity
+-fix name generator
+-check drop rates
+-consider more types of equipment
+///////////////////////////////////////
+
+///////////////////////////////////////
+Other
+///////////////////////////////////////
+-add more spells
+-add weapons
+-add fog of war
+-make world traps
+-finish status effects
+-put item icons on shop view
+-add different types of monsters
+-set player name on game start
+-add ability to restart
+-add game over sceen
+-add controls info screen
+-add more item
+-add handlers for different resolutions
+-monster damage
+~~consider companions
+~~water on map
+-add player abilities
+-searchable debris
+-level locked abilities
+
+///////////////////////////////////////
+Abilities
+///////////////////////////////////////
+-water breathing
+-hard skin
+-rough skin
+-reflect magic
+-short teleport
+-long teleport
+-life steal
+-short timestop
+-absorb
+-crit booster
+-magician
+-brawler
+-tank
+-agility
+-padded
+-terraform
+-lucky
+-barrier
+-sneak
+-focused vision

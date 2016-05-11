@@ -1,0 +1,161 @@
+Drain
+- Delay -
+active: false
+- Duration - 
+lowMin: 500.0
+lowMax: 500.0
+- Count - 
+min: 0
+max: 200
+- Emission - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 40.0
+highMax: 40.0
+relative: false
+scalingCount: 3
+scaling0: 0.5686275
+scaling1: 0.9607843
+scaling2: 0.64705884
+timelineCount: 3
+timeline0: 0.0
+timeline1: 0.33561644
+timeline2: 0.84246576
+- Life - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 500.0
+highMax: 500.0
+relative: false
+scalingCount: 3
+scaling0: 1.0
+scaling1: 0.88235295
+scaling2: 0.9607843
+timelineCount: 3
+timeline0: 0.0
+timeline1: 0.7876712
+timeline2: 1.0
+- Life Offset - 
+active: false
+- X Offset - 
+active: false
+- Y Offset - 
+active: false
+- Spawn Shape - 
+shape: point
+- Spawn Width - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 0.0
+highMax: 0.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
+- Spawn Height - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 0.0
+highMax: 0.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
+- Scale - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 10.0
+highMax: 10.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
+- Velocity - 
+active: true
+lowMin: 0.0
+lowMax: 0.0
+highMin: 30.0
+highMax: 200.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
+- Angle - 
+active: true
+lowMin: 270.0
+lowMax: 270.0
+highMin: 135.0
+highMax: 315.0
+relative: false
+scalingCount: 4
+scaling0: 0.11235955
+scaling1: 0.039325844
+scaling2: 0.06741573
+scaling3: 0.4775281
+timelineCount: 4
+timeline0: 0.0
+timeline1: 0.62046206
+timeline2: 0.88338834
+timeline3: 1.0
+- Rotation - 
+active: false
+- Wind - 
+active: false
+- Gravity - 
+active: false
+- Tint - 
+colorsCount: 18
+colors0: 0.29411766
+colors1: 1.0
+colors2: 0.047058824
+colors3: 0.047058824
+colors4: 1.0
+colors5: 0.37254903
+colors6: 0.29411766
+colors7: 1.0
+colors8: 0.047058824
+colors9: 0.047058824
+colors10: 0.4509804
+colors11: 1.0
+colors12: 0.60784316
+colors13: 1.0
+colors14: 0.047058824
+colors15: 0.29411766
+colors16: 1.0
+colors17: 0.047058824
+timelineCount: 6
+timeline0: 0.0
+timeline1: 0.028037382
+timeline2: 0.26791278
+timeline3: 0.40083075
+timeline4: 0.62616825
+timeline5: 1.0
+- Transparency - 
+lowMin: 0.0
+lowMax: 0.0
+highMin: 1.0
+highMax: 1.0
+relative: false
+scalingCount: 4
+scaling0: 0.0
+scaling1: 1.0
+scaling2: 0.3508772
+scaling3: 0.0
+timelineCount: 4
+timeline0: 0.0
+timeline1: 0.17123288
+timeline2: 0.6849315
+timeline3: 1.0
+- Options - 
+attached: false
+continuous: false
+aligned: false
+additive: false
+behind: false
+premultipliedAlpha: false
+- Image Path -
+/C:/Users/Tom/Desktop/libgdx-nightly-20151214/particle.png

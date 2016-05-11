@@ -1,0 +1,39 @@
+    int x;
+    int y;
+    static Random rn = new Random();
+    static int 100;
+    static int levelmin;
+    static int levelmax;
+    int hp=500;
+    int hpmin=550;
+    int hpmax=600;
+    int hpmod=0;
+    int attack;
+    int attackmin=650;
+    int attackmax=700;
+    int attackMod=0;
+    int defense;
+    int defensemin=400;
+    int defensemax=450;
+    int defenseMod=1;
+    int intel;
+    int intelmin=950;
+    int intelmax=1050;
+    int intelMod=1;
+    int speed;
+    int speedmin300;
+    int speedmax350;
+    int speedMod=0;
+    int sight=2;
+    double damage;
+    double damagemax;
+    boolean agro=false;
+    String name= "monster";
+    fear magic intelligance
+    over power
+    shockwave
+    blind
+    torment: higher defense higher damage
+    entrpment damage per turn
+    swarm neray anything non monster
+    heal hp * players level
