@@ -37,7 +37,6 @@ public class MapState extends State {
     public static GridManager gm;
     public static ParticleEffect effect;
     public static ParticleEmitter emitter;
-    //public static BitmapFont font = new BitmapFont();
     static Random rn = new Random();
     public static Attack attack;
     public static Item item;
@@ -54,7 +53,7 @@ public class MapState extends State {
     public static int playerDamage = 0;
     public static int messageCounter=0;
     public static int invSlotHovered=0;
-    public static int cellW=10;
+    public static int cellW=3;
     public static int mHitX=0;
     public static int mHitY=0;
     public static int mouseX=0;
@@ -83,11 +82,10 @@ public class MapState extends State {
         output= new ArrayList<>();
         MapStateRender.loadAttackIcons();
         bufferOutput();
-        Game.setFontSize(12);
-        attack=new Flame();//Game.player.attackList.get(0);
+        Game.setFontSize(10);
+        attack=new Flame();
         cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT);
         gm.initializeGrid();
-        Cell c=gm.liveCellList.get(rn.nextInt(gm.liveCellList.size()));
         out("---Welcome to DUNGEON---");
         for(int i=0;i<10;i++)
         openCrate();

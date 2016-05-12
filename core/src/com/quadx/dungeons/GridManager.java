@@ -114,6 +114,7 @@ public class GridManager {
             }
         }
     private void plotShop(){
+
             int index= rn.nextInt(liveCellList.size());
             liveCellList.get(index).setShop(true);
         }

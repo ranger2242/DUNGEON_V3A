@@ -27,8 +27,6 @@ public class Game extends ApplicationAdapter {
 	SpriteBatch spriteBatch;
 	public static final int WIDTH = 1366;
 	public static final int HEIGHT = 724;
-	public static final float SCALE = 0.5f;
-	public static final String TITLE = "Dungeons";
 	public static Player player= new Player();
 	public static Monster monster=new Monster();
 	private GameStateManager gameStateManager;
@@ -40,18 +38,7 @@ public class Game extends ApplicationAdapter {
 		shapeR=new ShapeRenderer();
 		player.addSpell();
 		Gdx.graphics.setWindowedMode(WIDTH,HEIGHT);
-
-		try {
-			FreeTypeFontGenerator generator= new FreeTypeFontGenerator(Gdx.files.internal("fonts\\prstart.ttf"));;
-			FreeTypeFontGenerator.FreeTypeFontParameter parameter= new FreeTypeFontGenerator.FreeTypeFontParameter();
-			parameter.size = 20;
-			font = generator.generateFont(parameter);
-			console("Font Generated");
-		}
-		catch (Exception e){
-			e.printStackTrace();
-		}
-
+		setFontSize(20);
 		spriteBatch = new SpriteBatch();
 		gameStateManager.push(new MainMenuState(gameStateManager));
 	}
@@ -79,7 +66,7 @@ public class Game extends ApplicationAdapter {
 			font = generator.generateFont(parameter);
 			console("Font Generated");
 		}
-		catch (Exception e){
+			catch (Exception e){
 			e.printStackTrace();
 		}
 	}

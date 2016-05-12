@@ -32,48 +32,51 @@ public class MapStateRender extends MapState {
         //equipList.add();
     }
     public static void loadAttackIcons(){
-        for(Attack attack: Game.player.attackList){
-            String s=attack.getName();
-            try {
-                attackIconList.add(new Texture(Gdx.files.internal("images/icons/attacks/ic" + s + ".png")));
-            }
-            catch (GdxRuntimeException e){
+       if(Game.player.attackList.size() !=attackIconList.size()) {
+            for (Attack attack : Game.player.attackList) {
+                String s = attack.getName();
+                try {
+                    attackIconList.add(new Texture(Gdx.files.internal("images/icons/attacks/ic" + s + ".png")));
+                } catch (GdxRuntimeException e) {
 
+                }
             }
         }
     }
     public static void loadEquipIcons(){
-        equipIcon.clear();
-        for(Equipment eq: Game.player.equipedList){
-            String s;
-            s=eq.getType();
-            try {
-                equipIcon.add(new Texture(Gdx.files.internal("images/icons/items/ic" + s + ".png")));
+        if(equipIcon.size() != Game.player.equipedList.size()) {
+            equipIcon.clear();
+            for (Equipment eq : Game.player.equipedList) {
+                String s;
+                s = eq.getType();
+                try {
+                    equipIcon.add(new Texture(Gdx.files.internal("images/icons/items/ic" + s + ".png")));
 
-            }
-            catch (GdxRuntimeException e){
+                } catch (GdxRuntimeException e) {
 
+                }
             }
         }
     }
     public static void loadInventoryIcons(){
-        invIcon.clear();
-        invSize.clear();
+        if(invIcon.size() != Game.player.invList.size()) {
+            invIcon.clear();
+            invSize.clear();
 
-        for(ArrayList<Item> list: Game.player.invList){
-            Item item= list.get(0);
-            invSize.add(list.size());
-            String s=item.getName();
-            if(item.isEquip)
-                s=item.getType();
-            if(item.isSpell)
-                s="SpellBook";
-            try {
-                invIcon.add(new Texture(Gdx.files.internal("images/icons/items/ic" + s + ".png")));
+            for (ArrayList<Item> list : Game.player.invList) {
+                Item item = list.get(0);
+                invSize.add(list.size());
+                String s = item.getName();
+                if (item.isEquip)
+                    s = item.getType();
+                if (item.isSpell)
+                    s = "SpellBook";
+                try {
+                    invIcon.add(new Texture(Gdx.files.internal("images/icons/items/ic" + s + ".png")));
 
-            }
-            catch (GdxRuntimeException e){
+                } catch (GdxRuntimeException e) {
 
+                }
             }
         }
 
@@ -420,7 +423,7 @@ public class MapStateRender extends MapState {
         shapeR.end();
     }
     public static void drawGrid() {
-        int scale=1;
+        int scale=4;
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         //double cellWidth = (Gdx.graphics.getWidth() / gm.res*scale);
         //double cellHeight = (Gdx.graphics.getHeight() / gm.res*scale);
