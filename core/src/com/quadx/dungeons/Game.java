@@ -40,6 +40,8 @@ public class Game extends ApplicationAdapter {
 		Gdx.graphics.setWindowedMode(WIDTH,HEIGHT);
 		setFontSize(20);
 		spriteBatch = new SpriteBatch();
+		//gameStateManager.push(new Map2State(gameStateManager));
+
 		gameStateManager.push(new MainMenuState(gameStateManager));
 	}
 	public static BitmapFont getFont(){

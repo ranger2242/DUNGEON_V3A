@@ -23,14 +23,14 @@ public class Map2State extends State {
     //Map Variables
     ////////////////////////////////////////////////////////////////////////////////////////
     public static int res =200;
-    static int seedPoints=50;
-    static int secondaryPoints=50;
+    static int seedPoints=20;
+    static int secondaryPoints=100;
     static int triPoints=50;
     static int firstRunDepth=5;
     static int secRunDepth=3;
     static int triRunDepth=6;
-    static int stdDvX=res/4;
-    static int stdDvY=res/4;
+    static int stdDvX=res/2;
+    static int stdDvY=res/2;
     static float fillPercent = .5f;
     ////////////////////////////////////////////////////////////////////////////////////////
     public static Cell[][] dispArray  = new Cell[res][res];
@@ -121,7 +121,7 @@ public class Map2State extends State {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
     //RENDER FUNCTIONS
     public void render(SpriteBatch sb) {
-        Gdx.gl.glClearColor(1,1,1,0);
+        Gdx.gl.glClearColor(1,0,0,1);
 
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         //calculateCells(0,0, Game.HEIGHT,5);

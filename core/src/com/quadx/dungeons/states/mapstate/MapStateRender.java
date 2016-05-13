@@ -25,6 +25,7 @@ import java.util.ArrayList;
  * Created by Tom on 12/28/2015.
  */
 public class MapStateRender extends MapState {
+   public static int inventoryPos=0;
 
     public static ArrayList<String> equipList=new ArrayList<>();
     public MapStateRender(GameStateManager gsm) {
@@ -85,7 +86,7 @@ public class MapStateRender extends MapState {
         drawPlayerStats(sb, viewX, viewY);
         drawAttackMenu(sb);
         drawInventory(sb);
-
+        drawMiniMap(sb);
         sb.begin();
         try {
             if (dtLootPopup < .4)
@@ -104,7 +105,7 @@ public class MapStateRender extends MapState {
         for(int i=0;i<10;i++){
             //if(output.size()>=0&&i+messageCounter<output.size()  )
             try {
-                Game.getFont().draw(sb, output.get(i), viewX+30,viewY+30+(i * 20));
+                Game.getFont().draw(sb, output.get(i), viewX+30,viewY+100+(i * 20));
             }
             catch(IndexOutOfBoundsException e){
                 System.out.println((i+messageCounter)+"  Message out failed "+output.size());
@@ -207,7 +208,25 @@ public class MapStateRender extends MapState {
         sb.end();
     }
     public static void drawInventory(SpriteBatch sb) {
+
         sb.begin();
+        for(int i=0;i<3;i++){
+            try {
+                Texture t = invIcon.get(inventoryPos + i);
+                int x=(int)(viewX+(Game.WIDTH -(200-(i*30))) + (t.getWidth() * (i)));
+                int y=(int)viewY+ 100;
+                sb.draw(t,x ,y);
+                Game.getFont().draw(sb, "x" + Game.player.invList.get(inventoryPos+i).size(),x, y);
+                if(i==1){
+                    Game.getFont().draw(sb,Game.player.invList.get(inventoryPos+i).get(0).getName(),x-20,y-20);
+                }
+
+            }
+            catch (IndexOutOfBoundsException e){
+
+            }
+        }
+        /*
         qButtonList.clear();
         int count=0;
         for(int i=0;i<4;i++) {
@@ -233,8 +252,21 @@ public class MapStateRender extends MapState {
                     }
                 }
             }
-        }
+        }*/
         sb.end();
+    }
+    public static void drawMiniMap(SpriteBatch sb){
+        shapeR.begin(ShapeRenderer.ShapeType.Filled);
+        shapeR.setColor(Color.BLACK);
+        shapeR.rect(viewX+Game.WIDTH-250,viewY+Game.HEIGHT-250,200,200);
+        shapeR.end();
+
+        drawGrid(true);
+
+        shapeR.begin(ShapeRenderer.ShapeType.Line);
+        shapeR.setColor(Color.WHITE);
+        shapeR.rect(viewX+Game.WIDTH-250,viewY+Game.HEIGHT-250,200,200);
+        shapeR.end();
     }
     public static void drawPopup(SpriteBatch sb){
         int x=(int)viewX+ mouseX;
@@ -422,12 +454,8 @@ public class MapStateRender extends MapState {
         }
         shapeR.end();
     }
-    public static void drawGrid() {
-        int scale=4;
+    public static void drawGrid(boolean map) {
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        //double cellWidth = (Gdx.graphics.getWidth() / gm.res*scale);
-        //double cellHeight = (Gdx.graphics.getHeight() / gm.res*scale);
-        //cellW=(int)cellWidth;
         for(Cell c:gm.liveCellList){
             int x=c.getX();
             int y=c.getY();
@@ -439,69 +467,12 @@ public class MapStateRender extends MapState {
             if(c.hasWarp()) shapeR.setColor(0f, 1f, 0f, 1);
             if(c.hasMon())  shapeR.setColor(1,0,0,1);
 
-            shapeR.rect((cellW * x), cellW * y, cellW, cellW);
+            if(!map)
+                shapeR.rect((cellW * x), cellW * y, cellW, cellW);
+            else
+                shapeR.rect(viewX+Game.WIDTH-250+x, viewY+Game.HEIGHT-250+y, 1, 1);
+
         }
-        /*
-        for (int j = 0; j < gm.res; j++) {
-            for (int k = 0; k < gm.res; k++) {
-                gm.clearAgro();
-                for (int i = 0; i < gm.monsterList.size(); i++) {
-                    int h = gm.monsterList.get(i).getX();
-                    int ii = gm.monsterList.get(i).getY();
-
-                    gm.plotAgro(h, ii);
-                }
-                if (gm.dispArray[j][k]!=null) {
-                    if (gm.dispArray[j][k].getState()) {
-                        shapeR.setColor(.235f, .235f, .196f, 1);
-                        shapeR.rect((int) (cellHeight * j), (int) cellHeight * k, (int) cellWidth, (int) cellHeight);
-                    } else {
-                        shapeR.setColor(0f, 0f, 0f, 1);
-                        shapeR.rect((int) (cellHeight * j), (int) cellHeight * k, (int) cellWidth, (int) cellHeight);
-                    }
-                    if (gm.dispArray[j][k].getLootState()) {
-                        shapeR.setColor(1f, .647f, 0f, 1);
-                        shapeR.rect((int) (cellHeight * j), (int) cellHeight * k, (int) cellWidth, (int) cellHeight);
-                    }
-                    if (gm.dispArray[j][k].getCrate()) {
-                        shapeR.setColor(.627f, .322f, .176f, 1);
-                        shapeR.rect((int) (cellHeight * j), (int) cellHeight * k, (int) cellWidth, (int) cellHeight);
-                    }
-                    if (gm.dispArray[j][k].hasWarp()) {
-                        shapeR.setColor(0f, 1f, 0f, 1);
-                        shapeR.rect((int) (cellHeight * j), (int) cellHeight * k, (int) cellWidth, (int) cellHeight);
-                    }
-                    if (gm.dispArray[j][k].getShop()) {
-                        shapeR.setColor(1f, 0f, 1f, 1);
-                        shapeR.rect((int) (cellHeight * j), (int) cellHeight * k, (int) cellWidth, (int) cellHeight);
-                    }
-                    if (gm.dispArray[j][k].getAgro()) {
-                        shapeR.setColor(.4f, .2f, .2f, .5f);
-                        shapeR.rect((int) (cellHeight * j), (int) cellHeight * k, (int) cellWidth, (int) cellHeight);
-                    }
-                    if (gm.dispArray[j][k].hasMon()) {
-                        shapeR.setColor(1f, 0f, 0f, 1);
-                        for (Monster m : gm.monsterList) {
-                            if (m.getX() == j && m.getY() == k) {
-                                m.setCordsPX((int) (cellHeight * j + (cellWidth / 2)), (int) (cellHeight * k + (cellHeight / 2)));
-                            }
-                        }
-                        shapeR.rect((int) (cellHeight * j), (int) cellHeight * k, (int) cellWidth, (int) cellHeight);
-                    }
-                    if (gm.dispArray[j][k].hasPlayer()) {
-                        shapeR.setColor(0f, 0f, 1f, 1);
-                        Game.player.setCordsPX((int) (cellHeight * j + (cellWidth / 2)), (int) (cellHeight * k + (cellHeight / 2)));
-                        setFront(j, k);
-                        shapeR.rect((int) (cellHeight * j), (int) cellHeight * k, (int) cellWidth, (int) cellHeight);
-                    }
-                    if (gm.dispArray[j][k].isPlayerFront()) {
-                        shapeR.setColor(1f, 1f, 1f, .05f);
-                        shapeR.rect((int) (cellHeight * j), (int) cellHeight * k, (int) cellWidth, (int) cellHeight);
-                    }
-                }
-
-            }
-        }*/
         shapeR.end();
 
     }

@@ -53,7 +53,7 @@ public class MapState extends State {
     public static int playerDamage = 0;
     public static int messageCounter=0;
     public static int invSlotHovered=0;
-    public static int cellW=3;
+    public static int cellW=20;
     public static int mHitX=0;
     public static int mHitY=0;
     public static int mouseX=0;
@@ -107,7 +107,7 @@ public class MapState extends State {
         Gdx.gl.glBlendFunc(Gdx.gl20.GL_SRC_ALPHA, Gdx.gl20.GL_ONE_MINUS_SRC_ALPHA);
         shapeR.setProjectionMatrix(cam.combined);
         sb.setProjectionMatrix(cam.combined);
-        MapStateRender.drawGrid();
+        MapStateRender.drawGrid(false);
         MapStateRender.drawMonsterAgro();
         MapStateRender.drawHUD(sb);
         MapStateRender.drawMessageOutput(sb);

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Cell;
 import com.quadx.dungeons.Game;
+import com.quadx.dungeons.Player;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
@@ -23,6 +24,7 @@ public class MapStateUpdater extends MapState {
     static float dtInfo =0;
     static float dtItem=0;
     static float dtToolTip=0;
+    static float dtInvSwitch=0;
     static float lerp = 0.2f;
     static int x = 0;
 
@@ -104,12 +106,32 @@ public class MapStateUpdater extends MapState {
     public static void buttonHandler() {
         dtMove += Gdx.graphics.getDeltaTime();
         dtAttack += Gdx.graphics.getDeltaTime();
+        dtInvSwitch+= Gdx.graphics.getDeltaTime();
         if (dtMove > .05) {
             if (Gdx.input.isKeyPressed(Input.Keys.W)) movementHandler(0, 1, 'w');
             if (Gdx.input.isKeyPressed(Input.Keys.S)) movementHandler(0, -1, 's');
             if (Gdx.input.isKeyPressed(Input.Keys.A)) movementHandler(-1, 0, 'a');
             if (Gdx.input.isKeyPressed(Input.Keys.D)) movementHandler(1, 0, 'd');
             dtMove = 0;
+        }
+        if(dtInvSwitch>.15) {
+            if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+                if (MapStateRender.inventoryPos >= 0)
+                    MapStateRender.inventoryPos--;
+                else {
+                    MapStateRender.inventoryPos = Game.player.invList.size() - 1;
+                }
+                dtInvSwitch=0;
+
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+                if (MapStateRender.inventoryPos < Game.player.invList.size())
+                    MapStateRender.inventoryPos++;
+                else {
+                    MapStateRender.inventoryPos = 0;
+                }
+                dtInvSwitch=0;
+            }
         }
         if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
             numberButtonHandler(0);
@@ -145,6 +167,7 @@ public class MapStateUpdater extends MapState {
             functionButtonHandler(2);
 
         }
+        /*
         if(Gdx.input.isKeyPressed(Input.Keys.F4)){
             functionButtonHandler(3);
         }
@@ -159,7 +182,7 @@ public class MapStateUpdater extends MapState {
         }
         if(Gdx.input.isKeyPressed(Input.Keys.F8)){
             functionButtonHandler(7);
-        }
+        }*/
         if(Gdx.input.isKeyPressed(Input.Keys.SPACE)){
             if (dtAttack > attackMintime) {
                 MapStateExt.battleFunctions(lastNumPressed );
@@ -214,7 +237,7 @@ public class MapStateUpdater extends MapState {
     }
     public static void functionButtonHandler(int i){
         if(dtItem>itemMinTime && Game.player.invList.size()>i){
-            MapStateExt.useItem(i);
+            MapStateExt.useItem(MapStateRender.inventoryPos+ i);
             dtItem=0;
             if(Game.player.invList.get(i).size()==0) {
                 Game.player.invList.remove(i);}
