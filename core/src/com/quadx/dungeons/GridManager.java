@@ -60,7 +60,7 @@ public class GridManager {
     }
     private void createMap() {
             Map2State.updateVars();
-            dispArray= Map2State.generateMap();
+            dispArray= Map2State.generateMap2();
             splitMapDataToList();
         }
     private void splitMapDataToList(){

@@ -79,6 +79,14 @@ public class SpellMods {
 
                 break;
             }
+            case 8: {//REST
+                if(Game.player.getEnergy()<Game.player.getEnergyMax()) {
+                    System.out.println("Resting");
+                    Game.player.setEnergy(Game.player.getEnergy() + a.getCost()/2);
+                    if(Game.player.getEnergy()>Game.player.getEnergyMax())
+                        Game.player.setEnergy(Game.player.getEnergyMax());
+                }
+            }
 
         }
         MapState.dtStatPopup=0;

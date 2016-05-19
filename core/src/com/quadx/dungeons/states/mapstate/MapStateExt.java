@@ -2,6 +2,7 @@ package com.quadx.dungeons.states.mapstate;
 
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.QButton;
+import com.quadx.dungeons.SpellMods;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.states.GameStateManager;
 
@@ -117,7 +118,9 @@ public class MapStateExt extends MapState{
         if (Game.player.getMana() >=attack.getCost()) {
             Game.player.setMana(Game.player.getMana() - attack.getCost());
             MapStateRender.loadParticleEffects(i);
+            SpellMods.runMod(targetMon,attack);
             attack.checkLvlUp();
+
         }
     };
 }

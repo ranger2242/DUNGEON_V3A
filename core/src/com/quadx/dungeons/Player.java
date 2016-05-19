@@ -38,17 +38,22 @@ public class Player {
     int intel=20;
     int mana = 100;
     int manaMax = 100;
-    int manaRegenRate=10;
+    int manaRegenRate=5;
     int hpRegenRate=2;
     double damage;
     int exp=0;
     int expGain=0;
     int killcount=0;
+    int energy=100;
+    int energyMax=100;
+    int energyRegen=2;
     public int floor= 0;
+    float moveSpeed=.08f;
     Random rn =new Random();
     String name ="DEMO";
     Attack fullhealSp = new FullHeal();
     Attack flameSp= new Flame();
+    Attack restSp =new Rest();
     Attack drainSp= new Drain();
     Attack blindSp = new Blind();
     Attack tormentSp = new Torment();
@@ -64,6 +69,12 @@ public class Player {
 
     }
     public void addKills(){killcount++;}
+    public void setEnergy(int e){
+        energy=e;
+    }
+    public void setEnergyMax(int e){
+        energyMax=e;
+    }
     public void setGold(int g){gold=g;}
     public void setCords(int a, int b) {
         x=a;
@@ -152,6 +163,12 @@ public class Player {
     }
     public int getExp(){return exp;}
     public int getMana(){return mana;}
+    public int getEnergy(){
+        return  energy;
+    }
+    public int getEnergyMax(){
+        return energyMax;
+    }
     public int getManaRegenRate(){
         return  manaRegenRate;
     }
@@ -206,6 +223,7 @@ public class Player {
     public void addSpell(){
         attackList.clear();
         attackList.add(flameSp);
+        attackList.add(restSp);
         attackList.add(blindSp);
         attackList.add (drainSp);
         attackList.add(illusionSp);
@@ -291,5 +309,17 @@ public class Player {
             sum6+=eq.getManamod();
         }
         manaMod=sum6;
+    }
+
+    public int getEnergyRegen() {
+        return energyRegen;
+    }
+
+    public float getMoveSpeed() {
+        return moveSpeed;
+    }
+
+    public void setMoveSpeed(float moveSpeed) {
+        this.moveSpeed = moveSpeed;
     }
 }

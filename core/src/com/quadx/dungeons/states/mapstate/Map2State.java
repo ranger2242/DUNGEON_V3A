@@ -1,6 +1,7 @@
 package com.quadx.dungeons.states.mapstate;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.loaders.resolvers.AbsoluteFileHandleResolver;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -9,6 +10,7 @@ import com.quadx.dungeons.Game;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.State;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -49,7 +51,7 @@ public class Map2State extends State {
     public Map2State(GameStateManager gsm) {
         super(gsm);
         initBools();
-        generateMap();
+        generateMap2();
     }
     protected void handleInput() {
 
@@ -60,7 +62,7 @@ public class Map2State extends State {
         dtChange+=dt;
         if(dtChange>2){
             updateVars();
-            generateMap();
+            generateMap2();
             dtChange=0;
         }
     }
@@ -206,6 +208,7 @@ public class Map2State extends State {
         }
 }
     public static Cell[][] generateMap(){
+        /*
         initArray(buffArray);
         setSeed();
         automataAlgorithm(firstRunDepth);
@@ -215,7 +218,7 @@ public class Map2State extends State {
 
         for(int i=0;i<triPoints; i++) setSeed();
         automataAlgorithm(triRunDepth);
-        checkForSingles();
+        checkForSingles();*/
         return dispArray;
     }
     public static void initArray(Cell[][] arr){
@@ -241,8 +244,162 @@ public class Map2State extends State {
             }
         }
     }
+//New maze algorithm
+    public static Cell[][] generateMap2(){
 
+        ArrayList<Cell> endpointList = new ArrayList<>();
+        ArrayList<Cell> liveList=new ArrayList<>();
+        int runs = 60;
+        int initPoints =rn.nextInt(5)+1;
 
+        initArray(buffArray);//buffers the buffArray
+        plotInitPoints(endpointList,initPoints);
+        growPaths(endpointList);
+        //make sure there grid is more than 1 size
+        liveList=updateLiveList(liveList);
+        while(liveList.size()<2){
+            growPaths(endpointList);
+            liveList=updateLiveList(liveList);
+        }
+        for(int i=0;i<runs;i++){
+            liveList= updateLiveList(liveList);
+            endpointList=updateEndpoints(liveList,endpointList);
+            growPaths(endpointList);
+        }
+
+        ArrayList<Cell> small = new ArrayList<>();
+        //search for single off bits
+        for(int i=0;i<res;i++){
+            for(int j=0;j<res;j++){
+                try{
+                    int count=0;
+                    if(buffArray[i-1][j].getState())count++;
+                    if(buffArray[i+1][j].getState())count++;
+                    if(buffArray[i][j-1].getState())count++;
+                    if(buffArray[i][j+1].getState())count++;
+                    if(count>2 && rn.nextFloat()>.2){
+                        buffArray[i][j].setState(true);
+                        buffArray[i][j].setCords(i,j);
+                        liveList.add(buffArray[i][j]);
+                    }
+
+                }
+                catch (ArrayIndexOutOfBoundsException e){
+
+                }
+            }
+
+        }
+        dispArray=buffArray;
+        return dispArray;
+    }
+
+    static ArrayList<Cell> plotInitPoints(ArrayList<Cell> endpointList, int count){
+        //create initial growth points
+        for(int i=0; i<count;i++) {
+            int xs = rn.nextInt(res);
+            int ys = rn.nextInt(res);
+            buffArray[xs][ys].setState(true);
+            buffArray[xs][ys].setCords(xs, ys);
+            endpointList.add(buffArray[xs][ys]);
+        }
+        return endpointList;
+    }
+
+    static ArrayList<Cell> updateLiveList(ArrayList<Cell> liveList){
+        liveList.clear();
+        for(int i=0; i<res; i++){
+            for(int j=0;j<res;j++){
+                if(buffArray[i][j].getState()){
+                    liveList.add(buffArray[i][j]);
+                }
+            }
+        }
+        return liveList;
+    }
+    static ArrayList<Cell> updateEndpoints(ArrayList<Cell> liveList, ArrayList<Cell> endpointList){
+        endpointList.clear();
+        for(Cell c: liveList){
+            int x=c.getX();
+            int y=c.getY();
+            int count =0;
+            try {
+                if (buffArray[x - 1][y].getState()) count++;
+            }catch (ArrayIndexOutOfBoundsException e){}
+            try {
+
+                if(buffArray[x+1][y].getState())count++;
+            }catch (ArrayIndexOutOfBoundsException e){}
+            try {
+
+                if(buffArray[x][y-1].getState())count++;
+            }catch (ArrayIndexOutOfBoundsException e){}
+            try {
+
+                if(buffArray[x][y+1].getState())count++;
+            }catch (ArrayIndexOutOfBoundsException e){}
+            if(count==1){
+                endpointList.add(c);
+            }
+        }
+        return endpointList;
+    }
+    static void growPaths(ArrayList<Cell> endpointList){
+        for(Cell c:endpointList){//check boundries
+            try {//left bound
+                //System.out.println("-----");
+                int a1=c.getX() - 1;
+                int b1=c.getX() - 2;
+                int a2=c.getY();
+                boolean a=!buffArray[a1][a2].getState() && !buffArray[b1][a2].getState();
+                addBranch(a,a1,a2,b1,a2);
+            }
+            catch (ArrayIndexOutOfBoundsException e){
+                //System.out.println("Err:0001");
+            }
+            try {//right bound
+                //System.out.println("-----");
+                int a1=c.getX() + 1;
+                int b1=c.getX() + 2;
+                int a2=c.getY();
+                boolean a=!buffArray[a1][a2].getState() && !buffArray[b1][a2].getState();
+                addBranch(a,a1,a2,b1,a2);
+            }
+            catch (ArrayIndexOutOfBoundsException e){
+              //  System.out.println("Err:0001");
+            }
+            try {//top bound
+ //               System.out.println("-----");
+                int a1=c.getY() + 1;
+                int b1=c.getY() + 2;
+                int a2=c.getX();
+                boolean a=!buffArray[a1][a2].getState() && !buffArray[b1][a2].getState();
+                addBranch(a,a2,a1,a2,b1);
+            }
+            catch (ArrayIndexOutOfBoundsException e){
+            //    System.out.println("Err:0001");
+            }
+            try {//low bound
+   //             System.out.println("-----");
+                int a1=c.getY() - 1;
+                int b1=c.getY() - 2;
+                int a2=c.getX();
+                boolean a=!buffArray[a1][a2].getState() && !buffArray[b1][a2].getState();
+                addBranch(a,a2,a1,a2,b1);
+            }
+            catch (ArrayIndexOutOfBoundsException e){
+                //System.out.println("Err:0001");
+            }
+        }
+    }
+    static void addBranch(boolean a, int a1, int a2, int b1, int b2){
+        if (a && rn.nextBoolean() && rn.nextFloat() <.6f) {
+            buffArray[a1][a2].setState(true);
+            buffArray[a1][a2].setCords(a1,a2);
+            buffArray[b1][b2].setState(true);
+            buffArray[b1][b2].setCords(b1,b2);
+        }
+    }
     public void dispose() {
 
     }

@@ -8,7 +8,7 @@ import java.util.Random;
 /**
  * Created by Tom on 11/10/2015.
  */
-public class Monster {//penis
+public class Monster {
     Damage d = new Damage();
     int x,px;
     int y,py;
@@ -35,7 +35,7 @@ public class Monster {//penis
     double intelMod=1;
     double speedMod=0;
     String status="0";
-    int sight=2;
+    int sight=4;
     public double damage;
     static int playerlevel;
     boolean agro=false;
@@ -194,43 +194,89 @@ public class Monster {//penis
         int b=rn.nextInt(3)+1;
         int tx=x;
         int ty=y;
+        //MapState.out(x+"  "+y);
 
-        switch(a) {
-            case(1):{tx+=rn.nextInt(2);break;}
-            case(2):{tx-=rn.nextInt(2);break;}
-            case(3):{break;}}
-        switch(b) {
-            case(1):{ty+=rn.nextInt(2);break;}
-            case(2):{ty-=rn.nextInt(2);break;}
-            case(3):{break;}}
-        boolean placed= false;
-        for(Cell c1: GridManager.liveCellList){
-            if(c1.getX()==x && c1.getY()==y){
-                //c1.setMon(false);
+        //check if player is around
+        if(Game.player.getX()>this.getX()-this.getSight() && Game.player.getX()<this.getX()+this.getSight()
+                &&Game.player.getY()>this.getY()-this.getSight() && Game.player.getY()<this.getY()+this.getSight()){
+            MapState.out(x+"  "+y);
+            if(Game.player.getX()>this.getX()){
+
+                tx=this.x+1;
             }
-            if(c1.getX()==tx && c1.getY()==ty) {
-                c1.setMon(true);
-                setCords(tx, ty);
-                placed = true;
+            else if(Game.player.getX()==this.getX()){
+
+            }
+            else{
+                tx=this.x-1;
+            }
+            if(Game.player.getY()>this.getY()){
+                ty=this.y+1;
+            }
+            else if(Game.player.getY()==this.getY()){
+
+            }
+            else{
+                ty=this.y-1;
             }
         }
-        if(!placed){
-            setCords(x,y);
-            for(Cell c: GridManager.liveCellList){
-                if(c.getX()==x && c.getY()==y){
-                    c.setMon(true);
+        else {
+            switch (a) {
+                case (1): {
+                    tx += rn.nextInt(2);
+                    break;
+                }
+                case (2): {
+                    tx -= rn.nextInt(2);
+                    break;
+                }
+                case (3): {
+                    break;
+                }
+            }
+            switch (b) {
+                case (1): {
+                    ty += rn.nextInt(2);
+                    break;
+                }
+                case (2): {
+                    ty -= rn.nextInt(2);
+                    break;
+                }
+                case (3): {
+                    break;
+                }
+            }
+
+        }
+        boolean placed = false;
+        boolean cont=false;
+        for(Cell c :GridManager.liveCellList){//checks if there is monster already on chosen cell
+            if(c.getX()==tx && c.getY() ==ty){
+                if(c.hasMon())
+                    cont=true;
+            }
+        }
+        if(!cont) {
+            for (Cell c1 : GridManager.liveCellList) {
+                if (c1.getX() == x && c1.getY() == y) {
+                    c1.setMon(false);
+                }
+                if (c1.getX() == tx && c1.getY() == ty) {
+                    c1.setMon(true);
+                    setCords(tx, ty);
+                    placed = true;
+                }
+            }
+            if (!placed) {
+                setCords(x, y);
+                for (Cell c : GridManager.liveCellList) {
+                    if (c.getX() == x && c.getY() == y) {
+                        c.setMon(true);
+                    }
                 }
             }
         }
-        /*
-        for(Cell c: GridManager.liveCellList){
-            if(){
-                c.setMon(true);
-                setCords(tx,ty);
-
-            }
-        }*/
-        //setCordsPX(x* MapState.cellW,y*MapState.cellW);
     }
 
     public double getAttack() {
@@ -239,5 +285,9 @@ public class Monster {//penis
 
     public double getSpeed() {
         return speed;
+    }
+
+    public int getSight() {
+        return sight;
     }
 }

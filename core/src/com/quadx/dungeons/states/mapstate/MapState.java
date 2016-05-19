@@ -41,6 +41,7 @@ public class MapState extends State {
     public static Attack attack;
     public static Item item;
     public static Item popupItem;
+    public static Monster targetMon;
 
     public static char lastPressed = 'w';
     public static boolean attackMenuOpen = false;
@@ -182,11 +183,11 @@ public class MapState extends State {
                             if(c.getX()==xrange && c.getY()==yrange && c.hasMon()){
                                 for (Monster m : gm.monsterList) {
                                     if (m.getX() == xrange && m.getY() == yrange) {
+                                        targetMon=m;
                                         out("Hit");
                                         index = gm.monsterList.indexOf(m);
                                         playerDamage = (int) Damage.playerMagicDamage(Game.player, m, attack.getPower());
                                         int attIndex = Game.player.attackList.indexOf(attack);
-                                        SpellMods.runMod(m, attack);
                                         mHitX = m.getPX();
                                         mHitY = m.getPY();
 

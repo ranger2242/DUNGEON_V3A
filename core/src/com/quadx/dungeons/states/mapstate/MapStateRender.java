@@ -119,24 +119,27 @@ public class MapStateRender extends MapState {
         int hpDiff = 0;
         int mode = 1;
         int margin = 30;
-        double playerHealthMax = Game.player.getHpMax();
-        double playerHealth = Game.player.getHp();
-        double playerMana = Game.player.getMana();
-        double playerManaMax = Game.player.getManaMax();
+        double pHealthMax = Game.player.getHpMax();
+        double pHealth = Game.player.getHp();
+        double pMana = Game.player.getMana();
+        double pManaMax = Game.player.getManaMax();
+        double pEnergyMax=Game.player.getEnergyMax();
+        double pEnergy=Game.player.getEnergy();
         int barWidth = 1;
         if (mode == 1) barWidth = 4;
         if (mode == 2) barWidth = 3;
-        double playerHPBarMax = (Game.WIDTH / barWidth) - margin - 15;
-        double playerHPBar = (playerHealth / playerHealthMax) * (playerHPBarMax - hpDiffx);
-        double playerManaBarMax = (Game.WIDTH / barWidth) - margin - 15;
-        double playerManaBar = (playerMana / playerManaMax * playerManaBarMax);
-        hpDiff = (int) (playerHPBar - ((playerHealth - Game.monster.damage / playerHealthMax) * ((x / barWidth) - margin - 15)));
+        double pHPBarMax = (Game.WIDTH / barWidth) - margin - 15;
+        double pHPBar = (pHealth / pHealthMax) * (pHPBarMax - hpDiffx);
+        double pManaBarMax = (Game.WIDTH / barWidth) - margin - 15;
+        double pManaBar = (pMana / pManaMax * pManaBarMax);
+        double pEnergyBarMax=(Game.WIDTH/barWidth)-margin-15;
+        double pEnergyBar=(pEnergy/pEnergyMax*pEnergyBarMax);
 
         //Game.setFontSize(10);
         Game.font.setColor(.5f, .5f, .5f, 1);
         ArrayList<String> a = Game.player.getStatsList();
         for (int i = 0; i < a.size(); i++) {
-            Game.getFont().draw(sb, a.get(i), x + 30, y + Game.HEIGHT - 50 - (i * 20));
+            Game.getFont().draw(sb, a.get(i), x + 30, y + Game.HEIGHT - 75 - (i * 20));
         }
         sb.end();
 
@@ -148,9 +151,12 @@ public class MapStateRender extends MapState {
         if (Game.player.getHp() < Game.player.getHpMax() / 2) {
             shapeR.setColor(1f, 0f, 0f, 1);
         }
-        shapeR.rect(x + margin, y + Game.HEIGHT - 30, (int) playerHPBar, 10);
+        shapeR.rect(x + margin, y + Game.HEIGHT - 30, (int) pHPBar, 10);
         shapeR.setColor(0f, 0f, 1f, 1);
-        shapeR.rect(x + margin, y + Game.HEIGHT - 45, (int) playerManaBar, 10);
+        shapeR.rect(x + margin, y + Game.HEIGHT - 45, (int) pManaBar, 10);
+        shapeR.setColor(1f,1f,0,1);
+        shapeR.rect(x + margin, y + Game.HEIGHT - 60, (int) pEnergyBar, 10);
+
         shapeR.end();
     }
     public static void drawPlayerEquipment(SpriteBatch sb){
@@ -212,6 +218,7 @@ public class MapStateRender extends MapState {
         sb.begin();
         for(int i=0;i<3;i++){
             try {
+
                 Texture t = invIcon.get(inventoryPos + i);
                 int x=(int)(viewX+(Game.WIDTH -(200-(i*30))) + (t.getWidth() * (i)));
                 int y=(int)viewY+ 100;
@@ -223,7 +230,6 @@ public class MapStateRender extends MapState {
 
             }
             catch (IndexOutOfBoundsException e){
-
             }
         }
         /*
@@ -446,7 +452,7 @@ public class MapStateRender extends MapState {
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         for(int i=0;i<gm.monsterList.size();i++){
             Monster m= gm.monsterList.get(i);
-            int side=6*cellW;
+            int side=m.getSight()*2*cellW;
             double x1=m.getPX()-(side/2)+(cellW/2);
             double y1=m.getPY()-(side/2)+(cellW/2);
             shapeR.setColor(1,0,0,.2f);

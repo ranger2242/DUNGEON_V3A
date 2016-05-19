@@ -17,10 +17,12 @@ import com.quadx.dungeons.states.ShopState;
  */
 public class MapStateUpdater extends MapState {
     private static float dtimeMin=0;
-    static float dtMonsterMove=0;
+    static float dtRun=0;
+    static float dtDig=0;
     static float dtMove = 0;
     static float dtAttack = 0;
     static float dtRegen = 0;
+    static float dtEnergyRe=0;
     static float dtInfo =0;
     static float dtItem=0;
     static float dtToolTip=0;
@@ -34,7 +36,7 @@ public class MapStateUpdater extends MapState {
     }
     public static void moveMonsters(){
         dtimeMin+= Gdx.graphics.getDeltaTime();
-        if(dtimeMin>.3) {
+        if(dtimeMin>.1) {
             gm.clearMonsterPositions();
             for(Monster m :gm.monsterList){
                 m.move();
@@ -48,6 +50,13 @@ public class MapStateUpdater extends MapState {
         mouseY=Gdx.input.getY();
         mouseRealitiveX=(int)(mouseX+viewX);
         mouseRealitiveY=(int)(Game.HEIGHT-mouseY+viewY);
+        dtEnergyRe+=dt;
+
+        if(dtEnergyRe>.2 && Game.player.getEnergy()<Game.player.getEnergyMax()){
+            Game.player.setEnergy(Game.player.getEnergy()+Game.player.getEnergyRegen());
+            if(Game.player.getEnergy()>Game.player.getEnergyMax())Game.player.setEnergy(Game.player.getEnergyMax());
+            dtEnergyRe=0;
+        }
 
         ////////////////////////////////////////////////////////
         //DEBUG OUTPUT SECTION
@@ -70,7 +79,10 @@ public class MapStateUpdater extends MapState {
         position.y += (Game.player.getCordsPX().y - position.y) * lerp;
         cam.position.set(position);
         cam.update();
+        dtDig +=dt;
+
         dtRegen += dt;
+        dtRun+=dt;
         dtItem+=dt;
         dtInfo+=dt;
         dtLootPopup +=dt;
@@ -107,7 +119,7 @@ public class MapStateUpdater extends MapState {
         dtMove += Gdx.graphics.getDeltaTime();
         dtAttack += Gdx.graphics.getDeltaTime();
         dtInvSwitch+= Gdx.graphics.getDeltaTime();
-        if (dtMove > .05) {
+        if (dtMove > Game.player.getMoveSpeed()) {
             if (Gdx.input.isKeyPressed(Input.Keys.W)) movementHandler(0, 1, 'w');
             if (Gdx.input.isKeyPressed(Input.Keys.S)) movementHandler(0, -1, 's');
             if (Gdx.input.isKeyPressed(Input.Keys.A)) movementHandler(-1, 0, 'a');
@@ -198,9 +210,27 @@ public class MapStateUpdater extends MapState {
         if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
             if(cellW>3)cellW--;
         }*/
-            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) ||
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) ||
                     Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-            gm.clearArea();
+                if(dtDig>Game.player.getMoveSpeed()) {
+                    if (Game.player.getEnergy() > 5) {
+                        gm.clearArea();
+                        Game.player.setEnergy(Game.player.getEnergy() - 2);
+                    }
+                    dtDig=0;
+                }
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) ||Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) ){
+            if(dtRun>.05 && Game.player.getEnergy()>3) {
+                Game.player.setMoveSpeed(.04f);
+                Game.player.setEnergy(Game.player.getEnergy() - 3);
+                dtRun=0;
+            }
+            else  Game.player.setMoveSpeed(.08f);
+
+        }
+        else{
+            Game.player.setMoveSpeed(.08f);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.J)) {
             clearFront();
