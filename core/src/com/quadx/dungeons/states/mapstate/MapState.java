@@ -54,7 +54,7 @@ public class MapState extends State {
     public static int playerDamage = 0;
     public static int messageCounter=0;
     public static int invSlotHovered=0;
-    public static int cellW=20;
+    public static int cellW=5;
     public static int mHitX=0;
     public static int mHitY=0;
     public static int mouseX=0;

@@ -18,17 +18,17 @@ public class ColorConverter {
         redI=r;
         greenI=g;
         blueI=b;
-        convert(redI,blueI,greenI);
+        convert(redI,greenI, blueI);
         color=new Color(redF,greenF,blueF,a);
-        printValues();
+       // printValues();
     }
     public ColorConverter(float r, float g, float b, int a){
         redF=r;
         greenF=g;
         blueF=b;
-        convert(redF,blueF,greenF);
+        convert(redF,greenF, blueF);
         color=new Color(greenF,greenF,blueF,a);
-        printValues();
+        //printValues();
     }
     public void printValues(){
         System.out.println(redF+" "+greenF+" "+blueF);

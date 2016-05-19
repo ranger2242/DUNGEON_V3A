@@ -472,6 +472,8 @@ public class MapStateRender extends MapState {
             if(c.getShop()) shapeR.setColor(1f, 0f, 1f, 1);
             if(c.hasWarp()) shapeR.setColor(0f, 1f, 0f, 1);
             if(c.hasMon())  shapeR.setColor(1,0,0,1);
+            ColorConverter water = new ColorConverter(12,41,155,1);
+            if(c.getWater())shapeR.setColor(water.getLIBGDXColor());
 
             if(!map)
                 shapeR.rect((cellW * x), cellW * y, cellW, cellW);

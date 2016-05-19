@@ -7,6 +7,7 @@ public class Cell {
     boolean hasPlayer=false;
     boolean isLive = false;
     boolean isEmpty =true;
+    boolean hasWater = false;
     boolean hasCrate=false;
     boolean hasLoot = false;
     boolean hasMon = false;
@@ -25,6 +26,7 @@ public class Cell {
     {
         isLive =activate;
     }
+    public boolean getWater(){return hasWater;}
     public boolean getShop(){return hasShop;}
     public boolean getAgro(){return agroPoint;}
     public boolean getState()
@@ -48,6 +50,7 @@ public class Cell {
         isLive =set;
     }
     public void setCrate(boolean set){hasCrate=set;}
+    public void setWater(boolean set){hasWater=set;}
     public void setHasLoot(boolean set) {
         hasLoot =set;
         if(set){

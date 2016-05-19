@@ -249,15 +249,15 @@ public class Map2State extends State {
 
         ArrayList<Cell> endpointList = new ArrayList<>();
         ArrayList<Cell> liveList=new ArrayList<>();
-        int runs = 60;
-        int initPoints =rn.nextInt(5)+1;
+        int runs = rn.nextInt(50)+30;
+        int initPoints =rn.nextInt(8)+1;
 
         initArray(buffArray);//buffers the buffArray
         plotInitPoints(endpointList,initPoints);
         growPaths(endpointList);
         //make sure there grid is more than 1 size
         liveList=updateLiveList(liveList);
-        while(liveList.size()<2){
+        while(liveList.size()<4){
             growPaths(endpointList);
             liveList=updateLiveList(liveList);
         }
@@ -269,6 +269,39 @@ public class Map2State extends State {
 
         ArrayList<Cell> small = new ArrayList<>();
         //search for single off bits
+        liveList= fillBits(2,liveList);
+        liveList= fillBits(4,liveList);
+        liveList= plotWater(liveList);
+        dispArray=buffArray;
+        return dispArray;
+    }
+    private static ArrayList<Cell> plotWater(ArrayList<Cell> liveList){
+        for(int i=0;i<10;i++) {
+            liveList.get(rn.nextInt(liveList.size())).setWater(true);
+        }
+        for(int i=0;i<1;i++) {
+            for (Cell c : liveList) {
+                if (c.getWater()) {
+                    int x = c.getX();
+                    int y = c.getY();
+                    try {
+                        if (rn.nextBoolean()) buffArray[x - 1][y - 1].setWater(true);
+                        if (rn.nextBoolean()) buffArray[x - 1][y].setWater(true);
+                        if (rn.nextBoolean()) buffArray[x - 1][y + 1].setWater(true);
+                        if (rn.nextBoolean()) buffArray[x][y + 1].setWater(true);
+                        if (rn.nextBoolean()) buffArray[x + 1][y + 1].setWater(true);
+                        if (rn.nextBoolean()) buffArray[x + 1][y].setWater(true);
+                        if (rn.nextBoolean()) buffArray[x + 1][y - 1].setWater(true);
+                        if (rn.nextBoolean()) buffArray[x][y - 1].setWater(true);
+                    }
+                    catch (ArrayIndexOutOfBoundsException e){}
+
+                }
+            }
+        }
+        return liveList;
+    }
+    static ArrayList<Cell> fillBits(int factor, ArrayList<Cell> liveList){
         for(int i=0;i<res;i++){
             for(int j=0;j<res;j++){
                 try{
@@ -277,23 +310,17 @@ public class Map2State extends State {
                     if(buffArray[i+1][j].getState())count++;
                     if(buffArray[i][j-1].getState())count++;
                     if(buffArray[i][j+1].getState())count++;
-                    if(count>2 && rn.nextFloat()>.2){
+                    if(count>=factor && rn.nextFloat()>.4){
                         buffArray[i][j].setState(true);
                         buffArray[i][j].setCords(i,j);
                         liveList.add(buffArray[i][j]);
                     }
-
                 }
-                catch (ArrayIndexOutOfBoundsException e){
-
-                }
+                catch (ArrayIndexOutOfBoundsException e){}
             }
-
         }
-        dispArray=buffArray;
-        return dispArray;
+        return liveList;
     }
-
     static ArrayList<Cell> plotInitPoints(ArrayList<Cell> endpointList, int count){
         //create initial growth points
         for(int i=0; i<count;i++) {

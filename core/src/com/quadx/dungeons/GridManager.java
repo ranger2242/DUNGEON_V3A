@@ -50,7 +50,6 @@ public class GridManager {
         for(Cell c:liveCellList)
             c.setMon(false);
     }
-
     private void unNullWallCells(){
         for(int i=0;i<res;i++){
             for(int j=0;j<res;j++){
@@ -143,4 +142,5 @@ public class GridManager {
             int w= MapState.cellW;
             Game.player.setCordsPX(c.getX()*w,c.getY()*w);
         }
+
 }

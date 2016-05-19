@@ -27,6 +27,7 @@ public class MapStateUpdater extends MapState {
     static float dtItem=0;
     static float dtToolTip=0;
     static float dtInvSwitch=0;
+    static float dtMap=0;
     static float lerp = 0.2f;
     static int x = 0;
 
@@ -88,6 +89,7 @@ public class MapStateUpdater extends MapState {
         dtLootPopup +=dt;
         dtStatPopup+=dt;
         dtDamageTextFloat += dt;
+        dtMap +=dt;
         dtMessage += Gdx.graphics.getDeltaTime();
         if(hovering){
             dtToolTip+=dt;
@@ -257,7 +259,10 @@ public class MapStateUpdater extends MapState {
             gsm.push(new ShopState(gsm));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.M)) {
-            gm.initializeGrid();
+            if(dtMap>.6) {
+                gm.initializeGrid();
+                dtMap=0;
+            }
         }
         if (Gdx.input.isKeyPressed(Input.Keys.TAB)) {
             if (attackMenuOpen) attackMenuOpen = false;
@@ -303,7 +308,7 @@ public class MapStateUpdater extends MapState {
         int x = Game.player.getPX() + xmod * cellW;
         int y = Game.player.getPY() + ymod * cellW;
         for(Cell cell: gm.liveCellList){
-            if(cell.getY()*cellW==y && cell.getX()*cellW==x){
+            if(cell.getY()*cellW==y && cell.getX()*cellW==x && !cell.getWater()){
                 Game.player.setCordsPX(x, y);
                 Game.player.setLiveListIndex(gm.liveCellList.indexOf(cell));
             }
