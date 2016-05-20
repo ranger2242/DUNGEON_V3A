@@ -34,6 +34,7 @@ public class MapState extends State {
     public static Texture lootPopup;
     public static Texture statPopup;
 
+    public static AbilitiyMod am;
     public static GridManager gm;
     public static ParticleEffect effect;
     public static ParticleEmitter emitter;

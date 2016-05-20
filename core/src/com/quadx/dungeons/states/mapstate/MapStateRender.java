@@ -21,6 +21,8 @@ import com.quadx.dungeons.tools.ColorConverter;
 
 import java.util.ArrayList;
 
+import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtWater;
+
 /**
  * Created by Tom on 12/28/2015.
  */
@@ -472,7 +474,15 @@ public class MapStateRender extends MapState {
             if(c.getShop()) shapeR.setColor(1f, 0f, 1f, 1);
             if(c.hasWarp()) shapeR.setColor(0f, 1f, 0f, 1);
             if(c.hasMon())  shapeR.setColor(1,0,0,1);
-            ColorConverter water = new ColorConverter(12,41,155,1);
+            ColorConverter water = new ColorConverter(48,109,179,1);
+            if(dtWater>.03) {
+                if (rn.nextBoolean())
+                    water = new ColorConverter(12, 41, 155, 1);
+                else
+                    water = new ColorConverter(28, 123, 232, 1);
+                dtWater=0;
+            }
+
             if(c.getWater())shapeR.setColor(water.getLIBGDXColor());
 
             if(!map)

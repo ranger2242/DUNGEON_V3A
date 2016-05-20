@@ -12,11 +12,13 @@ import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.ShopState;
 
+
 /**
  * Created by Tom on 1/29/2016.
  */
 public class MapStateUpdater extends MapState {
     private static float dtimeMin=0;
+    public static float dtWater=0;
     static float dtRun=0;
     static float dtDig=0;
     static float dtMove = 0;
@@ -81,6 +83,7 @@ public class MapStateUpdater extends MapState {
         cam.position.set(position);
         cam.update();
         dtDig +=dt;
+        dtWater+=Gdx.graphics.getDeltaTime();
 
         dtRegen += dt;
         dtRun+=dt;
@@ -216,7 +219,9 @@ public class MapStateUpdater extends MapState {
                     Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                 if(dtDig>Game.player.getMoveSpeed()) {
                     if (Game.player.getEnergy() > 5) {
-                        gm.clearArea();
+                        int x= Game.player.getX()-1;
+                        int y= Game.player.getY()-1;
+                        gm.clearArea(x,y,true);
                         Game.player.setEnergy(Game.player.getEnergy() - 2);
                     }
                     dtDig=0;

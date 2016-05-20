@@ -12,7 +12,7 @@ public class GridManager {
     static ArrayList<Cell> warpList = new ArrayList();
     public static ArrayList<Monster> monsterList = new ArrayList<>();
 
-    public static int res= 200;
+    public static int res= Map2State.res;
     public static int monsters= 10;
     public  static int width=0;
     public static int height=0;
@@ -30,9 +30,8 @@ public class GridManager {
         plotMonsters();
         plotPlayer();
     }
-    public void clearArea() {
-        int x= Game.player.getX()-1;
-        int y= Game.player.getY()-1;
+    public void clearArea(int x, int y, boolean player) {
+
         unNullWallCells();
         try {
             dispArray[x + 1][y + 1].setState(true);
@@ -43,6 +42,18 @@ public class GridManager {
             dispArray[x - 1][y + 1].setState(true);
             dispArray[x - 1][y].setState(true);
             dispArray[x - 1][y - 1].setState(true);
+            if(player && AbilitiyMod.digPlus){//checks if players dig ability is active
+                for(int i=0;i<9;i++){
+                    for(int j=0; j<3;j++){
+                        dispArray[x-4+i][y-1+j].setState(true);
+                    }
+                }
+                for(int i=0;i<3;i++){
+                    for(int j=0; j<9;j++){
+                        dispArray[x-1+i][y-4+j].setState(true);
+                    }
+                }
+            }
             splitMapDataToList();
         }catch(ArrayIndexOutOfBoundsException e){}
     }
@@ -87,13 +98,18 @@ public class GridManager {
             monsterList.clear();
         }
     private void plotWarps() {
-            //int points=3;
-            warpList.clear();
-            int index=rn.nextInt(liveCellList.size());
-            liveCellList.get(index).setWarp(true);
-            warpList.add(liveCellList.get(index));
-
+        //int points=3;
+        warpList.clear();
+        boolean plotted=false;
+        while(!plotted) {
+            int index = rn.nextInt(liveCellList.size());
+            if(!liveCellList.get(index).hasWater) {
+                liveCellList.get(index).setWarp(true);
+                warpList.add(liveCellList.get(index));
+                plotted=true;
+            }
         }
+    }
     private void plotMonsters() {
             double temp=liveCellList.size()*.005;
 
@@ -104,17 +120,21 @@ public class GridManager {
             while(temp>0){
                 Monster m = new Monster();
                 int index=rn.nextInt(liveCellList.size());
-                Cell c =liveCellList.get(index);
-                m.setCords(c.getX(),c.getY());
-                monsterList.add(m);
-                liveCellList.get(index).setMon(true);
-                liveCellList.get(index).setMonsterIndex(monsterList.indexOf(m));
-                temp--;
+                if(!liveCellList.get(index).hasWater) {
+
+                    Cell c = liveCellList.get(index);
+                    m.setCords(c.getX(), c.getY());
+                    monsterList.add(m);
+                    liveCellList.get(index).setMon(true);
+                    liveCellList.get(index).setMonsterIndex(monsterList.indexOf(m));
+                    temp--;
+                }
             }
         }
     private void plotShop(){
 
             int index= rn.nextInt(liveCellList.size());
+                 if(!liveCellList.get(index).hasWater)
             liveCellList.get(index).setShop(true);
         }
     private void plotLoot() {
@@ -122,7 +142,8 @@ public class GridManager {
             int loot=(int)(liveCellList.size()*fillPercent);
             while(loot>0){
                 int index = rn.nextInt(liveCellList.size());
-                liveCellList.get(index).setHasLoot(true);
+                if(!liveCellList.get(index).hasWater)
+                    liveCellList.get(index).setHasLoot(true);
                 loot--;
             }
         }
@@ -131,6 +152,7 @@ public class GridManager {
             int crates=(int)(liveCellList.size()*fillPercent);
             while(crates>0){
                 int index = rn.nextInt(liveCellList.size());
+                if(!liveCellList.get(index).hasWater)
                 liveCellList.get(index).setCrate(true);
                 crates--;
             }
@@ -141,6 +163,37 @@ public class GridManager {
             Cell c=liveCellList.get(index);
             int w= MapState.cellW;
             Game.player.setCordsPX(c.getX()*w,c.getY()*w);
+        int range=20;
+        for(int i=0;i<range;i++){
+            for(int j=0;j<range;j++){
+                int x=c.getX()-range/2+i;
+                int y=c.getY()-range/2+j;
+                try {
+                    if (dispArray[x][y].hasMon()) {
+                        Monster temp = null;
+                        for (Monster m : monsterList) {
+                            if (m.getX() == x && m.getY() == y) {
+                                temp = m;
+                                dispArray[x][y].setMon(false);
+                            }
+                        }
+                        if (temp != null)
+                            monsterList.remove(temp);
+                    }
+                }catch (NullPointerException e){}
+                catch (ArrayIndexOutOfBoundsException e1){}
+            }
         }
+        /*
+            for(Cell c1: liveCellList){
+                for(int i=0;i<10;i++){
+                    for(int j=0;j<10;j++){
+
+                    }
+                }
+                if(c1.hasMon() )
+            }*/
+        }
+
 
 }

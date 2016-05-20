@@ -24,7 +24,7 @@ public class Map2State extends State {
     ////////////////////////////////////////////////////////////////////////////////////////
     //Map Variables
     ////////////////////////////////////////////////////////////////////////////////////////
-    public static int res =200;
+    public static int res =150;
     static int seedPoints=20;
     static int secondaryPoints=100;
     static int triPoints=50;
@@ -276,10 +276,12 @@ public class Map2State extends State {
         return dispArray;
     }
     private static ArrayList<Cell> plotWater(ArrayList<Cell> liveList){
-        for(int i=0;i<10;i++) {
+        int cycles = rn.nextInt(10);
+        int grow=rn.nextInt(1)+1;
+        for(int i=0;i<cycles;i++) {
             liveList.get(rn.nextInt(liveList.size())).setWater(true);
         }
-        for(int i=0;i<1;i++) {
+        for(int i=0;i<grow;i++) {
             for (Cell c : liveList) {
                 if (c.getWater()) {
                     int x = c.getX();

@@ -275,6 +275,7 @@ public class Monster {
                         c.setMon(true);
                     }
                 }
+                MapState.gm.clearArea(x,y,false);
             }
         }
     }
