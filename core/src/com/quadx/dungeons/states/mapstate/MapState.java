@@ -34,7 +34,7 @@ public class MapState extends State {
     public static Texture lootPopup;
     public static Texture statPopup;
 
-    public static AbilitiyMod am;
+    public static AbilityMod am;
     public static GridManager gm;
     public static ParticleEffect effect;
     public static ParticleEmitter emitter;
@@ -112,6 +112,7 @@ public class MapState extends State {
         MapStateRender.drawGrid(false);
         MapStateRender.drawMonsterAgro();
         MapStateRender.drawHUD(sb);
+        MapStateRender.drawAbilityIcon(sb);
         MapStateRender.drawMessageOutput(sb);
         MapStateRender.drawStatChanges(sb);
         MapStateRender.drawPlayerEquipment(sb);
@@ -119,11 +120,10 @@ public class MapState extends State {
         if (displayPlayerDamage) MapStateRender.drawPlayerDamageOutput(sb, mHitX, mHitY + textY);
         if(hovering) MapStateRender.drawPopup(sb);
         if (effectLoaded) {MapStateRender.drawParticleEffects(sb, Game.player.getPX(), Game.player.getPY());}
+        if(MapStateRender.hovText) MapStateRender.drawHovText(sb);
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         shapeR.setColor(Color.RED);
-
          if(qButtonList.size()>0)   shapeR.rect(qButtonList.get(0).getPx(), qButtonList.get(0).getPx(), 12, 12);
-
             shapeR.end();
         Gdx.gl.glDisable(Gdx.gl.GL_BLEND);
     }
@@ -239,6 +239,7 @@ public class MapState extends State {
         catch (NullPointerException e){
 
         }
+        catch(ArrayIndexOutOfBoundsException e){}
     }
     public static void setFront(int j, int k){
         try{

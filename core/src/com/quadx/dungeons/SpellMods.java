@@ -35,7 +35,7 @@ public class SpellMods {
                 break;
             }
             case 2:{
-                Game.player.hp= Game.player.hpmax;
+                Game.player.hp= Game.player.hpMax;
                 Game.player.mana= Game.player.manaMax;
                 break;
             }
@@ -71,7 +71,7 @@ public class SpellMods {
             }
             case 7:{//SACRIFICE
                 levelB=new double[]{.15,.20,.30,.40,.50};
-                double x= Game.player.hpmax*levelB[a.getLevel()];
+                double x= Game.player.hpMax *levelB[a.getLevel()];
                 double y= Game.player.manaMax*(levelB[a.getLevel()]*2);
                 Game.player.hp-=(x);
                 Game.player.mana+=(x);

@@ -31,7 +31,8 @@ public class GridManager {
         plotPlayer();
     }
     public void clearArea(int x, int y, boolean player) {
-
+        x-=1;
+        y-=1;
         unNullWallCells();
         try {
             dispArray[x + 1][y + 1].setState(true);
@@ -42,17 +43,31 @@ public class GridManager {
             dispArray[x - 1][y + 1].setState(true);
             dispArray[x - 1][y].setState(true);
             dispArray[x - 1][y - 1].setState(true);
-            if(player && AbilitiyMod.digPlus){//checks if players dig ability is active
+            if(player && AbilityMod.digPlus){//checks if players dig ability is active
+                if(MapState.lastPressed =='d')
                 for(int i=0;i<9;i++){
                     for(int j=0; j<3;j++){
-                        dispArray[x-4+i][y-1+j].setState(true);
+                        dispArray[x+i][y-1+j].setState(true);
                     }
                 }
-                for(int i=0;i<3;i++){
+                if(MapState.lastPressed =='a')
+                    for(int i=0;i<9;i++){
+                        for(int j=0; j<3;j++){
+                            dispArray[x-i][y-1+j].setState(true);
+                        }
+                    }
+                if(MapState.lastPressed =='s')
+                    for(int i=0;i<3;i++){
                     for(int j=0; j<9;j++){
-                        dispArray[x-1+i][y-4+j].setState(true);
+                        dispArray[x-1+i][y-j].setState(true);
                     }
                 }
+                if(MapState.lastPressed =='w')
+                    for(int i=0;i<3;i++){
+                        for(int j=0; j<9;j++){
+                            dispArray[x-1+i][y+j].setState(true);
+                        }
+                    }
             }
             splitMapDataToList();
         }catch(ArrayIndexOutOfBoundsException e){}

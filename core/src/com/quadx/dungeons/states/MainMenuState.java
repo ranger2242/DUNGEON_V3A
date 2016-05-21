@@ -59,8 +59,7 @@ public class MainMenuState extends State {
         if(Gdx.input.isKeyPressed(Input.Keys.ENTER)){
             switch (selector){
                 case(0):{
-                    //System.out.println("Fucking fucks");
-                    gsm.push(new MapState(gsm));
+                    gsm.push(new AbilitySelectState(gsm));
                     dispose();
                     break;
                 }

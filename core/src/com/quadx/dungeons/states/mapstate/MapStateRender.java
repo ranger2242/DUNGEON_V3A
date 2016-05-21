@@ -8,10 +8,7 @@ import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.quadx.dungeons.Cell;
-import com.quadx.dungeons.EmitterAngles;
-import com.quadx.dungeons.Game;
-import com.quadx.dungeons.QButton;
+import com.quadx.dungeons.*;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
@@ -21,6 +18,8 @@ import com.quadx.dungeons.tools.ColorConverter;
 
 import java.util.ArrayList;
 
+import static com.quadx.dungeons.states.MainMenuState.gl;
+import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtHovText;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtWater;
 
 /**
@@ -28,11 +27,15 @@ import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtWater;
  */
 public class MapStateRender extends MapState {
    public static int inventoryPos=0;
-
+    public static boolean hovText=false;
     public static ArrayList<String> equipList=new ArrayList<>();
+    public static String hovTextS="";
+    static int hovTextYPosMod=0;
+    static Texture abilityIcon;
+    static int prevMod=0;//checks if Ability has changed
+
     public MapStateRender(GameStateManager gsm) {
         super(gsm);
-        //equipList.add();
     }
     public static void loadAttackIcons(){
        if(Game.player.attackList.size() !=attackIconList.size()) {
@@ -44,6 +47,54 @@ public class MapStateRender extends MapState {
 
                 }
             }
+        }
+    }
+    public static void drawAbilityIcon(SpriteBatch sb){
+        if(AbilityMod.modifier !=prevMod) {
+            String s = "";
+            switch (AbilityMod.modifier) {
+                case 1: {//DigPlus
+                    s = "DigPlus.png";
+                    prevMod=1;
+                    break;
+                }
+                case 2: {//Brawler
+                    s = "Brawler.png";
+                    prevMod=2;
+                    break;
+                }
+                case 3: {//Mage
+                    s = "Mage.png";
+                    prevMod=3;
+                    break;
+                }
+                case 4: {//Quick
+                    s = "Quick.png";
+                    prevMod=4;
+                    break;
+                }
+                case 5: {//Investor
+                    s = "Investor.png";
+                    prevMod=5;
+                    break;
+                }
+                case 6: {//Tank
+                    s = "Tank.png";
+                    prevMod=6;
+                    break;
+                }
+
+            }
+            try {
+                abilityIcon = new Texture(Gdx.files.internal("images/icons/abilities/ic" + s));
+            } catch (GdxRuntimeException e) {
+            }
+        }
+        if(prevMod !=0){
+            //MapState.out("Fucking Errors");
+            sb.begin();
+            sb.draw(abilityIcon,viewX+Game.WIDTH-60,viewY+ 150);
+            sb.end();
         }
     }
     public static void loadEquipIcons(){
@@ -84,12 +135,32 @@ public class MapStateRender extends MapState {
         }
 
     }
+    public static void drawHovText(SpriteBatch sb){
+        sb.begin();
+        if(dtHovText<1.5){
+            Game.setFontSize(14);
+            CharSequence cs=hovTextS;
+            gl.setText(Game.font,cs);
+            int posX =(int)(Game.player.getPX()-(gl.width/2));
+            int posY=Game.player.getPY()+4*cellW+hovTextYPosMod;
+            Game.getFont().draw(sb,hovTextS,posX,posY);
+            hovTextYPosMod++;
+            dtHovText+=Gdx.graphics.getDeltaTime();
+        }
+        else{
+            dtHovText=0;
+            hovTextYPosMod=0;
+            hovText=false;
+        }
+        sb.end();
+    }
     public static void drawHUD(SpriteBatch sb) {
         drawPlayerStats(sb, viewX, viewY);
         drawAttackMenu(sb);
         drawInventory(sb);
         drawMiniMap(sb);
         sb.begin();
+
         try {
             if (dtLootPopup < .4)
                 sb.draw(lootPopup, Game.player.getPX()-(lootPopup.getWidth()/2)-(cellW/4), Game.player.getPY()+5);
@@ -137,7 +208,7 @@ public class MapStateRender extends MapState {
         double pEnergyBarMax=(Game.WIDTH/barWidth)-margin-15;
         double pEnergyBar=(pEnergy/pEnergyMax*pEnergyBarMax);
 
-        //Game.setFontSize(10);
+        Game.setFontSize(10);
         Game.font.setColor(.5f, .5f, .5f, 1);
         ArrayList<String> a = Game.player.getStatsList();
         for (int i = 0; i < a.size(); i++) {

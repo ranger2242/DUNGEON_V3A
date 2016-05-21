@@ -4,9 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
+import com.quadx.dungeons.AbilityMod;
 import com.quadx.dungeons.Cell;
 import com.quadx.dungeons.Game;
-import com.quadx.dungeons.Player;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
@@ -30,6 +30,7 @@ public class MapStateUpdater extends MapState {
     static float dtToolTip=0;
     static float dtInvSwitch=0;
     static float dtMap=0;
+    public static float dtHovText=0;
     static float lerp = 0.2f;
     static int x = 0;
 
@@ -53,13 +54,6 @@ public class MapStateUpdater extends MapState {
         mouseY=Gdx.input.getY();
         mouseRealitiveX=(int)(mouseX+viewX);
         mouseRealitiveY=(int)(Game.HEIGHT-mouseY+viewY);
-        dtEnergyRe+=dt;
-
-        if(dtEnergyRe>.2 && Game.player.getEnergy()<Game.player.getEnergyMax()){
-            Game.player.setEnergy(Game.player.getEnergy()+Game.player.getEnergyRegen());
-            if(Game.player.getEnergy()>Game.player.getEnergyMax())Game.player.setEnergy(Game.player.getEnergyMax());
-            dtEnergyRe=0;
-        }
 
         ////////////////////////////////////////////////////////
         //DEBUG OUTPUT SECTION
@@ -82,9 +76,9 @@ public class MapStateUpdater extends MapState {
         position.y += (Game.player.getCordsPX().y - position.y) * lerp;
         cam.position.set(position);
         cam.update();
-        dtDig +=dt;
-        dtWater+=Gdx.graphics.getDeltaTime();
 
+        dtDig +=dt;
+        dtWater+=dt;
         dtRegen += dt;
         dtRun+=dt;
         dtItem+=dt;
@@ -93,7 +87,18 @@ public class MapStateUpdater extends MapState {
         dtStatPopup+=dt;
         dtDamageTextFloat += dt;
         dtMap +=dt;
-        dtMessage += Gdx.graphics.getDeltaTime();
+        dtMessage += dt;
+        dtEnergyRe+=dt;
+        //dtHovText+=dt;
+        if(MapStateRender.hovText)
+            dtEnergyRe+=dt;
+
+        if(dtEnergyRe>.2 && Game.player.getEnergy()<Game.player.getEnergyMax()){
+            Game.player.setEnergy(Game.player.getEnergy()+Game.player.getEnergyRegen());
+            if(Game.player.getEnergy()>Game.player.getEnergyMax())Game.player.setEnergy(Game.player.getEnergyMax());
+            dtEnergyRe=0;
+        }
+
         if(hovering){
             dtToolTip+=dt;
             if(dtToolTip>.6){
@@ -108,10 +113,13 @@ public class MapStateUpdater extends MapState {
             //textY += .2;
         }
         if (dtRegen > .4) {
-            if (Game.player.getMana() < Game.player.getManaMax())
+            if(AbilityMod.investor){
+                Game.player.setGold((int)(Game.player.getGold()*1.01));
+            }
+                if (Game.player.getMana() < Game.player.getManaMax())
                 Game.player.setMana(Game.player.getMana() + Game.player.getManaRegenRate());
             if (Game.player.getHp() < Game.player.getHpMax())
-                Game.player.setHp(Game.player.getHp() + Game.player.getHpRegenRate());
+                Game.player.setHp(Game.player.getHp() + Game.player.getHpRegen());
             dtRegen = 0;
         }
         if(effectLoaded) effect.update(Gdx.graphics.getDeltaTime());
@@ -215,12 +223,20 @@ public class MapStateUpdater extends MapState {
         if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
             if(cellW>3)cellW--;
         }*/
+        if(Gdx.input.isKeyPressed(Input.Keys.T)){
+            //if(!AbilityMod.investor) {
+                //AbilityMod.enableAbility(5);
+                MapStateRender.hovText=true;
+            //}
+            MapStateRender.hovTextS="Penis!";
+
+        }
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) ||
                     Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                 if(dtDig>Game.player.getMoveSpeed()) {
                     if (Game.player.getEnergy() > 5) {
-                        int x= Game.player.getX()-1;
-                        int y= Game.player.getY()-1;
+                        int x= Game.player.getX();
+                        int y= Game.player.getY() ;
                         gm.clearArea(x,y,true);
                         Game.player.setEnergy(Game.player.getEnergy() - 2);
                     }

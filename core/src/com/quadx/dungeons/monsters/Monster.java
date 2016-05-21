@@ -199,7 +199,7 @@ public class Monster {
         //check if player is around
         if(Game.player.getX()>this.getX()-this.getSight() && Game.player.getX()<this.getX()+this.getSight()
                 &&Game.player.getY()>this.getY()-this.getSight() && Game.player.getY()<this.getY()+this.getSight()){
-            MapState.out(x+"  "+y);
+            //MapState.out(x+"  "+y);
             if(Game.player.getX()>this.getX()){
 
                 tx=this.x+1;
@@ -219,6 +219,8 @@ public class Monster {
             else{
                 ty=this.y-1;
             }
+            MapState.gm.clearArea(tx,ty,false);
+
         }
         else {
             switch (a) {
@@ -275,7 +277,7 @@ public class Monster {
                         c.setMon(true);
                     }
                 }
-                MapState.gm.clearArea(x,y,false);
+                if(rn.nextBoolean()) MapState.gm.clearArea(x,y,false);
             }
         }
     }

@@ -24,7 +24,7 @@ public class Player {
     int liveCellListIndex;
     int gold=500;
     public int level =1;
-    int hpmax = 100;
+    int hpMax = 100;
     int hpMod =0;
     int attackMod=0;
     int defenseMod=0;
@@ -39,14 +39,15 @@ public class Player {
     int mana = 100;
     int manaMax = 100;
     int manaRegenRate=5;
-    int hpRegenRate=2;
+    int hpRegen =2;
     double damage;
     int exp=0;
     int expGain=0;
     int killcount=0;
     int energy=100;
     int energyMax=100;
-    int energyRegen=2;
+    int energyRegen=1 ;
+    int abilityPoints=1;
     public int floor= 0;
     float moveSpeed=.08f;
     Random rn =new Random();
@@ -143,7 +144,7 @@ public class Player {
     }
     public int getHpMax()
     {
-        return hpmax;
+        return hpMax;
     }
     public int getDefense()
     {
@@ -172,13 +173,13 @@ public class Player {
     public int getManaRegenRate(){
         return  manaRegenRate;
     }
-    public int getHpRegenRate(){return  hpRegenRate;}
+    public int getHpRegen(){return hpRegen;}
     public ArrayList<String> getStatsList(){
         statsList.clear();
 
         statsList.add(name);
         statsList.add("Level " + level);
-        statsList.add("HP " + hp + "/" + hpmax+"+"+hpMod+": "+(hpmax+hpMod));
+        statsList.add("HP " + hp + "/" + hpMax +"+"+hpMod+": "+(hpMax +hpMod));
         statsList.add("M " + mana + "/" + manaMax+" + "+manaMod+": "+(manaMax+manaMod));
         statsList.add("ATT:      " + attack+" + "+attackMod+": "+(attack+attackMod));
         statsList.add("DEF:      " + defense+" + "+defenseMod+": "+(defense+defenseMod));
@@ -202,7 +203,7 @@ public class Player {
 
             //System.out.println(name+" leveled up.");
             level++;
-            hpmax=hpmax+( 25 + rn.nextInt(20));
+            hpMax = hpMax +( 25 + rn.nextInt(20));
             manaMax=manaMax+(25+rn.nextInt(20));
             manaRegenRate+=1;
             attack=attack+( 0 + (int)(Math.random()*4));
@@ -312,14 +313,32 @@ public class Player {
     }
 
     public int getEnergyRegen() {
-        return energyRegen;
+            return energyRegen;
     }
-
     public float getMoveSpeed() {
         return moveSpeed;
     }
-
     public void setMoveSpeed(float moveSpeed) {
         this.moveSpeed = moveSpeed;
+    }
+
+    public void setEnergyRegen(int i) {
+        energyRegen=i;
+    }
+
+    public void setManaMax(int manaMax) {
+        this.manaMax = manaMax;
+    }
+
+    public void setManaRegen(int manaRegen) {
+        this.manaRegenRate = manaRegen;
+    }
+
+    public void setHpRegen(int hpRegen) {
+        this.hpRegen = hpRegen;
+    }
+
+    public void setHpMax(int hpMax) {
+        this.hpMax = hpMax;
     }
 }

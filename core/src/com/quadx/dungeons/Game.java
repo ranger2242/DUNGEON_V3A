@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeType;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.quadx.dungeons.monsters.Monster;
+import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.MainMenuState;
 import com.quadx.dungeons.states.mapstate.Map2State;
@@ -41,8 +42,9 @@ public class Game extends ApplicationAdapter {
 		setFontSize(20);
 		spriteBatch = new SpriteBatch();
 		//gameStateManager.push(new Map2State(gameStateManager));
-
 		gameStateManager.push(new MainMenuState(gameStateManager));
+
+		//gameStateManager.push(new AbilitySelectState(gameStateManager));
 	}
 	public static BitmapFont getFont(){
 
@@ -59,14 +61,14 @@ public class Game extends ApplicationAdapter {
 		}
 		catch (NullPointerException e)
 		{
-			console("Null pointer disposing generator or font");
+			//console("Null pointer disposing generator or font");
 		}
 		try {
 			FreeTypeFontGenerator generator= new FreeTypeFontGenerator(Gdx.files.internal("fonts\\prstart.ttf"));;
 			FreeTypeFontGenerator.FreeTypeFontParameter parameter= new FreeTypeFontGenerator.FreeTypeFontParameter();
 			parameter.size = x;
 			font = generator.generateFont(parameter);
-			console("Font Generated");
+			//console("Font Generated");
 		}
 			catch (Exception e){
 			e.printStackTrace();
