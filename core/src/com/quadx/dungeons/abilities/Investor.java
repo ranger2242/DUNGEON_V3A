@@ -21,22 +21,28 @@ public class Investor extends Ability {
     public void onActivate() {
         Game.player.setHpRegen(Game.player.getHpRegen()*2);
         Game.player.setIntel(Game.player.getIntel()*2);
+        Game.player.setGold(100);
         MapState.out("----------------------------------");
         MapState.out(Game.player.getName()+" activated the INVESTOR ability!");
         MapState.out("HP Regen doubled!");
         MapState.out("INT doubled!");
         MapState.out("Gold is being generated!");
-        MapStateRender.hovTextS="INVESTOR!";
-        MapStateRender.hovText=true;
+        MapStateRender.setHoverText("INVESTOR!",1.5f);
     }
 
     public ArrayList<String> details() {
         output.clear();
 
         output.add("-INVESTOR-");
-        output.add("Gold increases by 1% often");
+        output.add("Gold increases by .1% often");
+        output.add("Start with 100g");
         output.add("INT x2");
         output.add("HP Regen x2");
+        output.add("!Gold can go negative");
+        output.add("if you don't save enough!");
         return output;
+    }
+    public static void generatePlayerGold(){
+        Game.player.setGold((float)(Game.player.getGold()*1.01));
     }
 }

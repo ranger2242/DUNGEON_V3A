@@ -22,7 +22,7 @@ public class Player {
     int x,px;//(Game.WIDTH/2)+1;
     int y,py;//(Game.HEIGHT/2)-2;
     int liveCellListIndex;
-    int gold=500;
+    float gold=0;
     public int level =1;
     int hpMax = 100;
     int hpMod =0;
@@ -76,7 +76,7 @@ public class Player {
     public void setEnergyMax(int e){
         energyMax=e;
     }
-    public void setGold(int g){gold=g;}
+    public void setGold(float g){gold=g;}
     public void setCords(int a, int b) {
         x=a;
         y=b;
@@ -113,7 +113,7 @@ public class Player {
     }
     public int getGold()
     {
-        return gold;
+        return (int)gold;
     }
     public int getLiveListIndex(){
         return liveCellListIndex;

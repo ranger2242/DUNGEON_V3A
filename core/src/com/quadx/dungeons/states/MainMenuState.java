@@ -15,6 +15,9 @@ import com.sun.beans.editors.ColorEditor;
 
 import java.util.ArrayList;
 
+import static com.quadx.dungeons.states.mapstate.MapState.viewX;
+import static com.quadx.dungeons.states.mapstate.MapState.viewY;
+
 /**
  * Created by Tom on 12/22/2015.
  */
@@ -47,19 +50,22 @@ public class MainMenuState extends State {
         //Game.setFontSize(40);
         CharSequence cs="DUNGEON";
         gl.setText(Game.font,cs);
-        titlePosX =(int)((Game.WIDTH/2)-(gl.width/2));
-        titlePosY=(Game.HEIGHT/3)*2;
+        titlePosX = (int)(viewX+(Game.WIDTH/2)-(gl.width/2));
+        titlePosY=(int)(viewY+ (Game.HEIGHT/3)*2);
         effect.setPosition(Game.WIDTH/2,0);
-        selectorPosX=(Game.WIDTH/2)-100;
-        optionsPosX =(int)((Game.WIDTH/2)-(gl.width/2));
-        optionsPosY =(Game.HEIGHT/3);
+        selectorPosX=(int)(viewX+ (Game.WIDTH/2)-100);
+        optionsPosX =(int)(viewX+(Game.WIDTH/2)-(gl.width/2));
+        optionsPosY =(int)(viewY+ (Game.HEIGHT/3));
     }
     @Override
     protected void handleInput() {
         if(Gdx.input.isKeyPressed(Input.Keys.ENTER)){
             switch (selector){
                 case(0):{
-                    gsm.push(new AbilitySelectState(gsm));
+                    if(MapState.inGame)
+                        gsm.pop();
+                    else
+                        gsm.push(new AbilitySelectState(gsm));
                     dispose();
                     break;
                 }
@@ -106,6 +112,10 @@ public class MainMenuState extends State {
 
     @Override
     public void render(SpriteBatch sb) {
+        /*if(MapState.inGame) {
+            shapeR.setProjectionMatrix(cam.combined);
+            sb.setProjectionMatrix(cam.combined);
+        }*/
         drawTitle(sb);
         drawOptions(sb);
         drawSelector();
@@ -123,7 +133,10 @@ public class MainMenuState extends State {
     void drawOptions(SpriteBatch sb){
         sb.begin();
        // Game.setFontSize(20);
-        Game.getFont().draw(sb,"START", optionsPosX, optionsPosY -(0*20));
+        if(MapState.inGame)
+            Game.getFont().draw(sb,"CONTINUE", optionsPosX, optionsPosY -(0*20));
+        else
+            Game.getFont().draw(sb,"START", optionsPosX, optionsPosY -(0*20));
         Game.getFont().draw(sb,"OPTIONS", optionsPosX, optionsPosY -(1*20));
         Game.getFont().draw(sb,"CONTROLS", optionsPosX, optionsPosY -(2*20));
         Game.getFont().draw(sb,"EXTRA", optionsPosX, optionsPosY -(3*20));
@@ -139,7 +152,7 @@ public class MainMenuState extends State {
 /////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void dispose() {
-        shapeR.dispose();
+      //  shapeR.dispose();
        effect.dispose();
     }
 }

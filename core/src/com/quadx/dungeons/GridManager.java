@@ -163,7 +163,7 @@ public class GridManager {
             }
         }
     private void plotCrates(){
-            float fillPercent=.001f;
+            float fillPercent=.01f;
             int crates=(int)(liveCellList.size()*fillPercent);
             while(crates>0){
                 int index = rn.nextInt(liveCellList.size());
@@ -178,25 +178,42 @@ public class GridManager {
             Cell c=liveCellList.get(index);
             int w= MapState.cellW;
             Game.player.setCordsPX(c.getX()*w,c.getY()*w);
-        int range=20;
+        int range=30;
         for(int i=0;i<range;i++){
             for(int j=0;j<range;j++){
                 int x=c.getX()-range/2+i;
                 int y=c.getY()-range/2+j;
                 try {
                     if (dispArray[x][y].hasMon()) {
+                        /*
                         Monster temp = null;
                         for (Monster m : monsterList) {
-                            if (m.getX() == x && m.getY() == y) {
+                            if (m.equals(monsterList.get())) {
                                 temp = m;
                                 dispArray[x][y].setMon(false);
                             }
                         }
-                        if (temp != null)
+                        if (temp != null) {
                             monsterList.remove(temp);
+                            Game.console("Monster Removed");
+                        }
+                        else {
+                            Game.console("null");
+                        }*/
+                        int index1=-1;
+                        for(Cell c1:liveCellList){
+                            if(c1.getX()==x && c1.getY()==y){
+                                c1.setMon(false);
+                                index1= c1.monsterIndex;
+                                Game.console("!"+index1+" "+monsterList.size());
+                            }
+                        }
+                        monsterList.remove(index1);
+                        //dispArray[x][y].setMon(false);
                     }
                 }catch (NullPointerException e){}
                 catch (ArrayIndexOutOfBoundsException e1){}
+                catch (IndexOutOfBoundsException e){}
             }
         }
         /*

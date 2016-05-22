@@ -20,8 +20,7 @@ public class Tank extends Ability {
     public void onActivate() {
         Game.player.setDefense(Game.player.getDefense()*2);
         Game.player.setHp((int)(Game.player.getHp()*1.5));
-        Game.player.setHpMax(Game.player.getHpMax()*2);
-        Game.player.setHpRegen(Game.player.getHpRegen()*2);
+        Game.player.setHpMax((int)(Game.player.getHpMax()*1.5));        Game.player.setHpRegen(Game.player.getHpRegen()*2);
         Game.player.setMoveSpeed(Game.player.getMoveSpeed()/2);
         MapState.out("----------------------------------");
         MapState.out(Game.player.getName()+" activated the TANK ability!");
@@ -29,8 +28,8 @@ public class Tank extends Ability {
         MapState.out("HP Regen doubled!");
         MapState.out("DEF doubled!");
         MapState.out("Move Speed halved!");
-        MapStateRender.hovTextS="Tank!";
-        MapStateRender.hovText=true;
+        MapStateRender.setHoverText("Tank!!",1.5f);
+
     }
 
     public ArrayList<String> details() {

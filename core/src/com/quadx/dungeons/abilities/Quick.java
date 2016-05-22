@@ -33,8 +33,8 @@ public class Quick extends Ability {
         MapState.out("E Regen doubled!");
         MapState.out("DEF halved!");
         MapState.out("INT lowered by 25%");
-        MapStateRender.hovTextS="QUICK!";
-        MapStateRender.hovText=true;
+        MapStateRender.setHoverText("QUICK!",1.5f);
+
     }
     public  ArrayList<String> details() {
         output.clear();

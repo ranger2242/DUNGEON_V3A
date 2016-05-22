@@ -44,6 +44,7 @@ public class MapState extends State {
     public static Item popupItem;
     public static Monster targetMon;
 
+    public static boolean inGame=false;
     public static char lastPressed = 'w';
     public static boolean attackMenuOpen = false;
     public static boolean inventoryOpen = false;
@@ -79,6 +80,7 @@ public class MapState extends State {
 
     public MapState(GameStateManager gsm) {
         super(gsm);
+        inGame=true;
         gm = new GridManager();
         shapeR = new ShapeRenderer();
         output= new ArrayList<>();
@@ -107,8 +109,10 @@ public class MapState extends State {
         Gdx.gl.glClearColor(0,0,0,1);
         Gdx.gl.glEnable(Gdx.gl20.GL_BLEND);
         Gdx.gl.glBlendFunc(Gdx.gl20.GL_SRC_ALPHA, Gdx.gl20.GL_ONE_MINUS_SRC_ALPHA);
-        shapeR.setProjectionMatrix(cam.combined);
-        sb.setProjectionMatrix(cam.combined);
+        if(inGame) {
+            shapeR.setProjectionMatrix(cam.combined);
+            sb.setProjectionMatrix(cam.combined);
+        }
         MapStateRender.drawGrid(false);
         MapStateRender.drawMonsterAgro();
         MapStateRender.drawHUD(sb);
@@ -155,6 +159,7 @@ public class MapState extends State {
             case ('s'): {attackCollisionHandler(-r, s, pow, px, py);break;}
             case ('d'): {attackCollisionHandler(r, s, pow, px, py);break;}}
     }
+
     public static void attackCollisionHandler(int r, int s, int pow, int px, int py) {
         s = 0;
         int xrange=0;
@@ -222,8 +227,11 @@ public class MapState extends State {
     public static void makeGold(int x){
         int gold=(int) ((x*10)+rn.nextGaussian()*100);
         if (gold<0)gold=1;
-        Game.player.setGold(Game.player.getGold()+gold);
-        out(Game.player.getName()+" recieved "+gold+"G");
+        {
+            Game.player.setGold(Game.player.getGold() + gold);
+            out(Game.player.getName() + " recieved " + gold + "G");
+            MapStateRender.setHoverText(gold+"G",.5f);
+        }
     }
     static void clearFront(){
         int j= Game.player.getX();
@@ -255,13 +263,17 @@ public class MapState extends State {
         }
     }
     static void openCrate(){
-        int q=rn.nextInt(17)+1;
-        if(q==15){
-            double rand=rn.nextGaussian()*100;
-            int gold=(int)(Game.player.getGold()+rand);
-            Game.player.setGold(gold);
+        int q=rn.nextInt(30)+1;
+        if(q>17){
+            double rand=rn.nextFloat()/4;
+            if(rand<0)rand*=-1;
+            int gold=(int)(Game.player.getGold()*(rand));
+            if(gold<=0)gold=1;
+            Game.player.setGold(Game.player.getGold()+gold);
             lootPopup = new Texture(Gdx.files.internal("images/imCoin.png"));
             out(gold+" added to stash");
+            MapStateRender.setHoverText(gold+"G",1);
+
         }
         else{
             Item item =new Item();
@@ -271,8 +283,8 @@ public class MapState extends State {
             else if(q==7||q==8)item=new SpeedPlus();
             else if(q>=9&&q<=11)item=new ManaPlus();
             else if(q>11&&q<=14) item=new Potion();
-            else if(q==16)item=new SpellBook();
-            else if(q==17) item=generateEquipment();
+            else if(q==15)item=new SpellBook();
+            else if(q==16) item=generateEquipment();
             Game.player.addItemToInventory(item);
             String s=item.getName();
             if(item.isEquip)
@@ -287,6 +299,7 @@ public class MapState extends State {
 
             }
             out(item.getName()+" added to inventory");
+            MapStateRender.setHoverText(item.getName(),1);
         }
     }
     public static Item generateEquipment(){

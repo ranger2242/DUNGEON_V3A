@@ -29,8 +29,8 @@ public class Brawler extends Ability {
         MapState.out("E Regen doubled!");
         MapState.out("M Max was halved!");
         MapState.out("1.2x DMG for E Attacks");
-        MapStateRender.hovTextS="BRAWLER!";
-        MapStateRender.hovText=true;
+        MapStateRender.setHoverText("MAGE!",1.5f);
+
         //super.onActivate();
     }
 

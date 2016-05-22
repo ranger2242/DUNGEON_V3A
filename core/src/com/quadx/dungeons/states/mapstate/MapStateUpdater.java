@@ -7,9 +7,11 @@ import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.AbilityMod;
 import com.quadx.dungeons.Cell;
 import com.quadx.dungeons.Game;
+import com.quadx.dungeons.abilities.Investor;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
+import com.quadx.dungeons.states.MainMenuState;
 import com.quadx.dungeons.states.ShopState;
 
 
@@ -113,10 +115,9 @@ public class MapStateUpdater extends MapState {
             //textY += .2;
         }
         if (dtRegen > .4) {
-            if(AbilityMod.investor){
-                Game.player.setGold((int)(Game.player.getGold()*1.01));
-            }
-                if (Game.player.getMana() < Game.player.getManaMax())
+            if(AbilityMod.investor)
+                Investor.generatePlayerGold();
+            if (Game.player.getMana() < Game.player.getManaMax())
                 Game.player.setMana(Game.player.getMana() + Game.player.getManaRegenRate());
             if (Game.player.getHp() < Game.player.getHpMax())
                 Game.player.setHp(Game.player.getHp() + Game.player.getHpRegen());
@@ -208,6 +209,9 @@ public class MapStateUpdater extends MapState {
         if(Gdx.input.isKeyPressed(Input.Keys.F8)){
             functionButtonHandler(7);
         }*/
+        if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
+            gsm.push(new MainMenuState(gsm));
+        }
         if(Gdx.input.isKeyPressed(Input.Keys.SPACE)){
             if (dtAttack > attackMintime) {
                 MapStateExt.battleFunctions(lastNumPressed );

@@ -30,8 +30,8 @@ public class Mage extends Ability {
         MapState.out("M Regen doubled!");
         MapState.out("E Max was halved!");
         MapState.out("1.2x DMG for M Attacks");
-        MapStateRender.hovTextS="MAGE!";
-        MapStateRender.hovText=true;
+        MapStateRender.setHoverText("MAGE!",1.5f);
+
     }
     public ArrayList<String> details() {
         output.clear();

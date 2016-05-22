@@ -30,12 +30,20 @@ public class MapStateRender extends MapState {
     public static boolean hovText=false;
     public static ArrayList<String> equipList=new ArrayList<>();
     public static String hovTextS="";
+    public static float hovTime=1f;
     static int hovTextYPosMod=0;
     static Texture abilityIcon;
     static int prevMod=0;//checks if Ability has changed
 
     public MapStateRender(GameStateManager gsm) {
         super(gsm);
+    }
+    public static void setHoverText(String s, float time){
+        hovText=true;
+        hovTextS=s;
+        hovTime=time;
+        hovTextYPosMod=0;
+        MapStateUpdater.dtHovText=0;
     }
     public static void loadAttackIcons(){
        if(Game.player.attackList.size() !=attackIconList.size()) {
@@ -137,10 +145,10 @@ public class MapStateRender extends MapState {
     }
     public static void drawHovText(SpriteBatch sb){
         sb.begin();
-        if(dtHovText<1.5){
+        if(dtHovText<hovTime){
             Game.setFontSize(14);
             CharSequence cs=hovTextS;
-            gl.setText(Game.font,cs);
+           gl.setText(Game.font,cs);
             int posX =(int)(Game.player.getPX()-(gl.width/2));
             int posY=Game.player.getPY()+4*cellW+hovTextYPosMod;
             Game.getFont().draw(sb,hovTextS,posX,posY);
@@ -302,6 +310,7 @@ public class MapStateRender extends MapState {
                 }
 
             }
+            catch (NullPointerException e){}
             catch (IndexOutOfBoundsException e){
             }
         }

@@ -11,20 +11,24 @@ import com.quadx.dungeons.items.*;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.quadx.dungeons.states.mapstate.MapState.viewX;
+import static com.quadx.dungeons.states.mapstate.MapState.viewY;
+
 /**
  * Created by Tom on 12/24/2015.
  */
 public class ShopState extends State {
 
 
-    public static float viewX=0;
-    public static float viewY=0;
+  //  public static float viewX=0;
+    //public static float viewY=0;
     public static float dtBuy=0;
     public static Random rn = new Random();
     public static ShapeRenderer shapeR=new ShapeRenderer();
     public static ArrayList<Item> shopInv = new ArrayList<>();
 
     public ShopState(GameStateManager gsm){
+
         super(gsm);
         cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT);
         genShopInv();
@@ -89,25 +93,25 @@ public class ShopState extends State {
         GlyphLayout gl = new GlyphLayout();
         CharSequence cs="(TAB) EXIT";
         gl.setText(Game.getFont(),cs);
-        Game.getFont().draw(sb,"(TAB) EXIT",(Game.WIDTH/2)-gl.width/2,70);
+        Game.getFont().draw(sb,"(TAB) EXIT",viewX+(Game.WIDTH/2)-gl.width/2,viewY+70);
         sb.end();
 
         shapeR.begin(ShapeRenderer.ShapeType.Line);
         shapeR.setColor(1,0,0,1);
-        shapeR.rect(50,50, Game.WIDTH-100, Game.HEIGHT-120);
+        shapeR.rect(1,40,viewX+ Game.WIDTH-50,viewY+ Game.HEIGHT-120);
         shapeR.end();
         drawShopInv(sb);
     }
     public void drawPlayerInv(SpriteBatch sb){
         sb.begin();
-        Game.getFont().draw(sb,"INV", Game.WIDTH/2, Game.HEIGHT-50);
-        Game.getFont().draw(sb,"G "+ Game.player.getGold(),(Game.WIDTH/2)+100, Game.HEIGHT-50);
+        Game.getFont().draw(sb,"INV",viewX+ Game.WIDTH/2,viewY+ Game.HEIGHT-50);
+        Game.getFont().draw(sb,"G "+ Game.player.getGold(),viewX+(Game.WIDTH/2)+100,viewY+ Game.HEIGHT-50);
 
         for(int i = 0; i< Game.player.invList.size(); i++)
         {
             ArrayList<Item> al= Game.player.invList.get(i);
-            Game.getFont().draw(sb,(i+1)+". "+al.get(0).getName(), Game.WIDTH/2, Game.HEIGHT-90-(i*60));
-            Game.getFont().draw(sb,"x"+al.size(), Game.WIDTH-100, Game.HEIGHT-90-(i*60));
+            Game.getFont().draw(sb,(i+1)+". "+al.get(0).getName(), viewX+Game.WIDTH/2,viewY+ Game.HEIGHT-90-(i*60));
+            Game.getFont().draw(sb,"x"+al.size(),viewX+ Game.WIDTH-100,viewY+ Game.HEIGHT-90-(i*60));
 
         }
 
@@ -115,11 +119,11 @@ public class ShopState extends State {
     }
     public void drawShopInv(SpriteBatch sb){
         sb.begin();
-        Game.getFont().draw(sb,"SHOP",50, Game.HEIGHT-50);
+        Game.getFont().draw(sb,"SHOP",viewX+ 50,viewY+ Game.HEIGHT-50);
         for(int i=0;i<shopInv.size();i++){
             Item item=shopInv.get(i);
-            Game.getFont().draw(sb,(i+1)+". "+item.getName(),70, Game.HEIGHT-90-(i*60));
-            Game.getFont().draw(sb,item.getCost()+"G",(Game.WIDTH/2)-100, Game.HEIGHT-90-(i*60));
+            Game.getFont().draw(sb,(i+1)+". "+item.getName(),viewX+70,viewY+ Game.HEIGHT-90-(i*60));
+            Game.getFont().draw(sb,item.getCost()+"G",viewX+(Game.WIDTH/2)-100,viewY+ Game.HEIGHT-90-(i*60));
         }
         sb.end();
     }
