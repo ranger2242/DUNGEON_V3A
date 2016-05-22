@@ -49,12 +49,12 @@ public class MainMenuState extends State {
         font.setColor(1,1,1,1);
         //Game.setFontSize(40);
         CharSequence cs="DUNGEON";
-        gl.setText(Game.font,cs);
+        gl.setText(Game.getFont(),cs);
         titlePosX = (int)(viewX+(Game.WIDTH/2)-(gl.width/2));
         titlePosY=(int)(viewY+ (Game.HEIGHT/3)*2);
         effect.setPosition(Game.WIDTH/2,0);
         selectorPosX=(int)(viewX+ (Game.WIDTH/2)-100);
-        optionsPosX =(int)(viewX+(Game.WIDTH/2)-(gl.width/2));
+        optionsPosX =(int)(viewX+(Game.WIDTH/2));
         optionsPosY =(int)(viewY+ (Game.HEIGHT/3));
     }
     @Override
@@ -124,7 +124,7 @@ public class MainMenuState extends State {
 //DRAWING FUNCTIONS
     public void drawTitle(SpriteBatch sb){
         sb.begin();
-        //Game.setFontSize(40);
+        Game.setFontSize(40);
         Game.font.setColor(Color.WHITE);
         Game.getFont().draw(sb,"DUNGEON", titlePosX,titlePosY);
         effect.draw(sb);
@@ -132,7 +132,7 @@ public class MainMenuState extends State {
     }
     void drawOptions(SpriteBatch sb){
         sb.begin();
-       // Game.setFontSize(20);
+        Game.setFontSize(20);
         if(MapState.inGame)
             Game.getFont().draw(sb,"CONTINUE", optionsPosX, optionsPosY -(0*20));
         else

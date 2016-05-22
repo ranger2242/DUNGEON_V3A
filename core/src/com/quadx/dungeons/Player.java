@@ -164,6 +164,10 @@ public class Player {
     }
     public int getExp(){return exp;}
     public int getMana(){return mana;}
+    public int getPoints(){
+        int points=((int)gold*10)+(attack*50)+(defense*50)+(speed*50)+(level*200)+(intel*50)+(hpMax*20)+(manaMax*20)+(energyMax*20)+(floor*10)+(killcount*20);
+        return points;
+    }
     public int getEnergy(){
         return  energy;
     }

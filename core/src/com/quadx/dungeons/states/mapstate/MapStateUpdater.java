@@ -32,6 +32,7 @@ public class MapStateUpdater extends MapState {
     static float dtToolTip=0;
     static float dtInvSwitch=0;
     static float dtMap=0;
+    public static float dtCircle=MapStateRender.circleTime;
     public static float dtHovText=0;
     static float lerp = 0.2f;
     static int x = 0;
@@ -91,6 +92,13 @@ public class MapStateUpdater extends MapState {
         dtMap +=dt;
         dtMessage += dt;
         dtEnergyRe+=dt;
+        if(MapStateRender.showCircle && dtCircle>0){
+            dtCircle-=dt;
+        }
+        else{
+            dtCircle=2;
+            MapStateRender.showCircle=false;
+        }
         //dtHovText+=dt;
         if(MapStateRender.hovText)
             dtEnergyRe+=dt;
@@ -228,12 +236,7 @@ public class MapStateUpdater extends MapState {
             if(cellW>3)cellW--;
         }*/
         if(Gdx.input.isKeyPressed(Input.Keys.T)){
-            //if(!AbilityMod.investor) {
-                //AbilityMod.enableAbility(5);
-                MapStateRender.hovText=true;
-            //}
-            MapStateRender.hovTextS="Penis!";
-
+            MapState.openCrate();
         }
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) ||
                     Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {

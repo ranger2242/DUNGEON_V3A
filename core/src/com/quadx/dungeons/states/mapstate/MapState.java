@@ -56,7 +56,7 @@ public class MapState extends State {
     public static int playerDamage = 0;
     public static int messageCounter=0;
     public static int invSlotHovered=0;
-    public static int cellW=5;
+    public static int cellW=32;
     public static int mHitX=0;
     public static int mHitY=0;
     public static int mouseX=0;
@@ -129,6 +129,8 @@ public class MapState extends State {
         shapeR.setColor(Color.RED);
          if(qButtonList.size()>0)   shapeR.rect(qButtonList.get(0).getPx(), qButtonList.get(0).getPx(), 12, 12);
             shapeR.end();
+        if(MapStateRender.showCircle)
+            MapStateRender.drawPlayerFinder(sb);
         Gdx.gl.glDisable(Gdx.gl.GL_BLEND);
     }
     public void dispose() {
@@ -139,12 +141,7 @@ public class MapState extends State {
         attackIconList.clear();
     }
     public static void out(String s){
-        //System.out.println(s);
-
-        //output.clear();
         output.add(s);
-        //dtMessage=0;
-       // messageCounter++;
         if(output.size()>10)output.remove(0);
     }
     public static void checkAttackHit(int pos) {
@@ -230,7 +227,7 @@ public class MapState extends State {
         {
             Game.player.setGold(Game.player.getGold() + gold);
             out(Game.player.getName() + " recieved " + gold + "G");
-            MapStateRender.setHoverText(gold+"G",.5f);
+            MapStateRender.setHoverText(gold+"G",.5f,Color.GOLD);
         }
     }
     static void clearFront(){
@@ -272,7 +269,7 @@ public class MapState extends State {
             Game.player.setGold(Game.player.getGold()+gold);
             lootPopup = new Texture(Gdx.files.internal("images/imCoin.png"));
             out(gold+" added to stash");
-            MapStateRender.setHoverText(gold+"G",1);
+            MapStateRender.setHoverText(gold+"G",1,Color.WHITE);
 
         }
         else{
@@ -298,8 +295,13 @@ public class MapState extends State {
             catch (GdxRuntimeException e){
 
             }
-            out(item.getName()+" added to inventory");
-            MapStateRender.setHoverText(item.getName(),1);
+            if(item.getName()==null){
+                MapStateRender.setHoverText("ERR:0002", 1,Color.RED);
+
+            }else {
+                out(item.getName() + " added to inventory");
+                MapStateRender.setHoverText(item.getName(), 1,Color.WHITE);
+            }
         }
     }
     public static Item generateEquipment(){

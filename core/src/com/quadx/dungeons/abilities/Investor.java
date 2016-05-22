@@ -1,5 +1,6 @@
 package com.quadx.dungeons.abilities;
 
+import com.badlogic.gdx.graphics.Color;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
@@ -27,7 +28,7 @@ public class Investor extends Ability {
         MapState.out("HP Regen doubled!");
         MapState.out("INT doubled!");
         MapState.out("Gold is being generated!");
-        MapStateRender.setHoverText("INVESTOR!",1.5f);
+        MapStateRender.setHoverText("INVESTOR!",1.5f, Color.WHITE);
     }
 
     public ArrayList<String> details() {

@@ -1,5 +1,6 @@
 package com.quadx.dungeons.abilities;
 
+import com.badlogic.gdx.graphics.Color;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
@@ -29,7 +30,7 @@ public class Brawler extends Ability {
         MapState.out("E Regen doubled!");
         MapState.out("M Max was halved!");
         MapState.out("1.2x DMG for E Attacks");
-        MapStateRender.setHoverText("MAGE!",1.5f);
+        MapStateRender.setHoverText("MAGE!",1.5f, Color.WHITE);
 
         //super.onActivate();
     }

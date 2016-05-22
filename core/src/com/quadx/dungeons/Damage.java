@@ -8,10 +8,11 @@ import java.util.Random;
  * Created by Tom on 11/24/2015.
  */
 public class Damage {
-    double damagemax;
-    double crit;
+    static double damagemax;
+     static int crit;
     static int damage;
     static Random rn =new Random();
+
 
     //damage = ( ((2*p.level+10)/250) * (p.attack/m.defense) * (power+2) ) * Mod
     //Mod = stab * type bonus* crit* other *(random[.85,1]
@@ -24,7 +25,7 @@ public class Damage {
         damage= baseDamage+rn.nextInt((int)crit);
         return damage;
     }
-    public int monsterPhysicalDamage(Player p, Monster m, int power){
+    public static int monsterPhysicalDamage(Player p, Monster m, int power){
         damagemax=((m.getAttack()+m.getLevel())*3);
         int baseDamage=(int)((m.getAttack()*3)+(power))-(int)((p.getDefense()));
         crit=(baseDamage/100)*15;

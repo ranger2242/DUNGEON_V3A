@@ -1,7 +1,9 @@
 package com.quadx.dungeons.monsters;
 
+import com.badlogic.gdx.graphics.Color;
 import com.quadx.dungeons.*;
 import com.quadx.dungeons.states.mapstate.MapState;
+import com.quadx.dungeons.states.mapstate.MapStateRender;
 
 import java.util.Random;
 
@@ -16,7 +18,7 @@ public class Monster {
     static double level=1;
     static int levelmin;
     static int levelmax;
-    double power=40;
+    double power=20;
     double hp=0;
     double hpsoft=0;
     public double acc=1;
@@ -194,62 +196,39 @@ public class Monster {
         int b=rn.nextInt(3)+1;
         int tx=x;
         int ty=y;
-        //MapState.out(x+"  "+y);
-
-        //check if player is around
-        if(Game.player.getX()>this.getX()-this.getSight() && Game.player.getX()<this.getX()+this.getSight()
-                &&Game.player.getY()>this.getY()-this.getSight() && Game.player.getY()<this.getY()+this.getSight()){
-            //MapState.out(x+"  "+y);
-            if(Game.player.getX()>this.getX()){
-
-                tx=this.x+1;
-            }
-            else if(Game.player.getX()==this.getX()){
-
-            }
-            else{
-                tx=this.x-1;
-            }
-            if(Game.player.getY()>this.getY()){
-                ty=this.y+1;
-            }
-            else if(Game.player.getY()==this.getY()){
-
-            }
-            else{
-                ty=this.y-1;
-            }
-            MapState.gm.clearArea(tx,ty,false);
-
+        if((x==Game.player.getX() && y==Game.player.getY() )||
+            (x+1==Game.player.getX() && y==Game.player.getY()) ||
+            (x-1==Game.player.getX() && y==Game.player.getY()) ||
+            (x==Game.player.getX() && y+1==Game.player.getY()) ||
+            (x==Game.player.getX() && y-1==Game.player.getY()) ) {
+            int d= Damage.monsterPhysicalDamage(Game.player,this,(int)power);
+            Game.player.setHp(Game.player.getHp()- d);
+            MapStateRender.setHoverText("-"+d,1, Color.RED);
         }
-        else {
-            switch (a) {
-                case (1): {
-                    tx += rn.nextInt(2);
-                    break;
-                }
-                case (2): {
-                    tx -= rn.nextInt(2);
-                    break;
-                }
-                case (3): {
-                    break;
-                }
-            }
-            switch (b) {
-                case (1): {
-                    ty += rn.nextInt(2);
-                    break;
-                }
-                case (2): {
-                    ty -= rn.nextInt(2);
-                    break;
-                }
-                case (3): {
-                    break;
-                }
-            }
+        else{
+            if (Game.player.getX() > this.getX() - this.getSight() && Game.player.getX() < this.getX() + this.getSight()
+                    && Game.player.getY() > this.getY() - this.getSight() && Game.player.getY() < this.getY() + this.getSight()) {
 
+                if (Game.player.getX() > this.getX()) {tx = this.x + 1;}
+                else if (Game.player.getX() == this.getX()) {}
+                else {tx = this.x - 1;}
+                if (Game.player.getY() > this.getY()) {ty = this.y + 1;}
+                else if (Game.player.getY() == this.getY()) {}
+                else {ty = this.y - 1;}
+                MapState.gm.clearArea(tx, ty, false);
+            }
+            else {
+                switch (a) {
+                    case (1): {tx += rn.nextInt(2);break;}
+                    case (2): {tx -= rn.nextInt(2);break;}
+                    case (3): {break;}
+                }
+                switch (b) {
+                    case (1): {ty += rn.nextInt(2);break;}
+                    case (2): {ty -= rn.nextInt(2);break;}
+                    case (3): {break;}
+                }
+            }
         }
         boolean placed = false;
         boolean cont=false;

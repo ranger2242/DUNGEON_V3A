@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Created by range on 5/20/2016.
  */
-public class AbilitySelectState extends State {
+public class         AbilitySelectState extends State {
     public static GlyphLayout gl=new GlyphLayout();
     ArrayList<Ability> abilityList= new ArrayList<>();
     public static ArrayList<Texture> abilityIconList = new ArrayList<>();
@@ -34,6 +34,8 @@ public class AbilitySelectState extends State {
 
     public AbilitySelectState(GameStateManager gsm){
         super(gsm);
+        Game.setFontSize(28);
+
         Gdx.gl.glClearColor(0,0,0,1);
         CharSequence cs="Select Ability";
         Game.setFontSize(10);
@@ -94,17 +96,18 @@ public class AbilitySelectState extends State {
     public void render(SpriteBatch sb) {
         sb.begin();
 
-        Game.setFontSize(20);
-        Game.font.setColor(Color.WHITE);
 
-        Game.setFontSize(10);
+        Game.setFontSize(12);
+        Game.font.setColor(Color.WHITE);
         Game.getFont().draw(sb,"Select Ability",titlex,titley);
         int a2=0;
+
         for(Ability a :abilityList) {
             for (int i = 0; i < a.details().size(); i++) {
                 try {
                     int x1=(int)(MapState.viewX + 30+(a2*Game.WIDTH/5));
                     int y1=(int) (MapState.viewY +Game.HEIGHT/2- 100 - (i * 20));
+
                     Game.getFont().draw(sb, a.details().get(i), x1,y1);
                 } catch (IndexOutOfBoundsException e) {
                 }

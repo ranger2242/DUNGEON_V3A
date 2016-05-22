@@ -15,6 +15,6 @@ public class Flame extends Attack {
         mod=0;
         description="Player creates a burst of fire.";
         spread=1;
-        range=5;
+        range=10;
     }
 }

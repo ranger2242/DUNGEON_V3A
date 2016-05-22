@@ -1,5 +1,6 @@
 package com.quadx.dungeons.abilities;
 
+import com.badlogic.gdx.graphics.Color;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
@@ -28,7 +29,7 @@ public class Tank extends Ability {
         MapState.out("HP Regen doubled!");
         MapState.out("DEF doubled!");
         MapState.out("Move Speed halved!");
-        MapStateRender.setHoverText("Tank!!",1.5f);
+        MapStateRender.setHoverText("Tank!!",1.5f, Color.WHITE);
 
     }
 

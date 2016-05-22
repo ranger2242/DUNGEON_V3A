@@ -28,9 +28,12 @@ import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtWater;
 public class MapStateRender extends MapState {
    public static int inventoryPos=0;
     public static boolean hovText=false;
+    public static boolean showCircle=false;
     public static ArrayList<String> equipList=new ArrayList<>();
     public static String hovTextS="";
     public static float hovTime=1f;
+    public static Color hovColor=Color.WHITE;
+    public static float circleTime=.6f;
     static int hovTextYPosMod=0;
     static Texture abilityIcon;
     static int prevMod=0;//checks if Ability has changed
@@ -38,7 +41,8 @@ public class MapStateRender extends MapState {
     public MapStateRender(GameStateManager gsm) {
         super(gsm);
     }
-    public static void setHoverText(String s, float time){
+    public static void setHoverText(String s, float time, Color color){
+        hovColor=color;
         hovText=true;
         hovTextS=s;
         hovTime=time;
@@ -138,17 +142,25 @@ public class MapStateRender extends MapState {
 
                 } catch (GdxRuntimeException e) {
 
-                }
+                }catch (ArrayIndexOutOfBoundsException e){}
             }
         }
 
+    }
+    public static void drawPlayerFinder(SpriteBatch sb){
+        shapeR.begin(ShapeRenderer.ShapeType.Line);
+        shapeR.setColor(Color.WHITE);
+
+        shapeR.circle(Game.player.getPX(),Game.player.getPY(),100*MapStateUpdater.dtCircle);
+        shapeR.end();
     }
     public static void drawHovText(SpriteBatch sb){
         sb.begin();
         if(dtHovText<hovTime){
             Game.setFontSize(14);
             CharSequence cs=hovTextS;
-           gl.setText(Game.font,cs);
+            gl.setText(Game.getFont(),cs);
+            Game.getFont().setColor(hovColor);
             int posX =(int)(Game.player.getPX()-(gl.width/2));
             int posY=Game.player.getPY()+4*cellW+hovTextYPosMod;
             Game.getFont().draw(sb,hovTextS,posX,posY);
@@ -168,7 +180,10 @@ public class MapStateRender extends MapState {
         drawInventory(sb);
         drawMiniMap(sb);
         sb.begin();
-
+        CharSequence cs=Game.player.getPoints()+"";
+        gl.setText(Game.getFont(),cs);
+        Game.getFont().setColor(Color.WHITE);
+        Game.getFont().draw(sb,Game.player.getPoints()+"",(int)(viewX+Game.WIDTH/2-(gl.width/2)) ,(int)(viewY+ Game.HEIGHT-50));
         try {
             if (dtLootPopup < .4)
                 sb.draw(lootPopup, Game.player.getPX()-(lootPopup.getWidth()/2)-(cellW/4), Game.player.getPY()+5);
@@ -181,12 +196,12 @@ public class MapStateRender extends MapState {
     public static void drawMessageOutput(SpriteBatch sb){
 
         sb.begin();
-        //Game.setFontSize(10);
+        Game.setFontSize(14);
         Game.font.setColor(Color.WHITE);
         for(int i=0;i<10;i++){
             //if(output.size()>=0&&i+messageCounter<output.size()  )
             try {
-                Game.getFont().draw(sb, output.get(i), viewX+30,viewY+100+(i * 20));
+                Game.getFont().draw(sb, output.get(i), viewX+30,viewY+300-(i * 20));
             }
             catch(IndexOutOfBoundsException e){
                 System.out.println((i+messageCounter)+"  Message out failed "+output.size());
@@ -554,6 +569,12 @@ public class MapStateRender extends MapState {
             if(c.getShop()) shapeR.setColor(1f, 0f, 1f, 1);
             if(c.hasWarp()) shapeR.setColor(0f, 1f, 0f, 1);
             if(c.hasMon())  shapeR.setColor(1,0,0,1);
+            if(map && Game.player.getX()==x && Game.player.getY()==y){
+                if(rn.nextBoolean())
+                    shapeR.setColor(0,0,1,1);
+                else
+                    shapeR.setColor(1,1,1,1);
+            }
             ColorConverter water = new ColorConverter(48,109,179,1);
             if(dtWater>.03) {
                 if (rn.nextBoolean())
