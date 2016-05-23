@@ -15,6 +15,7 @@ public class Cell {
     boolean hasShop=false;
     boolean agroPoint=false;
     boolean playerFront=false;
+    boolean attArea=false;
     int monsterIndex;
     int x;
     int y;
@@ -26,6 +27,7 @@ public class Cell {
     {
         isLive =activate;
     }
+    public boolean getAttArea(){return  attArea;}
     public boolean getWater(){return hasWater;}
     public boolean getShop(){return hasShop;}
     public boolean getAgro(){return agroPoint;}
@@ -40,6 +42,7 @@ public class Cell {
     public boolean getCrate(){return hasCrate;}
     public int     getIndex(){return monsterIndex;}
     public boolean isPlayerFront(){return playerFront;}
+    public void setAttArea(boolean a){attArea=a;}
     public void setCords(int a, int b){x=a;y=b;}
     public void setAgro(boolean b, int a){agroPoint=b; monsterIndex =a;}
     public void setShop(boolean set){hasShop=set;}

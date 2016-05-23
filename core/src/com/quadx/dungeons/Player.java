@@ -1,10 +1,12 @@
 package com.quadx.dungeons;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.items.*;
 import com.quadx.dungeons.attacks.*;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.MapState;
+import com.quadx.dungeons.states.mapstate.MapStateRender;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -94,6 +96,7 @@ public class Player {
     public void setExp(Monster m) {
         int expmax=m.getLevel()*25;
         expGain=((m.getLevel()*50)+(int)(Math.random()*expmax));
+        MapStateRender.setHoverText(expGain+" EXP",.8f, Color.GREEN);
         exp=exp+expGain;
         MapState.out(name+" gained "+expGain+" EXP");
     }
@@ -203,6 +206,8 @@ public class Player {
         //System.out.println("!"+exp+" n"+((((Math.pow(1.2,level))*1000)/2)-300));
         if (exp>=(int)((((Math.pow(1.2,level))*1000)/2)-300))
         {
+            MapStateRender.setHoverText("--LVL UP--",.8f, Color.GREEN);
+
             exp=exp-(int)((((Math.pow(1.2,level))*1000)/2)-300);
 
             //System.out.println(name+" leveled up.");

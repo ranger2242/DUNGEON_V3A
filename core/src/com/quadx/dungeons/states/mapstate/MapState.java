@@ -16,6 +16,7 @@ import com.quadx.dungeons.items.equipment.*;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.State;
+import com.sun.org.apache.regexp.internal.RE;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -56,7 +57,7 @@ public class MapState extends State {
     public static int playerDamage = 0;
     public static int messageCounter=0;
     public static int invSlotHovered=0;
-    public static int cellW=32;
+    public static int cellW=10;
     public static int mHitX=0;
     public static int mHitY=0;
     public static int mouseX=0;
@@ -144,85 +145,129 @@ public class MapState extends State {
         output.add(s);
         if(output.size()>10)output.remove(0);
     }
-    public static void checkAttackHit(int pos) {
-        int r = Game.player.attackList.get(attackListCount + pos).getRange();
-        int s = Game.player.attackList.get(attackListCount + pos).getSpread();
+
+    public static void attackCollisionHandler(int pos) {
+        int range = Game.player.attackList.get(attackListCount + pos).getRange();
+        int spread = Game.player.attackList.get(attackListCount + pos).getSpread();
         int pow = Game.player.attackList.get(attackListCount + pos).getPower();
         int px = Game.player.getX();
         int py = Game.player.getY();
-        switch (lastPressed) {
-            case ('w'): {attackCollisionHandler(r, s, pow, px, py);break;}
-            case ('a'): {attackCollisionHandler(-r, s, pow, px, py);break;}
-            case ('s'): {attackCollisionHandler(-r, s, pow, px, py);break;}
-            case ('d'): {attackCollisionHandler(r, s, pow, px, py);break;}}
-    }
-
-    public static void attackCollisionHandler(int r, int s, int pow, int px, int py) {
-        s = 0;
         int xrange=0;
         int yrange=0;
-        dtDamageTextFloat = 0;
-            while (r != 0) {
-            if (lastPressed == 'w' || lastPressed == 's') {
-                xrange=px+s;
-                yrange=py+r;
-            }
-            else if(lastPressed == 'a' || lastPressed == 'd') {
-                xrange=px+r;
-                yrange=py+s;
-            }
-            int index = 0;
-            if (xrange >= 0 && xrange < gm.res && yrange >= 0 && yrange < gm.res) {
-                try {
-                    index = gm.dispArray[xrange][yrange].getIndex();
-                }
-                catch (NullPointerException e){}
-            }
-            if (index > -1) {
-                Monster tempMon = new Monster();
-                if (xrange >= 0 && xrange < gm.res && yrange >= 0 && yrange < gm.res)
+
+        ArrayList<Cell> hitList=new ArrayList<>();
+        if(lastPressed=='w') {
+            xrange = (px) + spread;
+            yrange = py + range;
+            for (int i = px; i < xrange; i++) {
+                for (int j = py; j < yrange; j++) {
                     try {
-                        for(Cell c : gm.liveCellList){
-                            if(c.getX()==xrange && c.getY()==yrange && c.hasMon()){
-                                for (Monster m : gm.monsterList) {
-                                    if (m.getX() == xrange && m.getY() == yrange) {
-                                        targetMon=m;
-                                        out("Hit");
-                                        index = gm.monsterList.indexOf(m);
-                                        playerDamage = (int) Damage.playerMagicDamage(Game.player, m, attack.getPower());
-                                        int attIndex = Game.player.attackList.indexOf(attack);
-                                        mHitX = m.getPX();
-                                        mHitY = m.getPY();
-
-                                        Game.player.attackList.get(attIndex).setUses();
-                                        Game.player.attackList.get(attIndex).checkLvlUp();
-                                        displayPlayerDamage = true;
-                                        m.takeAttackDamage(playerDamage);
-                                        if (m.getHp() <= 0) {
-                                            out(DIVIDER);
-                                            out(m.getName() + " Level " + m.getLevel() + " was killed.");
-                                            Game.player.addKills();
-                                            Game.player.setExp(m);
-                                            Game.player.checkLvlUp();
-                                            makeGold(m.getLevel());
-                                            gm.dispArray[m.getX()][m.getY()].setMon(false);
-                                            tempMon = m;
-
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        gm.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j].setAttArea(true);
+                        gm.liveCellList.set(gm.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j].getIndex(), gm.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j]);
+                        hitList.add(gm.liveCellList.get(gm.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j].getIndex()));
+                    } catch (NullPointerException e) {
+                        MapStateRender.setHoverText("ERR:0003", 1f, Color.RED);
                     }
-                    catch (NullPointerException e){}
+                    catch (ArrayIndexOutOfBoundsException e) {
+                        MapStateRender.setHoverText("ERR:0004", 1f, Color.RED);
+                    }
+                }
+            }
+        }
+        else if(lastPressed=='s'){
+            xrange = (px) + spread;
+            yrange = py - range;
+            for (int i = px; i < xrange; i++) {
+                for (int j = yrange; j < py; j++) {
+                    try {
+                        gm.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j-1].setAttArea(true);
+                        gm.liveCellList.set(gm.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j-1].getIndex(), gm.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j-1]);
+                        hitList.add(gm.liveCellList.get(gm.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j-1].getIndex()));
+
+                    } catch (NullPointerException e) {
+                        MapStateRender.setHoverText("ERR:0003", 1f, Color.RED);
+                    }
+                    catch (ArrayIndexOutOfBoundsException e) {
+                        MapStateRender.setHoverText("ERR:0004", 1f, Color.RED);
+                    }
+                }
+            }
+        }
+        else if(lastPressed=='d'){
+            xrange = (px) + range;
+            yrange = py + spread;
+            for (int i = px; i < xrange; i++) {
+                for (int j = py; j < yrange; j++) {
+                    try {
+                        gm.dispArray[(int) (i )][(int)(j - Math.ceil(spread / 2))-1].setAttArea(true);
+                        gm.liveCellList.set(gm.dispArray[(int) i  ][(int)(j - Math.ceil(spread / 2))-1].getIndex(), gm.dispArray[(int) i ][(int)(j - Math.ceil(spread / 2))-1]);
+                        hitList.add(gm.liveCellList.get(gm.dispArray[(int) i  ][(int)(j - Math.ceil(spread / 2))-1].getIndex()));
+
+                    } catch (NullPointerException e) {
+                        MapStateRender.setHoverText("ERR:0003", 1f, Color.RED);
+                    }
+                    catch (ArrayIndexOutOfBoundsException e) {
+                        MapStateRender.setHoverText("ERR:0004", 1f, Color.RED);
+                    }
+                }
+            }
+        }
+        else if(lastPressed=='a'){
+            xrange = (px) - range;
+            yrange = py + spread;
+            for (int i = xrange; i < px; i++) {
+                for (int j = py; j < yrange; j++) {
+                    try {
+                        gm.dispArray[(int) (i -1)][(int)(j - Math.ceil(spread / 2))-1].setAttArea(true);
+                        gm.liveCellList.set(gm.dispArray[(int) i  -1][(int)(j - Math.ceil(spread / 2))-1].getIndex(), gm.dispArray[(int) i -1][(int)(j - Math.ceil(spread / 2))-1]);
+                        hitList.add(gm.liveCellList.get(gm.dispArray[(int) i  -1][(int)(j - Math.ceil(spread / 2))-1].getIndex()));
+
+                    } catch (NullPointerException e) {
+                        MapStateRender.setHoverText("ERR:0003", 1f, Color.RED);
+                    }
+                    catch (ArrayIndexOutOfBoundsException e) {
+                        MapStateRender.setHoverText("ERR:0004", 1f, Color.RED);
+                    }
+                }
+            }
+        }
+        Monster tempMon=null;
+        boolean killed= false;
+        for(Cell c:hitList){
+            for(Monster m: gm.monsterList){
+                if(c.getX()==m.getX() && c.getY()==m.getY()){
+                    dtDamageTextFloat = 0;
+                    out("Hit");
+                    tempMon=m;
+                    playerDamage = (int) Damage.playerMagicDamage(Game.player, m, attack.getPower());
+                    int attIndex = Game.player.attackList.indexOf(attack);
+                    Game.player.attackList.get(attIndex).setUses();
+                    Game.player.attackList.get(attIndex).checkLvlUp();
+                    displayPlayerDamage = true;
+                    m.takeAttackDamage(playerDamage);
+                    if (m.getHp() < 1) {
+                        out(DIVIDER);
+                        out(m.getName() + " Level " + m.getLevel() + " was killed.");
+                        Game.player.addKills();
+                        Game.player.setExp(m);
+                        Game.player.checkLvlUp();
+                        makeGold(m.getLevel());
+                        try {
+                            gm.dispArray[m.getX()][m.getY()].setMon(false);
+                        }catch (NullPointerException e){}
+                        tempMon = m;
+                        killed=true;
+                    }
+                }
+            }
+            if(tempMon !=null && killed){
                 gm.monsterList.remove(tempMon);
             }
-            if (r > 0) r--;
-            if (r < 0) r++;
         }
     }
+
     public static void makeGold(int x){
-        int gold=(int) ((x*10)+rn.nextGaussian()*100);
+        int gold=(int) ((rn.nextFloat()/2)*100);
         if (gold<0)gold=1;
         {
             Game.player.setGold(Game.player.getGold() + gold);
@@ -258,18 +303,19 @@ public class MapState extends State {
         catch (NullPointerException e){
 
         }
+        catch (ArrayIndexOutOfBoundsException e){}
     }
     static void openCrate(){
         int q=rn.nextInt(30)+1;
         if(q>17){
-            double rand=rn.nextFloat()/4;
+            double rand=rn.nextFloat()/8;
             if(rand<0)rand*=-1;
             int gold=(int)(Game.player.getGold()*(rand));
             if(gold<=0)gold=1;
             Game.player.setGold(Game.player.getGold()+gold);
             lootPopup = new Texture(Gdx.files.internal("images/imCoin.png"));
             out(gold+" added to stash");
-            MapStateRender.setHoverText(gold+"G",1,Color.WHITE);
+            MapStateRender.setHoverText(gold+"G",1,Color.GOLD);
 
         }
         else{

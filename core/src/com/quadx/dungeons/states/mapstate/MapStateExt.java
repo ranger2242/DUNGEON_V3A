@@ -116,8 +116,10 @@ public class MapStateExt extends MapState{
     }
     public static void battleFunctions(int i) {
         if (Game.player.getMana() >=attack.getCost()) {
+
             Game.player.setMana(Game.player.getMana() - attack.getCost());
             MapStateRender.loadParticleEffects(i);
+            MapState.attackCollisionHandler(i);
             SpellMods.runMod(targetMon,attack);
             attack.checkLvlUp();
 

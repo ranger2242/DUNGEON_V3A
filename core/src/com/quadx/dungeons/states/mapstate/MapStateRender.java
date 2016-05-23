@@ -174,7 +174,15 @@ public class MapStateRender extends MapState {
         }
         sb.end();
     }
+    static void drawMonsterHp(SpriteBatch sb){
+        sb.begin();
+        for(Monster m: gm.monsterList){
+            Game.getFont().draw(sb,(int)m.getHp()+"", m.getX()*cellW,m.getY()*cellW);
+        }
+        sb.end();
+    }
     public static void drawHUD(SpriteBatch sb) {
+        drawMonsterHp(sb);
         drawPlayerStats(sb, viewX, viewY);
         drawAttackMenu(sb);
         drawInventory(sb);
@@ -192,6 +200,22 @@ public class MapStateRender extends MapState {
 
         }
         sb.end();
+
+        ///////////////////////////////////////////////
+        //Draw Grid
+        /*
+        for(int i=0;i<gm.res;i+=10)
+            Game.getFont().draw(sb,i+"",i*cellW,-10);
+        shapeR.begin(ShapeRenderer.ShapeType.Line);
+        //shapeR.setColor(Color.WHITE);
+        shapeR.setColor(.1f,.1f,.1f,.1f);
+        for(int i=1;i<=gm.res;i++){
+            shapeR.line(i*cellW,0,i*cellW,gm.res*cellW);
+            shapeR.line(0,i*cellW,gm.res*cellW, i*cellW);
+
+        }
+        shapeR.end();
+*/
     }
     public static void drawMessageOutput(SpriteBatch sb){
 
@@ -436,7 +460,7 @@ public class MapStateRender extends MapState {
         effectLoaded = true;
         emitter = effect.findEmitter(s);
         //effect.scaleEffect(2f);
-        checkAttackHit(pos);
+        //checkAttackHit(pos);
     }
     public static void drawParticleEffects(SpriteBatch sb, float x, float y) {
         particleAngleHandler();
@@ -569,6 +593,7 @@ public class MapStateRender extends MapState {
             if(c.getShop()) shapeR.setColor(1f, 0f, 1f, 1);
             if(c.hasWarp()) shapeR.setColor(0f, 1f, 0f, 1);
             if(c.hasMon())  shapeR.setColor(1,0,0,1);
+            if(c.getAttArea())shapeR.setColor(.7f,0,0f,1);
             if(map && Game.player.getX()==x && Game.player.getY()==y){
                 if(rn.nextBoolean())
                     shapeR.setColor(0,0,1,1);
@@ -592,7 +617,12 @@ public class MapStateRender extends MapState {
                 shapeR.rect(viewX+Game.WIDTH-250+x, viewY+Game.HEIGHT-250+y, 1, 1);
 
         }
+        for(Cell c:gm.liveCellList){
+            c.setAttArea(false);
+        }
+
         shapeR.end();
+
 
     }
 }

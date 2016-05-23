@@ -14,7 +14,7 @@ public class Flame extends Attack {
         cost=30;
         mod=0;
         description="Player creates a burst of fire.";
-        spread=1;
+        spread=5;
         range=10;
     }
 }
