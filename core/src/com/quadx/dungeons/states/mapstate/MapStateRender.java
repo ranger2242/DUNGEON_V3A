@@ -124,8 +124,8 @@ public class MapStateRender extends MapState {
             }
         }
     }
-    public static void loadInventoryIcons(){
-        if(invIcon.size() != Game.player.invList.size()) {
+    public static void loadInventoryIcons() {
+        if (invIcon.size() != Game.player.invList.size()) {
             invIcon.clear();
             invSize.clear();
 
@@ -141,11 +141,12 @@ public class MapStateRender extends MapState {
                     invIcon.add(new Texture(Gdx.files.internal("images/icons/items/ic" + s + ".png")));
 
                 } catch (GdxRuntimeException e) {
-
-                }catch (ArrayIndexOutOfBoundsException e){}
+                } catch (ArrayIndexOutOfBoundsException e) {
+                } catch (IndexOutOfBoundsException e) {
+                }
             }
-        }
 
+        }
     }
     public static void drawPlayerFinder(SpriteBatch sb){
         shapeR.begin(ShapeRenderer.ShapeType.Line);
