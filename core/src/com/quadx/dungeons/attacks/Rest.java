@@ -1,10 +1,9 @@
 package com.quadx.dungeons.attacks;
 
-import com.sun.org.apache.regexp.internal.RE;
-
 /**
  * Created by range on 5/17/2016.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class Rest extends Attack {
     public Rest(){
         costGold = 0;

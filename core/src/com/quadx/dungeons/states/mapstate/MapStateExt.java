@@ -9,13 +9,13 @@ import com.quadx.dungeons.states.GameStateManager;
 /**
  * Created by Tom on 1/29/2016.
  */
-public class MapStateExt extends MapState{
+@SuppressWarnings("DefaultFileTemplate")
+class MapStateExt extends MapState{
     public MapStateExt(GameStateManager gsm) {
         super(gsm);
     }
 
     public static void mouseOverHandler(){
-        int count=0;
         try {
             //out("$" + mouseRealitiveX + " " + qButtonList.get(0).getPx());
         }
@@ -70,7 +70,6 @@ public class MapStateExt extends MapState{
                 if(remove){
                     Game.player.equipedList.remove(temp);
                     equipIcon.remove(temp);
-                    remove=false;
                 }
                 Game.player.equipedList.add(equip);
                 System.out.println(Game.player.equipedList.size());
@@ -124,5 +123,5 @@ public class MapStateExt extends MapState{
             attack.checkLvlUp();
 
         }
-    };
+    }
 }

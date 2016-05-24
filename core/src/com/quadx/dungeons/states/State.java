@@ -8,15 +8,16 @@ import com.badlogic.gdx.math.Vector3;
 /**
  * Created by Brent on 6/26/2015.
  */
+@SuppressWarnings("ALL")
 public abstract class State {
-    public static OrthographicCamera cam;
-    protected Vector3 mouse;
+    protected static OrthographicCamera cam;
+    private Vector3 mouse;
     protected static GameStateManager gsm;
    // public static BitmapFont font = Game.font;
-    public static BitmapFont font = new BitmapFont();
+    static BitmapFont font = new BitmapFont();
 
-    public State(GameStateManager gsm){
-        this.gsm = gsm;
+    protected State(GameStateManager gsm){
+        State.gsm = gsm;
         cam = new OrthographicCamera();
         cam.setToOrtho(true);
         mouse = new Vector3();

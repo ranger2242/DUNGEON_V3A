@@ -1,11 +1,11 @@
 package com.quadx.dungeons.attacks;
 
 import java.util.Arrays;
-import java.util.StringJoiner;
 
 /**
  * Created by Tom on 11/14/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class Attack {
 
     int[] powerA = new int[5];
@@ -16,11 +16,10 @@ public class Attack {
     int cost =0;
     int mod =0;
     int level =0;
-    int uses=0;
+    private int uses=0;
     int range=0;
     int spread=0;
     int costGold=0;
-    String shape = "";
     String description="s";
     public void checkLvlUp(){
         if(uses>20){level=1;}
@@ -30,7 +29,7 @@ public class Attack {
         power=powerA[level];
         cost=costA[level];
     }
-    public Attack(){}
+    Attack(){}
     public Attack(String na, int lvl, int pow, int co, int mo){
         name=na;
         power=pow;
@@ -41,12 +40,10 @@ public class Attack {
     public String getName(){return name;}
     public String getDescription(){return description;}
     public String getPowerArr(){
-        String s =Arrays.toString(powerA);
-        return s;
+        return Arrays.toString(powerA);
     }
     public String getCostArr() {
-        String s = Arrays.toString(costA);
-        return s;
+        return Arrays.toString(costA);
     }
     public int getPower(){return power;}
     public int getCost(){return cost;}

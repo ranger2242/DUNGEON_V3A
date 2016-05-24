@@ -3,6 +3,7 @@ package com.quadx.dungeons.attacks;
 /**
  * Created by Tom on 11/18/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class Torment extends Attack {
     public Torment()  {
         costGold=40;

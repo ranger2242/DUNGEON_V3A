@@ -5,7 +5,8 @@ import com.badlogic.gdx.controllers.PovDirection;
 /**
  * Created by Tom on 12/29/2015.
  */
-public class Xbox360Pad
+@SuppressWarnings("DefaultFileTemplate")
+class Xbox360Pad
 {
     /*
      * It seems there are different versions of gamepads with different ID Strings.

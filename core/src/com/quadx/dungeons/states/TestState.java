@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 /**
  * Created by range on 5/10/2016.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class TestState extends State {
     public TestState(GameStateManager gsm){
         super(gsm);

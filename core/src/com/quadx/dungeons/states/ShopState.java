@@ -17,15 +17,16 @@ import static com.quadx.dungeons.states.mapstate.MapState.viewY;
 /**
  * Created by Tom on 12/24/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class ShopState extends State {
 
 
   //  public static float viewX=0;
     //public static float viewY=0;
-    public static float dtBuy=0;
-    public static Random rn = new Random();
-    public static ShapeRenderer shapeR=new ShapeRenderer();
-    public static ArrayList<Item> shopInv = new ArrayList<>();
+    private static float dtBuy=0;
+    private static Random rn = new Random();
+    private static ShapeRenderer shapeR=new ShapeRenderer();
+    private static ArrayList<Item> shopInv = new ArrayList<>();
 
     public ShopState(GameStateManager gsm){
 
@@ -65,7 +66,7 @@ public class ShopState extends State {
             gsm.pop();
         }
     }
-    public void numberButtonHandler(int i){
+    private void numberButtonHandler(int i){
         if(i<shopInv.size() && dtBuy>.3 && Game.player.getGold()>=shopInv.get(i).getCost()){
             Game.player.setGold(Game.player.getGold()-shopInv.get(i).getCost());
             Game.player.addItemToInventory(shopInv.get(i));
@@ -102,7 +103,7 @@ public class ShopState extends State {
         shapeR.end();
         drawShopInv(sb);
     }
-    public void drawPlayerInv(SpriteBatch sb){
+    private void drawPlayerInv(SpriteBatch sb){
         sb.begin();
         Game.getFont().draw(sb,"INV",viewX+ Game.WIDTH/2,viewY+ Game.HEIGHT-50);
         Game.getFont().draw(sb,"G "+ Game.player.getGold(),viewX+(Game.WIDTH/2)+100,viewY+ Game.HEIGHT-50);
@@ -117,7 +118,7 @@ public class ShopState extends State {
 
         sb.end();
     }
-    public void drawShopInv(SpriteBatch sb){
+    private void drawShopInv(SpriteBatch sb){
         sb.begin();
         Game.getFont().draw(sb,"SHOP",viewX+ 50,viewY+ Game.HEIGHT-50);
         for(int i=0;i<shopInv.size();i++){
@@ -127,7 +128,7 @@ public class ShopState extends State {
         }
         sb.end();
     }
-    public void genShopInv(){
+    private void genShopInv(){
         shopInv.clear();
         shopInv.add(new Potion());
         shopInv.add(new ManaPlus());
@@ -138,7 +139,7 @@ public class ShopState extends State {
         shopInv.add(new SpellBook());
         shopInv.add(new SpellBook());
     }
-    public Item statItemPicker(){
+    private Item statItemPicker(){
         Item item=null;
 
         switch (rn.nextInt(4)){

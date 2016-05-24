@@ -3,6 +3,7 @@ package com.quadx.dungeons.attacks;
 /**
  * Created by Tom on 11/21/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class Slash extends Attack {
     public Slash(){
         costGold=35;

@@ -14,55 +14,57 @@ import java.util.Random;
 /**
  * Created by Tom on 11/9/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class Player {
     public ArrayList<Attack> attackList = new ArrayList<>();
     public ArrayList<ArrayList<Item>> invList = new ArrayList<>();
     public ArrayList<Equipment> equipedList = new ArrayList<>();
-    ArrayList<String> statsList= new ArrayList<>();
-    Damage d = new Damage();
-    Vector2 pospx=new Vector2(0,0);
-    int x,px;//(Game.WIDTH/2)+1;
-    int y,py;//(Game.HEIGHT/2)-2;
-    int liveCellListIndex;
-    float gold=0;
+    private ArrayList<String> statsList= new ArrayList<>();
+    private Damage d = new Damage();
+    private Vector2 pospx=new Vector2(0,0);
+    private int x;
+    private int px;//(Game.WIDTH/2)+1;
+    private int y;
+    private int py;//(Game.HEIGHT/2)-2;
+    private int liveCellListIndex;
+    private float gold=0;
     public int level =1;
     int hpMax = 100;
-    int hpMod =0;
-    int attackMod=0;
-    int defenseMod=0;
-    int speedMod=0;
+    private int hpMod =0;
+    private int attackMod=0;
+    private int defenseMod=0;
+    private int speedMod=0;
     int intelMod=0;
-    int manaMod = 0;
+    private int manaMod = 0;
     int hp =100;
     int attack=20;
     int defense=20;
-    int speed=20;
+    private int speed=20;
     int intel=20;
     int mana = 100;
     int manaMax = 100;
-    int manaRegenRate=5;
-    int hpRegen =2;
+    private int manaRegenRate=5;
+    private int hpRegen =2;
     double damage;
-    int exp=0;
-    int expGain=0;
-    int killcount=0;
-    int energy=100;
-    int energyMax=100;
-    int energyRegen=1 ;
+    private int exp=0;
+    private int killcount=0;
+    private int energy=100;
+    private int energyMax=100;
+    private int energyRegen=1 ;
     int abilityPoints=1;
     public int floor= 0;
-    float moveSpeed=.08f;
-    Random rn =new Random();
+    private float moveSpeed=.08f;
+    private Random rn =new Random();
     String name ="DEMO";
-    Attack fullhealSp = new FullHeal();
-    Attack flameSp= new Flame();
-    Attack restSp =new Rest();
-    Attack drainSp= new Drain();
-    Attack blindSp = new Blind();
-    Attack tormentSp = new Torment();
-    Attack illusionSp= new Illusion();
-    Attack protectSp= new Protect();
-    Attack sacrificeSp= new Sacrifice();
+    private Attack fullhealSp = new FullHeal();
+    private Attack flameSp= new Flame();
+    private Attack restSp =new Rest();
+    private Attack drainSp= new Drain();
+    private Attack blindSp = new Blind();
+    private Attack tormentSp = new Torment();
+    private Attack illusionSp= new Illusion();
+    private Attack protectSp= new Protect();
+    private Attack sacrificeSp= new Sacrifice();
     Attack slashSp = new Slash();
     Attack stabSp = new Stab();
 
@@ -95,10 +97,10 @@ public class Player {
     }
     public void setExp(Monster m) {
         int expmax=m.getLevel()*25;
-        expGain=((m.getLevel()*50)+(int)(Math.random()*expmax));
-        MapStateRender.setHoverText(expGain+" EXP",.8f, Color.GREEN);
-        exp=exp+expGain;
-        MapState.out(name+" gained "+expGain+" EXP");
+        int expGain = ((m.getLevel() * 50) + (int) (Math.random() * expmax));
+        MapStateRender.setHoverText(expGain +" EXP",.8f, Color.GREEN);
+        exp=exp+ expGain;
+        MapState.out(name+" gained "+ expGain +" EXP");
     }
     public void setExp(int a){exp=a;}
     public void setLiveListIndex(int i){
@@ -137,7 +139,7 @@ public class Player {
     {
         return py;
     }
-    int getLevel()
+    private int getLevel()
     {
         return level;
     }
@@ -168,8 +170,7 @@ public class Player {
     public int getExp(){return exp;}
     public int getMana(){return mana;}
     public int getPoints(){
-        int points=((int)gold*10)+(attack*50)+(defense*50)+(speed*50)+(level*200)+(intel*50)+(hpMax*20)+(manaMax*20)+(energyMax*20)+(floor*10)+(killcount*20);
-        return points;
+        return ((int)gold*10)+(attack*50)+(defense*50)+(speed*50)+(level*200)+(intel*50)+(hpMax*20)+(manaMax*20)+(energyMax*20)+(floor*10)+(killcount*20);
     }
     public int getEnergy(){
         return  energy;
@@ -215,20 +216,11 @@ public class Player {
             hpMax = hpMax +( 25 + rn.nextInt(20));
             manaMax=manaMax+(25+rn.nextInt(20));
             manaRegenRate+=1;
-            attack=attack+( 0 + (int)(Math.random()*4));
-            defense=defense+( 0 + (int)(Math.random()*4));
-            intel=intel+( 0 + (int)(Math.random()*4));
-            speed=speed+( 0 + (int)(Math.random()*4));
+            attack=attack+((int) (Math.random() * 4));
+            defense=defense+((int) (Math.random() * 4));
+            intel=intel+((int) (Math.random() * 4));
+            speed=speed+((int) (Math.random() * 4));
         }
-    }
-    public void takeAttackDamage(int i) {hp=hp-i;}
-    public double getAttackDamage(int power) {
-        damage=d.playerPhysicalDamage(this,Main.monster,power);
-        return damage;
-    }
-    public double getIntelDamage(int power) {
-        damage=d.playerMagicDamage(this,Main.monster,power);
-        return damage;
     }
     public void addSpell(){
         attackList.clear();
@@ -268,7 +260,7 @@ public class Player {
             }
         }
         if(!added){
-            ArrayList al =new ArrayList<Item>();
+            ArrayList<Item> al = new ArrayList<>();
             al.add(item);
             invList.add(al);
         }

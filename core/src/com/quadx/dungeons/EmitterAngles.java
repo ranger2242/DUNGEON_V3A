@@ -5,14 +5,14 @@ import java.util.ArrayList;
 /**
  * Created by Tom on 12/17/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class EmitterAngles {
     public static int angleHigh[]= new int[4];
     public static int angleLow[]= new int[4];
     public static int angleHHigh[];
     public static int angleLHigh[];
-    ArrayList<int[]> angles=new ArrayList<>();
 
-    public static int getAttackIndex(String s) {
+    public static void getAttackIndex(String s) {
         int index=0;
         //angle[] {w,a,s,d}
         switch (s) {
@@ -73,6 +73,5 @@ public class EmitterAngles {
                 angleLow=new int[]{0,0,0,0};
                 break;}
         }
-        return index;
     }
 }

@@ -3,6 +3,7 @@ package com.quadx.dungeons.attacks;
 /**
  * Created by Tom on 11/17/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class Flame extends Attack {
     public Flame()  {
         costGold=100;

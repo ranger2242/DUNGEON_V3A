@@ -7,10 +7,11 @@ import java.util.Random;
 /**
  * Created by Tom on 12/29/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class Equipment extends Item {
-    public static Random rn=new Random();
-    public Grade grade;
-    public Boost boost;
+    private static Random rn=new Random();
+    Grade grade;
+    Boost boost;
     public Type type;
 
     public enum Type{
@@ -22,7 +23,7 @@ public class Equipment extends Item {
     public enum Boost{
         Perception, Power, Health, Magic, Haste, Resistance
     }
-    public Equipment(){
+    Equipment(){
     isEquip=true;
     }
     public String getName(){
@@ -60,7 +61,7 @@ public class Equipment extends Item {
             }
         }
     }
-    int calculateBuff(){
+    private int calculateBuff(){
         int buff=0;
         switch (grade){
             case Poor:

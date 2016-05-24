@@ -25,18 +25,19 @@ import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtWater;
 /**
  * Created by Tom on 12/28/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class MapStateRender extends MapState {
    public static int inventoryPos=0;
     public static boolean hovText=false;
     public static boolean showCircle=false;
-    public static ArrayList<String> equipList=new ArrayList<>();
-    public static String hovTextS="";
-    public static float hovTime=1f;
-    public static Color hovColor=Color.WHITE;
+    private static ArrayList<String> equipList=new ArrayList<>();
+    private static String hovTextS="";
+    private static float hovTime=1f;
+    private static Color hovColor=Color.WHITE;
     public static float circleTime=.6f;
-    static int hovTextYPosMod=0;
-    static Texture abilityIcon;
-    static int prevMod=0;//checks if Ability has changed
+    private static int hovTextYPosMod=0;
+    private static Texture abilityIcon;
+    private static int prevMod=0;//checks if Ability has changed
 
     public MapStateRender(GameStateManager gsm) {
         super(gsm);
@@ -140,9 +141,7 @@ public class MapStateRender extends MapState {
                 try {
                     invIcon.add(new Texture(Gdx.files.internal("images/icons/items/ic" + s + ".png")));
 
-                } catch (GdxRuntimeException e) {
-                } catch (ArrayIndexOutOfBoundsException e) {
-                } catch (IndexOutOfBoundsException e) {
+                } catch (GdxRuntimeException |IndexOutOfBoundsException  e) {
                 }
             }
 
@@ -175,9 +174,9 @@ public class MapStateRender extends MapState {
         }
         sb.end();
     }
-    static void drawMonsterHp(SpriteBatch sb){
+    private static void drawMonsterHp(SpriteBatch sb){
         sb.begin();
-        for(Monster m: gm.monsterList){
+        for(Monster m: GridManager.monsterList){
             Game.getFont().draw(sb,(int)m.getHp()+"", m.getX()*cellW,m.getY()*cellW);
         }
         sb.end();
@@ -234,11 +233,9 @@ public class MapStateRender extends MapState {
         }
         sb.end();
     }
-    public static void drawPlayerStats(SpriteBatch sb, float x, float y) {
+    private static void drawPlayerStats(SpriteBatch sb, float x, float y) {
         sb.begin();//Draw STATS
         int hpDiffx = 0;
-        int hpDiff = 0;
-        int mode = 1;
         int margin = 30;
         double pHealthMax = Game.player.getHpMax();
         double pHealth = Game.player.getHp();
@@ -246,9 +243,7 @@ public class MapStateRender extends MapState {
         double pManaMax = Game.player.getManaMax();
         double pEnergyMax=Game.player.getEnergyMax();
         double pEnergy=Game.player.getEnergy();
-        int barWidth = 1;
-        if (mode == 1) barWidth = 4;
-        if (mode == 2) barWidth = 3;
+        int barWidth= 4;
         double pHPBarMax = (Game.WIDTH / barWidth) - margin - 15;
         double pHPBar = (pHealth / pHealthMax) * (pHPBarMax - hpDiffx);
         double pManaBarMax = (Game.WIDTH / barWidth) - margin - 15;
@@ -266,8 +261,7 @@ public class MapStateRender extends MapState {
 
         //DRAW HP BARS
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        if (mode == 1) shapeR.setColor(.5f, .5f, .5f, 1);
-        if (mode == 2) shapeR.setColor(.0f, .0f, .0f, 1);
+        shapeR.setColor(.5f, .5f, .5f, 1);
         shapeR.setColor(0f, 1f, 0f, 1);
         if (Game.player.getHp() < Game.player.getHpMax() / 2) {
             shapeR.setColor(1f, 0f, 0f, 1);
@@ -303,9 +297,6 @@ public class MapStateRender extends MapState {
         shapeR.end();
 
         sb.begin();
-        for(int i=0;i<equipList.size();i++) {
-           // Game.font.draw(sb,equipList.get(i),viewX+Game.WIDTH-200,viewY+Game.HEIGHT-30-(i*36));
-        }
         int count =0;
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 4; j++) {
@@ -320,7 +311,7 @@ public class MapStateRender extends MapState {
         }
             sb.end();
     }
-    public static void drawAttackMenu(SpriteBatch sb) {
+    private static void drawAttackMenu(SpriteBatch sb) {
         int xoffset= (int) (viewX+(Game.WIDTH/2)-(52*4));
         sb.begin();
         for(int i = 0; i< attackIconList.size(); i++){
@@ -328,13 +319,17 @@ public class MapStateRender extends MapState {
                 sb.draw(attackIconList.get(i), xoffset  + (i * 52), viewY + 48);
                 if(i<=7) Game.getFont().draw(sb,(i+1)+"",xoffset+ (i * 52), viewY + 58);
             }
+            else{
+                int rem= Game.player.attackList.get(i).getCost()- Game.player.getMana();
+                Game.getFont().draw(sb,rem+"",xoffset  + (i * 52)+52/2,viewY + 70);
+            }
             Game.getFont().draw(sb,"Lv."+(Game.player.attackList.get(i).getLevel()+1),xoffset + (i * 52), viewY + 48);
             Game.getFont().draw(sb,"M"+ Game.player.attackList.get(i).getCost(),xoffset + (i * 52),viewY+30);
         }
 
         sb.end();
     }
-    public static void drawInventory(SpriteBatch sb) {
+    private static void drawInventory(SpriteBatch sb) {
 
         sb.begin();
         for(int i=0;i<3;i++){
@@ -350,9 +345,7 @@ public class MapStateRender extends MapState {
                 }
 
             }
-            catch (NullPointerException e){}
-            catch (IndexOutOfBoundsException e){
-            }
+            catch (NullPointerException | IndexOutOfBoundsException e){}
         }
         /*
         qButtonList.clear();
@@ -383,7 +376,7 @@ public class MapStateRender extends MapState {
         }*/
         sb.end();
     }
-    public static void drawMiniMap(SpriteBatch sb){
+    private static void drawMiniMap(SpriteBatch sb){
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         shapeR.setColor(Color.BLACK);
         shapeR.rect(viewX+Game.WIDTH-250,viewY+Game.HEIGHT-250,200,200);
@@ -474,13 +467,9 @@ public class MapStateRender extends MapState {
             effect.reset();
         }*/
     }
-    public static void particleAngleHandler() {
+    private static void particleAngleHandler() {
         EmitterAngles.getAttackIndex(emitter.getName());
         ParticleEmitter.ScaledNumericValue angle = emitter.getAngle();
-        if(emitter.getName().equals("Protect")) {
-            //effect.setDuration(4000);
-            //emitter.setContinuous(true);
-        }
         switch (lastPressed) {
             case ('w'): {
                 //angle.setHigh(EmitterAngles.angleHigh[0]);
@@ -572,8 +561,8 @@ public class MapStateRender extends MapState {
     }
     public static void drawMonsterAgro(){
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        for(int i=0;i<gm.monsterList.size();i++){
-            Monster m= gm.monsterList.get(i);
+        for(int i = 0; i< GridManager.monsterList.size(); i++){
+            Monster m= GridManager.monsterList.get(i);
             int side=m.getSight()*2*cellW;
             double x1=m.getPX()-(side/2)+(cellW/2);
             double y1=m.getPY()-(side/2)+(cellW/2);
@@ -584,7 +573,7 @@ public class MapStateRender extends MapState {
     }
     public static void drawGrid(boolean map) {
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        for(Cell c:gm.liveCellList){
+        for(Cell c: GridManager.liveCellList){
             int x=c.getX();
             int y=c.getY();
             if(c.getState())shapeR.setColor(.235f, .235f, .196f, 1);
@@ -618,7 +607,7 @@ public class MapStateRender extends MapState {
                 shapeR.rect(viewX+Game.WIDTH-250+x, viewY+Game.HEIGHT-250+y, 1, 1);
 
         }
-        for(Cell c:gm.liveCellList){
+        for(Cell c: GridManager.liveCellList){
             c.setAttArea(false);
         }
 

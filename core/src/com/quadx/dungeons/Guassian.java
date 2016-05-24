@@ -1,3 +1,4 @@
+package com.quadx.dungeons;
 
 /*************************************************************************
  *  Compilation:  javac Gaussian.java
@@ -21,10 +22,11 @@
  *
  *************************************************************************/
 
+@SuppressWarnings("WeakerAccess")
 class Gaussian {
 
     // return phi(x) = standard Gaussian pdf
-    public static double phi(double x) {
+    private static double phi(double x) {
         return Math.exp(-x*x / 2) / Math.sqrt(2 * Math.PI);
     }
 
@@ -34,7 +36,7 @@ class Gaussian {
     }
 
     // return Phi(z) = standard Gaussian cdf using Taylor approximation
-    public static double Phi(double z) {
+    private static double Phi(double z) {
         if (z < -8.0) return 0.0;
         if (z >  8.0) return 1.0;
         double sum = 0.0, term = z;
@@ -46,12 +48,12 @@ class Gaussian {
     }
 
     // return Phi(z, mu, sigma) = Gaussian cdf with mean mu and stddev sigma
-    public static double Phi(double z, double mu, double sigma) {
+    private static double Phi(double z, double mu, double sigma) {
         return Phi((z - mu) / sigma);
     }
 
     // Compute z such that Phi(z) = y via bisection search
-    public static double PhiInverse(double y) {
+    private static double PhiInverse(double y) {
         return PhiInverse(y, .00000001, -8, 8);
     }
 
@@ -62,17 +64,4 @@ class Gaussian {
         if (Phi(mid) > y) return PhiInverse(y, delta, lo, mid);
         else              return PhiInverse(y, delta, mid, hi);
     }
-
-
-
-    // test client
-    public static void main(String[] args) {
-        double z     = Double.parseDouble(args[0]);
-        double mu    = Double.parseDouble(args[1]);
-        double sigma = Double.parseDouble(args[2]);
-        System.out.println(Phi(z, mu, sigma));
-        double y = Phi(z);
-        System.out.println(PhiInverse(y));
-    }
-
 }

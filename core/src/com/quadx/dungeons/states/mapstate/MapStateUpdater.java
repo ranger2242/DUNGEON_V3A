@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.AbilityMod;
 import com.quadx.dungeons.Cell;
 import com.quadx.dungeons.Game;
+import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.abilities.Investor;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.monsters.Monster;
@@ -18,24 +19,24 @@ import com.quadx.dungeons.states.ShopState;
 /**
  * Created by Tom on 1/29/2016.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class MapStateUpdater extends MapState {
     private static float dtimeMin=0;
     public static float dtWater=0;
-    static float dtRun=0;
-    static float dtDig=0;
-    static float dtMove = 0;
-    static float dtAttack = 0;
-    static float dtRegen = 0;
-    static float dtEnergyRe=0;
-    static float dtInfo =0;
-    static float dtItem=0;
-    static float dtToolTip=0;
-    static float dtInvSwitch=0;
-    static float dtMap=0;
+    private static float dtRun=0;
+    private static float dtDig=0;
+    private static float dtMove = 0;
+    private static float dtAttack = 0;
+    private static float dtRegen = 0;
+    private static float dtEnergyRe=0;
+    private static float dtInfo =0;
+    private static float dtItem=0;
+    private static float dtToolTip=0;
+    private static float dtInvSwitch=0;
+    private static float dtMap=0;
     public static float dtCircle=MapStateRender.circleTime;
     public static float dtHovText=0;
-    static float lerp = 0.2f;
-    static int x = 0;
+    private static int x = 0;
 
 
     public MapStateUpdater(GameStateManager gsm) {
@@ -45,7 +46,7 @@ public class MapStateUpdater extends MapState {
         dtimeMin+= Gdx.graphics.getDeltaTime();
         if(dtimeMin>.1) {
             gm.clearMonsterPositions();
-            for(Monster m :gm.monsterList){
+            for(Monster m : GridManager.monsterList){
                 m.move();
             }
             dtimeMin=0;
@@ -75,6 +76,7 @@ public class MapStateUpdater extends MapState {
         MapStateRender.loadEquipIcons();
         Vector3 position = cam.position;
 
+        float lerp = 0.2f;
         position.x += (Game.player.getCordsPX().x - position.x) * lerp;
         position.y += (Game.player.getCordsPX().y - position.y) * lerp;
         cam.position.set(position);
@@ -119,8 +121,6 @@ public class MapStateUpdater extends MapState {
         }
         if (dtDamageTextFloat > .6) {
             displayPlayerDamage = false;
-        } else {
-            //textY += .2;
         }
         if (dtRegen > .4) {
             if(AbilityMod.investor)
@@ -298,7 +298,7 @@ public class MapStateUpdater extends MapState {
         }
         //collisionHandler();
     }
-    public static void functionButtonHandler(int i){
+    private static void functionButtonHandler(int i){
         if(dtItem>itemMinTime && Game.player.invList.size()>i){
             MapStateExt.useItem(MapStateRender.inventoryPos+ i);
             dtItem=0;
@@ -306,7 +306,7 @@ public class MapStateUpdater extends MapState {
                 Game.player.invList.remove(i);}
         }
     }
-    public static void numberButtonHandler(int i){
+    private static void numberButtonHandler(int i){
         lastNumPressed=i;
         if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)){
             if(dtInfo>.4) {
@@ -326,42 +326,41 @@ public class MapStateUpdater extends MapState {
                 if (Game.player.invList.get(i).size() == 0) {
                     Game.player.invList.remove(i);
                 }
-            } else if (inventoryOpen && dtItem < itemMinTime) {
-            } else if (dtAttack > attackMintime) {
+            }  else if (dtAttack > attackMintime) {
                 attack = Game.player.attackList.get(attackListCount + i);
             }
         }
     }
-    public static void movementHandler(int xmod, int ymod, char c) {
+    private static void movementHandler(int xmod, int ymod, char c) {
         int x = Game.player.getPX() + xmod * cellW;
         int y = Game.player.getPY() + ymod * cellW;
-        for(Cell cell: gm.liveCellList){
+        for(Cell cell: GridManager.liveCellList){
             if(cell.getY()*cellW==y && cell.getX()*cellW==x && !cell.getWater()){
                 Game.player.setCordsPX(x, y);
-                Game.player.setLiveListIndex(gm.liveCellList.indexOf(cell));
+                Game.player.setLiveListIndex(GridManager.liveCellList.indexOf(cell));
             }
         }
         lastPressed=c;
     }
     public static void collisionHandler(){
         int index= Game.player.getLiveListIndex();
-        Cell c=gm.liveCellList.get(index);
+        Cell c= GridManager.liveCellList.get(index);
         if (c.hasLoot()) {
             dtLootPopup =0;
             lootPopup=new Texture(Gdx.files.internal("images/imCoin.png"));
             makeGold(Game.player.level);
-            gm.liveCellList.get(index).setHasLoot(false);
+            GridManager.liveCellList.get(index).setHasLoot(false);
         }
         if (c.hasCrate()) {
             openCrate();
-            gm.liveCellList.get(index).setCrate(false);
+            GridManager.liveCellList.get(index).setCrate(false);
         }
         if (c.hasWarp()) {
             Game.player.floor++;
             gm.initializeGrid();
         }
         if (c.getShop()) {
-            gm.liveCellList.get(index).setShop(false);
+            GridManager.liveCellList.get(index).setShop(false);
             gsm.push(new ShopState(gsm));
         }
         /*

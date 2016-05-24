@@ -7,11 +7,12 @@ import java.util.Random;
 /**
  * Created by Tom on 12/22/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class SpellBook extends Item {
-    Random rn = new Random();
     public SpellBook(){
         isSpell=true;
-        int x=rn.nextInt(10);
+        Random rn = new Random();
+        int x= rn.nextInt(10);
         setAttack(x);
         name="Spell Book ("+attack.getName()+")";
     }
@@ -20,7 +21,7 @@ public class SpellBook extends Item {
         return attack;
     }
 
-    public void setAttack(int x){
+    private void setAttack(int x){
         switch (x){
             case(0):{
                 attack=new Blind();

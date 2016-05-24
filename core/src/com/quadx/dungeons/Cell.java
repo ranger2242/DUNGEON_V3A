@@ -4,29 +4,25 @@ package com.quadx.dungeons;
  * Created by Tom isLive 11/7/2015.
  */
 public class Cell {
-    boolean hasPlayer=false;
-    boolean isLive = false;
-    boolean isEmpty =true;
+    private boolean hasPlayer=false;
+    private boolean isLive = false;
     boolean hasWater = false;
-    boolean hasCrate=false;
-    boolean hasLoot = false;
-    boolean hasMon = false;
-    boolean isWarp=false;
-    boolean hasShop=false;
-    boolean agroPoint=false;
-    boolean playerFront=false;
-    boolean attArea=false;
+    private boolean hasCrate=false;
+    private boolean hasLoot = false;
+    private boolean hasMon = false;
+    private boolean isWarp=false;
+    private boolean hasShop=false;
+    private boolean agroPoint=false;
+    private boolean playerFront=false;
+    private boolean attArea=false;
     int monsterIndex;
-    int x;
-    int y;
+    private int x;
+    private int y;
 
 
     public Cell() {
     }
-    Cell(boolean activate)
-    {
-        isLive =activate;
-    }
+
     public boolean getAttArea(){return  attArea;}
     public boolean getWater(){return hasWater;}
     public boolean getShop(){return hasShop;}
@@ -47,17 +43,18 @@ public class Cell {
     public void setAgro(boolean b, int a){agroPoint=b; monsterIndex =a;}
     public void setShop(boolean set){hasShop=set;}
     public void setMon(boolean set){hasMon=set;}
-    public void setWarp(boolean set){isWarp=set;}
-    public void setState(boolean set)
+    public void setWarp(){isWarp= true;}
+    public void setState()
     {
-        isLive =set;
+        isLive = true;
     }
     public void setCrate(boolean set){hasCrate=set;}
-    public void setWater(boolean set){hasWater=set;}
+    public void setWater(){hasWater= true;}
     public void setHasLoot(boolean set) {
         hasLoot =set;
         if(set){
-            isEmpty =false;}
+            boolean isEmpty = false;
+        }
     }
     public void setPlayer(boolean set){hasPlayer=set;}
     public void setFront(boolean set){playerFront=set;}
@@ -65,20 +62,6 @@ public class Cell {
     public boolean hasWarp(){return isWarp;}
     public boolean hasMon(){return hasMon;}
     public boolean hasPlayer(){return hasPlayer;}
-    public String getSummary(int denx, int deny) {
-        /*String s=Main.field.getText();
-        String s1=s+"\n["+denx+","+deny+"]";
-        s1+="\nLive:" + isLive;
-        if(hasLoot) {s1+="\nLoot:"+ hasLoot;}
-        if(hasMon) {s1+="\nMonster:"+ hasMon;}
-        else{s1+="\nEmpty:"+ isEmpty;}
-        return s1;*/
-        return "";
-    }
-    public String exportCell() {
-        String s =isLive+","+ hasLoot +","+ isEmpty;
-        return s;
-    }
     public boolean hasLoot() {return hasLoot;}
 
     public boolean hasCrate() {return hasCrate;}

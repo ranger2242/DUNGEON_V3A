@@ -3,7 +3,6 @@ package com.quadx.dungeons.states;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,23 +13,18 @@ import com.quadx.dungeons.abilities.*;
 import com.quadx.dungeons.states.mapstate.MapState;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 /**
  * Created by range on 5/20/2016.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class         AbilitySelectState extends State {
-    public static GlyphLayout gl=new GlyphLayout();
-    ArrayList<Ability> abilityList= new ArrayList<>();
-    public static ArrayList<Texture> abilityIconList = new ArrayList<>();
-    Tank tank=new Tank();
-    Investor inv=new Investor();
-    Mage mage=new Mage();
-    Quick quick=new Quick();
-    Brawler brawler=new Brawler();
-    int titlex;
-    int titley;
+    private static GlyphLayout gl=new GlyphLayout();
+    private ArrayList<Ability> abilityList= new ArrayList<>();
+    private static ArrayList<Texture> abilityIconList = new ArrayList<>();
+    private int titlex;
+    private int titley;
 
     public AbilitySelectState(GameStateManager gsm){
         super(gsm);
@@ -42,10 +36,15 @@ public class         AbilitySelectState extends State {
         gl.setText(Game.getFont(),cs);
         titlex=(int)(MapState.viewX +(Game.WIDTH/2)-(gl.width/2));
         titley=(int)(MapState.viewY +Game.HEIGHT-100);
+        Tank tank = new Tank();
         abilityList.add(tank);
+        Investor inv = new Investor();
         abilityList.add(inv);
+        Mage mage = new Mage();
         abilityList.add(mage);
+        Quick quick = new Quick();
         abilityList.add(quick);
+        Brawler brawler = new Brawler();
         abilityList.add(brawler);
         try {
             abilityIconList.add(new Texture(Gdx.files.internal("images/icons/abilities/icTank.png")));

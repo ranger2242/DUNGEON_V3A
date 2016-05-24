@@ -3,6 +3,7 @@ package com.quadx.dungeons.attacks;
 /**
  * Created by Tom on 11/17/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class FullHeal extends Attack {
     public FullHeal()  {
         costGold=1;

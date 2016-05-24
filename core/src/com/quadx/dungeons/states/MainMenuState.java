@@ -9,9 +9,7 @@ import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.quadx.dungeons.Game;
-import com.quadx.dungeons.states.mapstate.Map2State;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.sun.beans.editors.ColorEditor;
 
 import java.util.ArrayList;
 
@@ -21,19 +19,18 @@ import static com.quadx.dungeons.states.mapstate.MapState.viewY;
 /**
  * Created by Tom on 12/22/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class MainMenuState extends State {
     public static GlyphLayout gl=new GlyphLayout();
-    public static ShapeRenderer shapeR=new ShapeRenderer();
-    public static ParticleEffect effect;
-    public static ParticleEmitter emitter;
-    public static ArrayList<String> options = new ArrayList<>();
-    public static int selector=0;
-    int titlePosX =0;
-    int titlePosY=0;
-    int selectorPosX=0;
-    int optionsPosX =0;
-    int optionsPosY =0;
-    float dtCursor = 0;
+    private static ShapeRenderer shapeR=new ShapeRenderer();
+    private static ParticleEffect effect;
+    private static int selector=0;
+    private int titlePosX =0;
+    private int titlePosY=0;
+    private int selectorPosX=0;
+    private int optionsPosX =0;
+    private int optionsPosY =0;
+    private float dtCursor = 0;
     public MainMenuState(GameStateManager gsm)
     {
         super(gsm);
@@ -41,7 +38,7 @@ public class MainMenuState extends State {
         Gdx.gl.glClearColor(0,0,0,1);
 
         effect = new ParticleEffect();
-        emitter = new ParticleEmitter();
+        ParticleEmitter emitter = new ParticleEmitter();
         String s = "StartScreen";
         effect.load(Gdx.files.internal("particles\\pt" + s), Gdx.files.internal("particles"));
         emitter = effect.findEmitter("StartScreen");
@@ -83,9 +80,6 @@ public class MainMenuState extends State {
                     break;
                 }
             }
-            if(selector==0){
-            }
-
         }
         if(Gdx.input.isKeyPressed(Input.Keys.UP)){
             selector--;
@@ -122,7 +116,7 @@ public class MainMenuState extends State {
     }
 /////////////////////////////////////////////////////////////////////////////////////////
 //DRAWING FUNCTIONS
-    public void drawTitle(SpriteBatch sb){
+private void drawTitle(SpriteBatch sb){
         sb.begin();
         Game.setFontSize(40);
         Game.font.setColor(Color.WHITE);
@@ -130,20 +124,20 @@ public class MainMenuState extends State {
         effect.draw(sb);
         sb.end();
     }
-    void drawOptions(SpriteBatch sb){
+    private void drawOptions(SpriteBatch sb){
         sb.begin();
         Game.setFontSize(20);
         if(MapState.inGame)
-            Game.getFont().draw(sb,"CONTINUE", optionsPosX, optionsPosY -(0*20));
+            Game.getFont().draw(sb,"CONTINUE", optionsPosX, optionsPosY);
         else
-            Game.getFont().draw(sb,"START", optionsPosX, optionsPosY -(0*20));
-        Game.getFont().draw(sb,"OPTIONS", optionsPosX, optionsPosY -(1*20));
+            Game.getFont().draw(sb,"START", optionsPosX, optionsPosY);
+        Game.getFont().draw(sb,"OPTIONS", optionsPosX, optionsPosY -(20));
         Game.getFont().draw(sb,"CONTROLS", optionsPosX, optionsPosY -(2*20));
         Game.getFont().draw(sb,"EXTRA", optionsPosX, optionsPosY -(3*20));
         Game.getFont().draw(sb,"EXIT", optionsPosX, optionsPosY -(4*20));
         sb.end();
     }
-    void drawSelector(){
+    private void drawSelector(){
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         shapeR.setColor(1,1,1,1);
         shapeR.rect(selectorPosX,optionsPosY-((selector+1)*20),20,20);

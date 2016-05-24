@@ -10,6 +10,7 @@ import java.util.ArrayList;
 /**
  * Created by range on 5/20/2016.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class Mage extends Ability {
    // protected static ArrayList<String> output=new ArrayList<>();
 

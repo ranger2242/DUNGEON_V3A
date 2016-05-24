@@ -6,25 +6,23 @@ import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.MapState;
 
-import java.util.Random;
-
 /**
  * Created by Tom on 11/17/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class SpellMods {
 
     static public void runMod(Monster m, Attack a){
         int mod=a.getMod();
-        String name=a.getName();
-        String s;
-        Random rn = new Random();
+        //String name=a.getName();
+       // String s;
 
         int[] levelA;
         double[] levelB;
         MapState.statPopup=null;
         switch (mod){
             case -1:{
-                s= Game.player.name +" used "+ name;
+                //s= Game.player.name +" used "+ name;
             }
             case 0:{
                 break;

@@ -6,11 +6,15 @@ import com.quadx.dungeons.items.Item;
 /**
  * Created by Tom on 1/4/2016.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class QButton {
-    public static int px,py,width,height;
-    Item item;
-    Attack attack;
-    String name="";
+    private static int px;
+    private static int py;
+    private static int width;
+    private static int height;
+    private Item item;
+    private Attack attack;
+    private String name="";
     public QButton(){}
     public QButton(int x, int y, int w, int h){
         px=x;

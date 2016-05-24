@@ -3,7 +3,8 @@ package com.quadx.dungeons.monsters;
 /**
  * Created by Tom on 12/30/2015.
  */
-public class Blob extends Monster {
+@SuppressWarnings("DefaultFileTemplate")
+class Blob extends Monster {
     public Blob(){
         power=20;
         hpBase =850;

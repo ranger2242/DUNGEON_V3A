@@ -10,22 +10,23 @@ import java.util.Random;
 /**
  * Created by Tom on 11/10/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class Monster {
-    Damage d = new Damage();
-    int x,px;
-    int y,py;
-    static Random rn;
-    static double level=1;
-    static int levelmin;
-    static int levelmax;
+    private Damage d = new Damage();
+    private int x;
+    private int px;
+    private int y;
+    private int py;
+    private static Random rn;
+    private static double level=1;
     double power=20;
-    double hp=0;
-    double hpsoft=0;
+    private double hp=0;
+    private double hpsoft=0;
     public double acc=1;
     public double attack;
-    public double defense;
+    private double defense;
     public double intel;
-    public double speed;
+    private double speed;
     double hpBase =30;
     double attBase =50;
     double defBase =50;
@@ -38,9 +39,7 @@ public class Monster {
     double speedMod=0;
     String status="0";
     int sight=4;
-    public double damage;
-    static int playerlevel;
-    boolean agro=false;
+    private double damage;
     public String name= "monster";
 
     public Monster(){
@@ -59,22 +58,19 @@ public class Monster {
             sayStats();
         }
     }
-    public void genLevel(int i) {
-        playerlevel=i;
-        levelmin=i;
-        levelmax=i+3;
+    private void genLevel(int i) {
         level=rn.nextGaussian()*i;
         while(level<=0) {
             System.out.println("$$"+level);
             level = rn.nextGaussian() * i;
                     System.out.println(level);
-        };
+        }
         System.out.println("###$");
         if(level<1)
         {level=1;}
         System.out.println("Level "+level);
     }
-    public void genStats(){
+    private void genStats(){
         System.out.println("---------------------------------------");
         genHp();
         genAttack();
@@ -143,7 +139,6 @@ public class Monster {
     {
         return py;
     }
-    public boolean getAgro(){return agro;}
     public void  setCords(int a, int b) {
         x=a;
         y=b;
@@ -157,7 +152,7 @@ public class Monster {
     }
     public void setLevel(int l){level=l;}
     public double getAttackDamage() {
-        damage=d.monsterPhysicalDamage(Game.player, this, (int)power);
+        damage= Damage.monsterPhysicalDamage(Game.player, this, (int)power);
         return damage;
     }
     public double getIntelDamage(){
@@ -171,7 +166,7 @@ public class Monster {
             hp=0;
         }
     }
-    public void sayStats() {
+    private void sayStats() {
         System.out.println("\nHP: "+(int)hp);
         System.out.println("Level: "+level);
         System.out.println("openAttackMenu: "+(int)attack);
@@ -179,18 +174,7 @@ public class Monster {
         System.out.println("Intel: "+(int)intel);
         System.out.println("Speed: "+(int)speed);
     }
-    public int monsterAttack() {
-        int attackswitch =0;
-        if (attackswitch==0)
-        {
-            getAttackDamage();
-        }
-        if (attackswitch==1)
-        {
-            getIntelDamage();
-        }
-        return (int)damage;
-    }
+
     public void move() {
         int a=rn.nextInt(3)+1;
         int b=rn.nextInt(3)+1;
@@ -210,10 +194,10 @@ public class Monster {
                     && Game.player.getY() > this.getY() - this.getSight() && Game.player.getY() < this.getY() + this.getSight()) {
 
                 if (Game.player.getX() > this.getX()) {tx = this.x + 1;}
-                else if (Game.player.getX() == this.getX()) {}
+                else if (Game.player.getX() == this.getX()) {tx=Game.player.getX();}
                 else {tx = this.x - 1;}
                 if (Game.player.getY() > this.getY()) {ty = this.y + 1;}
-                else if (Game.player.getY() == this.getY()) {}
+                else if (Game.player.getY() == this.getY()) {ty=Game.player.getY();}
                 else {ty = this.y - 1;}
                 MapState.gm.clearArea(tx, ty, false);
             }

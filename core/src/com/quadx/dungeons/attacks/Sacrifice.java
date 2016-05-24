@@ -3,6 +3,7 @@ package com.quadx.dungeons.attacks;
 /**
  * Created by Tom on 11/19/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class Sacrifice extends Attack {
     public Sacrifice()  {
         costGold=200;

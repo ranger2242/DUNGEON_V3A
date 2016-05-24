@@ -4,19 +4,18 @@ import com.quadx.dungeons.attacks.Attack;
 
 public class Item
 {
-    public String name;
-    public int cost;
-    public int hpmod;
-    public int manamod;
-    public int attackmod;
-    public int defensemod;
-    public int intelmod;
-    public int speedmod;
-    public int levelmod;
-    public int accmod;
+    protected String name;
+    int cost;
+    protected int hpmod;
+    protected int manamod;
+    protected int attackmod;
+    protected int defensemod;
+    protected int intelmod;
+    protected int speedmod;
+    private int levelmod;
     public boolean isEquip=false;
     public boolean isSpell=false;
-    public Attack attack;
+    Attack attack;
 
     public Item(int a, int b, int c, int d, int e, int f, int g,String h)
     {
@@ -44,10 +43,6 @@ public class Item
         System.out.println("Level mod "+levelmod);
     }
 
-    public int getLevelmod()
-    {
-        return levelmod;
-    }
     public int getDefensemod()
     {
         return defensemod;
@@ -67,10 +62,6 @@ public class Item
     public int getHpmod()
     {
         return hpmod;
-    }
-    public int getAccmod()
-    {
-        return accmod;
     }
     public int getCost() {return cost;}
     public String getName(){return name;}

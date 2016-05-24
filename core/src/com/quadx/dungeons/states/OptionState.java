@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 /**
  * Created by Tom on 12/30/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class OptionState extends State{
     public OptionState(GameStateManager gsm) {
         super(gsm);

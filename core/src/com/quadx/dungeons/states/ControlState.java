@@ -10,8 +10,9 @@ import java.util.ArrayList;
 /**
  * Created by Tom on 12/30/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class ControlState extends State {
-    ArrayList<String> controlList = new ArrayList<>();
+    private ArrayList<String> controlList = new ArrayList<>();
 
     public ControlState(GameStateManager gsm){
         super(gsm);

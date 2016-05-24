@@ -8,21 +8,17 @@ import com.quadx.dungeons.states.mapstate.MapStateRender;
 import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
 public class GridManager {
-    static ArrayList<Cell> warpList = new ArrayList();
+    private static ArrayList<Cell> warpList = new ArrayList<>();
     public static ArrayList<Monster> monsterList = new ArrayList<>();
 
     public static int res = Map2State.res;
-    public static int monsters = 10;
-    public static int width = 0;
-    public static int height = 0;
     public static Cell[][] dispArray;
     public static ArrayList<Cell> liveCellList = new ArrayList<>();
-    static Random rn = new Random();
+    private static Random rn = new Random();
 
     public void initializeGrid() {
         clearMonsterList();
@@ -42,37 +38,37 @@ public class GridManager {
         y -= 1;
         unNullWallCells();
         try {
-            dispArray[x + 1][y + 1].setState(true);
-            dispArray[x + 1][y].setState(true);
-            dispArray[x + 1][y - 1].setState(true);
-            dispArray[x][y + 1].setState(true);
-            dispArray[x][y - 1].setState(true);
-            dispArray[x - 1][y + 1].setState(true);
-            dispArray[x - 1][y].setState(true);
-            dispArray[x - 1][y - 1].setState(true);
+            dispArray[x + 1][y + 1].setState();
+            dispArray[x + 1][y].setState();
+            dispArray[x + 1][y - 1].setState();
+            dispArray[x][y + 1].setState();
+            dispArray[x][y - 1].setState();
+            dispArray[x - 1][y + 1].setState();
+            dispArray[x - 1][y].setState();
+            dispArray[x - 1][y - 1].setState();
             if (player && AbilityMod.digPlus) {//checks if players dig ability is active
                 if (MapState.lastPressed == 'd')
                     for (int i = 0; i < 9; i++) {
                         for (int j = 0; j < 3; j++) {
-                            dispArray[x + i][y - 1 + j].setState(true);
+                            dispArray[x + i][y - 1 + j].setState();
                         }
                     }
                 if (MapState.lastPressed == 'a')
                     for (int i = 0; i < 9; i++) {
                         for (int j = 0; j < 3; j++) {
-                            dispArray[x - i][y - 1 + j].setState(true);
+                            dispArray[x - i][y - 1 + j].setState();
                         }
                     }
                 if (MapState.lastPressed == 's')
                     for (int i = 0; i < 3; i++) {
                         for (int j = 0; j < 9; j++) {
-                            dispArray[x - 1 + i][y - j].setState(true);
+                            dispArray[x - 1 + i][y - j].setState();
                         }
                     }
                 if (MapState.lastPressed == 'w')
                     for (int i = 0; i < 3; i++) {
                         for (int j = 0; j < 9; j++) {
-                            dispArray[x - 1 + i][y + j].setState(true);
+                            dispArray[x - 1 + i][y + j].setState();
                         }
                     }
             }
@@ -89,7 +85,7 @@ public class GridManager {
     private void unNullWallCells() {
         for (int i = 0; i < res; i++) {
             for (int j = 0; j < res; j++) {
-                if (dispArray[i][j] == null) dispArray[i][j] = new Cell(false);
+                if (dispArray[i][j] == null) dispArray[i][j] = new Cell();
             }
         }
     }
@@ -114,7 +110,7 @@ public class GridManager {
         for (int i = 0; i < res; i++) {
             for (int j = 0; j < res; j++)
                 //Trim wall Cells from array to make memory taken smaller
-                if (dispArray[i][j].getState() == false) {
+                if (!dispArray[i][j].getState()) {
                     dispArray[i][j] = null;
                 } else {
                     //set live cells into list
@@ -140,7 +136,7 @@ public class GridManager {
         while (!plotted) {
             int index = rn.nextInt(liveCellList.size());
             if (!liveCellList.get(index).hasWater) {
-                liveCellList.get(index).setWarp(true);
+                liveCellList.get(index).setWarp();
                 warpList.add(liveCellList.get(index));
                 plotted = true;
             }
@@ -214,7 +210,7 @@ public class GridManager {
             for (int j = 0; j < range; j++) {
                 int x = c.getX() - (range / 2) + i;
                 int y = c.getY() - range / 2 + j;
-                int monIndex = -1;
+                int monIndex;
 
                 if (x < 0) x = 0;
                 if (x > res - 1) x = res - 1;
@@ -230,13 +226,14 @@ public class GridManager {
             }
         }
         Collections.sort(monsFound,Collections.<Integer>reverseOrder());
-        for(int i =0;i<monsFound.size();i++){
+        for (Integer aMonsFound : monsFound) {
             try {
-                Monster m = monsterList.get(monsFound.get(i));
+                Monster m = monsterList.get(aMonsFound);
                 //MapState.out("Fucking monster:" + monsFound.get(i));
                 dispArray[m.getX()][m.getY()].setMon(false);
                 monsterList.remove(m);
-            }catch (IndexOutOfBoundsException e){}
+            } catch (IndexOutOfBoundsException e) {
+            }
         }
         loadLiveCells();
     }

@@ -2,6 +2,7 @@ package com.quadx.dungeons.states.mapstate;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
@@ -16,7 +17,6 @@ import com.quadx.dungeons.items.equipment.*;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.State;
-import com.sun.org.apache.regexp.internal.RE;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -24,51 +24,52 @@ import java.util.Random;
 /**
  * Created by Brent on 6/26/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class MapState extends State {
-    public static ShapeRenderer shapeR;
-    public static ArrayList<String> output;
-    public static ArrayList<QButton> qButtonList =new ArrayList<>();
-    public static ArrayList<Texture> attackIconList =new ArrayList<>();
-    public static ArrayList<Texture> invIcon=new ArrayList<>();
-    public static ArrayList<Texture> equipIcon=new ArrayList<>();
-    public static ArrayList<Integer> invSize=new ArrayList<>();
-    public static Texture lootPopup;
+    static ShapeRenderer shapeR;
+    static ArrayList<String> output;
+    static ArrayList<QButton> qButtonList =new ArrayList<>();
+    static ArrayList<Texture> attackIconList =new ArrayList<>();
+    static ArrayList<Texture> invIcon=new ArrayList<>();
+    static ArrayList<Texture> equipIcon=new ArrayList<>();
+    static ArrayList<Integer> invSize=new ArrayList<>();
+    static Texture lootPopup;
     public static Texture statPopup;
 
     public static AbilityMod am;
     public static GridManager gm;
-    public static ParticleEffect effect;
-    public static ParticleEmitter emitter;
+    static ParticleEffect effect;
+    static ParticleEmitter emitter;
     static Random rn = new Random();
-    public static Attack attack;
-    public static Item item;
-    public static Item popupItem;
-    public static Monster targetMon;
+    static Attack attack;
+    static Item item;
+    static Item popupItem;
+    static Monster targetMon;
 
     public static boolean inGame=false;
     public static char lastPressed = 'w';
-    public static boolean attackMenuOpen = false;
-    public static boolean inventoryOpen = false;
-    public static boolean displayPlayerDamage = false;
-    public static boolean hovering=false;
-    public static boolean effectLoaded = false;
-    public static final String DIVIDER= "_________________________";
-    public static int attackListCount = 0;
-    public static int playerDamage = 0;
-    public static int messageCounter=0;
+    static boolean attackMenuOpen = false;
+    static boolean inventoryOpen = false;
+    static boolean displayPlayerDamage = false;
+    static boolean hovering=false;
+    static boolean effectLoaded = false;
+    static final String DIVIDER= "_________________________";
+    static int attackListCount = 0;
+    static int playerDamage = 0;
+    static int messageCounter=0;
     public static int invSlotHovered=0;
     public static int cellW=10;
-    public static int mHitX=0;
-    public static int mHitY=0;
-    public static int mouseX=0;
-    public static int mouseY=0;
-    public static int mouseRealitiveX=0;
-    public static int mouseRealitiveY=0;
+    static int mHitX=0;
+    static int mHitY=0;
+    static int mouseX=0;
+    static int mouseY=0;
+    static int mouseRealitiveX=0;
+    static int mouseRealitiveY=0;
 
-    public static int qButtonBeingHovered;
+    static int qButtonBeingHovered;
 
-    public static float dtMessage=0;
-    public static float dtLootPopup =0;
+    static float dtMessage=0;
+    static float dtLootPopup =0;
     public static float dtStatPopup=0;
     public static float viewX;
     public static float viewY;
@@ -76,8 +77,7 @@ public class MapState extends State {
     static float attackMintime = .3f;
 
     static float dtDamageTextFloat = 0;
-    float textY = 0;
-    static int lastNumPressed=1;
+    static int lastNumPressed=0;
 
     public MapState(GameStateManager gsm) {
         super(gsm);
@@ -88,12 +88,13 @@ public class MapState extends State {
         MapStateRender.loadAttackIcons();
         bufferOutput();
         Game.setFontSize(10);
-        attack=new Flame();
         cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT);
         gm.initializeGrid();
         out("---Welcome to DUNGEON---");
-        for(int i=0;i<10;i++)
-        openCrate();
+        //for(int i=0;i<10;i++)
+       // openCrate();
+        attack=Game.player.attackList.get(0);
+
     }
     public void handleInput() {
     }
@@ -108,8 +109,8 @@ public class MapState extends State {
     }
     public void render(SpriteBatch sb) {
         Gdx.gl.glClearColor(0,0,0,1);
-        Gdx.gl.glEnable(Gdx.gl20.GL_BLEND);
-        Gdx.gl.glBlendFunc(Gdx.gl20.GL_SRC_ALPHA, Gdx.gl20.GL_ONE_MINUS_SRC_ALPHA);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         if(inGame) {
             shapeR.setProjectionMatrix(cam.combined);
             sb.setProjectionMatrix(cam.combined);
@@ -122,6 +123,7 @@ public class MapState extends State {
         MapStateRender.drawStatChanges(sb);
         MapStateRender.drawPlayerEquipment(sb);
         MapStateRender.drawPlayer(sb);
+        float textY = 0;
         if (displayPlayerDamage) MapStateRender.drawPlayerDamageOutput(sb, mHitX, mHitY + textY);
         if(hovering) MapStateRender.drawPopup(sb);
         if (effectLoaded) {MapStateRender.drawParticleEffects(sb, Game.player.getPX(), Game.player.getPY());}
@@ -132,7 +134,7 @@ public class MapState extends State {
             shapeR.end();
         if(MapStateRender.showCircle)
             MapStateRender.drawPlayerFinder(sb);
-        Gdx.gl.glDisable(Gdx.gl.GL_BLEND);
+        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
     public void dispose() {
         //unload attack icons
@@ -146,14 +148,13 @@ public class MapState extends State {
         if(output.size()>10)output.remove(0);
     }
 
-    public static void attackCollisionHandler(int pos) {
+    static void attackCollisionHandler(int pos) {
         int range = Game.player.attackList.get(attackListCount + pos).getRange();
         int spread = Game.player.attackList.get(attackListCount + pos).getSpread();
-        int pow = Game.player.attackList.get(attackListCount + pos).getPower();
         int px = Game.player.getX();
         int py = Game.player.getY();
-        int xrange=0;
-        int yrange=0;
+        int xrange;
+        int yrange;
 
         ArrayList<Cell> hitList=new ArrayList<>();
         if(lastPressed=='w') {
@@ -162,15 +163,11 @@ public class MapState extends State {
             for (int i = px; i < xrange; i++) {
                 for (int j = py; j < yrange; j++) {
                     try {
-                        gm.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j].setAttArea(true);
-                        gm.liveCellList.set(gm.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j].getIndex(), gm.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j]);
-                        hitList.add(gm.liveCellList.get(gm.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j].getIndex()));
-                    } catch (NullPointerException e) {
-                        MapStateRender.setHoverText("ERR:0003", 1f, Color.RED);
+                        GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j].setAttArea(true);
+                        GridManager.liveCellList.set(GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j].getIndex(), GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j]);
+                        hitList.add(GridManager.liveCellList.get(GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j].getIndex()));
                     }
-                    catch (ArrayIndexOutOfBoundsException e) {
-                        MapStateRender.setHoverText("ERR:0004", 1f, Color.RED);
-                    }
+                    catch (NullPointerException | ArrayIndexOutOfBoundsException e) {}
                 }
             }
         }
@@ -180,16 +177,12 @@ public class MapState extends State {
             for (int i = px; i < xrange; i++) {
                 for (int j = yrange; j < py; j++) {
                     try {
-                        gm.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j-1].setAttArea(true);
-                        gm.liveCellList.set(gm.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j-1].getIndex(), gm.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j-1]);
-                        hitList.add(gm.liveCellList.get(gm.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j-1].getIndex()));
+                        GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j-1].setAttArea(true);
+                        GridManager.liveCellList.set(GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j-1].getIndex(), GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j-1]);
+                        hitList.add(GridManager.liveCellList.get(GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j-1].getIndex()));
 
-                    } catch (NullPointerException e) {
-                        MapStateRender.setHoverText("ERR:0003", 1f, Color.RED);
                     }
-                    catch (ArrayIndexOutOfBoundsException e) {
-                        MapStateRender.setHoverText("ERR:0004", 1f, Color.RED);
-                    }
+                    catch (NullPointerException | ArrayIndexOutOfBoundsException e) {}
                 }
             }
         }
@@ -199,16 +192,12 @@ public class MapState extends State {
             for (int i = px; i < xrange; i++) {
                 for (int j = py; j < yrange; j++) {
                     try {
-                        gm.dispArray[(int) (i )][(int)(j - Math.ceil(spread / 2))-1].setAttArea(true);
-                        gm.liveCellList.set(gm.dispArray[(int) i  ][(int)(j - Math.ceil(spread / 2))-1].getIndex(), gm.dispArray[(int) i ][(int)(j - Math.ceil(spread / 2))-1]);
-                        hitList.add(gm.liveCellList.get(gm.dispArray[(int) i  ][(int)(j - Math.ceil(spread / 2))-1].getIndex()));
+                        GridManager.dispArray[i][(int)(j - Math.ceil(spread / 2))-1].setAttArea(true);
+                        GridManager.liveCellList.set(GridManager.dispArray[i][(int)(j - Math.ceil(spread / 2))-1].getIndex(), GridManager.dispArray[i][(int)(j - Math.ceil(spread / 2))-1]);
+                        hitList.add(GridManager.liveCellList.get(GridManager.dispArray[i][(int)(j - Math.ceil(spread / 2))-1].getIndex()));
 
-                    } catch (NullPointerException e) {
-                        MapStateRender.setHoverText("ERR:0003", 1f, Color.RED);
                     }
-                    catch (ArrayIndexOutOfBoundsException e) {
-                        MapStateRender.setHoverText("ERR:0004", 1f, Color.RED);
-                    }
+                    catch (NullPointerException | ArrayIndexOutOfBoundsException e) {}
                 }
             }
         }
@@ -218,29 +207,26 @@ public class MapState extends State {
             for (int i = xrange; i < px; i++) {
                 for (int j = py; j < yrange; j++) {
                     try {
-                        gm.dispArray[(int) (i -1)][(int)(j - Math.ceil(spread / 2))-1].setAttArea(true);
-                        gm.liveCellList.set(gm.dispArray[(int) i  -1][(int)(j - Math.ceil(spread / 2))-1].getIndex(), gm.dispArray[(int) i -1][(int)(j - Math.ceil(spread / 2))-1]);
-                        hitList.add(gm.liveCellList.get(gm.dispArray[(int) i  -1][(int)(j - Math.ceil(spread / 2))-1].getIndex()));
+                        GridManager.dispArray[(i -1)][(int)(j - Math.ceil(spread / 2))-1].setAttArea(true);
+                        GridManager.liveCellList.set(GridManager.dispArray[i  -1][(int)(j - Math.ceil(spread / 2))-1].getIndex(), GridManager.dispArray[i -1][(int)(j - Math.ceil(spread / 2))-1]);
+                        hitList.add(GridManager.liveCellList.get(GridManager.dispArray[i  -1][(int)(j - Math.ceil(spread / 2))-1].getIndex()));
 
-                    } catch (NullPointerException e) {
-                        MapStateRender.setHoverText("ERR:0003", 1f, Color.RED);
                     }
-                    catch (ArrayIndexOutOfBoundsException e) {
-                        MapStateRender.setHoverText("ERR:0004", 1f, Color.RED);
-                    }
+                    catch (NullPointerException | ArrayIndexOutOfBoundsException e) {}
                 }
             }
         }
         Monster tempMon=null;
         boolean killed= false;
         for(Cell c:hitList){
-            for(Monster m: gm.monsterList){
+            for(Monster m: GridManager.monsterList){
                 if(c.getX()==m.getX() && c.getY()==m.getY()){
                     dtDamageTextFloat = 0;
                     out("Hit");
                     tempMon=m;
-                    playerDamage = (int) Damage.playerMagicDamage(Game.player, m, attack.getPower());
+                    playerDamage = Damage.playerMagicDamage(Game.player, m, attack.getPower());
                     int attIndex = Game.player.attackList.indexOf(attack);
+
                     Game.player.attackList.get(attIndex).setUses();
                     Game.player.attackList.get(attIndex).checkLvlUp();
                     displayPlayerDamage = true;
@@ -253,7 +239,7 @@ public class MapState extends State {
                         Game.player.checkLvlUp();
                         makeGold(m.getLevel());
                         try {
-                            gm.dispArray[m.getX()][m.getY()].setMon(false);
+                            GridManager.dispArray[m.getX()][m.getY()].setMon(false);
                         }catch (NullPointerException e){}
                         tempMon = m;
                         killed=true;
@@ -261,12 +247,12 @@ public class MapState extends State {
                 }
             }
             if(tempMon !=null && killed){
-                gm.monsterList.remove(tempMon);
+                GridManager.monsterList.remove(tempMon);
             }
         }
     }
 
-    public static void makeGold(int x){
+    static void makeGold(int x){
         int gold=(int) ((rn.nextFloat()/2)*100);
         if (gold<0)gold=1;
         {
@@ -280,30 +266,28 @@ public class MapState extends State {
         int k= Game.player.getY();
 
         try {
-            gm.dispArray[j][k].setFront(false);
-            if (j + 1 < gm.res) gm.dispArray[j + 1][k].setFront(false);
-            if (j - 1 >= 0) gm.dispArray[j - 1][k].setFront(false);
-            if (k + 1 < gm.res) gm.dispArray[j][k + 1].setFront(false);
-            if (k - 1 >= 0) gm.dispArray[j][k - 1].setFront(false);
+            GridManager.dispArray[j][k].setFront(false);
+            if (j + 1 < GridManager.res) GridManager.dispArray[j + 1][k].setFront(false);
+            if (j - 1 >= 0) GridManager.dispArray[j - 1][k].setFront(false);
+            if (k + 1 < GridManager.res) GridManager.dispArray[j][k + 1].setFront(false);
+            if (k - 1 >= 0) GridManager.dispArray[j][k - 1].setFront(false);
         }
-        catch (NullPointerException e){
+        catch (NullPointerException | ArrayIndexOutOfBoundsException e){
 
         }
-        catch(ArrayIndexOutOfBoundsException e){}
     }
-    public static void setFront(int j, int k){
+    static void setFront(int j, int k){
         try{
             switch (lastPressed) {
-                case 'w':{if(k+1< gm.res) gm.dispArray[j][k+1].setFront(true);break;}
-                case 'a':{if(j-1>=0) gm.dispArray[j-1][k].setFront(true);break;}
-                case 's':{if(k-1>=0) gm.dispArray[j][k-1].setFront(true);break;}
-                case 'd':{if(j+1< gm.res) gm.dispArray[j+1][k].setFront(true);break;}
+                case 'w':{if(k+1< GridManager.res) GridManager.dispArray[j][k+1].setFront(true);break;}
+                case 'a':{if(j-1>=0) GridManager.dispArray[j-1][k].setFront(true);break;}
+                case 's':{if(k-1>=0) GridManager.dispArray[j][k-1].setFront(true);break;}
+                case 'd':{if(j+1< GridManager.res) GridManager.dispArray[j+1][k].setFront(true);break;}
             }
         }
-        catch (NullPointerException e){
+        catch (NullPointerException | ArrayIndexOutOfBoundsException e){
 
         }
-        catch (ArrayIndexOutOfBoundsException e){}
     }
     static void openCrate(){
         int q=rn.nextInt(30)+1;
@@ -342,7 +326,10 @@ public class MapState extends State {
 
             }
             if(item.getName()==null){
-                MapStateRender.setHoverText("ERR:0002", 1,Color.RED);
+               // MapStateRender.setHoverText("ERR:0002", 1,Color.RED);
+                item=new Potion();
+                out(item.getName() + " added to inventory");
+                MapStateRender.setHoverText(item.getName(), 1,Color.WHITE);
 
             }else {
                 out(item.getName() + " added to inventory");
@@ -350,7 +337,7 @@ public class MapState extends State {
             }
         }
     }
-    public static Item generateEquipment(){
+    private static Item generateEquipment(){
         Item item=new Item();
         int x=rn.nextInt(8)+1;
         switch (x){
@@ -389,7 +376,8 @@ public class MapState extends State {
         }
         return item;
     }
-    void bufferOutput(){
+
+    private void bufferOutput(){
         for(int i=0;i<10;i++)
             out("");
     }

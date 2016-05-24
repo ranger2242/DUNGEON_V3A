@@ -4,6 +4,7 @@ package com.quadx.dungeons.attacks;
 /**
  * Created by Tom on 11/18/2015.
  */
+@SuppressWarnings("DefaultFileTemplate")
 public class Blind extends Attack {
     public Blind()  {
         costGold=30;
