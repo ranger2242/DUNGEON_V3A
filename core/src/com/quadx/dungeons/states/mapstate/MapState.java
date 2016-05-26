@@ -33,6 +33,8 @@ public class MapState extends State {
     static ArrayList<Texture> invIcon=new ArrayList<>();
     static ArrayList<Texture> equipIcon=new ArrayList<>();
     static ArrayList<Integer> invSize=new ArrayList<>();
+    static ArrayList<Cell> hitList=new ArrayList<>();
+
     static Texture lootPopup;
     public static Texture statPopup;
 
@@ -58,7 +60,7 @@ public class MapState extends State {
     static int playerDamage = 0;
     static int messageCounter=0;
     public static int invSlotHovered=0;
-    public static int cellW=10;
+    public static int cellW=5;
     static int mHitX=0;
     static int mHitY=0;
     static int mouseX=0;
@@ -91,9 +93,11 @@ public class MapState extends State {
         cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT);
         gm.initializeGrid();
         out("---Welcome to DUNGEON---");
-        //for(int i=0;i<10;i++)
-       // openCrate();
+        for(int i=0;i<20;i++)
+        openCrate();
         attack=Game.player.attackList.get(0);
+        AbilityMod.enableAbility(4);//Quick
+
 
     }
     public void handleInput() {
@@ -103,6 +107,7 @@ public class MapState extends State {
             output.remove(0);
         }
         MapStateUpdater.buttonHandler();
+        if(MapStateUpdater.dtCollision>.16666f)
         MapStateUpdater.collisionHandler();
         MapStateUpdater.moveMonsters();
         MapStateUpdater.fuckingStupidUpdateFunction(dt);
@@ -115,6 +120,7 @@ public class MapState extends State {
             shapeR.setProjectionMatrix(cam.combined);
             sb.setProjectionMatrix(cam.combined);
         }
+        Game.player.checkNullInventory();
         MapStateRender.drawGrid(false);
         MapStateRender.drawMonsterAgro();
         MapStateRender.drawHUD(sb);
@@ -124,7 +130,20 @@ public class MapState extends State {
         MapStateRender.drawPlayerEquipment(sb);
         MapStateRender.drawPlayer(sb);
         float textY = 0;
-        if (displayPlayerDamage) MapStateRender.drawPlayerDamageOutput(sb, mHitX, mHitY + textY);
+
+
+        if (displayPlayerDamage) {
+            for(Cell c:hitList) {
+                for (Monster m : GridManager.monsterList) {
+                    if (c.getX() == m.getX() && c.getY() == m.getY()) {
+                        MapStateRender.drawPlayerDamageOutput(sb, m.getX(), m.getY()+10 + textY);
+                    }
+                }
+            }
+        }
+
+
+
         if(hovering) MapStateRender.drawPopup(sb);
         if (effectLoaded) {MapStateRender.drawParticleEffects(sb, Game.player.getPX(), Game.player.getPY());}
         if(MapStateRender.hovText) MapStateRender.drawHovText(sb);
@@ -155,8 +174,7 @@ public class MapState extends State {
         int py = Game.player.getY();
         int xrange;
         int yrange;
-
-        ArrayList<Cell> hitList=new ArrayList<>();
+        hitList.clear();
         if(lastPressed=='w') {
             xrange = (px) + spread;
             yrange = py + range;
@@ -167,7 +185,9 @@ public class MapState extends State {
                         GridManager.liveCellList.set(GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j].getIndex(), GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j]);
                         hitList.add(GridManager.liveCellList.get(GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j].getIndex()));
                     }
-                    catch (NullPointerException | ArrayIndexOutOfBoundsException e) {}
+                    catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+                      //  Game.printLOG(e);
+                    }
                 }
             }
         }
@@ -182,7 +202,9 @@ public class MapState extends State {
                         hitList.add(GridManager.liveCellList.get(GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j-1].getIndex()));
 
                     }
-                    catch (NullPointerException | ArrayIndexOutOfBoundsException e) {}
+                    catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+                        Game.printLOG(e);
+                    }
                 }
             }
         }
@@ -197,7 +219,9 @@ public class MapState extends State {
                         hitList.add(GridManager.liveCellList.get(GridManager.dispArray[i][(int)(j - Math.ceil(spread / 2))-1].getIndex()));
 
                     }
-                    catch (NullPointerException | ArrayIndexOutOfBoundsException e) {}
+                    catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+                        Game.printLOG(e);
+                    }
                 }
             }
         }
@@ -212,7 +236,9 @@ public class MapState extends State {
                         hitList.add(GridManager.liveCellList.get(GridManager.dispArray[i  -1][(int)(j - Math.ceil(spread / 2))-1].getIndex()));
 
                     }
-                    catch (NullPointerException | ArrayIndexOutOfBoundsException e) {}
+                    catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+                        Game.printLOG(e);
+                    }
                 }
             }
         }
@@ -222,9 +248,9 @@ public class MapState extends State {
             for(Monster m: GridManager.monsterList){
                 if(c.getX()==m.getX() && c.getY()==m.getY()){
                     dtDamageTextFloat = 0;
-                    out("Hit");
                     tempMon=m;
                     playerDamage = Damage.playerMagicDamage(Game.player, m, attack.getPower());
+                    out("Hit "+playerDamage+" damage");
                     int attIndex = Game.player.attackList.indexOf(attack);
 
                     Game.player.attackList.get(attIndex).setUses();
@@ -240,7 +266,9 @@ public class MapState extends State {
                         makeGold(m.getLevel());
                         try {
                             GridManager.dispArray[m.getX()][m.getY()].setMon(false);
-                        }catch (NullPointerException e){}
+                        }catch (NullPointerException e){
+                            Game.printLOG(e);
+                        }
                         tempMon = m;
                         killed=true;
                     }
@@ -273,6 +301,7 @@ public class MapState extends State {
             if (k - 1 >= 0) GridManager.dispArray[j][k - 1].setFront(false);
         }
         catch (NullPointerException | ArrayIndexOutOfBoundsException e){
+            Game.printLOG(e);
 
         }
     }
@@ -286,12 +315,13 @@ public class MapState extends State {
             }
         }
         catch (NullPointerException | ArrayIndexOutOfBoundsException e){
+            Game.printLOG(e);
 
         }
     }
     static void openCrate(){
         int q=rn.nextInt(30)+1;
-        if(q>17){
+        if(q>=17){
             double rand=rn.nextFloat()/8;
             if(rand<0)rand*=-1;
             int gold=(int)(Game.player.getGold()*(rand));
@@ -323,7 +353,7 @@ public class MapState extends State {
                 dtLootPopup=0;
             }
             catch (GdxRuntimeException e){
-
+                Game.printLOG(e);
             }
             if(item.getName()==null){
                // MapStateRender.setHoverText("ERR:0002", 1,Color.RED);

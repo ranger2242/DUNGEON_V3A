@@ -36,6 +36,7 @@ public class MapStateUpdater extends MapState {
     private static float dtMap=0;
     public static float dtCircle=MapStateRender.circleTime;
     public static float dtHovText=0;
+    public static float dtCollision=0;
     private static int x = 0;
 
 
@@ -58,20 +59,6 @@ public class MapStateUpdater extends MapState {
         mouseY=Gdx.input.getY();
         mouseRealitiveX=(int)(mouseX+viewX);
         mouseRealitiveY=(int)(Game.HEIGHT-mouseY+viewY);
-
-        ////////////////////////////////////////////////////////
-        //DEBUG OUTPUT SECTION
-        //out("sSS");
-        //out(Game.player.getX()+" "+Game.player.getY());
-        // out("@"+mouseRealitiveX+" "+mouseRealitiveY);
-        try {
-            //out("-"+qButtonList.get(0).getPx() + " " + qButtonList.get(0).getPy());
-        }
-        catch (IndexOutOfBoundsException e){
-        }
-        ////////////////////////////////////////////////////////
-
-
         MapStateRender.loadInventoryIcons();
         MapStateRender.loadEquipIcons();
         Vector3 position = cam.position;
@@ -94,6 +81,7 @@ public class MapStateUpdater extends MapState {
         dtMap +=dt;
         dtMessage += dt;
         dtEnergyRe+=dt;
+        dtCollision+=dt;
         if(MapStateRender.showCircle && dtCircle>0){
             dtCircle-=dt;
         }
@@ -148,22 +136,14 @@ public class MapStateUpdater extends MapState {
             if (Gdx.input.isKeyPressed(Input.Keys.D)) movementHandler(1, 0, 'd');
             dtMove = 0;
         }
-        if(dtInvSwitch>.15) {
+        if(dtInvSwitch>.5) {
             if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
-                if (MapStateRender.inventoryPos >= 0)
-                    MapStateRender.inventoryPos--;
-                else {
-                    MapStateRender.inventoryPos = Game.player.invList.size() - 1;
-                }
+                MapStateRender.inventoryPos--;
                 dtInvSwitch=0;
 
             }
             if (Gdx.input.isKeyPressed(Input.Keys.E)) {
-                if (MapStateRender.inventoryPos < Game.player.invList.size())
-                    MapStateRender.inventoryPos++;
-                else {
-                    MapStateRender.inventoryPos = 0;
-                }
+                MapStateRender.inventoryPos++;
                 dtInvSwitch=0;
             }
         }
@@ -250,15 +230,7 @@ public class MapStateUpdater extends MapState {
                     dtDig=0;
                 }
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) ||Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) ){
-            if(dtRun>.05 && Game.player.getEnergy()>3) {
-                Game.player.setMoveSpeed(.04f);
-                Game.player.setEnergy(Game.player.getEnergy() - 3);
-                dtRun=0;
-            }
-            else  Game.player.setMoveSpeed(.08f);
 
-        }
         else{
             Game.player.setMoveSpeed(.08f);
         }
@@ -332,6 +304,16 @@ public class MapStateUpdater extends MapState {
         }
     }
     private static void movementHandler(int xmod, int ymod, char c) {
+        if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) ||Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) ){
+            if(dtRun>.05 && Game.player.getEnergy()>3) {
+                Game.player.setMoveSpeed(.04f);
+                Game.player.setEnergy(Game.player.getEnergy() - 3);
+                dtRun=0;
+            }
+            else  Game.player.setMoveSpeed(.08f);
+
+        }
+
         int x = Game.player.getPX() + xmod * cellW;
         int y = Game.player.getPY() + ymod * cellW;
         for(Cell cell: GridManager.liveCellList){
@@ -341,6 +323,26 @@ public class MapStateUpdater extends MapState {
             }
         }
         lastPressed=c;
+        if (Gdx.input.isKeyPressed(Input.Keys.J)) {
+            clearFront();
+            lastPressed = 'a';
+            setFront(Game.player.getX(), Game.player.getY());
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.L)) {
+            clearFront();
+            lastPressed = 'd';
+            setFront(Game.player.getX(), Game.player.getY());
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.I)) {
+            clearFront();
+            lastPressed = 'w';
+            setFront(Game.player.getX(), Game.player.getY());
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.K)) {
+            clearFront();
+            lastPressed = 's';
+            setFront(Game.player.getX(), Game.player.getY());
+        }
     }
     public static void collisionHandler(){
         int index= Game.player.getLiveListIndex();
@@ -363,54 +365,6 @@ public class MapStateUpdater extends MapState {
             GridManager.liveCellList.get(index).setShop(false);
             gsm.push(new ShopState(gsm));
         }
-        /*
-        if (gm.dispArray[Game.player.getX()][Game.player.getY()].hasMon()) {
-            //enterBattlePhase();
-        }
-        else{
-
-        }
-        if (gm.dispArray[Game.player.getX()][Game.player.getY()].getAgro()) {
-            int index= gm.dispArray[Game.player.getX()][Game.player.getY()].getIndex();
-            float monx;
-            float mony;
-            try{
-                monx= gm.monsterList.get(index).getX();
-                mony= gm.monsterList.get(index).getY();
-                int xmod=0,ymod=0;
-                gm.dispArray[(int)monx][(int)mony].setMon(false);
-                dtMonsterMove+=Gdx.graphics.getDeltaTime();
-                if(dtMonsterMove>=.3) {
-                    if (Game.player.getX() != monx) {
-
-                        if (Game.player.getX() < monx) {
-                            xmod -= 1;
-                        }
-                        if (Game.player.getX() > monx) {
-                            xmod += 1;
-                        }
-                    }
-                    if (Game.player.getY() != mony) {
-                        if (Game.player.getY() < mony) {
-                            ymod -= 1;
-                        }
-                        if (Game.player.getY() > mony) {
-
-                        }
-                    }
-                    dtMonsterMove=0;
-                }
-                gm.monsterList.get(index).setCords((int)monx+xmod, (int)mony+ymod);
-                gm.dispArray[(int)(monx+xmod)][(int)mony+ymod].setMon(true);
-                if(gm.dispArray[(int)monx+xmod][(int)mony+ymod].hasPlayer()){
-                    //enterBattlePhase();
-                }
-            }
-            catch (IndexOutOfBoundsException e){
-
-            }
-
-        }*/
     }
 
 }

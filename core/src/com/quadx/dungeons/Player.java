@@ -51,6 +51,7 @@ public class Player {
     private int energy=100;
     private int energyMax=100;
     private int energyRegen=1 ;
+    int prevInvSize=0;
     int abilityPoints=1;
     public int floor= 0;
     private float moveSpeed=.08f;
@@ -341,5 +342,20 @@ public class Player {
 
     public void setHpMax(int hpMax) {
         this.hpMax = hpMax;
+    }
+
+    public void checkNullInventory() {
+        ArrayList<Integer> toRemove=new ArrayList<>();
+        if(prevInvSize!=invList.size()){
+            for(ArrayList<Item> list :invList){
+                if(list.get(0).getName()==null){
+                    toRemove.add(invList.indexOf(list));
+                }
+            }
+            for(int i=0;i<toRemove.size();i++){
+                invList.remove(toRemove.get(i));
+            }
+            prevInvSize=invList.size();
+        }
     }
 }

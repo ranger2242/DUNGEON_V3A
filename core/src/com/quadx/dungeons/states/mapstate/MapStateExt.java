@@ -1,5 +1,6 @@
 package com.quadx.dungeons.states.mapstate;
 
+import com.badlogic.gdx.graphics.Color;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.QButton;
 import com.quadx.dungeons.SpellMods;
@@ -16,16 +17,8 @@ class MapStateExt extends MapState{
     }
 
     public static void mouseOverHandler(){
-        try {
-            //out("$" + mouseRealitiveX + " " + qButtonList.get(0).getPx());
-        }
-        catch (IndexOutOfBoundsException e){
-
-        }
-        //out(qButtonList.size()+" -");
         for(int i=0;i<qButtonList.size();i++) {
             QButton button = qButtonList.get(i);
-            //out("$" + button.getPy() + " " + i);
             if (mouseRealitiveX >= button.getPx() && mouseRealitiveX < (button.getPx() + button.getWidth())
                     && mouseRealitiveY >= button.getPy() && mouseRealitiveY <= (button.getPy() + button.getHeight())) {
                 popupItem = Game.player.invList.get(i).get(0);
@@ -33,17 +26,6 @@ class MapStateExt extends MapState{
                 hovering = true;
             }
         }
-        /*
-        for(QButton button : qButtonList){
-            out("$"+button.getPy()+" "+qButtonList.indexOf(button));
-            if(mouseRealitiveX>=button.getPx()&& mouseRealitiveX<(button.getPx()+button.getWidth())
-                    && mouseRealitiveY>=button.getPy()&& mouseRealitiveY<=(button.getPy()+button.getHeight())){
-                popupItem = Game.player.invList.get(qButtonList.indexOf(button)).get(0);
-                qButtonBeingHovered=qButtonList.indexOf(button);
-                hovering=true;
-                //out(qButtonList.size()+" ");
-            }
-        }*/
     }
     public static void useItem(int i){
         String s="";
@@ -52,7 +34,8 @@ class MapStateExt extends MapState{
             Game.player.invList.get(i).remove(0) ;
         }
         catch (IndexOutOfBoundsException e){
-
+            MapStateRender.setHoverText("ohfuck",1, Color.RED);
+            Game.printLOG(e);
         }
         if(item.isEquip){
             Equipment equip=(Equipment) item;

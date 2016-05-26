@@ -130,17 +130,27 @@ public class GridManager {
     }
 
     private void plotWarps() {
-        //int points=3;
-        warpList.clear();
-        boolean plotted = false;
-        while (!plotted) {
-            int index = rn.nextInt(liveCellList.size());
-            if (!liveCellList.get(index).hasWater) {
-                liveCellList.get(index).setWarp();
-                warpList.add(liveCellList.get(index));
-                plotted = true;
+        boolean placed = false;
+        int index=0;
+        while(!placed){
+            index = rn.nextInt(liveCellList.size());
+
+            Cell c = liveCellList.get(index);
+            if(!c.hasWater){
+                int x=c.getX();
+                int y=c.getY();
+                int count=0;
+                if(x-1>=0 && x+1<res &&y-1>=0 && y+1<res) {
+                    if (dispArray[x + 1][y].hasWater) count++;
+                    if (dispArray[x - 1][y].hasWater) count++;
+                    if (dispArray[x][y + 1].hasWater) count++;
+                    if (dispArray[x][y - 1].hasWater) count++;
+                    if (count < 4) placed = true;
+                }
+                else index = rn.nextInt(liveCellList.size());
             }
         }
+        liveCellList.get(index).setWarp();
     }
 
     private void plotMonsters() {
@@ -199,7 +209,27 @@ public class GridManager {
     }
 
     private void plotPlayer() {
+        boolean placed =false;
         int index = rn.nextInt(liveCellList.size());
+
+        while(!placed){
+            Cell c = liveCellList.get(index);
+            if(!c.hasWater){
+                int x=c.getX();
+                int y=c.getY();
+                int count=0;
+                if(x-1>=0 && x+1<res &&y-1>=0 && y+1<res) {
+                    if (dispArray[x + 1][y].hasWater) count++;
+                    if (dispArray[x - 1][y].hasWater) count++;
+                    if (dispArray[x][y + 1].hasWater) count++;
+                    if (dispArray[x][y - 1].hasWater) count++;
+                    if (count < 4) placed = true;
+                }
+                else index = rn.nextInt(liveCellList.size());
+            }
+            else index = rn.nextInt(liveCellList.size());
+        }
+
         Game.player.setLiveListIndex(index);
         Cell c = liveCellList.get(index);
         int w = MapState.cellW;

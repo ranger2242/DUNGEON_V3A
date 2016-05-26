@@ -38,6 +38,7 @@ public class MapStateRender extends MapState {
     private static int hovTextYPosMod=0;
     private static Texture abilityIcon;
     private static int prevMod=0;//checks if Ability has changed
+    static int invSlots=3;
 
     public MapStateRender(GameStateManager gsm) {
         super(gsm);
@@ -57,6 +58,7 @@ public class MapStateRender extends MapState {
                 try {
                     attackIconList.add(new Texture(Gdx.files.internal("images/icons/attacks/ic" + s + ".png")));
                 } catch (GdxRuntimeException e) {
+                    //Game.printLOG(e);
 
                 }
             }
@@ -101,6 +103,7 @@ public class MapStateRender extends MapState {
             try {
                 abilityIcon = new Texture(Gdx.files.internal("images/icons/abilities/ic" + s));
             } catch (GdxRuntimeException e) {
+                Game.printLOG(e);
             }
         }
         if(prevMod !=0){
@@ -120,7 +123,7 @@ public class MapStateRender extends MapState {
                     equipIcon.add(new Texture(Gdx.files.internal("images/icons/items/ic" + s + ".png")));
 
                 } catch (GdxRuntimeException e) {
-
+                    //.printLOG(e);
                 }
             }
         }
@@ -142,6 +145,8 @@ public class MapStateRender extends MapState {
                     invIcon.add(new Texture(Gdx.files.internal("images/icons/items/ic" + s + ".png")));
 
                 } catch (GdxRuntimeException |IndexOutOfBoundsException  e) {
+//                    Game.printLOG(e);
+
                 }
             }
 
@@ -197,7 +202,7 @@ public class MapStateRender extends MapState {
                 sb.draw(lootPopup, Game.player.getPX()-(lootPopup.getWidth()/2)-(cellW/4), Game.player.getPY()+5);
         }
         catch (NullPointerException e){
-
+            //Game.printLOG(e);
         }
         sb.end();
 
@@ -229,6 +234,7 @@ public class MapStateRender extends MapState {
             }
             catch(IndexOutOfBoundsException e){
                 System.out.println((i+messageCounter)+"  Message out failed "+output.size());
+                //Game.printLOG(e);
             }
         }
         sb.end();
@@ -305,6 +311,7 @@ public class MapStateRender extends MapState {
                     count++;
                 }
                 catch (IndexOutOfBoundsException e){
+                    //Game.printLOG(e);
 
                 }
             }
@@ -329,64 +336,101 @@ public class MapStateRender extends MapState {
 
         sb.end();
     }
-    private static void drawInventory(SpriteBatch sb) {
 
-        sb.begin();
+    private static void drawInventory(SpriteBatch sb) {
+        String[] strings=new String[3];
+        int[] indexes=new int[3];
+        int overrideA =0;
+        int overrideB= Game.player.invList.size()-1;
         for(int i=0;i<3;i++){
             try {
+                strings[i]=(inventoryPos+ i)+":"+ Game.player.invList.get(inventoryPos+ i).get(0).getName();
+                indexes[i]=inventoryPos+ i;
+            }catch (IndexOutOfBoundsException e) {
+                //int remainder = Game.player.invList.size() % 3;
+                try {
+                    if (!Game.player.invList.isEmpty()) {
+                        if (inventoryPos + i >= Game.player.invList.size()) {
+                            strings[i] = (overrideA) + ":" + Game.player.invList.get(overrideA).get(0).getName();
+                            indexes[i] = overrideA;
+                            overrideA++;
 
-                Texture t = invIcon.get(inventoryPos + i);
-                int x=(int)(viewX+(Game.WIDTH -(200-(i*30))) + (t.getWidth() * (i)));
-                int y=(int)viewY+ 100;
-                sb.draw(t,x ,y);
-                Game.getFont().draw(sb, "x" + Game.player.invList.get(inventoryPos+i).size(),x, y);
-                if(i==1){
-                    Game.getFont().draw(sb,Game.player.invList.get(inventoryPos+i).get(0).getName(),x-20,y-20);
-                }
+                        } else if (inventoryPos + i < 0) {
+                            int a = overrideB;
+                            strings[i] = (a) + ":" + Game.player.invList.get(a).get(0).getName();
+                            indexes[i] = a;
+                            overrideB--;
+                            overrideA++;
 
-            }
-            catch (NullPointerException | IndexOutOfBoundsException e){}
-        }
-        /*
-        qButtonList.clear();
-        int count=0;
-        for(int i=0;i<4;i++) {
-            for(int j=0;j<4;j++){
-                if(count< Game.player.invList.size()){
-                    int x=(int) viewX + Game.WIDTH - 200 + +(j * 40);
-                    int y=(int)viewY +  (Game.HEIGHT/2) - (i * 48);
-
-                    try {
-                        sb.draw(invIcon.get(count), x,y);
-                        qButtonList.add(new QButton(x,y,invIcon.get(count).getWidth(), invIcon.get(count).getHeight()));
-                        QButton q= qButtonList.get(qButtonList.size()-1);
-                        //out("%"+x+" "+y);
-                        if(i==0 && j==0){
-                            //out("icon x"+x +" y"+y);
-                            //out("button "+bx+" "+by);
                         }
-                        Game.getFont().draw(sb, "x" + invSize.get(count),x, y);
-                        count++;
-                    }
-                    catch (IndexOutOfBoundsException e){
-
                     }
                 }
+                catch (IndexOutOfBoundsException e1){
+                    MapStateRender.setHoverText("ohfuckbbro",1, Color.RED);
+                    //Game.printLOG(e1);
+                }
+                if(inventoryPos+i==-2){
+                    int t1;
+                    String t2;
+                    t1=indexes[1];
+                    t2=strings[1];
+                    indexes[1]=indexes[0];
+                    strings[1]=strings[0];
+                    indexes[1]=t1;
+                    strings[1]=t2;
+
+                }
+                if(inventoryPos+i<0 && overrideA==3){
+                    inventoryPos=overrideB;
+                }
+                if(inventoryPos+i>=Game.player.invList.size()&& overrideA==3){
+                    inventoryPos=0;
+                }
             }
-        }*/
+        }
+        sb.begin();
+        for(int i=0;i<3;i++) {
+            try {
+                Game.getFont().draw(sb, strings[i], viewX + Game.WIDTH - 200, viewY + 100 - (i * 20));
+            }catch (NullPointerException e){
+                MapStateRender.setHoverText("ohfuckno",1, Color.RED);
+                //Game.printLOG(e);
+            }
+        }
+        for(int i=0;i<3;i++){
+            int y=(int)viewY+ 150;
+            Texture t;
+            try {
+
+                t = invIcon.get(indexes[i]);
+                int x=(int)(viewX+Game.WIDTH-300+(i*(t.getWidth()+10)));
+
+                sb.draw(t,x ,y);
+                Game.getFont().draw(sb, "x" + Game.player.invList.get(indexes[i]).size(),x, y);
+                if(i==1){
+                    Game.getFont().draw(sb,Game.player.invList.get(indexes[i]).get(0).getName(),x-20,y-20);
+                }
+            }
+            catch (IndexOutOfBoundsException e){
+                //Game.printLOG(e);
+            }
+            catch (NullPointerException e){
+               // Game.printLOG(e);
+            }
+        }
         sb.end();
     }
     private static void drawMiniMap(SpriteBatch sb){
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         shapeR.setColor(Color.BLACK);
-        shapeR.rect(viewX+Game.WIDTH-250,viewY+Game.HEIGHT-250,200,200);
+        shapeR.rect(viewX+Game.WIDTH-(Map2State.res+50),viewY+Game.HEIGHT-(Map2State.res+50),Map2State.res,Map2State.res);
         shapeR.end();
 
         drawGrid(true);
 
         shapeR.begin(ShapeRenderer.ShapeType.Line);
         shapeR.setColor(Color.WHITE);
-        shapeR.rect(viewX+Game.WIDTH-250,viewY+Game.HEIGHT-250,200,200);
+        shapeR.rect(viewX+Game.WIDTH-(Map2State.res+50),viewY+Game.HEIGHT-(Map2State.res+50),Map2State.res,Map2State.res);
         shapeR.end();
     }
     public static void drawPopup(SpriteBatch sb){
@@ -413,7 +457,7 @@ public class MapStateRender extends MapState {
             popupList.add(popupItem.getName());
         }
         catch (IndexOutOfBoundsException e){
-
+            //Game.printLOG(e);
         }
         if(popupItem.getHpmod()!=0){
             popupList.add("HP "+ popupItem.getHpmod());
@@ -538,8 +582,8 @@ public class MapStateRender extends MapState {
     public static void drawPlayerDamageOutput(SpriteBatch sb, float x, float y) {
         sb.begin();
         //Game.setFontSize(20);
-        Game.font.setColor(1, .5f, .5f, 1);
-        Game.getFont().draw(sb, "" + playerDamage, x, y);
+        Game.font.setColor(1f,0f,0f,1f);
+        Game.getFont().draw(sb, "-" + playerDamage, x*cellW, y*cellW);
         sb.end();
     }
     public static void drawStatChanges(SpriteBatch sb){
@@ -549,7 +593,7 @@ public class MapStateRender extends MapState {
                 sb.draw(statPopup, mHitX-(statPopup.getWidth()/2)-(cellW/4), mHitY+5);
         }
         catch (NullPointerException e){
-
+            //Game.printLOG(e);
         }
         sb.end();
     }
@@ -603,9 +647,11 @@ public class MapStateRender extends MapState {
 
             if(!map)
                 shapeR.rect((cellW * x), cellW * y, cellW, cellW);
-            else
-                shapeR.rect(viewX+Game.WIDTH-250+x, viewY+Game.HEIGHT-250+y, 1, 1);
-
+            else {
+                int xa= (int) (viewX + Game.WIDTH - (Map2State.res + 50))+x;
+                int ya= (int) (viewY + Game.HEIGHT - (Map2State.res + 50))+y;
+                shapeR.rect(xa,ya, 1, 1);
+            }
         }
         for(Cell c: GridManager.liveCellList){
             c.setAttArea(false);

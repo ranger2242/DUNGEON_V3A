@@ -19,7 +19,7 @@ import java.util.Random;
 public class Map2State extends State {
     private static ShapeRenderer shapeR= new ShapeRenderer();
     private static Random rn= new Random();
-    public static int res =150;
+    public static int res =100;
     private static Cell[][] dispArray  = new Cell[res][res];
     private static Cell[][] buffArray  = new Cell[res][res];
     private float dtChange=0;
@@ -135,7 +135,7 @@ public class Map2State extends State {
         return dispArray;
     }
     private static void plotWater(ArrayList<Cell> liveList){
-        int cycles = rn.nextInt(10);
+        int cycles = rn.nextInt(20);
         int grow=rn.nextInt(1)+1;
         for(int i=0;i<cycles;i++) {
             liveList.get(rn.nextInt(liveList.size())).setWater();
