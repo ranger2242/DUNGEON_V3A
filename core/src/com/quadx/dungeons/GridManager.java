@@ -32,56 +32,62 @@ public class GridManager {
         MapStateRender.showCircle = true;
         MapStateUpdater.dtCircle = MapStateRender.circleTime;
     }
-
     public void clearArea(int x, int y, boolean player) {
         x -= 1;
         y -= 1;
         unNullWallCells();
-        try {
-            dispArray[x + 1][y + 1].setState();
-            dispArray[x + 1][y].setState();
-            dispArray[x + 1][y - 1].setState();
-            dispArray[x][y + 1].setState();
-            dispArray[x][y - 1].setState();
-            dispArray[x - 1][y + 1].setState();
-            dispArray[x - 1][y].setState();
-            dispArray[x - 1][y - 1].setState();
+        try {dispArray[x + 1][y + 1].setState();}
+        catch (ArrayIndexOutOfBoundsException e) {}
+        try {dispArray[x + 1][y].setState();}
+        catch (ArrayIndexOutOfBoundsException e) {}
+        try {dispArray[x + 1][y - 1].setState();}
+        catch (ArrayIndexOutOfBoundsException e) {}
+        try {dispArray[x][y - 1].setState();}
+        catch (ArrayIndexOutOfBoundsException e) {}
+        try {dispArray[x][y + 1].setState();}
+        catch (ArrayIndexOutOfBoundsException e) {}
+        try {dispArray[x - 1][y + 1].setState();}
+        catch (ArrayIndexOutOfBoundsException e) {}
+        try {dispArray[x - 1][y].setState();}
+        catch (ArrayIndexOutOfBoundsException e) {}
+        try {dispArray[x - 1][y - 1].setState();}
+        catch (ArrayIndexOutOfBoundsException e) {}
             if (player && AbilityMod.digPlus) {//checks if players dig ability is active
                 if (MapState.lastPressed == 'd')
                     for (int i = 0; i < 9; i++) {
                         for (int j = 0; j < 3; j++) {
-                            dispArray[x + i][y - 1 + j].setState();
+                            try{dispArray[x + i][y - 1 + j].setState();}
+                            catch (ArrayIndexOutOfBoundsException e) {}
                         }
                     }
                 if (MapState.lastPressed == 'a')
                     for (int i = 0; i < 9; i++) {
                         for (int j = 0; j < 3; j++) {
-                            dispArray[x - i][y - 1 + j].setState();
+                            try{dispArray[x - i][y - 1 + j].setState();}
+                            catch (ArrayIndexOutOfBoundsException e) {}
                         }
                     }
                 if (MapState.lastPressed == 's')
                     for (int i = 0; i < 3; i++) {
                         for (int j = 0; j < 9; j++) {
-                            dispArray[x - 1 + i][y - j].setState();
+                            try{dispArray[x - 1 + i][y - j].setState();}
+                            catch (ArrayIndexOutOfBoundsException e) {}
                         }
                     }
                 if (MapState.lastPressed == 'w')
                     for (int i = 0; i < 3; i++) {
                         for (int j = 0; j < 9; j++) {
-                            dispArray[x - 1 + i][y + j].setState();
+                            try{dispArray[x - 1 + i][y + j].setState();}
+                            catch (ArrayIndexOutOfBoundsException e) {}
                         }
                     }
             }
             splitMapDataToList();
-        } catch (ArrayIndexOutOfBoundsException e) {
         }
-    }
-
     public void clearMonsterPositions() {
         for (Cell c : liveCellList)
             c.setMon(false);
     }
-
     private void unNullWallCells() {
         for (int i = 0; i < res; i++) {
             for (int j = 0; j < res; j++) {
@@ -89,7 +95,6 @@ public class GridManager {
             }
         }
     }
-
     private void createMap() {
         Map2State.updateVars();
         dispArray = Map2State.generateMap2();
@@ -124,11 +129,9 @@ public class GridManager {
 
         }
     }
-
     private void clearMonsterList() {
         monsterList.clear();
     }
-
     private void plotWarps() {
         boolean placed = false;
         int index=0;
@@ -151,8 +154,14 @@ public class GridManager {
             }
         }
         liveCellList.get(index).setWarp();
+        Cell c = liveCellList.get(index);
+        int x=c.getX();
+        int y=c.getY();
+        for(int i=0;i<4;i++){
+            if(y + i + 1<res)
+                dispArray[x][y + i + 1].setState();
+        }
     }
-
     private void plotMonsters() {
         double temp = liveCellList.size() * .005;
 
@@ -178,14 +187,12 @@ public class GridManager {
             }
         }
     }
-
     private void plotShop() {
 
         int index = rn.nextInt(liveCellList.size());
         if (!liveCellList.get(index).hasWater)
             liveCellList.get(index).setShop(true);
     }
-
     private void plotLoot() {
         float fillPercent = .01f;
         int loot = (int) (liveCellList.size() * fillPercent);
@@ -196,7 +203,6 @@ public class GridManager {
             loot--;
         }
     }
-
     private void plotCrates() {
         float fillPercent = .01f;
         int crates = (int) (liveCellList.size() * fillPercent);
@@ -207,7 +213,6 @@ public class GridManager {
             crates--;
         }
     }
-
     private void plotPlayer() {
         boolean placed =false;
         int index = rn.nextInt(liveCellList.size());

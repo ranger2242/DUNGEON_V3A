@@ -19,7 +19,7 @@ import java.util.Random;
 public class Map2State extends State {
     private static ShapeRenderer shapeR= new ShapeRenderer();
     private static Random rn= new Random();
-    public static int res =100;
+    public static int res =200;
     private static Cell[][] dispArray  = new Cell[res][res];
     private static Cell[][] buffArray  = new Cell[res][res];
     private float dtChange=0;
@@ -106,6 +106,16 @@ public class Map2State extends State {
         }
     }
 //New maze algorithm
+    public static Cell[][] generateMapTEST(){
+        initArray(buffArray);
+        for(int i=0;i<10;i++){
+            for(int j=0;j<10;j++){
+                buffArray[i][j].setState();
+            }
+        }
+        dispArray=buffArray;
+        return buffArray;
+    }
     public static Cell[][] generateMap2(){
 
         ArrayList<Cell> endpointList = new ArrayList<>();

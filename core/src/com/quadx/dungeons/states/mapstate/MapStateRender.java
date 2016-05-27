@@ -27,18 +27,22 @@ import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtWater;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class MapStateRender extends MapState {
-   public static int inventoryPos=0;
-    public static boolean hovText=false;
-    public static boolean showCircle=false;
+
     private static ArrayList<String> equipList=new ArrayList<>();
     private static String hovTextS="";
-    private static float hovTime=1f;
     private static Color hovColor=Color.WHITE;
-    public static float circleTime=.6f;
-    private static int hovTextYPosMod=0;
     private static Texture abilityIcon;
-    private static int prevMod=0;//checks if Ability has changed
+
+    public static boolean hovText=false;
+    public static boolean showCircle=false;
+    private static boolean blink=false;
+    private static float hovTime=1f;
+    public static float circleTime=.6f;
+    public static float dtBlink =0;
     static int invSlots=3;
+    public static int inventoryPos=0;
+    private static int prevMod=0;//checks if Ability has changed
+    private static int hovTextYPosMod=0;
 
     public MapStateRender(GameStateManager gsm) {
         super(gsm);
@@ -204,23 +208,28 @@ public class MapStateRender extends MapState {
         catch (NullPointerException e){
             //Game.printLOG(e);
         }
-        sb.end();
-
-        ///////////////////////////////////////////////
-        //Draw Grid
-        /*
         for(int i=0;i<gm.res;i+=10)
             Game.getFont().draw(sb,i+"",i*cellW,-10);
+        sb.end();
+
+
+
+    }
+    public static void drawGrid(SpriteBatch sb){
+        ///////////////////////////////////////////////
+        //Draw Grid
+
+
         shapeR.begin(ShapeRenderer.ShapeType.Line);
         //shapeR.setColor(Color.WHITE);
         shapeR.setColor(.1f,.1f,.1f,.1f);
-        for(int i=1;i<=gm.res;i++){
-            shapeR.line(i*cellW,0,i*cellW,gm.res*cellW);
-            shapeR.line(0,i*cellW,gm.res*cellW, i*cellW);
+        for(int i=0;i<gm.res;i++){
+            int a=i;
+            shapeR.line(a*cellW,0,a*cellW,gm.res*cellW);
+            shapeR.line(0,a*cellW,gm.res*cellW, a*cellW);
 
         }
         shapeR.end();
-*/
     }
     public static void drawMessageOutput(SpriteBatch sb){
 
@@ -297,7 +306,7 @@ public class MapStateRender extends MapState {
         shapeR.setColor(Color.GRAY);
         for (int i = 0; i < 2; i++) {
         for(int j=0;j<4;j++) {
-                shapeR.rect(viewX + 30+ (j * 36), viewY + (Game.HEIGHT / 2)+ (i * 36), 32, 32);
+                shapeR.rect(viewX + 30+ (j * 36), viewY + (Game.HEIGHT / 2)+ (i * 36)-20, 32, 32);
             }
         }
         shapeR.end();
@@ -617,6 +626,19 @@ public class MapStateRender extends MapState {
     }
     public static void drawGrid(boolean map) {
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
+        int tx = 0;
+        int ty=0;
+        int px=0;
+        int py=0;
+        for(Cell c: GridManager.liveCellList) {
+            if(c.hasWarp()){
+
+                tx= (int) (viewX + Game.WIDTH - (Map2State.res + 50))+c.getX();
+                ty=(int) (viewY + Game.HEIGHT - (Map2State.res + 50))+c.getY();
+            }
+        }
+        px= (int) (viewX + Game.WIDTH - (Map2State.res + 50))+Game.player.getX();
+        py=(int) (viewY + Game.HEIGHT - (Map2State.res + 50))+Game.player.getY();
         for(Cell c: GridManager.liveCellList){
             int x=c.getX();
             int y=c.getY();
@@ -658,7 +680,20 @@ public class MapStateRender extends MapState {
         }
 
         shapeR.end();
+        shapeR.begin(ShapeRenderer.ShapeType.Line);
+        if(map){
+            shapeR.setColor(Color.GREEN);
+            shapeR.circle(tx,ty,5);
 
+            if(blink){shapeR.setColor(Color.BLUE);}
+            else if(!blink){shapeR.setColor(Color.WHITE);}
+            if(dtBlink>.5){
+                blink=!blink;
+                dtBlink=0;
+            }
+            shapeR.circle(px,py,5);
+        }
+        shapeR.end();
 
     }
 }

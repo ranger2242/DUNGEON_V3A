@@ -50,7 +50,7 @@ public class Player {
     private int killcount=0;
     private int energy=100;
     private int energyMax=100;
-    private int energyRegen=1 ;
+    private int energyRegen=10 ;
     int prevInvSize=0;
     int abilityPoints=1;
     public int floor= 0;

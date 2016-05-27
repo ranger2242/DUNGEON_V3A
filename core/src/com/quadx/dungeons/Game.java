@@ -6,24 +6,16 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.MainMenuState;
 import com.quadx.dungeons.states.mapstate.Map2State;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.tools.ColorConverter;
 
 import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
+
 
 
 public class Game extends ApplicationAdapter {
@@ -50,8 +42,8 @@ public class Game extends ApplicationAdapter {
 		Gdx.graphics.setWindowedMode(WIDTH,HEIGHT);
 		setFontSize(20);
 		spriteBatch = new SpriteBatch();
-		gameStateManager.push(new MapState(gameStateManager));
-		// gameStateManager.push(new MainMenuState(gameStateManager));
+		//gameStateManager.push(new MapState(gameStateManager));
+		 gameStateManager.push(new MainMenuState(gameStateManager));
 
 		//gameStateManager.push(new AbilitySelectState(gameStateManager));
 	}
@@ -63,7 +55,7 @@ public class Game extends ApplicationAdapter {
 		df = new SimpleDateFormat("ddMMyy_HHmmss");
 		dateobj = new Date();
 		fileName= df.format(dateobj);
-		file= new File(fileName+".log");
+		file= new File("\\logs\\"+fileName+".log");
 		try {
 			pw = new PrintWriter(file);
 		} catch (FileNotFoundException e) {
@@ -97,10 +89,11 @@ public class Game extends ApplicationAdapter {
 		}
 	}
 	public static void printLOG(Exception e) {
+		/*
 		sw=new StringWriter();
 		pw2=new PrintWriter(sw);
 		e.printStackTrace(pw2);
-		pw.append(sw.toString()+"\n");
+		pw.append(sw.toString()+"\n");*/
 	}
 	@Override
 	public void render () {

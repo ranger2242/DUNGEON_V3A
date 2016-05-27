@@ -21,7 +21,7 @@ import com.quadx.dungeons.states.ShopState;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class MapStateUpdater extends MapState {
-    private static float dtimeMin=0;
+    private static float dtMonsterMove =0;
     public static float dtWater=0;
     private static float dtRun=0;
     private static float dtDig=0;
@@ -44,13 +44,13 @@ public class MapStateUpdater extends MapState {
         super(gsm);
     }
     public static void moveMonsters(){
-        dtimeMin+= Gdx.graphics.getDeltaTime();
-        if(dtimeMin>.1) {
+        dtMonsterMove += Gdx.graphics.getDeltaTime();
+        if(dtMonsterMove >.1) {
             gm.clearMonsterPositions();
             for(Monster m : GridManager.monsterList){
                 m.move();
             }
-            dtimeMin=0;
+            dtMonsterMove =0;
         }
     }
     public static void fuckingStupidUpdateFunction(float dt){
@@ -69,6 +69,7 @@ public class MapStateUpdater extends MapState {
         cam.position.set(position);
         cam.update();
 
+        MapStateRender.dtBlink+=dt;
         dtDig +=dt;
         dtWater+=dt;
         dtRegen += dt;
@@ -347,23 +348,25 @@ public class MapStateUpdater extends MapState {
     public static void collisionHandler(){
         int index= Game.player.getLiveListIndex();
         Cell c= GridManager.liveCellList.get(index);
-        if (c.hasLoot()) {
-            dtLootPopup =0;
-            lootPopup=new Texture(Gdx.files.internal("images/imCoin.png"));
-            makeGold(Game.player.level);
-            GridManager.liveCellList.get(index).setHasLoot(false);
-        }
-        if (c.hasCrate()) {
-            openCrate();
-            GridManager.liveCellList.get(index).setCrate(false);
-        }
-        if (c.hasWarp()) {
-            Game.player.floor++;
-            gm.initializeGrid();
-        }
-        if (c.getShop()) {
-            GridManager.liveCellList.get(index).setShop(false);
-            gsm.push(new ShopState(gsm));
+        if(Game.player.getX()==c.getX() && Game.player.getY() ==c.getY()) {
+            if (c.hasLoot()) {
+                dtLootPopup = 0;
+                lootPopup = new Texture(Gdx.files.internal("images/imCoin.png"));
+                makeGold(Game.player.level);
+                GridManager.liveCellList.get(index).setHasLoot(false);
+            }
+            if (c.hasCrate()) {
+                openCrate();
+                GridManager.liveCellList.get(index).setCrate(false);
+            }
+            if (c.hasWarp()) {
+                Game.player.floor++;
+                gm.initializeGrid();
+            }
+            if (c.getShop()) {
+                GridManager.liveCellList.get(index).setShop(false);
+                gsm.push(new ShopState(gsm));
+            }
         }
     }
 

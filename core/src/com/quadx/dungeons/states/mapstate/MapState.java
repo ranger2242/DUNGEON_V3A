@@ -60,7 +60,7 @@ public class MapState extends State {
     static int playerDamage = 0;
     static int messageCounter=0;
     public static int invSlotHovered=0;
-    public static int cellW=5;
+    public static int cellW=10;
     static int mHitX=0;
     static int mHitY=0;
     static int mouseX=0;
@@ -96,8 +96,24 @@ public class MapState extends State {
         for(int i=0;i<20;i++)
         openCrate();
         attack=Game.player.attackList.get(0);
-        AbilityMod.enableAbility(4);//Quick
+        //AbilityMod.enableAbility(4);//Quick
 
+        countWarps();
+    }
+    void countWarps(){
+        int c1=0,c2=0;
+        for(int i=0;i<Map2State.res;i++){
+            for(int j=0;j<Map2State.res;j++){
+                if(gm.dispArray[i][j].hasWarp()){
+                    c1++;
+                }
+            }
+        }
+        for(Cell c: gm.liveCellList){
+            if(c.hasWarp())c2++;
+        }
+        out("Warps ARR:"+c1);
+        out("Warps List:"+c2);
 
     }
     public void handleInput() {

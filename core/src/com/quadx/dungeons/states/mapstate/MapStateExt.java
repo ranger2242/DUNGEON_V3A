@@ -37,7 +37,8 @@ class MapStateExt extends MapState{
             MapStateRender.setHoverText("ohfuck",1, Color.RED);
             Game.printLOG(e);
         }
-        if(item.isEquip){
+
+        if(item.isEquip){/*
             Equipment equip=(Equipment) item;
             System.out.println("#"+equip.getName());
             boolean remove=false;
@@ -61,7 +62,7 @@ class MapStateExt extends MapState{
                 Game.player.equipedList.add(equip);
                 System.out.println(Game.player.equipedList.size());
             }
-
+*/
         }
         else{
             if(item.getHpmod()!=0){
