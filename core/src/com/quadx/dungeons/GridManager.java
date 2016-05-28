@@ -1,6 +1,7 @@
 package com.quadx.dungeons;
 
 
+import com.quadx.dungeons.abilities.DigPlus;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.Map2State;
 import com.quadx.dungeons.states.mapstate.MapState;
@@ -52,7 +53,7 @@ public class GridManager {
         catch (ArrayIndexOutOfBoundsException e) {}
         try {dispArray[x - 1][y - 1].setState();}
         catch (ArrayIndexOutOfBoundsException e) {}
-            if (player && AbilityMod.digPlus) {//checks if players dig ability is active
+            if (player && AbilityMod.modifier==1) {//checks if players dig ability is active
                 if (MapState.lastPressed == 'd')
                     for (int i = 0; i < 9; i++) {
                         for (int j = 0; j < 3; j++) {
@@ -101,12 +102,14 @@ public class GridManager {
         //splitMapDataToList();
         loadLiveCells();
     }
-    private void loadLiveCells(){
+    public static void loadLiveCells(){
         liveCellList.clear();
         for(int i=0;i<res;i++){
             for(int j=0;j<res;j++){
-                if(dispArray[i][j].getState())
-                liveCellList.add(dispArray[i][j]);
+                try {
+                    if (dispArray[i][j].getState())
+                        liveCellList.add(dispArray[i][j]);
+                }catch (NullPointerException e){}
             }
         }
     }

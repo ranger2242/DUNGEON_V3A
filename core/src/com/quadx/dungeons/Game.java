@@ -24,6 +24,7 @@ public class Game extends ApplicationAdapter {
 	private SpriteBatch spriteBatch;
 	public static final int WIDTH = 1366;
 	public static final int HEIGHT = 724;
+	public static float frame = .01666f;
 	public static Player player= new Player();
 	private GameStateManager gameStateManager;
 
@@ -38,7 +39,6 @@ public class Game extends ApplicationAdapter {
 	public void create () {
 		initFile();
 		gameStateManager=new GameStateManager();
-		player.addSpell();
 		Gdx.graphics.setWindowedMode(WIDTH,HEIGHT);
 		setFontSize(20);
 		spriteBatch = new SpriteBatch();

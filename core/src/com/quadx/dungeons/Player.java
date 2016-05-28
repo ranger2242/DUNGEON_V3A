@@ -358,4 +358,10 @@ public class Player {
             prevInvSize=invList.size();
         }
     }
+
+    public boolean checkIfDead() {
+        boolean dead=false;
+        if(hp<1)dead=true;
+        return dead;
+    }
 }

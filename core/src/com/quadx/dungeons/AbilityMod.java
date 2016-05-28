@@ -10,48 +10,49 @@ public class AbilityMod {
     public static int modifier=1;
     public static boolean digPlus=false;
     public static boolean investor=false;
+    public static Ability ability = null;
+
 
     public static void enableAbility(int mod){
         modifier=mod;
         switch (mod){
             case 1:{
-                digPlus=true;
+                ability = new DigPlus();
                 break;
             }
-            case 2:Ability ability;
+            case 2:
             {//Brawler
                 ability =new Brawler();
-                ability.onActivate();
                 boolean brawler = true;
                 break;
             }
             case 3:{//Mage
                 ability =new Mage();
-                ability.onActivate();
                 boolean mage = true;
                 break;
             }
             case 4:{//Quick
                 ability =new Quick();
-                ability.onActivate();
                 boolean quick = true;
                 break;
             }
             case 5: {//Investor
                 ability =new Investor();
-                ability.onActivate();
                 investor=true;
                 break;
             }
             case 6: {//Tank
                 ability =new Tank();
-                ability.onActivate();
                 boolean tank = true;
                 break;
             }
             case 7:{//Lucky
-
+                ability=new Warp();
+                break;
             }
+
         }
+        ability.onActivate();
+
     }
 }

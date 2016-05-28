@@ -19,7 +19,7 @@ public class Brawler extends Ability {
     }
 
     @Override
-    public void onActivate() {
+    public  void onActivate() {
         Game.player.setEnergy(Game.player.getEnergy()*2);
         Game.player.setEnergyMax(Game.player.getEnergyMax()*2);
         Game.player.setEnergyRegen(Game.player.getEnergyRegen()*2);

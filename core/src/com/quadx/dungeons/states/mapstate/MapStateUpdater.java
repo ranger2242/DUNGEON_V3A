@@ -4,13 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
-import com.quadx.dungeons.AbilityMod;
-import com.quadx.dungeons.Cell;
-import com.quadx.dungeons.Game;
-import com.quadx.dungeons.GridManager;
+import com.quadx.dungeons.*;
 import com.quadx.dungeons.abilities.Investor;
+import com.quadx.dungeons.abilities.Warp;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.monsters.Monster;
+import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.MainMenuState;
 import com.quadx.dungeons.states.ShopState;
@@ -45,7 +44,7 @@ public class MapStateUpdater extends MapState {
     }
     public static void moveMonsters(){
         dtMonsterMove += Gdx.graphics.getDeltaTime();
-        if(dtMonsterMove >.1) {
+        if(dtMonsterMove >.1f) {
             gm.clearMonsterPositions();
             for(Monster m : GridManager.monsterList){
                 m.move();
@@ -83,6 +82,7 @@ public class MapStateUpdater extends MapState {
         dtMessage += dt;
         dtEnergyRe+=dt;
         dtCollision+=dt;
+        if(Warp.isEnabled()){Warp.updateTimeCounter();}
         if(MapStateRender.showCircle && dtCircle>0){
             dtCircle-=dt;
         }
@@ -125,6 +125,14 @@ public class MapStateUpdater extends MapState {
         viewY = cam.position.y - cam.viewportHeight / 2;
         MapStateExt.mouseOverHandler();
         x++;
+        if(Game.player.checkIfDead()){
+            Game.player=null;
+            Game.player=new Player();
+            AbilitySelectState.pressed=false;
+            gsm.pop();
+            gsm.push(new MainMenuState(gsm));
+            //gsm.push(new MainMenuState(gsm));
+        }
     }
     public static void buttonHandler() {
         dtMove += Gdx.graphics.getDeltaTime();
@@ -269,6 +277,10 @@ public class MapStateUpdater extends MapState {
             if (attackMenuOpen) attackMenuOpen = false;
             if (inventoryOpen) inventoryOpen = false;
         }
+        if(Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT) ||
+                Gdx.input.isKeyPressed(Input.Keys.ALT_RIGHT)){
+            Warp.warpPlayer();
+        }
         //collisionHandler();
     }
     private static void functionButtonHandler(int i){
@@ -304,7 +316,7 @@ public class MapStateUpdater extends MapState {
             }
         }
     }
-    private static void movementHandler(int xmod, int ymod, char c) {
+    public static void movementHandler(int xmod, int ymod, char c) {
         if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) ||Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) ){
             if(dtRun>.05 && Game.player.getEnergy()>3) {
                 Game.player.setMoveSpeed(.04f);

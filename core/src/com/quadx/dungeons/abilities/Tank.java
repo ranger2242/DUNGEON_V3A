@@ -17,8 +17,8 @@ public class Tank extends Ability {
     public Tank(){
         details();
     }
-
     @Override
+
     public void onActivate() {
         Game.player.setDefense(Game.player.getDefense()*2);
         Game.player.setHp((int)(Game.player.getHp()*1.5));

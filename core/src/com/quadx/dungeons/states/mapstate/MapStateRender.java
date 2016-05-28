@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.*;
+import com.quadx.dungeons.abilities.Warp;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
@@ -41,6 +42,7 @@ public class MapStateRender extends MapState {
     public static float dtBlink =0;
     static int invSlots=3;
     public static int inventoryPos=0;
+    static int blradius=0;
     private static int prevMod=0;//checks if Ability has changed
     private static int hovTextYPosMod=0;
 
@@ -102,10 +104,17 @@ public class MapStateRender extends MapState {
                     prevMod=6;
                     break;
                 }
+                case 7:{
+                    s="Warp.png";
+                    prevMod=7;
+                    break;
+                }
 
             }
             try {
-                abilityIcon = new Texture(Gdx.files.internal("images/icons/abilities/ic" + s));
+
+                    abilityIcon = new Texture(Gdx.files.internal("images/icons/abilities/ic" + s));
+
             } catch (GdxRuntimeException e) {
                 Game.printLOG(e);
             }
@@ -113,7 +122,7 @@ public class MapStateRender extends MapState {
         if(prevMod !=0){
             //MapState.out("Fucking Errors");
             sb.begin();
-            sb.draw(abilityIcon,viewX+Game.WIDTH-60,viewY+ 150);
+            sb.draw(abilityIcon,viewX+50,viewY+50);
             sb.end();
         }
     }
@@ -138,19 +147,21 @@ public class MapStateRender extends MapState {
             invSize.clear();
 
             for (ArrayList<Item> list : Game.player.invList) {
-                Item item = list.get(0);
-                invSize.add(list.size());
-                String s = item.getName();
-                if (item.isEquip)
-                    s = item.getType();
-                if (item.isSpell)
-                    s = "SpellBook";
-                try {
-                    invIcon.add(new Texture(Gdx.files.internal("images/icons/items/ic" + s + ".png")));
+                if(!list.isEmpty()){
+                    Item item = list.get(0);
+                    invSize.add(list.size());
+                    String s = item.getName();
+                    if (item.isEquip)
+                        s = item.getType();
+                    if (item.isSpell)
+                        s = "SpellBook";
+                    try {
+                        invIcon.add(new Texture(Gdx.files.internal("images/icons/items/ic" + s + ".png")));
 
-                } catch (GdxRuntimeException |IndexOutOfBoundsException  e) {
-//                    Game.printLOG(e);
+                    } catch (GdxRuntimeException | IndexOutOfBoundsException e) {
+    //                    Game.printLOG(e);
 
+                    }
                 }
             }
 
@@ -234,7 +245,7 @@ public class MapStateRender extends MapState {
     public static void drawMessageOutput(SpriteBatch sb){
 
         sb.begin();
-        Game.setFontSize(14);
+        Game.setFontSize(10);
         Game.font.setColor(Color.WHITE);
         for(int i=0;i<10;i++){
             //if(output.size()>=0&&i+messageCounter<output.size()  )
@@ -276,7 +287,9 @@ public class MapStateRender extends MapState {
 
         //DRAW HP BARS
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        shapeR.setColor(.5f, .5f, .5f, 1);
+
+        shapeR.end();
+        shapeR.begin(ShapeRenderer.ShapeType.Filled);
         shapeR.setColor(0f, 1f, 0f, 1);
         if (Game.player.getHp() < Game.player.getHpMax() / 2) {
             shapeR.setColor(1f, 0f, 0f, 1);
@@ -412,13 +425,11 @@ public class MapStateRender extends MapState {
             try {
 
                 t = invIcon.get(indexes[i]);
-                int x=(int)(viewX+Game.WIDTH-300+(i*(t.getWidth()+10)));
+                int x=(int)(viewX+Game.WIDTH-200+(i*(t.getWidth()+10)));
 
                 sb.draw(t,x ,y);
                 Game.getFont().draw(sb, "x" + Game.player.invList.get(indexes[i]).size(),x, y);
-                if(i==1){
-                    Game.getFont().draw(sb,Game.player.invList.get(indexes[i]).get(0).getName(),x-20,y-20);
-                }
+
             }
             catch (IndexOutOfBoundsException e){
                 //Game.printLOG(e);
@@ -622,6 +633,10 @@ public class MapStateRender extends MapState {
             shapeR.setColor(1,0,0,.2f);
             shapeR.rect((int)x1,(int)y1,side,side);
         }
+        shapeR.setColor(.1f, .1f, .1f, .4f);
+        shapeR.rect(viewX,viewY, (float) (Game.WIDTH/3.5),Game.HEIGHT);
+        //shapeR.rect((float) (viewX+Game.WIDTH-(Game.WIDTH/3.5)),viewY, (float) (Game.WIDTH/3.5),Game.HEIGHT);
+
         shapeR.end();
     }
     public static void drawGrid(boolean map) {
@@ -685,13 +700,16 @@ public class MapStateRender extends MapState {
             shapeR.setColor(Color.GREEN);
             shapeR.circle(tx,ty,5);
 
+            //shapeR.setColor(Color.BLUE);
             if(blink){shapeR.setColor(Color.BLUE);}
             else if(!blink){shapeR.setColor(Color.WHITE);}
-            if(dtBlink>.5){
+            if(dtBlink>Game.frame*4){
                 blink=!blink;
+                blradius++;
                 dtBlink=0;
             }
-            shapeR.circle(px,py,5);
+            shapeR.circle(px,py,blradius);
+            if(blradius>5)blradius=0;
         }
         shapeR.end();
 

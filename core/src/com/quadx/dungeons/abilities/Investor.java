@@ -18,8 +18,8 @@ public class Investor extends Ability {
     public Investor(){
         details();
     }
-
     @Override
+
     public void onActivate() {
         Game.player.setHpRegen(Game.player.getHpRegen()*2);
         Game.player.setIntel(Game.player.getIntel()*2);

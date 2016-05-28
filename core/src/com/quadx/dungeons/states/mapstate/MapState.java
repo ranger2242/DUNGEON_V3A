@@ -60,7 +60,7 @@ public class MapState extends State {
     static int playerDamage = 0;
     static int messageCounter=0;
     public static int invSlotHovered=0;
-    public static int cellW=10;
+    public static int cellW=30;
     static int mHitX=0;
     static int mHitY=0;
     static int mouseX=0;
@@ -95,6 +95,7 @@ public class MapState extends State {
         out("---Welcome to DUNGEON---");
         for(int i=0;i<20;i++)
         openCrate();
+        Game.player.addSpell();
         attack=Game.player.attackList.get(0);
         //AbilityMod.enableAbility(4);//Quick
 
@@ -132,10 +133,8 @@ public class MapState extends State {
         Gdx.gl.glClearColor(0,0,0,1);
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        if(inGame) {
             shapeR.setProjectionMatrix(cam.combined);
             sb.setProjectionMatrix(cam.combined);
-        }
         Game.player.checkNullInventory();
         MapStateRender.drawGrid(false);
         MapStateRender.drawMonsterAgro();
@@ -179,8 +178,11 @@ public class MapState extends State {
         attackIconList.clear();
     }
     public static void out(String s){
-        output.add(s);
-        if(output.size()>10)output.remove(0);
+        try {
+            output.add(s);
+            if(output.size()>10)output.remove(0);
+
+        }catch (NullPointerException e){}
     }
 
     static void attackCollisionHandler(int pos) {
@@ -282,8 +284,8 @@ public class MapState extends State {
                         makeGold(m.getLevel());
                         try {
                             GridManager.dispArray[m.getX()][m.getY()].setMon(false);
-                        }catch (NullPointerException e){
-                            Game.printLOG(e);
+                        }catch (NullPointerException |ArrayIndexOutOfBoundsException e){
+                            //Game.printLOG(e);
                         }
                         tempMon = m;
                         killed=true;

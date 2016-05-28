@@ -18,9 +18,9 @@ public class Mage extends Ability {
         details();
 
     }
-
     @Override
-    public void onActivate() {
+
+    public  void onActivate() {
         Game.player.setMana(Game.player.getMana()*2);
         Game.player.setManaMax(Game.player.getManaMax()*2);
         Game.player.setManaRegen(Game.player.getManaRegenRate()*2);
