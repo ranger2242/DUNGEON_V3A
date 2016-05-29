@@ -30,8 +30,13 @@ public class Tank extends Ability {
         MapState.out("HP Regen doubled!");
         MapState.out("DEF doubled!");
         MapState.out("Move Speed halved!");
-        MapStateRender.setHoverText("Tank!!",1.5f, Color.WHITE);
+        MapStateRender.setHoverText("Tank!!",1.5f, Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
 
+    }
+
+    @Override
+    public int getMod() {
+        return 6;
     }
 
     public ArrayList<String> details() {

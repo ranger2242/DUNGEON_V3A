@@ -37,10 +37,10 @@ public class Player {
     int intelMod=0;
     private int manaMod = 0;
     int hp =100;
-    int attack=20;
-    int defense=20;
-    private int speed=20;
-    int intel=20;
+    int attack=10;
+    int defense=10;
+    private int speed=10;
+    int intel=10;
     int mana = 100;
     int manaMax = 100;
     private int manaRegenRate=5;
@@ -50,7 +50,7 @@ public class Player {
     private int killcount=0;
     private int energy=100;
     private int energyMax=100;
-    private int energyRegen=10 ;
+    private int energyRegen=2 ;
     int prevInvSize=0;
     int abilityPoints=1;
     public int floor= 0;
@@ -72,6 +72,18 @@ public class Player {
     public Player(){
         System.out.println("5");
         level=1;
+        attackList.clear();
+        attackList.add(flameSp);
+        attackList.add(restSp);
+        attackList.add(blindSp);
+        attackList.add (drainSp);
+        attackList.add(illusionSp);
+        attackList.add(fullhealSp);
+        //attackList.add(slashSp);
+        //attackList.add(stabSp);
+        attackList.add(tormentSp);
+        attackList.add(protectSp);
+        attackList.add(sacrificeSp);
 
     }
     public void addKills(){killcount++;}
@@ -98,8 +110,8 @@ public class Player {
     }
     public void setExp(Monster m) {
         int expmax=m.getLevel()*25;
-        int expGain = ((m.getLevel() * 50) + (int) (Math.random() * expmax));
-        MapStateRender.setHoverText(expGain +" EXP",.8f, Color.GREEN);
+        int expGain = (int) ((rn.nextFloat()* expmax)+(m.getLevel() * 10));
+        MapStateRender.setHoverText(expGain +" EXP",.8f, Color.GREEN ,Game.player.getPX(),Game.player.getPY()+10,false);
         exp=exp+ expGain;
         MapState.out(name+" gained "+ expGain +" EXP");
     }
@@ -196,7 +208,7 @@ public class Player {
         statsList.add("SPD:      " + speed+" + "+speedMod+": "+(speed+speedMod));
         statsList.add("KILLS:    " + killcount);
         statsList.add("GOLD:     " + gold);
-        statsList.add("EXP:      " + exp + "/" + (int) ((((Math.pow(1.2, Game.player.getLevel())) * 1000) / 2) - 300));
+        statsList.add("EXP:      " + exp + "/" + (int) ((((Math.pow(1.5, Game.player.getLevel())) * 1000) / 2) - 300));
         statsList.add("D:        " + floor);
         return  statsList;
     }
@@ -206,11 +218,11 @@ public class Player {
     }
     public void checkLvlUp() {
         //System.out.println("!"+exp+" n"+((((Math.pow(1.2,level))*1000)/2)-300));
-        if (exp>=(int)((((Math.pow(1.2,level))*1000)/2)-300))
+        if (exp>=(int)((((Math.pow(1.5,level))*1000)/2)-300))
         {
-            MapStateRender.setHoverText("--LVL UP--",.8f, Color.GREEN);
+            MapStateRender.setHoverText("--LVL UP--",.8f, Color.GREEN, Game.player.getPX(),Game.player.getPY()-20,true);
 
-            exp=exp-(int)((((Math.pow(1.2,level))*1000)/2)-300);
+            exp=exp-(int)((((Math.pow(1.5,level))*1000)/2)-300);
 
             //System.out.println(name+" leveled up.");
             level++;
@@ -224,23 +236,9 @@ public class Player {
         }
     }
     public void addSpell(){
-        attackList.clear();
-        attackList.add(flameSp);
-        attackList.add(restSp);
-        attackList.add(blindSp);
-        attackList.add (drainSp);
-        attackList.add(illusionSp);
-        attackList.add(fullhealSp);
-        //attackList.add(slashSp);
-        //attackList.add(stabSp);
-        attackList.add(tormentSp);
-        attackList.add(protectSp);
-        attackList.add(sacrificeSp);
 
-        for(Attack a: Game.player.attackList){
-            System.out.println(a.getName());
 
-        }
+
 
     }
     public void addItemToInventory(Item item){

@@ -1,5 +1,7 @@
 package com.quadx.dungeons;
 
+import com.badlogic.gdx.graphics.Color;
+
 /**
  * Created by Tom isLive 11/7/2015.
  */
@@ -18,7 +20,7 @@ public class Cell {
     int monsterIndex;
     private int x;
     private int y;
-
+    Color color = null;
 
     public Cell() {
     }
@@ -38,6 +40,7 @@ public class Cell {
     public boolean getCrate(){return hasCrate;}
     public int     getIndex(){return monsterIndex;}
     public boolean isPlayerFront(){return playerFront;}
+    public Color getColor(){return color;}
     public void setAttArea(boolean a){attArea=a;}
     public void setCords(int a, int b){x=a;y=b;}
     public void setAgro(boolean b, int a){agroPoint=b; monsterIndex =a;}
@@ -50,6 +53,9 @@ public class Cell {
     }
     public void setCrate(boolean set){hasCrate=set;}
     public void setWater(){hasWater= true;}
+    public void setColor(Color c){
+        color=c;
+    }
     public void setHasLoot(boolean set) {
         hasLoot =set;
         if(set){

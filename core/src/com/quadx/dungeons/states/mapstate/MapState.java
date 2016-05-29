@@ -76,7 +76,7 @@ public class MapState extends State {
     public static float viewX;
     public static float viewY;
     static float itemMinTime=.4f;
-    static float attackMintime = .3f;
+    static float attackMintime = Game.frame*5;
 
     static float dtDamageTextFloat = 0;
     static int lastNumPressed=0;
@@ -93,13 +93,7 @@ public class MapState extends State {
         cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT);
         gm.initializeGrid();
         out("---Welcome to DUNGEON---");
-        for(int i=0;i<20;i++)
-        openCrate();
-        Game.player.addSpell();
         attack=Game.player.attackList.get(0);
-        //AbilityMod.enableAbility(4);//Quick
-
-        countWarps();
     }
     void countWarps(){
         int c1=0,c2=0;
@@ -161,7 +155,8 @@ public class MapState extends State {
 
         if(hovering) MapStateRender.drawPopup(sb);
         if (effectLoaded) {MapStateRender.drawParticleEffects(sb, Game.player.getPX(), Game.player.getPY());}
-        if(MapStateRender.hovText) MapStateRender.drawHovText(sb);
+        MapStateRender.updateHoverTextTime();
+        MapStateRender.drawHovText(sb);
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         shapeR.setColor(Color.RED);
          if(qButtonList.size()>0)   shapeR.rect(qButtonList.get(0).getPx(), qButtonList.get(0).getPx(), 12, 12);
@@ -273,7 +268,8 @@ public class MapState extends State {
 
                     Game.player.attackList.get(attIndex).setUses();
                     Game.player.attackList.get(attIndex).checkLvlUp();
-                    displayPlayerDamage = true;
+                    //displayPlayerDamage = true;
+                    MapStateRender.setHoverText("-"+playerDamage,.8f,Color.RED,m.getPX(),m.getPY(),true);
                     m.takeAttackDamage(playerDamage);
                     if (m.getHp() < 1) {
                         out(DIVIDER);
@@ -304,7 +300,7 @@ public class MapState extends State {
         {
             Game.player.setGold(Game.player.getGold() + gold);
             out(Game.player.getName() + " recieved " + gold + "G");
-            MapStateRender.setHoverText(gold+"G",.5f,Color.GOLD);
+            MapStateRender.setHoverText(gold+"G",.5f,Color.GOLD, Game.player.getPX(),Game.player.getPY(),false);
         }
     }
     static void clearFront(){
@@ -339,7 +335,7 @@ public class MapState extends State {
     }
     static void openCrate(){
         int q=rn.nextInt(30)+1;
-        if(q>=17){
+        if(q>=15){
             double rand=rn.nextFloat()/8;
             if(rand<0)rand*=-1;
             int gold=(int)(Game.player.getGold()*(rand));
@@ -347,7 +343,7 @@ public class MapState extends State {
             Game.player.setGold(Game.player.getGold()+gold);
             lootPopup = new Texture(Gdx.files.internal("images/imCoin.png"));
             out(gold+" added to stash");
-            MapStateRender.setHoverText(gold+"G",1,Color.GOLD);
+            MapStateRender.setHoverText(gold+"G",1,Color.GOLD, Game.player.getPX(),Game.player.getPY(),false);
 
         }
         else{
@@ -358,8 +354,8 @@ public class MapState extends State {
             else if(q==7||q==8)item=new SpeedPlus();
             else if(q>=9&&q<=11)item=new ManaPlus();
             else if(q>11&&q<=14) item=new Potion();
-            else if(q==15)item=new SpellBook();
-            else if(q==16) item=generateEquipment();
+           // else if(q==15)item=new SpellBook();
+            //else if(q==16) item=generateEquipment();
             Game.player.addItemToInventory(item);
             String s=item.getName();
             if(item.isEquip)
@@ -377,11 +373,11 @@ public class MapState extends State {
                // MapStateRender.setHoverText("ERR:0002", 1,Color.RED);
                 item=new Potion();
                 out(item.getName() + " added to inventory");
-                MapStateRender.setHoverText(item.getName(), 1,Color.WHITE);
+                MapStateRender.setHoverText(item.getName(), 1,Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
 
             }else {
                 out(item.getName() + " added to inventory");
-                MapStateRender.setHoverText(item.getName(), 1,Color.WHITE);
+                MapStateRender.setHoverText(item.getName(), 1,Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
             }
         }
     }

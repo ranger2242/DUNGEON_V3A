@@ -38,7 +38,7 @@ public class SpellMods {
                 break;
             }
             case 3:{//BLIND
-                m.acc*=.9;
+//                m.acc*=.9;
                 MapState.statPopup=new Texture(Gdx.files.internal("images/icons/stats/icAccD.png"));
                 MapState.out(m.name+"'s accuracy was lowered by 10%.");
                 break;

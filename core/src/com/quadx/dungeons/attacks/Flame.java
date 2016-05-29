@@ -8,8 +8,8 @@ public class Flame extends Attack {
     public Flame()  {
         costGold=100;
         type=2;
-        powerA = new int[]{40,60,80,100,120};
-        costA =new int[]{30,45,60,80,90};
+        powerA = new int[]{20,30,60,100,120};
+        costA =new int[]{10,20,30,50,70};
         name="Flame";
         power=40;
         cost=30;

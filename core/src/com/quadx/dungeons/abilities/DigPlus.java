@@ -22,9 +22,14 @@ public class DigPlus extends Ability {
         MapState.out("----------------------------------");
         MapState.out(Game.player.getName()+" activated the Dig+ ability!");
         MapState.out("DIG!");
-        MapStateRender.setHoverText("DIG+!",1.5f, Color.WHITE);
+        MapStateRender.setHoverText("DIG+!",1.5f, Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
 
         //super.onActivate();
+    }
+
+    @Override
+    public int getMod() {
+        return 1;
     }
 
     public ArrayList<String> details() {

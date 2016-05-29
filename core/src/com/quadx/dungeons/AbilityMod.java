@@ -52,7 +52,10 @@ public class AbilityMod {
             }
 
         }
-        ability.onActivate();
+        try {
+            ability.onActivate();
+        }
+        catch (NullPointerException e){}
 
     }
 }

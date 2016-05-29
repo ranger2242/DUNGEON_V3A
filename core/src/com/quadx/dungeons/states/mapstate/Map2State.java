@@ -170,6 +170,11 @@ public class Map2State extends State {
                 }
             }
         }
+        for(Cell c : liveList){
+            if(c.getWater()) {
+                buffArray[c.getX()][c.getY()].setColor(new Color(0f, 0f, .8f, 1f));
+            }
+        }
     }
     private static ArrayList<Cell> fillBits(int factor, ArrayList<Cell> liveList){
         for(int i=0;i<res;i++){

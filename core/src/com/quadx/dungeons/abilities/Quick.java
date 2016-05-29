@@ -35,9 +35,15 @@ public class Quick extends Ability {
         MapState.out("E Regen doubled!");
         MapState.out("DEF halved!");
         MapState.out("INT lowered by 25%");
-        MapStateRender.setHoverText("QUICK!",1.5f, Color.WHITE);
+        MapStateRender.setHoverText("QUICK!",1.5f, Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
 
     }
+
+    @Override
+    public int getMod() {
+        return 4;
+    }
+
     public  ArrayList<String> details() {
         output.clear();
 

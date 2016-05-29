@@ -16,6 +16,7 @@ import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.tools.ColorConverter;
+import com.quadx.dungeons.tools.HoverText;
 
 import java.util.ArrayList;
 
@@ -30,32 +31,70 @@ import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtWater;
 public class MapStateRender extends MapState {
 
     private static ArrayList<String> equipList=new ArrayList<>();
-    private static String hovTextS="";
-    private static Color hovColor=Color.WHITE;
     private static Texture abilityIcon;
-
     public static boolean hovText=false;
     public static boolean showCircle=false;
     private static boolean blink=false;
-    private static float hovTime=1f;
-    public static float circleTime=.6f;
-    public static float dtBlink =0;
-    static int invSlots=3;
+    public static float dtCircle=1f;
+    static float dtBlink =0;
+    public static float dtWaterEffect=0;
     public static int inventoryPos=0;
+    static float dtHovBuffTime=0;
     static int blradius=0;
     private static int prevMod=0;//checks if Ability has changed
-    private static int hovTextYPosMod=0;
+    public static ArrayList<HoverText> hoverTexts = new ArrayList<>();
+    public static ArrayList<HoverText> hoverBuff = new ArrayList<>();
 
+    public static void updateVariables(float dt){
+        dtBlink+=dt;
+        dtWaterEffect+=dt;
+        dtHovBuffTime+=dt;
+        if(showCircle && dtCircle>0){
+            dtCircle-=dt;
+        }
+        else{
+            dtCircle=1f;
+            showCircle=false;
+        }
+    }
+    public static void updateHoverTextTime(){
+        hoverTexts.forEach(HoverText::updateDT);
+    }
     public MapStateRender(GameStateManager gsm) {
         super(gsm);
     }
-    public static void setHoverText(String s, float time, Color color){
-        hovColor=color;
-        hovText=true;
-        hovTextS=s;
-        hovTime=time;
-        hovTextYPosMod=0;
-        MapStateUpdater.dtHovText=0;
+    public static void setHoverText(String s, float time, Color color, int x, int y,boolean flash){
+        if(dtHovBuffTime>HoverText.bufferTime) {
+            hoverTexts.add(new HoverText(s, color, x, y, time, flash));
+            dtHovBuffTime=0;
+        }
+        else{
+            hoverBuff.add(new HoverText(s, color, x, y, time, flash));
+        }
+    }
+    public static void drawHovText(SpriteBatch sb){
+        if(!hoverBuff.isEmpty() &&dtHovBuffTime>HoverText.bufferTime){
+            hoverTexts.add(hoverBuff.get(0));
+            hoverBuff.remove(0);
+            dtHovBuffTime=0;
+        }
+        for(HoverText h:hoverTexts){
+            h.draw(sb);
+        }
+        //delete inactive hoverText
+        boolean[] index;
+        if(!hoverTexts.isEmpty()){
+            index= new boolean[hoverTexts.size()];
+            hoverTexts.stream().filter(h -> !h.isActive()).forEach(h -> {
+                index[hoverTexts.indexOf(h)] = true;
+            });
+            for(int i=hoverTexts.size()-1;i>=0;i--){
+                if(index[i]) {
+                    hoverTexts.remove(i);
+                }
+            }
+            while (hoverTexts.size()>4)hoverTexts.remove(0);
+        }
     }
     public static void loadAttackIcons(){
        if(Game.player.attackList.size() !=attackIconList.size()) {
@@ -126,73 +165,12 @@ public class MapStateRender extends MapState {
             sb.end();
         }
     }
-    public static void loadEquipIcons(){
-        if(equipIcon.size() != Game.player.equipedList.size()) {
-            equipIcon.clear();
-            for (Equipment eq : Game.player.equipedList) {
-                String s;
-                s = eq.getType();
-                try {
-                    equipIcon.add(new Texture(Gdx.files.internal("images/icons/items/ic" + s + ".png")));
-
-                } catch (GdxRuntimeException e) {
-                    //.printLOG(e);
-                }
-            }
-        }
-    }
-    public static void loadInventoryIcons() {
-        if (invIcon.size() != Game.player.invList.size()) {
-            invIcon.clear();
-            invSize.clear();
-
-            for (ArrayList<Item> list : Game.player.invList) {
-                if(!list.isEmpty()){
-                    Item item = list.get(0);
-                    invSize.add(list.size());
-                    String s = item.getName();
-                    if (item.isEquip)
-                        s = item.getType();
-                    if (item.isSpell)
-                        s = "SpellBook";
-                    try {
-                        invIcon.add(new Texture(Gdx.files.internal("images/icons/items/ic" + s + ".png")));
-
-                    } catch (GdxRuntimeException | IndexOutOfBoundsException e) {
-    //                    Game.printLOG(e);
-
-                    }
-                }
-            }
-
-        }
-    }
     public static void drawPlayerFinder(SpriteBatch sb){
         shapeR.begin(ShapeRenderer.ShapeType.Line);
         shapeR.setColor(Color.WHITE);
 
-        shapeR.circle(Game.player.getPX(),Game.player.getPY(),100*MapStateUpdater.dtCircle);
+        shapeR.circle(Game.player.getPX(),Game.player.getPY(),100*dtCircle);
         shapeR.end();
-    }
-    public static void drawHovText(SpriteBatch sb){
-        sb.begin();
-        if(dtHovText<hovTime){
-            Game.setFontSize(14);
-            CharSequence cs=hovTextS;
-            gl.setText(Game.getFont(),cs);
-            Game.getFont().setColor(hovColor);
-            int posX =(int)(Game.player.getPX()-(gl.width/2));
-            int posY=Game.player.getPY()+4*cellW+hovTextYPosMod;
-            Game.getFont().draw(sb,hovTextS,posX,posY);
-            hovTextYPosMod++;
-            dtHovText+=Gdx.graphics.getDeltaTime();
-        }
-        else{
-            dtHovText=0;
-            hovTextYPosMod=0;
-            hovText=false;
-        }
-        sb.end();
     }
     private static void drawMonsterHp(SpriteBatch sb){
         sb.begin();
@@ -225,22 +203,6 @@ public class MapStateRender extends MapState {
 
 
 
-    }
-    public static void drawGrid(SpriteBatch sb){
-        ///////////////////////////////////////////////
-        //Draw Grid
-
-
-        shapeR.begin(ShapeRenderer.ShapeType.Line);
-        //shapeR.setColor(Color.WHITE);
-        shapeR.setColor(.1f,.1f,.1f,.1f);
-        for(int i=0;i<gm.res;i++){
-            int a=i;
-            shapeR.line(a*cellW,0,a*cellW,gm.res*cellW);
-            shapeR.line(0,a*cellW,gm.res*cellW, a*cellW);
-
-        }
-        shapeR.end();
     }
     public static void drawMessageOutput(SpriteBatch sb){
 
@@ -278,7 +240,7 @@ public class MapStateRender extends MapState {
         double pEnergyBar=(pEnergy/pEnergyMax*pEnergyBarMax);
 
         Game.setFontSize(10);
-        Game.font.setColor(.5f, .5f, .5f, 1);
+        Game.font.setColor(Color.WHITE);
         ArrayList<String> a = Game.player.getStatsList();
         for (int i = 0; i < a.size(); i++) {
             Game.getFont().draw(sb, a.get(i), x + 30, y + Game.HEIGHT - 75 - (i * 20));
@@ -303,6 +265,7 @@ public class MapStateRender extends MapState {
         shapeR.end();
     }
     public static void drawPlayerEquipment(SpriteBatch sb){
+        /*
         equipList.clear();
         equipList.add("EQUIPMENT");
         equipList.add("HELMET");
@@ -314,6 +277,7 @@ public class MapStateRender extends MapState {
         equipList.add("CAPE");
         equipList.add("RING 1");
         //equipList.add("RING 2");
+
 
         shapeR.begin(ShapeRenderer.ShapeType.Line);
         shapeR.setColor(Color.GRAY);
@@ -339,6 +303,7 @@ public class MapStateRender extends MapState {
             }
         }
             sb.end();
+            */
     }
     private static void drawAttackMenu(SpriteBatch sb) {
         int xoffset= (int) (viewX+(Game.WIDTH/2)-(52*4));
@@ -358,7 +323,6 @@ public class MapStateRender extends MapState {
 
         sb.end();
     }
-
     private static void drawInventory(SpriteBatch sb) {
         String[] strings=new String[3];
         int[] indexes=new int[3];
@@ -388,7 +352,6 @@ public class MapStateRender extends MapState {
                     }
                 }
                 catch (IndexOutOfBoundsException e1){
-                    MapStateRender.setHoverText("ohfuckbbro",1, Color.RED);
                     //Game.printLOG(e1);
                 }
                 if(inventoryPos+i==-2){
@@ -415,7 +378,6 @@ public class MapStateRender extends MapState {
             try {
                 Game.getFont().draw(sb, strings[i], viewX + Game.WIDTH - 200, viewY + 100 - (i * 20));
             }catch (NullPointerException e){
-                MapStateRender.setHoverText("ohfuckno",1, Color.RED);
                 //Game.printLOG(e);
             }
         }
@@ -619,7 +581,7 @@ public class MapStateRender extends MapState {
     }
     public static void drawPlayer(SpriteBatch sb){
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        shapeR.setColor(Color.BLUE);
+        shapeR.setColor(Color.PURPLE);
         shapeR.rect(Game.player.getPX(), Game.player.getPY(),cellW,cellW);
         shapeR.end();
     }
@@ -633,7 +595,7 @@ public class MapStateRender extends MapState {
             shapeR.setColor(1,0,0,.2f);
             shapeR.rect((int)x1,(int)y1,side,side);
         }
-        shapeR.setColor(.1f, .1f, .1f, .4f);
+        shapeR.setColor(.1f, .1f, .1f, .5f);
         shapeR.rect(viewX,viewY, (float) (Game.WIDTH/3.5),Game.HEIGHT);
         //shapeR.rect((float) (viewX+Game.WIDTH-(Game.WIDTH/3.5)),viewY, (float) (Game.WIDTH/3.5),Game.HEIGHT);
 
@@ -666,21 +628,27 @@ public class MapStateRender extends MapState {
             if(c.hasMon())  shapeR.setColor(1,0,0,1);
             if(c.getAttArea())shapeR.setColor(.7f,0,0f,1);
             if(map && Game.player.getX()==x && Game.player.getY()==y){
-                if(rn.nextBoolean())
+                if(blink)
                     shapeR.setColor(0,0,1,1);
                 else
                     shapeR.setColor(1,1,1,1);
             }
-            ColorConverter water = new ColorConverter(48,109,179,1);
-            if(dtWater>.03) {
-                if (rn.nextBoolean())
-                    water = new ColorConverter(12, 41, 155, 1);
-                else
-                    water = new ColorConverter(28, 123, 232, 1);
-                dtWater=0;
-            }
 
-            if(c.getWater())shapeR.setColor(water.getLIBGDXColor());
+            if(dtWaterEffect>Game.frame*60){
+                if (blink&& rn.nextBoolean())
+                    c.setColor( new Color(.1f,.1f,.8f,1f));
+                else if(blink )
+                    c.setColor( new Color(0f,0f,.8f,1f));
+                else {
+                    c.setColor( new Color(.07f, .07f, .8f, 1f));
+                }
+                dtWaterEffect=0;
+            }
+            else dtWaterEffect+=Gdx.graphics.getDeltaTime();
+
+            try {
+                if (c.getWater()) shapeR.setColor(c.getColor());
+            }catch (NullPointerException e){}
 
             if(!map)
                 shapeR.rect((cellW * x), cellW * y, cellW, cellW);

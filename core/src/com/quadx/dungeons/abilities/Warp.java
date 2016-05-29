@@ -28,8 +28,14 @@ public class Warp extends Ability {
         MapState.out("Warp 10 spaces forward on demand.");
         MapState.out("Cost 10E");
         MapState.out("Cooldown 4s");
-        MapStateRender.setHoverText("WARP!", 1.5f, Color.WHITE);
+        MapStateRender.setHoverText("WARP!", 1.5f, Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
     }
+
+    @Override
+    public int getMod() {
+        return 7;
+    }
+
     public static void warpPlayer(){
         if(timeCounter>cooldown){
             char front=MapState.lastPressed;
@@ -43,7 +49,7 @@ public class Warp extends Ability {
             timeCounter=0;
         }
         else{
-            MapStateRender.setHoverText(""+(cooldown-timeCounter),.5f,Color.GRAY);
+            MapStateRender.setHoverText(""+(cooldown-timeCounter),.5f,Color.GRAY, Game.player.getPX(),Game.player.getPY(),false);
         }
     }
 

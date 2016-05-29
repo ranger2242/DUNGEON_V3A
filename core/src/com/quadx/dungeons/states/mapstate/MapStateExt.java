@@ -34,7 +34,7 @@ class MapStateExt extends MapState{
             Game.player.invList.get(i).remove(0) ;
         }
         catch (IndexOutOfBoundsException e){
-            MapStateRender.setHoverText("ohfuck",1, Color.RED);
+            MapStateRender.setHoverText("ohfuck",1, Color.RED, Game.player.getPX(),Game.player.getPY(),false);
             Game.printLOG(e);
         }
 

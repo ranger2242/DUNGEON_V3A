@@ -15,6 +15,7 @@ public abstract class Ability {
     protected static boolean enabled=false;
     protected static float cooldown=0;
     protected static float timeCounter=0;
+    protected static float mod=0;
 
     Ability(){
     }
@@ -22,9 +23,10 @@ public abstract class Ability {
     public static Texture getIcon(){return icon;}
 
     public abstract void onActivate();
-
+    public abstract int getMod();
     public ArrayList<String> details(){return  output;}
     public static void updateTimeCounter(){timeCounter+= Gdx.graphics.getDeltaTime();}
     public static float getCoolDown(){return cooldown;}
     public static boolean isEnabled(){return enabled;}
+
 }

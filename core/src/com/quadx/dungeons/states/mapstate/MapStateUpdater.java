@@ -4,15 +4,20 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.*;
 import com.quadx.dungeons.abilities.Investor;
 import com.quadx.dungeons.abilities.Warp;
 import com.quadx.dungeons.attacks.Attack;
+import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.MainMenuState;
 import com.quadx.dungeons.states.ShopState;
+
+import java.util.ArrayList;
 
 
 /**
@@ -30,13 +35,10 @@ public class MapStateUpdater extends MapState {
     private static float dtEnergyRe=0;
     private static float dtInfo =0;
     private static float dtItem=0;
-    private static float dtToolTip=0;
     private static float dtInvSwitch=0;
     private static float dtMap=0;
-    public static float dtCircle=MapStateRender.circleTime;
     public static float dtHovText=0;
     public static float dtCollision=0;
-    private static int x = 0;
 
 
     public MapStateUpdater(GameStateManager gsm) {
@@ -44,7 +46,7 @@ public class MapStateUpdater extends MapState {
     }
     public static void moveMonsters(){
         dtMonsterMove += Gdx.graphics.getDeltaTime();
-        if(dtMonsterMove >.1f) {
+        if(dtMonsterMove >.12f) {
             gm.clearMonsterPositions();
             for(Monster m : GridManager.monsterList){
                 m.move();
@@ -52,25 +54,71 @@ public class MapStateUpdater extends MapState {
             dtMonsterMove =0;
         }
     }
-    public static void fuckingStupidUpdateFunction(float dt){
-        Game.player.calculateArmorBuff();
+    static void updateMousePosition(){
         mouseX=Gdx.input.getX();
         mouseY=Gdx.input.getY();
         mouseRealitiveX=(int)(mouseX+viewX);
         mouseRealitiveY=(int)(Game.HEIGHT-mouseY+viewY);
-        MapStateRender.loadInventoryIcons();
-        MapStateRender.loadEquipIcons();
+    }
+    public static void updateCamPosition(){
         Vector3 position = cam.position;
-
         float lerp = 0.2f;
         position.x += (Game.player.getCordsPX().x - position.x) * lerp;
         position.y += (Game.player.getCordsPX().y - position.y) * lerp;
         cam.position.set(position);
         cam.update();
+        viewX = cam.position.x - cam.viewportWidth / 2;
+        viewY = cam.position.y - cam.viewportHeight / 2;
 
-        MapStateRender.dtBlink+=dt;
+    }
+    public static void loadInventoryIcons() {
+        if (invIcon.size() != Game.player.invList.size()) {
+            invIcon.clear();
+            invSize.clear();
+
+            for (ArrayList<Item> list : Game.player.invList) {
+                if(!list.isEmpty()){
+                    Item item = list.get(0);
+                    invSize.add(list.size());
+                    String s = item.getName();
+                    if (item.isEquip)
+                        s = item.getType();
+                    if (item.isSpell)
+                        s = "SpellBook";
+                    try {
+                        invIcon.add(new Texture(Gdx.files.internal("images/icons/items/ic" + s + ".png")));
+
+                    } catch (GdxRuntimeException | IndexOutOfBoundsException e) {
+                        //                    Game.printLOG(e);
+
+                    }
+                }
+            }
+
+        }
+    }
+    public static void loadEquipIcons(){
+        if(equipIcon.size() != Game.player.equipedList.size()) {
+            equipIcon.clear();
+            for (Equipment eq : Game.player.equipedList) {
+                String s;
+                s = eq.getType();
+                try {
+                    equipIcon.add(new Texture(Gdx.files.internal("images/icons/items/ic" + s + ".png")));
+
+                } catch (GdxRuntimeException e) {
+                    //.printLOG(e);
+                }
+            }
+        }
+    }
+    public static void fuckingStupidUpdateFunction(float dt){
+        updateCamPosition();
+        updateMousePosition();
+        loadInventoryIcons();
+        loadEquipIcons();
+        MapStateRender.updateVariables(dt);
         dtDig +=dt;
-        dtWater+=dt;
         dtRegen += dt;
         dtRun+=dt;
         dtItem+=dt;
@@ -83,13 +131,7 @@ public class MapStateUpdater extends MapState {
         dtEnergyRe+=dt;
         dtCollision+=dt;
         if(Warp.isEnabled()){Warp.updateTimeCounter();}
-        if(MapStateRender.showCircle && dtCircle>0){
-            dtCircle-=dt;
-        }
-        else{
-            dtCircle=2;
-            MapStateRender.showCircle=false;
-        }
+
         //dtHovText+=dt;
         if(MapStateRender.hovText)
             dtEnergyRe+=dt;
@@ -99,19 +141,10 @@ public class MapStateUpdater extends MapState {
             if(Game.player.getEnergy()>Game.player.getEnergyMax())Game.player.setEnergy(Game.player.getEnergyMax());
             dtEnergyRe=0;
         }
-
-        if(hovering){
-            dtToolTip+=dt;
-            if(dtToolTip>.6){
-                popupItem =null;
-                hovering=false;
-                dtToolTip=0;
-            }
-        }
         if (dtDamageTextFloat > .6) {
             displayPlayerDamage = false;
         }
-        if (dtRegen > .4) {
+        if (dtRegen > .3) {
             if(AbilityMod.investor)
                 Investor.generatePlayerGold();
             if (Game.player.getMana() < Game.player.getManaMax())
@@ -121,10 +154,7 @@ public class MapStateUpdater extends MapState {
             dtRegen = 0;
         }
         if(effectLoaded) effect.update(Gdx.graphics.getDeltaTime());
-        viewX = cam.position.x - cam.viewportWidth / 2;
-        viewY = cam.position.y - cam.viewportHeight / 2;
         MapStateExt.mouseOverHandler();
-        x++;
         if(Game.player.checkIfDead()){
             Game.player=null;
             Game.player=new Player();

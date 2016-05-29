@@ -28,28 +28,24 @@ public class Monster {
     public double intel;
     private double speed;
     double hpBase =30;
-    double attBase =50;
-    double defBase =50;
-    double intBase =50;
-    double spdBase =50;
+    double attBase =30;
+    double defBase =30;
+    double intBase =30;
+    double spdBase =30;
     double hpMod=0;
     double attackMod=0;
     double defenseMod=1;
     double intelMod=1;
     double speedMod=0;
     String status="0";
-    int sight=4;
+    int sight=6;
     private double damage;
     public String name= "monster";
 
     public Monster(){
-        System.out.println("=++");
         rn = new Random();
-        genLevel(Game.player.level);
-        System.out.println("@#@#@");
+        genLevel(Game.player.level+Game.player.floor);
         genStats();
-        //System.out.println("@#@#@");
-
     }
     public String getName(){return name;}
     public void stattest() {
@@ -59,7 +55,7 @@ public class Monster {
         }
     }
     private void genLevel(int i) {
-        level=rn.nextGaussian()*i;
+        level=rn.nextInt(i)+2;
         while(level<=0) {
             System.out.println("$$"+level);
             level = rn.nextGaussian() * i;
@@ -187,7 +183,7 @@ public class Monster {
             (x==Game.player.getX() && y-1==Game.player.getY()) ) {
             int d= Damage.monsterPhysicalDamage(Game.player,this,(int)power);
             Game.player.setHp(Game.player.getHp()- d);
-            MapStateRender.setHoverText("-"+d,1, Color.RED);
+            MapStateRender.setHoverText("-"+d,1, Color.RED, Game.player.getPX(),Game.player.getPY(),true);
         }
         else{
             if (Game.player.getX() > this.getX() - this.getSight() && Game.player.getX() < this.getX() + this.getSight()

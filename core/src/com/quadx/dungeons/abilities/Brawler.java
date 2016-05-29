@@ -31,9 +31,14 @@ public class Brawler extends Ability {
         MapState.out("E Regen doubled!");
         MapState.out("M Max was halved!");
         MapState.out("1.2x DMG for E Attacks");
-        MapStateRender.setHoverText("BRAWLER!",1.5f, Color.WHITE);
+        MapStateRender.setHoverText("BRAWLER!",1.5f, Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
 
         //super.onActivate();
+    }
+
+    @Override
+    public int getMod() {
+        return 2;
     }
 
     public ArrayList<String> details() {

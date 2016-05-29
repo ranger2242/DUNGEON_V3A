@@ -32,9 +32,15 @@ public class Mage extends Ability {
         MapState.out("M Regen doubled!");
         MapState.out("E Max was halved!");
         MapState.out("1.2x DMG for M Attacks");
-        MapStateRender.setHoverText("MAGE!",1.5f, Color.WHITE);
+        MapStateRender.setHoverText("MAGE!",1.5f, Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
 
     }
+
+    @Override
+    public int getMod() {
+        return 3;
+    }
+
     public ArrayList<String> details() {
         output.clear();
 

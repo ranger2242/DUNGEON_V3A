@@ -29,7 +29,12 @@ public class Investor extends Ability {
         MapState.out("HP Regen doubled!");
         MapState.out("INT doubled!");
         MapState.out("Gold is being generated!");
-        MapStateRender.setHoverText("INVESTOR!",1.5f, Color.WHITE);
+        MapStateRender.setHoverText("INVESTOR!",1.5f, Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
+    }
+
+    @Override
+    public int getMod() {
+        return 5;
     }
 
     public ArrayList<String> details() {
@@ -45,6 +50,6 @@ public class Investor extends Ability {
         return output;
     }
     public static void generatePlayerGold(){
-        Game.player.setGold((float)(Game.player.getGold()*1.01));
+        Game.player.setGold((float)(Game.player.getGold()*1.001));
     }
 }

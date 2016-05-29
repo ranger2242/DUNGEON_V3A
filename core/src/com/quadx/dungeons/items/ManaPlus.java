@@ -8,6 +8,6 @@ public class ManaPlus extends Item {
     public ManaPlus(){
         name="Mana+";
         manamod=60;
-        cost=15;
+        cost=100;
     }
 }

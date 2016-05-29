@@ -31,7 +31,6 @@ public class GridManager {
         plotMonsters();
         plotPlayer();
         MapStateRender.showCircle = true;
-        MapStateUpdater.dtCircle = MapStateRender.circleTime;
     }
     public void clearArea(int x, int y, boolean player) {
         x -= 1;
@@ -166,7 +165,7 @@ public class GridManager {
         }
     }
     private void plotMonsters() {
-        double temp = liveCellList.size() * .005;
+        double temp = liveCellList.size() * .01;
 
         //double temp=rng.nextGaussian(10,6);
         while (temp <= 0) {
