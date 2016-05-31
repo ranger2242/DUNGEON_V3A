@@ -71,7 +71,6 @@ public class MapState extends State {
     static int qButtonBeingHovered;
 
     static float dtMessage=0;
-    static float dtLootPopup =0;
     public static float dtStatPopup=0;
     public static float viewX;
     public static float viewY;
@@ -118,7 +117,7 @@ public class MapState extends State {
             output.remove(0);
         }
         MapStateUpdater.buttonHandler();
-        if(MapStateUpdater.dtCollision>.16666f)
+        if(MapStateUpdater.dtCollision>Game.frame/2)
         MapStateUpdater.collisionHandler();
         MapStateUpdater.moveMonsters();
         MapStateUpdater.fuckingStupidUpdateFunction(dt);
@@ -129,7 +128,7 @@ public class MapState extends State {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
             shapeR.setProjectionMatrix(cam.combined);
             sb.setProjectionMatrix(cam.combined);
-        Game.player.checkNullInventory();
+       // Game.player.checkNullInventory();
         MapStateRender.drawGrid(false);
         MapStateRender.drawMonsterAgro();
         MapStateRender.drawHUD(sb);
@@ -155,7 +154,6 @@ public class MapState extends State {
 
         if(hovering) MapStateRender.drawPopup(sb);
         if (effectLoaded) {MapStateRender.drawParticleEffects(sb, Game.player.getPX(), Game.player.getPY());}
-        MapStateRender.updateHoverTextTime();
         MapStateRender.drawHovText(sb);
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         shapeR.setColor(Color.RED);
@@ -260,8 +258,11 @@ public class MapState extends State {
         for(Cell c:hitList){
             for(Monster m: GridManager.monsterList){
                 if(c.getX()==m.getX() && c.getY()==m.getY()){
+                    int tempMonIndex;
+
                     dtDamageTextFloat = 0;
                     tempMon=m;
+                    tempMonIndex=GridManager.monsterList.indexOf(m);
                     playerDamage = Damage.playerMagicDamage(Game.player, m, attack.getPower());
                     out("Hit "+playerDamage+" damage");
                     int attIndex = Game.player.attackList.indexOf(attack);
@@ -271,9 +272,12 @@ public class MapState extends State {
                     //displayPlayerDamage = true;
                     MapStateRender.setHoverText("-"+playerDamage,.8f,Color.RED,m.getPX(),m.getPY(),true);
                     m.takeAttackDamage(playerDamage);
+                    GridManager.monsterList.get(tempMonIndex).setHit();
+
                     if (m.getHp() < 1) {
                         out(DIVIDER);
                         out(m.getName() + " Level " + m.getLevel() + " was killed.");
+                        c.setMon(false);
                         Game.player.addKills();
                         Game.player.setExp(m);
                         Game.player.checkLvlUp();
@@ -291,11 +295,17 @@ public class MapState extends State {
             if(tempMon !=null && killed){
                 GridManager.monsterList.remove(tempMon);
             }
+
+
         }
     }
 
     static void makeGold(int x){
-        int gold=(int) ((rn.nextFloat()/2)*100);
+        float f= rn.nextFloat();
+        while(f<.05){
+            f= rn.nextFloat();
+        }
+        int gold=(int) ((f)*100)*x;
         if (gold<0)gold=1;
         {
             Game.player.setGold(Game.player.getGold() + gold);
@@ -334,9 +344,9 @@ public class MapState extends State {
         }
     }
     static void openCrate(){
-        int q=rn.nextInt(30)+1;
+        int q=rn.nextInt(17)+1;
         if(q>=15){
-            double rand=rn.nextFloat()/8;
+            double rand=rn.nextFloat()/16;
             if(rand<0)rand*=-1;
             int gold=(int)(Game.player.getGold()*(rand));
             if(gold<=0)gold=1;
@@ -364,7 +374,7 @@ public class MapState extends State {
                 s="SpellBook";
             try {
                 lootPopup = new Texture(Gdx.files.internal("images/icons/items/ic" + s + ".png"));
-                dtLootPopup=0;
+                MapStateRender.dtLootPopup=0;
             }
             catch (GdxRuntimeException e){
                 Game.printLOG(e);

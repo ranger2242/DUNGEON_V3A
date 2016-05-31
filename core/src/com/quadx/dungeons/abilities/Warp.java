@@ -63,4 +63,9 @@ public class Warp extends Ability {
         output.add("Cooldown 4s");
         return output;
     }
+
+    @Override
+    public String getName() {
+        return "WARP";
+    }
 }

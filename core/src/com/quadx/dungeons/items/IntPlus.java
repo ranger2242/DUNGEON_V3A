@@ -8,6 +8,6 @@ public class IntPlus extends Item {
     public IntPlus(){
         name="Intel+";
         intelmod+=1;
-        cost=200;
+        cost=1000;
     }
 }

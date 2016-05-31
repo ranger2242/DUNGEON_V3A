@@ -42,6 +42,8 @@ public class AbilitySelectState extends State {
 
     public AbilitySelectState(GameStateManager gsm){
         super(gsm);
+        MyTextInputListener listener = new MyTextInputListener();
+        Gdx.input.getTextInput(listener, "Fucking name", "","a Fucking hint");
         Game.setFontSize(28);
 
         Gdx.gl.glClearColor(0,0,0,1);
@@ -97,13 +99,11 @@ public class AbilitySelectState extends State {
             }
             dtMove=0;
         }
-        if(dtSel >.7f) {
-            if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
-                pressed = true;
-                AbilityMod.enableAbility(hovering.getMod());
-                dtSel=0;
-            }
+        if(dtSel >.7f) if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
 
+            pressed = true;
+            AbilityMod.enableAbility(hovering.getMod());
+            dtSel = 0;
         }
         if(pressed){gsm.push(new MapState(gsm));}
     }

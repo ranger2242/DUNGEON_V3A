@@ -182,6 +182,8 @@ public class GridManager {
                 c.setMon(true);
                 c.setMonsterIndex(monsterList.indexOf(m));
                 liveCellList.set(index,c);
+                m.setMonListIndex(monsterList.indexOf(m));
+                m.setLiveCellIndex(index);
                 //liveCellList.get(index).setMon(true);
                 //liveCellList.get(index).setMonsterIndex(monsterList.indexOf(m));
                 Game.console("MList:" + monsterList.indexOf(m));
@@ -206,7 +208,7 @@ public class GridManager {
         }
     }
     private void plotCrates() {
-        float fillPercent = .01f;
+        float fillPercent = .003f;
         int crates = (int) (liveCellList.size() * fillPercent);
         while (crates > 0) {
             int index = rn.nextInt(liveCellList.size());

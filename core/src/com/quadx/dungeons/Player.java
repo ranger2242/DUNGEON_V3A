@@ -27,34 +27,36 @@ public class Player {
     private int y;
     private int py;//(Game.HEIGHT/2)-2;
     private int liveCellListIndex;
-    private float gold=0;
-    public int level =1;
-    int hpMax = 100;
     private int hpMod =0;
     private int attackMod=0;
     private int defenseMod=0;
     private int speedMod=0;
-    int intelMod=0;
     private int manaMod = 0;
-    int hp =100;
-    int attack=10;
-    int defense=10;
-    private int speed=10;
-    int intel=10;
-    int mana = 100;
-    int manaMax = 100;
     private int manaRegenRate=5;
+    private int speed=15;
     private int hpRegen =2;
-    double damage;
     private int exp=0;
     private int killcount=0;
     private int energy=100;
     private int energyMax=100;
     private int energyRegen=2 ;
+    public int level =1;
+    public int floor= 1;
+    int hpMax = 100;
+    int intelMod=0;
+    int hp =100;
+    int attack=15;
+    int defense=15;
+    int intel=15;
+    int mana = 100;
+    int manaMax = 100;
     int prevInvSize=0;
     int abilityPoints=1;
-    public int floor= 0;
+    double damage;
+
     private float moveSpeed=.08f;
+    private float gold=0;
+
     private Random rn =new Random();
     String name ="DEMO";
     private Attack fullhealSp = new FullHeal();
@@ -359,7 +361,10 @@ public class Player {
 
     public boolean checkIfDead() {
         boolean dead=false;
-        if(hp<1)dead=true;
+        if(hp<1){
+            dead=true;
+        }
+
         return dead;
     }
 }

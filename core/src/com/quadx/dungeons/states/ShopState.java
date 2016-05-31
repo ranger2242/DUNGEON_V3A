@@ -105,14 +105,19 @@ public class ShopState extends State {
     }
     private void drawPlayerInv(SpriteBatch sb){
         sb.begin();
+
         Game.getFont().draw(sb,"INV",viewX+ Game.WIDTH/2,viewY+ Game.HEIGHT-50);
         Game.getFont().draw(sb,"G "+ Game.player.getGold(),viewX+(Game.WIDTH/2)+100,viewY+ Game.HEIGHT-50);
 
         for(int i = 0; i< Game.player.invList.size(); i++)
         {
-            ArrayList<Item> al= Game.player.invList.get(i);
-            Game.getFont().draw(sb,(i+1)+". "+al.get(0).getName(), viewX+Game.WIDTH/2,viewY+ Game.HEIGHT-90-(i*60));
-            Game.getFont().draw(sb,"x"+al.size(),viewX+ Game.WIDTH-100,viewY+ Game.HEIGHT-90-(i*60));
+            try {
+                ArrayList<Item> al = Game.player.invList.get(i);
+                Game.getFont().draw(sb, (i + 1) + ". " + al.get(0).getName(), viewX + Game.WIDTH / 2, viewY + Game.HEIGHT - 90 - (i * 60));
+                Game.getFont().draw(sb, "x" + al.size(), viewX + Game.WIDTH - 100, viewY + Game.HEIGHT - 90 - (i * 60));
+            }catch (IndexOutOfBoundsException e){
+
+            }
 
         }
 
@@ -132,12 +137,11 @@ public class ShopState extends State {
         shopInv.clear();
         shopInv.add(new Potion());
         shopInv.add(new ManaPlus());
-        shopInv.add(statItemPicker());
-        shopInv.add(statItemPicker());
-        shopInv.add(statItemPicker());
-        shopInv.add(new SpellBook());
-        shopInv.add(new SpellBook());
-        shopInv.add(new SpellBook());
+        shopInv.add(new AttackPlus());
+        shopInv.add(new DefPlus());
+        shopInv.add(new IntPlus());
+        shopInv.add(new SpeedPlus());
+
     }
     private Item statItemPicker(){
         Item item=null;

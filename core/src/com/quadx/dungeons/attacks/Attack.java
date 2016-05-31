@@ -22,10 +22,10 @@ public class Attack {
     int costGold=0;
     String description="s";
     public void checkLvlUp(){
-        if(uses>50){level=1;}
-        if(uses>120){level=2;}
-        if(uses>200){level=3;}
-        if(uses>300){level=4;}
+        if(uses>150){level=1;}
+        if(uses>350){level=2;}
+        if(uses>600){level=3;}
+        if(uses>1000){level=4;}
         power=powerA[level];
         cost=costA[level];
     }

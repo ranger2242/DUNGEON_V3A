@@ -21,17 +21,18 @@ public class Mage extends Ability {
     @Override
 
     public  void onActivate() {
-        Game.player.setMana(Game.player.getMana()*2);
-        Game.player.setManaMax(Game.player.getManaMax()*2);
-        Game.player.setManaRegen(Game.player.getManaRegenRate()*2);
+        Game.player.setMana(Game.player.getMana()*4);
+        Game.player.setManaMax(Game.player.getManaMax()*4);
+        Game.player.setManaRegen(Game.player.getManaRegenRate()*3);
         Game.player.setEnergy(Game.player.getEnergy()/2);
         Game.player.setEnergyMax(Game.player.getEnergyMax()/2);
+        Game.player.setIntel(Game.player.getIntel()*2);
         MapState.out("----------------------------------");
         MapState.out(Game.player.getName()+" activated the MAGE ability!");
-        MapState.out("M Max doubled!");
-        MapState.out("M Regen doubled!");
+        MapState.out("M Max x4!");
+        MapState.out("M Regen x3!");
         MapState.out("E Max was halved!");
-        MapState.out("1.2x DMG for M Attacks");
+        MapState.out("2x INT");
         MapStateRender.setHoverText("MAGE!",1.5f, Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
 
     }
@@ -50,5 +51,10 @@ public class Mage extends Ability {
         output.add("E Max x0.5");
         output.add("M DMG x1.2");
         return output;
+    }
+
+    @Override
+    public String getName() {
+        return "MAGE";
     }
 }

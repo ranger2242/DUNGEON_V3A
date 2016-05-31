@@ -49,6 +49,12 @@ public class Investor extends Ability {
         output.add("if you don't save enough!");
         return output;
     }
+
+    @Override
+    public String getName() {
+        return "INVESTOR";
+    }
+
     public static void generatePlayerGold(){
         Game.player.setGold((float)(Game.player.getGold()*1.001));
     }

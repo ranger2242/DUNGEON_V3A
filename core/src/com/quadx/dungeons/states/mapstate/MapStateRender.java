@@ -38,6 +38,8 @@ public class MapStateRender extends MapState {
     public static float dtCircle=1f;
     static float dtBlink =0;
     public static float dtWaterEffect=0;
+    static float dtLootPopup=0;
+
     public static int inventoryPos=0;
     static float dtHovBuffTime=0;
     static int blradius=0;
@@ -49,6 +51,8 @@ public class MapStateRender extends MapState {
         dtBlink+=dt;
         dtWaterEffect+=dt;
         dtHovBuffTime+=dt;
+        dtLootPopup +=dt;
+        updateHoverTextTime();
         if(showCircle && dtCircle>0){
             dtCircle-=dt;
         }
@@ -175,7 +179,10 @@ public class MapStateRender extends MapState {
     private static void drawMonsterHp(SpriteBatch sb){
         sb.begin();
         for(Monster m: GridManager.monsterList){
+            //Game.getFont().draw(sb,GridManager.monsterList.indexOf(m)+"", m.getX()*cellW,m.getY()*cellW);
+
             Game.getFont().draw(sb,(int)m.getHp()+"", m.getX()*cellW,m.getY()*cellW);
+            if(m.isHit())Game.getFont().draw(sb,"!" , m.getX()*cellW, (float) ((m.getY()+1.5)*cellW));
         }
         sb.end();
     }
@@ -625,7 +632,8 @@ public class MapStateRender extends MapState {
             if(c.hasCrate())shapeR.setColor(.627f, .322f, .176f, 1);
             if(c.getShop()) shapeR.setColor(1f, 0f, 1f, 1);
             if(c.hasWarp()) shapeR.setColor(0f, 1f, 0f, 1);
-            if(c.hasMon())  shapeR.setColor(1,0,0,1);
+            if(c.hasMon())  shapeR.setColor(1, 0, 0, 1);
+
             if(c.getAttArea())shapeR.setColor(.7f,0,0f,1);
             if(map && Game.player.getX()==x && Game.player.getY()==y){
                 if(blink)

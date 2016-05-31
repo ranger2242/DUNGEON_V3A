@@ -8,6 +8,6 @@ public class DefPlus extends  Item {
     public DefPlus(){
         name="Defense+";
         defensemod+=1;
-        cost=200;
+        cost=1000;
     }
 }

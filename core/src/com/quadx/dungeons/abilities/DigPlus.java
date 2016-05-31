@@ -39,4 +39,9 @@ public class DigPlus extends Ability {
 
         return output;
     }
+
+    @Override
+    public String getName() {
+        return "DIG+";
+    }
 }

@@ -47,12 +47,9 @@ public class MainMenuState extends State {
         //Game.setFontSize(40);
         CharSequence cs="DUNGEON";
         gl.setText(Game.getFont(),cs);
-        titlePosX = (int)(viewX+(Game.WIDTH/2)-(gl.width/2));
-        titlePosY=(int)(viewY+ (Game.HEIGHT/3)*2);
-        effect.setPosition(Game.WIDTH/2,0);
-        selectorPosX=(int)(viewX+ (Game.WIDTH/2)-100);
-        optionsPosX =(int)(viewX+(Game.WIDTH/2));
-        optionsPosY =(int)(viewY+ (Game.HEIGHT/3));
+        cam.position.x=0;
+        cam.position.y=0;
+
     }
     @Override
     protected void handleInput() {
@@ -101,7 +98,12 @@ public class MainMenuState extends State {
         }
         effect.update(dt);
         //System.out.println(selector);
-
+        titlePosX = (int)(viewX+(Game.WIDTH/2)-(gl.width/2));
+        titlePosY=(int)(viewY+ (Game.HEIGHT/3)*2);
+        effect.setPosition(viewX+ Game.WIDTH/2,viewY+ 0);
+        selectorPosX=(int)(viewX+        (Game.WIDTH/2)-100);
+        optionsPosX =(int)(viewX+(Game.WIDTH/2));
+        optionsPosY =(int)(viewY+ (Game.HEIGHT/3));
     }
 
     @Override

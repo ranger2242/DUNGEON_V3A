@@ -78,4 +78,8 @@ public class Cell {
     public int getX() {
         return x;
     }
+
+    public int getMonsterIndex() {
+        return monsterIndex;
+    }
 }

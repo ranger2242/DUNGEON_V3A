@@ -8,6 +8,6 @@ public class AttackPlus extends Item {
     public AttackPlus(){
         name="Attack+";
         attackmod=1;
-        cost=200;
+        cost=1000;
     }
 }

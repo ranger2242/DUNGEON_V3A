@@ -12,10 +12,8 @@ import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
-import com.quadx.dungeons.states.AbilitySelectState;
-import com.quadx.dungeons.states.GameStateManager;
-import com.quadx.dungeons.states.MainMenuState;
-import com.quadx.dungeons.states.ShopState;
+import com.quadx.dungeons.states.*;
+import com.quadx.dungeons.tools.Score;
 
 import java.util.ArrayList;
 
@@ -45,14 +43,17 @@ public class MapStateUpdater extends MapState {
         super(gsm);
     }
     public static void moveMonsters(){
-        dtMonsterMove += Gdx.graphics.getDeltaTime();
-        if(dtMonsterMove >.12f) {
-            gm.clearMonsterPositions();
-            for(Monster m : GridManager.monsterList){
+        for(Monster m : GridManager.monsterList){
+            m.updateVariables(Gdx.graphics.getDeltaTime());
+            if(m.getdtMove()>m.getMoveSpeed()){
                 m.move();
             }
-            dtMonsterMove =0;
+            if(m.isMoved()){
+
+            }
         }
+       // gm.clearMonsterPositions();
+
     }
     static void updateMousePosition(){
         mouseX=Gdx.input.getX();
@@ -112,37 +113,12 @@ public class MapStateUpdater extends MapState {
             }
         }
     }
-    public static void fuckingStupidUpdateFunction(float dt){
-        updateCamPosition();
-        updateMousePosition();
-        loadInventoryIcons();
-        loadEquipIcons();
-        MapStateRender.updateVariables(dt);
-        dtDig +=dt;
-        dtRegen += dt;
-        dtRun+=dt;
-        dtItem+=dt;
-        dtInfo+=dt;
-        dtLootPopup +=dt;
-        dtStatPopup+=dt;
-        dtDamageTextFloat += dt;
-        dtMap +=dt;
-        dtMessage += dt;
-        dtEnergyRe+=dt;
-        dtCollision+=dt;
-        if(Warp.isEnabled()){Warp.updateTimeCounter();}
-
-        //dtHovText+=dt;
-        if(MapStateRender.hovText)
-            dtEnergyRe+=dt;
-
+    public static void regenPlayer(float dt){
+        dtRegen += dt; //move all this shit to PLAYER
         if(dtEnergyRe>.2 && Game.player.getEnergy()<Game.player.getEnergyMax()){
             Game.player.setEnergy(Game.player.getEnergy()+Game.player.getEnergyRegen());
             if(Game.player.getEnergy()>Game.player.getEnergyMax())Game.player.setEnergy(Game.player.getEnergyMax());
             dtEnergyRe=0;
-        }
-        if (dtDamageTextFloat > .6) {
-            displayPlayerDamage = false;
         }
         if (dtRegen > .3) {
             if(AbilityMod.investor)
@@ -153,15 +129,36 @@ public class MapStateUpdater extends MapState {
                 Game.player.setHp(Game.player.getHp() + Game.player.getHpRegen());
             dtRegen = 0;
         }
+    }
+    public static void fuckingStupidUpdateFunction(float dt){
+        updateCamPosition();
+        updateMousePosition();
+        loadInventoryIcons();
+        loadEquipIcons();
+        regenPlayer(dt);
+        MapStateRender.updateVariables(dt);
+        dtDig +=dt;
+        dtRun+=dt;
+        dtItem+=dt;
+        dtInfo+=dt;
+        dtStatPopup+=dt;
+        dtDamageTextFloat += dt;
+        dtMap +=dt;
+        dtMessage += dt;
+        dtEnergyRe+=dt;
+        dtCollision+=dt;
+        if(Warp.isEnabled()){Warp.updateTimeCounter();}
+
         if(effectLoaded) effect.update(Gdx.graphics.getDeltaTime());
         MapStateExt.mouseOverHandler();
         if(Game.player.checkIfDead()){
+            HighScoreState.addScore(new Score(Game.player.getPoints(), Game.player.getGold(),Game.player.getName(), AbilityMod.ability.getName()+" Lvl "+Game.player.level));
             Game.player=null;
             Game.player=new Player();
             AbilitySelectState.pressed=false;
-            gsm.pop();
-            gsm.push(new MainMenuState(gsm));
-            //gsm.push(new MainMenuState(gsm));
+            inGame=false;
+           // gsm.pop();
+            gsm.push(new HighScoreState(gsm));
         }
     }
     public static void buttonHandler() {
@@ -210,13 +207,13 @@ public class MapStateUpdater extends MapState {
         if (Gdx.input.isKeyPressed(Input.Keys.NUM_8)) {
             numberButtonHandler(7);
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.F1)){
+        if(Gdx.input.isKeyPressed(Input.Keys.Z)){
             functionButtonHandler(0);
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.F2)){
+        if(Gdx.input.isKeyPressed(Input.Keys.X)){
             functionButtonHandler(1);
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.F3)){
+        if(Gdx.input.isKeyPressed(Input.Keys.C)){
             functionButtonHandler(2);
 
         }
@@ -392,7 +389,7 @@ public class MapStateUpdater extends MapState {
         Cell c= GridManager.liveCellList.get(index);
         if(Game.player.getX()==c.getX() && Game.player.getY() ==c.getY()) {
             if (c.hasLoot()) {
-                dtLootPopup = 0;
+                MapStateRender.dtLootPopup = 0;
                 lootPopup = new Texture(Gdx.files.internal("images/imCoin.png"));
                 makeGold(Game.player.level);
                 GridManager.liveCellList.get(index).setHasLoot(false);

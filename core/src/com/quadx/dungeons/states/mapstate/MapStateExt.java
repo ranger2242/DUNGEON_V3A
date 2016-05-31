@@ -29,73 +29,47 @@ class MapStateExt extends MapState{
     }
     public static void useItem(int i){
         String s="";
-        try{
-            item = Game.player.invList.get(i).get(0);
-            Game.player.invList.get(i).remove(0) ;
-        }
-        catch (IndexOutOfBoundsException e){
-            MapStateRender.setHoverText("ohfuck",1, Color.RED, Game.player.getPX(),Game.player.getPY(),false);
-            Game.printLOG(e);
-        }
+        try {
+            try {
+                item = Game.player.invList.get(i).get(0);
+                Game.player.invList.get(i).remove(0);
+            } catch (IndexOutOfBoundsException e) {
+                MapStateRender.setHoverText("ohfuck", 1, Color.RED, Game.player.getPX(), Game.player.getPY(), false);
+                Game.printLOG(e);
+            }
 
-        if(item.isEquip){/*
-            Equipment equip=(Equipment) item;
-            System.out.println("#"+equip.getName());
-            boolean remove=false;
-            int temp = 0;
-            if(Game.player.equipedList.size()>0) {
-                for (Equipment eq : Game.player.equipedList) {
-                    if (eq.type == equip.type) {
-                        Game.player.addItemToInventory(eq);
-                        temp= Game.player.equipedList.indexOf(eq);
-                        remove=true;
-                    }
-                }
-                if(remove){
-                    Game.player.equipedList.remove(temp);
-                    equipIcon.remove(temp);
-                }
-                Game.player.equipedList.add(equip);
-                System.out.println(Game.player.equipedList.size());
-            }
-            else{
-                Game.player.equipedList.add(equip);
-                System.out.println(Game.player.equipedList.size());
-            }
-*/
-        }
-        else{
-            if(item.getHpmod()!=0){
-                Game.player.setHp(Game.player.getHp()+ item.getHpmod());
-                s= Game.player.getName()+"'s HP changed by "+ item.getHpmod();
+            if (item.getHpmod() != 0) {
+                Game.player.setHp(Game.player.getHp() + item.getHpmod());
+                s = Game.player.getName() + "'s HP changed by " + item.getHpmod();
             }
             //Mana
-            if(item.getManamod()!=0){
-                Game.player.setMana(Game.player.getMana()+ item.getManamod());
-                s= Game.player.getName()+"'s M changed by "+ item.getManamod();
+            if (item.getManamod() != 0) {
+                Game.player.setMana(Game.player.getMana() + item.getManamod());
+                s = Game.player.getName() + "'s M changed by " + item.getManamod();
             }
             //attack
-            if(item.getAttackmod()!=0){
-                Game.player.setAttack(Game.player.getAttack()+ item.getAttackmod());
-                s= Game.player.getName()+"'s ATT changed by "+ item.getAttackmod();
+            if (item.getAttackmod() != 0) {
+                Game.player.setAttack(Game.player.getAttack() + item.getAttackmod());
+                s = Game.player.getName() + "'s ATT changed by " + item.getAttackmod();
             }
             //defense
-            if(item.getDefensemod()!=0){
-                Game.player.setDefense(Game.player.getDefense()+ item.getDefensemod());
-                s= Game.player.getName()+"'s DEF changed by "+ item.getDefensemod();
+            if (item.getDefensemod() != 0) {
+                Game.player.setDefense(Game.player.getDefense() + item.getDefensemod());
+                s = Game.player.getName() + "'s DEF changed by " + item.getDefensemod();
             }
             //intel
-            if(item.getIntelmod()!=0){
-                Game.player.setIntel(Game.player.getIntel()+ item.getIntelmod());
-                s= Game.player.getName()+"'s INT changed by "+ item.getIntelmod();
+            if (item.getIntelmod() != 0) {
+                Game.player.setIntel(Game.player.getIntel() + item.getIntelmod());
+                s = Game.player.getName() + "'s INT changed by " + item.getIntelmod();
             }
             //speed
-            if(item.getSpeedmod()!=0){
-                Game.player.setSpeed(Game.player.getSpeed()+ item.getSpeedmod());
-                s= Game.player.getName()+"'s SPD changed by "+ item.getSpeedmod();
+            if (item.getSpeedmod() != 0) {
+                Game.player.setSpeed(Game.player.getSpeed() + item.getSpeedmod());
+                s = Game.player.getName() + "'s SPD changed by " + item.getSpeedmod();
             }
-        }
-        out(s);
+
+            out(s);
+        }catch (NullPointerException e){}
     }
     public static void battleFunctions(int i) {
         if (Game.player.getMana() >=attack.getCost()) {

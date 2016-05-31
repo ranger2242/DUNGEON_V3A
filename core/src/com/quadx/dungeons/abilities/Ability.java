@@ -28,5 +28,6 @@ public abstract class Ability {
     public static void updateTimeCounter(){timeCounter+= Gdx.graphics.getDeltaTime();}
     public static float getCoolDown(){return cooldown;}
     public static boolean isEnabled(){return enabled;}
+    public abstract String getName();
 
 }

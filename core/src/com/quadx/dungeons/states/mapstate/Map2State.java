@@ -19,7 +19,7 @@ import java.util.Random;
 public class Map2State extends State {
     private static ShapeRenderer shapeR= new ShapeRenderer();
     private static Random rn= new Random();
-    public static int res =200;
+    public static int res =150;
     private static Cell[][] dispArray  = new Cell[res][res];
     private static Cell[][] buffArray  = new Cell[res][res];
     private float dtChange=0;

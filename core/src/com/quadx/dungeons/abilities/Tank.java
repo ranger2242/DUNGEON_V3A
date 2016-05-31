@@ -49,4 +49,9 @@ public class Tank extends Ability {
         output.add("Move Speed x0.5");
         return output;
     }
+
+    @Override
+    public String getName() {
+        return "TANK";
+    }
 }

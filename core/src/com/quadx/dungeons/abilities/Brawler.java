@@ -51,4 +51,9 @@ public class Brawler extends Ability {
         output.add("E DMG x1.2");
         return output;
     }
+
+    @Override
+    public String getName() {
+        return "BRAWLER";
+    }
 }
