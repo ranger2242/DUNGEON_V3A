@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.quadx.dungeons.Game;
+import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.tools.Score;
 import com.sun.corba.se.impl.oa.poa.ActiveObjectMap;
 
@@ -70,8 +71,15 @@ public class HighScoreState extends State {
 
     @Override
     protected void handleInput() {
-        if(Gdx.input.isKeyPressed(Input.Keys.TAB)){
-            gsm.push(new MainMenuState(gsm));
+        if(Game.controllerMode){
+            if(MainMenuState.controller.getButton(Xbox360Pad.BUTTON_B)){
+                gsm.push(new MainMenuState(gsm));
+            }
+        }
+        else {
+            if (Gdx.input.isKeyPressed(Input.Keys.TAB)) {
+                gsm.push(new MainMenuState(gsm));
+            }
         }
     }
 

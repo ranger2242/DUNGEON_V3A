@@ -25,6 +25,7 @@ public class Brawler extends Ability {
         Game.player.setEnergyRegen(Game.player.getEnergyRegen()*2);
         Game.player.setMana(Game.player.getMana()/2);
         Game.player.setManaMax(Game.player.getManaMax()/2);
+        Game.player.setAttack(Game.player.getAttack()*2);
         MapState.out("----------------------------------");
         MapState.out(Game.player.getName()+" activated the BRAWLER ability!");
         MapState.out("E Max doubled!");

@@ -15,6 +15,7 @@ public class SpellBook extends Item {
         int x= rn.nextInt(10);
         setAttack(x);
         name="Spell Book ("+attack.getName()+")";
+        loadIcon(name);
     }
 
     public Attack getAttack(){
@@ -36,7 +37,7 @@ public class SpellBook extends Item {
                 break;
             }
             case(3):{
-                attack=new FullHeal();
+                attack=new Heal();
                 break;
             }
             case(4):{

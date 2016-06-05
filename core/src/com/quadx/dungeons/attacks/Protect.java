@@ -5,17 +5,22 @@ package com.quadx.dungeons.attacks;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class Protect extends Attack {
+    public static float[] time={1f,1.2f,1.5f,2f,2.4f};
+
     public Protect()  {
         costGold=90;
-        type=2;
+        type=3;
         powerA = new int[]{0,0,0,0,0};
         costA =new int[]{80,85,90,95,100};
         name="Protect";
         power=0;
-        cost=45;
+        cost=80;
         mod=6;
         spread=0;
         range=0;
-        description="Has a chance to protect the user from damage.";
+        description="Protects the user from damage.";
+    }
+    public int getLevel(){
+        return level;
     }
 }

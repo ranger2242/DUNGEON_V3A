@@ -9,5 +9,6 @@ public class ManaPlus extends Item {
         name="Mana+";
         manamod=60;
         cost=100;
+        loadIcon(name);
     }
 }

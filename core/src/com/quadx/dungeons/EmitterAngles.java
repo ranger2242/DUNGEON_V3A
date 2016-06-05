@@ -34,7 +34,7 @@ public class EmitterAngles {
                 angleHHigh=null;
                 angleLHigh=null;
                 break;}
-            case ("Full Heal"): {
+            case ("Heal"): {
                 angleHigh=new int[]{0,0,0,0};
                 angleLow=new int[]{0,0,0,0};
                 angleHHigh=new int[]{360,360,360,360};

@@ -9,10 +9,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.*;
-import com.quadx.dungeons.abilities.Warp;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.Item;
-import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.tools.ColorConverter;
@@ -20,9 +18,8 @@ import com.quadx.dungeons.tools.HoverText;
 
 import java.util.ArrayList;
 
+import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.states.MainMenuState.gl;
-import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtHovText;
-import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtWater;
 
 /**
  * Created by Tom on 12/28/2015.
@@ -101,8 +98,8 @@ public class MapStateRender extends MapState {
         }
     }
     public static void loadAttackIcons(){
-       if(Game.player.attackList.size() !=attackIconList.size()) {
-            for (Attack attack : Game.player.attackList) {
+       if(player.attackList.size() !=attackIconList.size()) {
+            for (Attack attack : player.attackList) {
                 String s = attack.getName();
                 try {
                     attackIconList.add(new Texture(Gdx.files.internal("images/icons/attacks/ic" + s + ".png")));
@@ -173,7 +170,7 @@ public class MapStateRender extends MapState {
         shapeR.begin(ShapeRenderer.ShapeType.Line);
         shapeR.setColor(Color.WHITE);
 
-        shapeR.circle(Game.player.getPX(),Game.player.getPY(),100*dtCircle);
+        shapeR.circle(player.getPX(), player.getPY(),100*dtCircle);
         shapeR.end();
     }
     private static void drawMonsterHp(SpriteBatch sb){
@@ -188,18 +185,18 @@ public class MapStateRender extends MapState {
     }
     public static void drawHUD(SpriteBatch sb) {
         drawMonsterHp(sb);
-        drawPlayerStats(sb, viewX, viewY);
+        drawStats(sb, viewX, viewY);
         drawAttackMenu(sb);
         drawInventory(sb);
         drawMiniMap(sb);
         sb.begin();
-        CharSequence cs=Game.player.getPoints()+"";
+        CharSequence cs= player.getPoints()+"";
         gl.setText(Game.getFont(),cs);
         Game.getFont().setColor(Color.WHITE);
-        Game.getFont().draw(sb,Game.player.getPoints()+"",(int)(viewX+Game.WIDTH/2-(gl.width/2)) ,(int)(viewY+ Game.HEIGHT-50));
+        Game.getFont().draw(sb, player.getPoints()+"",(int)(viewX+Game.WIDTH/2-(gl.width/2)) ,(int)(viewY+ Game.HEIGHT-50));
         try {
             if (dtLootPopup < .4)
-                sb.draw(lootPopup, Game.player.getPX()-(lootPopup.getWidth()/2)-(cellW/4), Game.player.getPY()+5);
+                sb.draw(lootPopup, player.getPX()-(lootPopup.getWidth()/2)-(cellW/4), player.getPY()+5);
         }
         catch (NullPointerException e){
             //Game.printLOG(e);
@@ -228,16 +225,16 @@ public class MapStateRender extends MapState {
         }
         sb.end();
     }
-    private static void drawPlayerStats(SpriteBatch sb, float x, float y) {
+    private static void drawStats(SpriteBatch sb, float x, float y) {
         sb.begin();//Draw STATS
         int hpDiffx = 0;
         int margin = 30;
-        double pHealthMax = Game.player.getHpMax();
-        double pHealth = Game.player.getHp();
-        double pMana = Game.player.getMana();
-        double pManaMax = Game.player.getManaMax();
-        double pEnergyMax=Game.player.getEnergyMax();
-        double pEnergy=Game.player.getEnergy();
+        double pHealthMax = player.getHpMax();
+        double pHealth = player.getHp();
+        double pMana = player.getMana();
+        double pManaMax = player.getManaMax();
+        double pEnergyMax= player.getEnergyMax();
+        double pEnergy= player.getEnergy();
         int barWidth= 4;
         double pHPBarMax = (Game.WIDTH / barWidth) - margin - 15;
         double pHPBar = (pHealth / pHealthMax) * (pHPBarMax - hpDiffx);
@@ -248,7 +245,7 @@ public class MapStateRender extends MapState {
 
         Game.setFontSize(10);
         Game.font.setColor(Color.WHITE);
-        ArrayList<String> a = Game.player.getStatsList();
+        ArrayList<String> a = player.getStatsList();
         for (int i = 0; i < a.size(); i++) {
             Game.getFont().draw(sb, a.get(i), x + 30, y + Game.HEIGHT - 75 - (i * 20));
         }
@@ -260,7 +257,7 @@ public class MapStateRender extends MapState {
         shapeR.end();
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         shapeR.setColor(0f, 1f, 0f, 1);
-        if (Game.player.getHp() < Game.player.getHpMax() / 2) {
+        if (player.getHp() < player.getHpMax() / 2) {
             shapeR.setColor(1f, 0f, 0f, 1);
         }
         shapeR.rect(x + margin, y + Game.HEIGHT - 30, (int) pHPBar, 10);
@@ -271,21 +268,7 @@ public class MapStateRender extends MapState {
 
         shapeR.end();
     }
-    public static void drawPlayerEquipment(SpriteBatch sb){
-        /*
-        equipList.clear();
-        equipList.add("EQUIPMENT");
-        equipList.add("HELMET");
-        equipList.add("CHEST");
-        equipList.add("ARMS");
-        equipList.add("GLOVES");
-        equipList.add("LEGS");
-        equipList.add("BOOTS");
-        equipList.add("CAPE");
-        equipList.add("RING 1");
-        //equipList.add("RING 2");
-
-
+    public static void drawEquipment(SpriteBatch sb){
         shapeR.begin(ShapeRenderer.ShapeType.Line);
         shapeR.setColor(Color.GRAY);
         for (int i = 0; i < 2; i++) {
@@ -300,7 +283,7 @@ public class MapStateRender extends MapState {
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 4; j++) {
                 try {
-                    sb.draw(equipIcon.get(count), viewX + 30 + (j * 36), viewY + (Game.HEIGHT / 2) + (i * 36));
+                    sb.draw(player.equipedList.get(count).getIcon(), viewX + 30 + (j * 36), viewY + (Game.HEIGHT / 2) + (i * 36));
                     count++;
                 }
                 catch (IndexOutOfBoundsException e){
@@ -310,104 +293,47 @@ public class MapStateRender extends MapState {
             }
         }
             sb.end();
-            */
+
     }
     private static void drawAttackMenu(SpriteBatch sb) {
         int xoffset= (int) (viewX+(Game.WIDTH/2)-(52*4));
         sb.begin();
         for(int i = 0; i< attackIconList.size(); i++){
-            if(Game.player.getMana()>= Game.player.attackList.get(i).getCost()) {
+            if(player.getMana()>= player.attackList.get(i).getCost()) {
                 sb.draw(attackIconList.get(i), xoffset  + (i * 52), viewY + 48);
                 if(i<=7) Game.getFont().draw(sb,(i+1)+"",xoffset+ (i * 52), viewY + 58);
             }
             else{
-                int rem= Game.player.attackList.get(i).getCost()- Game.player.getMana();
+                int rem= player.attackList.get(i).getCost()- player.getMana();
                 Game.getFont().draw(sb,rem+"",xoffset  + (i * 52)+52/2,viewY + 70);
             }
-            Game.getFont().draw(sb,"Lv."+(Game.player.attackList.get(i).getLevel()+1),xoffset + (i * 52), viewY + 48);
-            Game.getFont().draw(sb,"M"+ Game.player.attackList.get(i).getCost(),xoffset + (i * 52),viewY+30);
+            Game.getFont().draw(sb,"Lv."+(player.attackList.get(i).getLevel()+1),xoffset + (i * 52), viewY + 48);
+            Game.getFont().draw(sb,"M"+ player.attackList.get(i).getCost(),xoffset + (i * 52),viewY+30);
+            if(i==altNumPressed){
+                Game.getFont().draw(sb,"LT ALT",xoffset + (i * 52), viewY + 95);
+            }
+            if(i==lastNumPressed){
+                Game.getFont().draw(sb,"RT SPACE",xoffset + (i * 52), viewY + 108);
+            }
         }
 
         sb.end();
     }
     private static void drawInventory(SpriteBatch sb) {
-        String[] strings=new String[3];
-        int[] indexes=new int[3];
-        int overrideA =0;
-        int overrideB= Game.player.invList.size()-1;
-        for(int i=0;i<3;i++){
+        if(!player.invList.isEmpty() && inventoryPos >-1) {
             try {
-                strings[i]=(inventoryPos+ i)+":"+ Game.player.invList.get(inventoryPos+ i).get(0).getName();
-                indexes[i]=inventoryPos+ i;
-            }catch (IndexOutOfBoundsException e) {
-                //int remainder = Game.player.invList.size() % 3;
-                try {
-                    if (!Game.player.invList.isEmpty()) {
-                        if (inventoryPos + i >= Game.player.invList.size()) {
-                            strings[i] = (overrideA) + ":" + Game.player.invList.get(overrideA).get(0).getName();
-                            indexes[i] = overrideA;
-                            overrideA++;
+                String name = (inventoryPos) + ":" + player.invList.get(inventoryPos).get(0).getName();
+                int y = (int) viewY + 150;
+                Texture t= player.invList.get(inventoryPos).get(0).getIcon();
+                int x = (int) (viewX + Game.WIDTH - 200);
 
-                        } else if (inventoryPos + i < 0) {
-                            int a = overrideB;
-                            strings[i] = (a) + ":" + Game.player.invList.get(a).get(0).getName();
-                            indexes[i] = a;
-                            overrideB--;
-                            overrideA++;
-
-                        }
-                    }
-                }
-                catch (IndexOutOfBoundsException e1){
-                    //Game.printLOG(e1);
-                }
-                if(inventoryPos+i==-2){
-                    int t1;
-                    String t2;
-                    t1=indexes[1];
-                    t2=strings[1];
-                    indexes[1]=indexes[0];
-                    strings[1]=strings[0];
-                    indexes[1]=t1;
-                    strings[1]=t2;
-
-                }
-                if(inventoryPos+i<0 && overrideA==3){
-                    inventoryPos=overrideB;
-                }
-                if(inventoryPos+i>=Game.player.invList.size()&& overrideA==3){
-                    inventoryPos=0;
-                }
-            }
+                sb.begin();
+                Game.getFont().draw(sb, name, viewX + Game.WIDTH - 200, viewY + 100 - 20);
+                Game.getFont().draw(sb, "x" + player.invList.get(inventoryPos).size(), x, y);
+                sb.draw(t, x, y);
+                sb.end();
+            }catch (IndexOutOfBoundsException |NullPointerException e){}
         }
-        sb.begin();
-        for(int i=0;i<3;i++) {
-            try {
-                Game.getFont().draw(sb, strings[i], viewX + Game.WIDTH - 200, viewY + 100 - (i * 20));
-            }catch (NullPointerException e){
-                //Game.printLOG(e);
-            }
-        }
-        for(int i=0;i<3;i++){
-            int y=(int)viewY+ 150;
-            Texture t;
-            try {
-
-                t = invIcon.get(indexes[i]);
-                int x=(int)(viewX+Game.WIDTH-200+(i*(t.getWidth()+10)));
-
-                sb.draw(t,x ,y);
-                Game.getFont().draw(sb, "x" + Game.player.invList.get(indexes[i]).size(),x, y);
-
-            }
-            catch (IndexOutOfBoundsException e){
-                //Game.printLOG(e);
-            }
-            catch (NullPointerException e){
-               // Game.printLOG(e);
-            }
-        }
-        sb.end();
     }
     private static void drawMiniMap(SpriteBatch sb){
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
@@ -442,7 +368,7 @@ public class MapStateRender extends MapState {
         ArrayList<String> popupList =new ArrayList<>();
         try {
             sb.draw(invIcon.get(qButtonBeingHovered), x - 40, y + 150);
-            Item popupItem= Game.player.invList.get(qButtonBeingHovered).get(0);
+            Item popupItem= player.invList.get(qButtonBeingHovered).get(0);
             popupList.add(popupItem.getName());
         }
         catch (IndexOutOfBoundsException e){
@@ -481,9 +407,9 @@ public class MapStateRender extends MapState {
     public static void loadParticleEffects(int pos) {
         effect = new ParticleEffect();
         emitter = new ParticleEmitter();
-        String s = Game.player.attackList.get(attackListCount + pos).getName();
+        String s = player.attackList.get(attackListCount + pos).getName();
         effect.load(Gdx.files.internal("particles/pt" + s), Gdx.files.internal("particles"));
-        effect.setPosition(Game.player.getPX(), Game.player.getPY());
+        effect.setPosition(player.getPX(), player.getPY());
         effectLoaded = true;
         emitter = effect.findEmitter(s);
         //effect.scaleEffect(2f);
@@ -589,7 +515,7 @@ public class MapStateRender extends MapState {
     public static void drawPlayer(SpriteBatch sb){
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         shapeR.setColor(Color.PURPLE);
-        shapeR.rect(Game.player.getPX(), Game.player.getPY(),cellW,cellW);
+        shapeR.rect(player.getPX(), player.getPY(),cellW,cellW);
         shapeR.end();
     }
     public static void drawMonsterAgro(){
@@ -621,8 +547,8 @@ public class MapStateRender extends MapState {
                 ty=(int) (viewY + Game.HEIGHT - (Map2State.res + 50))+c.getY();
             }
         }
-        px= (int) (viewX + Game.WIDTH - (Map2State.res + 50))+Game.player.getX();
-        py=(int) (viewY + Game.HEIGHT - (Map2State.res + 50))+Game.player.getY();
+        px= (int) (viewX + Game.WIDTH - (Map2State.res + 50))+ player.getX();
+        py=(int) (viewY + Game.HEIGHT - (Map2State.res + 50))+ player.getY();
         for(Cell c: GridManager.liveCellList){
             int x=c.getX();
             int y=c.getY();
@@ -635,7 +561,7 @@ public class MapStateRender extends MapState {
             if(c.hasMon())  shapeR.setColor(1, 0, 0, 1);
 
             if(c.getAttArea())shapeR.setColor(.7f,0,0f,1);
-            if(map && Game.player.getX()==x && Game.player.getY()==y){
+            if(map && player.getX()==x && player.getY()==y){
                 if(blink)
                     shapeR.setColor(0,0,1,1);
                 else
@@ -644,7 +570,7 @@ public class MapStateRender extends MapState {
 
             if(dtWaterEffect>Game.frame*60){
                 if (blink&& rn.nextBoolean())
-                    c.setColor( new Color(.1f,.1f,.8f,1f));
+                    c.setColor( new Color(.12f,.12f,.8f,1f));
                 else if(blink )
                     c.setColor( new Color(0f,0f,.8f,1f));
                 else {

@@ -43,9 +43,10 @@ public class Monster {
     private float dtMove=0;
     private float moveSpeed=.12f;
     float moveSpeedMin=.12f;
-    float moveSpeedMax=.06f;
+    float moveSpeedMax=.09f;
     int liveCellIndex=-1;
     int monListIndex=-1;
+    int healCount=0;
     String status="0";
     int sight=6;
     private double damage;
@@ -230,14 +231,26 @@ public class Monster {
 
                     if (Game.player.getX() > this.getX() &&aa) {
                         tx = this.x - 1;
-                    } else {
+                    }else if(Game.player.getX() == this.getX()) {
+
+                    }
+                    else
+                     {
                         tx = this.x + 1;
                     }
                     if (Game.player.getY() > this.getY() &&bb) {
                         ty = this.y - 1;
-                    } else {
+                    }else if(Game.player.getY() == this.getY()){
+
+                    }
+                    else {
                         ty = this.y + 1;
                     }
+                    if(healCount>15) {
+                        hp++;
+                        healCount=0;
+                    }
+                    healCount++;
                 }
             }
         }

@@ -1,5 +1,7 @@
 package com.quadx.dungeons.attacks;
 
+import com.badlogic.gdx.scenes.scene2d.actions.ScaleToAction;
+
 import java.util.Arrays;
 
 /**
@@ -20,14 +22,17 @@ public class Attack {
     int range=0;
     int spread=0;
     int costGold=0;
+   // int[] usesCheck={125,270,400,875,1200};
+    int[] usesCheck={80,300,650,1000,1500};
+
     String description="s";
     public void checkLvlUp(){
-        if(uses>150){level=1;}
-        if(uses>350){level=2;}
-        if(uses>600){level=3;}
-        if(uses>1000){level=4;}
+        if(level<=4)
+        if(uses>usesCheck[level]){level++; range++;uses=0;}
+
         power=powerA[level];
         cost=costA[level];
+
     }
     Attack(){}
     public Attack(String na, int lvl, int pow, int co, int mo){

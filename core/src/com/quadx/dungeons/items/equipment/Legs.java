@@ -12,5 +12,6 @@ public class Legs extends Equipment {
         setBoost();
         setMods();
         name=grade.toString()+" "+boost.toString()+" Legs";
+        loadIcon("Legs");
     }
 }

@@ -25,6 +25,7 @@ public class Damage {
         damage= baseDamage+rn.nextInt(crit);
         if (damage < 0) //checks for negative damage
             damage = defaultDamage;
+        Game.player.pDamage=damage;
         return damage;
     }
     public static int monsterPhysicalDamage(Player p, Monster m, int power){
@@ -34,6 +35,8 @@ public class Damage {
         damage= baseDamage+rn.nextInt(crit);
         if (damage < 0) //checks for negative damage
             damage = defaultDamage;
+        if(Game.player.safe)
+            damage=0;
         return damage;
     }
     public static int playerMagicDamage(Player p, Monster m, int power){
@@ -43,6 +46,7 @@ public class Damage {
         damage =(int) (a *b * c );
         if (damage < 0) //checks for negative damage
             damage = defaultDamage;
+        Game.player.mDamage=damage;
         return damage;
     }
     public int monsterMagicDamage(Player p, Monster m, int power){
@@ -52,6 +56,8 @@ public class Damage {
         damage= baseDamage+rn.nextInt(crit);
         if (damage < 0) //checks for negative damage
             damage = defaultDamage;
+        if(Game.player.safe)
+            damage=0;
         return damage;
     }
 }

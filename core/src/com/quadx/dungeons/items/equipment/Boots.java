@@ -11,5 +11,6 @@ public class Boots extends Equipment {
         setBoost();
         setMods();
         name=grade.toString()+" "+boost.toString()+" Boots";
+        loadIcon("Boots");
     }
 }

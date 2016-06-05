@@ -1,6 +1,9 @@
 package com.quadx.dungeons.states.mapstate;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -8,24 +11,30 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.*;
 import com.quadx.dungeons.attacks.Attack;
-import com.quadx.dungeons.attacks.Flame;
 import com.quadx.dungeons.items.*;
 import com.quadx.dungeons.items.equipment.*;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
+import com.quadx.dungeons.states.MainMenuState;
 import com.quadx.dungeons.states.State;
 
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.quadx.dungeons.Game.controllerMode;
+import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtAttack;
+import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtScrollAtt;
+
 /**
  * Created by Brent on 6/26/2015.
  */
 @SuppressWarnings("DefaultFileTemplate")
-public class MapState extends State {
+public class MapState extends State implements ControllerListener {
     static ShapeRenderer shapeR;
     static ArrayList<String> output;
     static ArrayList<QButton> qButtonList =new ArrayList<>();
@@ -44,6 +53,8 @@ public class MapState extends State {
     static ParticleEmitter emitter;
     static Random rn = new Random();
     static Attack attack;
+    static Attack attack2;
+
     static Item item;
     static Item popupItem;
     static Monster targetMon;
@@ -75,24 +86,37 @@ public class MapState extends State {
     public static float viewX;
     public static float viewY;
     static float itemMinTime=.4f;
-    static float attackMintime = Game.frame*5;
+    static float attackMintime = Game.frame*10;
 
     static float dtDamageTextFloat = 0;
     static int lastNumPressed=0;
+    static int altNumPressed=1;
 
     public MapState(GameStateManager gsm) {
         super(gsm);
+
+        //Controllers.addListener(this);
         inGame=true;
         gm = new GridManager();
         shapeR = new ShapeRenderer();
         output= new ArrayList<>();
+        if(controllerMode)
+        MainMenuState.controller.addListener(this);
         MapStateRender.loadAttackIcons();
         bufferOutput();
         Game.setFontSize(10);
         cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT);
         gm.initializeGrid();
         out("---Welcome to DUNGEON---");
-        attack=Game.player.attackList.get(0);
+        attack= player.attackList.get(0);
+        attack2=player.attackList.get(1);
+
+        player.addItemToInventory(new Arms());
+        player.addItemToInventory(new Legs());
+        player.addItemToInventory(new Chest());
+        player.addItemToInventory(new Arms());
+
+
     }
     void countWarps(){
         int c1=0,c2=0;
@@ -135,7 +159,7 @@ public class MapState extends State {
         MapStateRender.drawAbilityIcon(sb);
         MapStateRender.drawMessageOutput(sb);
         MapStateRender.drawStatChanges(sb);
-        MapStateRender.drawPlayerEquipment(sb);
+        MapStateRender.drawEquipment(sb);
         MapStateRender.drawPlayer(sb);
         float textY = 0;
 
@@ -153,7 +177,7 @@ public class MapState extends State {
 
 
         if(hovering) MapStateRender.drawPopup(sb);
-        if (effectLoaded) {MapStateRender.drawParticleEffects(sb, Game.player.getPX(), Game.player.getPY());}
+        //if (effectLoaded) {MapStateRender.drawParticleEffects(sb, Game.player.getPX(), Game.player.getPY());}
         MapStateRender.drawHovText(sb);
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         shapeR.setColor(Color.RED);
@@ -179,13 +203,18 @@ public class MapState extends State {
     }
 
     static void attackCollisionHandler(int pos) {
-        int range = Game.player.attackList.get(attackListCount + pos).getRange();
-        int spread = Game.player.attackList.get(attackListCount + pos).getSpread();
-        int px = Game.player.getX();
-        int py = Game.player.getY();
+        int range = player.attackList.get(attackListCount + pos).getRange();
+        int spread = player.attackList.get(attackListCount + pos).getSpread();
+        int px = player.getX();
+        int py = player.getY();
         int xrange;
         int yrange;
         hitList.clear();
+        if(player.attackList.get(pos).getType()==3) {
+            player.attackList.get(pos).setUses();
+            player.attackList.get(pos).checkLvlUp();
+        }
+        hitList.add(GridManager.liveCellList.get(player.getLiveListIndex()));
         if(lastPressed=='w') {
             xrange = (px) + spread;
             yrange = py + range;
@@ -263,12 +292,13 @@ public class MapState extends State {
                     dtDamageTextFloat = 0;
                     tempMon=m;
                     tempMonIndex=GridManager.monsterList.indexOf(m);
-                    playerDamage = Damage.playerMagicDamage(Game.player, m, attack.getPower());
+                    playerDamage = Damage.playerMagicDamage(player, m, player.attackList.get(pos).getPower());
                     out("Hit "+playerDamage+" damage");
-                    int attIndex = Game.player.attackList.indexOf(attack);
+                    if(player.attackList.get(pos).getType() !=3) {
 
-                    Game.player.attackList.get(attIndex).setUses();
-                    Game.player.attackList.get(attIndex).checkLvlUp();
+                        player.attackList.get(pos).setUses();
+                        player.attackList.get(pos).checkLvlUp();
+                    }
                     //displayPlayerDamage = true;
                     MapStateRender.setHoverText("-"+playerDamage,.8f,Color.RED,m.getPX(),m.getPY(),true);
                     m.takeAttackDamage(playerDamage);
@@ -278,9 +308,9 @@ public class MapState extends State {
                         out(DIVIDER);
                         out(m.getName() + " Level " + m.getLevel() + " was killed.");
                         c.setMon(false);
-                        Game.player.addKills();
-                        Game.player.setExp(m);
-                        Game.player.checkLvlUp();
+                        player.addKills();
+                        player.setExp(m);
+                        player.checkLvlUp();
                         makeGold(m.getLevel());
                         try {
                             GridManager.dispArray[m.getX()][m.getY()].setMon(false);
@@ -307,15 +337,22 @@ public class MapState extends State {
         }
         int gold=(int) ((f)*100)*x;
         if (gold<0)gold=1;
+        if(gold>1000){
+            int exp=gold-1000;
+            gold=1000;
+            player.setExp(player.getExp()+exp);
+            MapStateRender.setHoverText(exp+"EXP",.5f,Color.GREEN, player.getPX(), player.getPY()-20,false);
+
+        }
         {
-            Game.player.setGold(Game.player.getGold() + gold);
-            out(Game.player.getName() + " recieved " + gold + "G");
-            MapStateRender.setHoverText(gold+"G",.5f,Color.GOLD, Game.player.getPX(),Game.player.getPY(),false);
+            player.setGold(player.getGold() + gold);
+            out(player.getName() + " recieved " + gold + "G");
+            MapStateRender.setHoverText(gold+"G",.5f,Color.GOLD, player.getPX(), player.getPY(),false);
         }
     }
     static void clearFront(){
-        int j= Game.player.getX();
-        int k= Game.player.getY();
+        int j= player.getX();
+        int k= player.getY();
 
         try {
             GridManager.dispArray[j][k].setFront(false);
@@ -329,7 +366,9 @@ public class MapState extends State {
 
         }
     }
-    static void setFront(int j, int k){
+    static void setFront(char c, int j, int k){
+        clearFront();
+        lastPressed =c;
         try{
             switch (lastPressed) {
                 case 'w':{if(k+1< GridManager.res) GridManager.dispArray[j][k+1].setFront(true);break;}
@@ -344,16 +383,16 @@ public class MapState extends State {
         }
     }
     static void openCrate(){
-        int q=rn.nextInt(17)+1;
-        if(q>=15){
+        int q=rn.nextInt(18)+1;
+        if(q>=16){
             double rand=rn.nextFloat()/16;
             if(rand<0)rand*=-1;
-            int gold=(int)(Game.player.getGold()*(rand));
+            int gold=(int)(player.getGold()*(rand));
             if(gold<=0)gold=1;
-            Game.player.setGold(Game.player.getGold()+gold);
+            player.setGold(player.getGold()+gold);
             lootPopup = new Texture(Gdx.files.internal("images/imCoin.png"));
             out(gold+" added to stash");
-            MapStateRender.setHoverText(gold+"G",1,Color.GOLD, Game.player.getPX(),Game.player.getPY(),false);
+            MapStateRender.setHoverText(gold+"G",1,Color.GOLD, player.getPX(), player.getPY(),false);
 
         }
         else{
@@ -364,16 +403,15 @@ public class MapState extends State {
             else if(q==7||q==8)item=new SpeedPlus();
             else if(q>=9&&q<=11)item=new ManaPlus();
             else if(q>11&&q<=14) item=new Potion();
-           // else if(q==15)item=new SpellBook();
-            //else if(q==16) item=generateEquipment();
-            Game.player.addItemToInventory(item);
+            else if(q==15) item=generateEquipment();
+            player.addItemToInventory(item);
             String s=item.getName();
             if(item.isEquip)
                 s=item.getType();
             if(item.isSpell)
                 s="SpellBook";
             try {
-                lootPopup = new Texture(Gdx.files.internal("images/icons/items/ic" + s + ".png"));
+                lootPopup = item.getIcon();
                 MapStateRender.dtLootPopup=0;
             }
             catch (GdxRuntimeException e){
@@ -383,11 +421,11 @@ public class MapState extends State {
                // MapStateRender.setHoverText("ERR:0002", 1,Color.RED);
                 item=new Potion();
                 out(item.getName() + " added to inventory");
-                MapStateRender.setHoverText(item.getName(), 1,Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
+                MapStateRender.setHoverText(item.getName(), 1,Color.WHITE, player.getPX(), player.getPY(),false);
 
             }else {
                 out(item.getName() + " added to inventory");
-                MapStateRender.setHoverText(item.getName(), 1,Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
+                MapStateRender.setHoverText(item.getName(), 1,Color.WHITE, player.getPX(), player.getPY(),false);
             }
         }
     }
@@ -434,5 +472,98 @@ public class MapState extends State {
     private void bufferOutput(){
         for(int i=0;i<10;i++)
             out("");
+    }
+
+    @Override
+    public void connected(Controller controller) {
+
+    }
+
+    @Override
+    public void disconnected(Controller controller) {
+
+    }
+
+    @Override
+    public boolean buttonDown(Controller controller, int buttonCode) {
+        return false;
+    }
+
+    @Override
+    public boolean buttonUp(Controller controller, int buttonCode) {
+        return false;
+    }
+
+    @Override
+    public boolean axisMoved(Controller controller, int axisCode, float value) {
+        if(axisCode==Xbox360Pad.AXIS_RIGHT_TRIGGER) {
+            if (value > -.5f) {
+                if (dtAttack > attackMintime) {
+                    MapStateExt.battleFunctions(lastNumPressed);
+                    dtAttack = 0;
+                }
+            }
+        }
+        if(axisCode==Xbox360Pad.AXIS_LEFT_TRIGGER) {
+            if (value < .5f) {
+                if (dtAttack > attackMintime) {
+                    MapStateExt.battleFunctions(altNumPressed);
+                    dtAttack = 0;
+                }
+            }
+        }
+        return false;
+
+   }
+
+    @Override
+    public boolean povMoved(Controller controller, int povCode, PovDirection value) {
+
+        if(dtScrollAtt>.3) {
+            if (value == Xbox360Pad.BUTTON_DPAD_LEFT) {
+                if(MapStateRender.inventoryPos>0)
+                MapStateRender.inventoryPos--;
+                else MapStateRender.inventoryPos=player.invList.size()-1;
+                MapStateUpdater.dtInvSwitch = 0;
+            }
+            if (value == Xbox360Pad.BUTTON_DPAD_RIGHT) {
+                if(MapStateRender.inventoryPos<player.invList.size()-1)
+                MapStateRender.inventoryPos++;
+                else MapStateRender.inventoryPos=0;
+                MapStateUpdater.dtInvSwitch = 0;
+            }
+            if (value == Xbox360Pad.BUTTON_DPAD_UP) {
+                if (altNumPressed < player.attackList.size()-1)
+                    altNumPressed++;
+                else altNumPressed = 0;
+                attack2=player.attackList.get(altNumPressed);
+            }
+            if (value == Xbox360Pad.BUTTON_DPAD_DOWN) {
+                if (lastNumPressed < player.attackList.size()-1)
+                    lastNumPressed++;
+                else lastNumPressed = 0;
+                attack=player.attackList.get(lastNumPressed);
+            }
+        }
+        return false;
+
+
+
+
+    }
+
+    @Override
+    public boolean xSliderMoved(Controller controller, int sliderCode, boolean value) {
+        return false;
+    }
+
+    @Override
+    public boolean ySliderMoved(Controller controller, int sliderCode, boolean value) {
+        return false;
+    }
+
+    @Override
+    public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
+        return false;
     }
 }

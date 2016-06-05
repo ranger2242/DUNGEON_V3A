@@ -2,17 +2,22 @@ package com.quadx.dungeons.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Game;
+import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.states.mapstate.MapState;
 
-import java.util.ArrayList;
-
+import static com.quadx.dungeons.Game.controllerMode;
 import static com.quadx.dungeons.states.mapstate.MapState.viewX;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
 
@@ -20,7 +25,7 @@ import static com.quadx.dungeons.states.mapstate.MapState.viewY;
  * Created by Tom on 12/22/2015.
  */
 @SuppressWarnings("DefaultFileTemplate")
-public class MainMenuState extends State {
+public class MainMenuState extends State implements ControllerListener {
     public static GlyphLayout gl=new GlyphLayout();
     private static ShapeRenderer shapeR=new ShapeRenderer();
     private static ParticleEffect effect;
@@ -31,13 +36,23 @@ public class MainMenuState extends State {
     private int optionsPosX =0;
     private int optionsPosY =0;
     private float dtCursor = 0;
+    public static Controller controller;
+    public static String s="";
+
     public MainMenuState(GameStateManager gsm)
     {
         super(gsm);
-
+        if(Controllers.getControllers().size>0) {
+            controller = Controllers.getControllers().first();
+            controller.addListener(this);
+            controllerMode =true;
+        }
         Gdx.gl.glClearColor(0,0,0,1);
 
         effect = new ParticleEffect();
+
+
+       // Game.controller.addListener(this);
         ParticleEmitter emitter = new ParticleEmitter();
         String s = "StartScreen";
         effect.load(Gdx.files.internal("particles\\pt" + s), Gdx.files.internal("particles"));
@@ -47,45 +62,52 @@ public class MainMenuState extends State {
         //Game.setFontSize(40);
         CharSequence cs="DUNGEON";
         gl.setText(Game.getFont(),cs);
-        cam.position.x=0;
-        cam.position.y=0;
+        selector=0;
 
     }
     @Override
     protected void handleInput() {
-        if(Gdx.input.isKeyPressed(Input.Keys.ENTER)){
-            switch (selector){
-                case(0):{
-                    if(MapState.inGame)
-                        gsm.pop();
-                    else
-                        gsm.push(new AbilitySelectState(gsm));
-                    dispose();
-                    break;
-                }
-                case(1):{
-                    gsm.push(new OptionState(gsm));
-                    break;
-                }case(2):{
-                    gsm.push(new ControlState(gsm));
-                    break;
-                }case(3):{
-                    gsm.push(new ExtraState(gsm));
-                    break;
-                }case(4):{
-                    System.exit(0);
-                    break;
-                }
-            }
+        //controller functions
+        if(controllerMode){
+            if(controller.getButton(Xbox360Pad.BUTTON_A))
+                selectOption();
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.UP)){
+        //keyboard functions
+        if(Gdx.input.isKeyPressed(Input.Keys.ENTER)){
+            selectOption();
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.W)){
             selector--;
             if(selector<0)selector=4;
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.DOWN)){
+        if(Gdx.input.isKeyPressed(Input.Keys.S)){
             selector++;
             if(selector>4)selector=0;
-            // was selector>options.size()-1
+        }
+    }
+    void selectOption(){
+        switch (selector){
+            case(0):{
+                if(MapState.inGame)
+                    gsm.pop();
+                else
+                    gsm.push(new AbilitySelectState(gsm));
+                dispose();
+                break;
+            }
+            case(1):{
+                gsm.push(new OptionState(gsm));
+                break;
+            }case(2):{
+                gsm.push(new ControlState(gsm));
+                break;
+            }case(3):{
+                gsm.push(new ExtraState(gsm));
+                break;
+            }case(4):{
+                System.exit(0);
+                break;
+            }
         }
     }
 
@@ -101,7 +123,7 @@ public class MainMenuState extends State {
         titlePosX = (int)(viewX+(Game.WIDTH/2)-(gl.width/2));
         titlePosY=(int)(viewY+ (Game.HEIGHT/3)*2);
         effect.setPosition(viewX+ Game.WIDTH/2,viewY+ 0);
-        selectorPosX=(int)(viewX+        (Game.WIDTH/2)-100);
+        selectorPosX=(int)(viewX+(Game.WIDTH/2)-100);
         optionsPosX =(int)(viewX+(Game.WIDTH/2));
         optionsPosY =(int)(viewY+ (Game.HEIGHT/3));
     }
@@ -115,6 +137,11 @@ public class MainMenuState extends State {
         drawTitle(sb);
         drawOptions(sb);
         drawSelector();
+        sb.begin();
+        Game.getFont().draw(sb,Controllers.getControllers().size+"",viewX+30,viewY+140);
+
+        Game.getFont().draw(sb,s,viewX+30,viewY+100);
+        sb.end();
     }
 /////////////////////////////////////////////////////////////////////////////////////////
 //DRAWING FUNCTIONS
@@ -142,7 +169,7 @@ private void drawTitle(SpriteBatch sb){
     private void drawSelector(){
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         shapeR.setColor(1,1,1,1);
-        shapeR.rect(selectorPosX,optionsPosY-((selector+1)*20),20,20);
+        shapeR.rect(viewX+(Game.WIDTH/3),viewY+ (Game.HEIGHT/3)-((selector+1)*20),20,20);
         shapeR.end();
     }
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -150,5 +177,62 @@ private void drawTitle(SpriteBatch sb){
     public void dispose() {
       //  shapeR.dispose();
        effect.dispose();
+    }
+
+    @Override
+    public void connected(Controller controller) {
+       // controllerMode=true;
+    }
+
+    @Override
+    public void disconnected(Controller controller) {
+
+    }
+
+    @Override
+    public boolean buttonDown(Controller controller, int buttonCode) {
+        return false;
+    }
+
+    @Override
+    public boolean buttonUp(Controller controller, int buttonCode) {
+        return false;
+    }
+
+    @Override
+    public boolean axisMoved(Controller controller, int axisCode, float value) {
+        if(axisCode==Xbox360Pad.AXIS_LEFT_TRIGGER){
+            s=value+"";
+        }
+        return false;
+    }
+
+    @Override
+    public boolean povMoved(Controller controller, int povCode, PovDirection value) {
+
+        if (value == Xbox360Pad.BUTTON_DPAD_UP) {
+            selector--;
+            if(selector<0)selector=4;
+        }
+        if (value == Xbox360Pad.BUTTON_DPAD_DOWN) {
+            selector++;
+            if(selector>4)selector=0;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean xSliderMoved(Controller controller, int sliderCode, boolean value) {
+        return false;
+    }
+
+    @Override
+    public boolean ySliderMoved(Controller controller, int sliderCode, boolean value) {
+        return false;
+    }
+
+    @Override
+    public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
+        return false;
     }
 }

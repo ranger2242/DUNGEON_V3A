@@ -9,5 +9,6 @@ public class DefPlus extends  Item {
         name="Defense+";
         defensemod+=1;
         cost=1000;
+        loadIcon(name);
     }
 }

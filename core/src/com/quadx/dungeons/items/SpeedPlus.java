@@ -9,6 +9,6 @@ public class SpeedPlus extends Item {
         name="Speed+";
         speedmod+=1;
         cost=1000 ;
-
+        loadIcon(name);
     }
 }

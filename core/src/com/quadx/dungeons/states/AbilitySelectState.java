@@ -2,16 +2,20 @@ package com.quadx.dungeons.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.AbilityMod;
 import com.quadx.dungeons.Game;
+import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.abilities.*;
-import com.quadx.dungeons.states.mapstate.Map2State;
 import com.quadx.dungeons.states.mapstate.MapState;
 
 import java.util.ArrayList;
@@ -24,7 +28,7 @@ import static com.quadx.dungeons.states.mapstate.MapState.viewY;
  * Created by range on 5/20/2016.
  */
 @SuppressWarnings("DefaultFileTemplate")
-public class AbilitySelectState extends State {
+public class AbilitySelectState extends State implements ControllerListener {
     int posx=0;
     int posy=0;
     float dtSel=0;
@@ -42,6 +46,8 @@ public class AbilitySelectState extends State {
 
     public AbilitySelectState(GameStateManager gsm){
         super(gsm);
+        if(Game.controllerMode)
+        MainMenuState.controller.addListener(this);
         MyTextInputListener listener = new MyTextInputListener();
         Gdx.input.getTextInput(listener, "Fucking name", "","a Fucking hint");
         Game.setFontSize(28);
@@ -83,6 +89,16 @@ public class AbilitySelectState extends State {
     }
     @Override
     protected void handleInput() {
+        //controller functions
+        if(Game.controllerMode){
+            if(MainMenuState.controller.getButton(Xbox360Pad.BUTTON_START)){
+                selectAbiltiy();
+            }
+            if(MainMenuState.controller.getButton(Xbox360Pad.BUTTON_B)){
+                exitScreen();
+            }
+        }
+        //keyboard functions
         if(dtMove>.1) {
             if (Gdx.input.isKeyPressed(Input.Keys.W)) {
                 posy--;
@@ -99,15 +115,23 @@ public class AbilitySelectState extends State {
             }
             dtMove=0;
         }
-        if(dtSel >.7f) if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
-
+        if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
+            selectAbiltiy();
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.TAB)){
+        }
+        if(pressed){gsm.push(new MapState(gsm));}
+    }
+    void selectAbiltiy(){
+        if(dtSel >.7f) {
             pressed = true;
             AbilityMod.enableAbility(hovering.getMod());
             dtSel = 0;
         }
-        if(pressed){gsm.push(new MapState(gsm));}
     }
-
+    void exitScreen(){
+        gsm.pop();
+    }
     @Override
     public void update(float dt) {
         handleInput();
@@ -181,5 +205,63 @@ public class AbilitySelectState extends State {
     @Override
     public void dispose() {
 
+    }
+
+    @Override
+    public void connected(Controller controller) {
+
+    }
+
+    @Override
+    public void disconnected(Controller controller) {
+
+    }
+
+    @Override
+    public boolean buttonDown(Controller controller, int buttonCode) {
+        return false;
+    }
+
+    @Override
+    public boolean buttonUp(Controller controller, int buttonCode) {
+        return false;
+    }
+
+    @Override
+    public boolean axisMoved(Controller controller, int axisCode, float value) {
+        return false;
+    }
+
+    @Override
+    public boolean povMoved(Controller controller, int povCode, PovDirection value) {
+        if (value == Xbox360Pad.BUTTON_DPAD_UP) {
+            if(posy>=0)
+            posy--;
+        }if (value == Xbox360Pad.BUTTON_DPAD_DOWN) {
+            if(posy<2)
+            posy++;
+        }if (value == Xbox360Pad.BUTTON_DPAD_LEFT) {
+            if(posx>=0)
+                posx--;
+        }if (value == Xbox360Pad.BUTTON_DPAD_RIGHT) {
+            if(posy<5)
+                posx++;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean xSliderMoved(Controller controller, int sliderCode, boolean value) {
+        return false;
+    }
+
+    @Override
+    public boolean ySliderMoved(Controller controller, int sliderCode, boolean value) {
+        return false;
+    }
+
+    @Override
+    public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
+        return false;
     }
 }

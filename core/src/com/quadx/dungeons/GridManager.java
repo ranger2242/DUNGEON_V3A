@@ -165,7 +165,7 @@ public class GridManager {
         }
     }
     private void plotMonsters() {
-        double temp = liveCellList.size() * .01;
+        double temp = liveCellList.size() * .005;
 
         //double temp=rng.nextGaussian(10,6);
         while (temp <= 0) {

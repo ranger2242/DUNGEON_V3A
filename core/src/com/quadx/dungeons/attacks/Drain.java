@@ -8,16 +8,14 @@ public class Drain extends Attack {
     public Drain()  {
         costGold=50;
         type=2;
-        powerA = new int[]{15,25,35,45,60};
-        costA =new int[]{30,40,50,60,80};
+        powerA = new int[]{25,35,45,50,70};
+        costA =new int[]{15,25,35,50,60};
         name="Drain";
         power=powerA[level];
         cost=costA[level];
-        range=5;
-        spread=0;
         mod=1;
         spread=1;
-        range=6;
+        range=10;
         description="Heals user the same amount as damage done to opponent.";
     }
 }

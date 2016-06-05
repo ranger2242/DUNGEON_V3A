@@ -8,14 +8,14 @@ public class Slash extends Attack {
     public Slash(){
         costGold=35;
         type=1;
-        powerA = new int[]{20,40,60,80,100};
-        costA =new int[]{0,0,0,0,0};
+        powerA = new int[]{80,90,110,130,150};
+        costA =new int[]{30,40,50,70,80};
         name="Slash";
-        power=20;
-        cost=0;
+        power=30;
+        cost=30;
         mod=-1;
-        spread=3;
-        range=3;
+        spread=5;
+        range=2;
         description="Slashes the opponent.";
     }
 }

@@ -2,9 +2,13 @@ package com.quadx.dungeons;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.maps.Map;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.MapState;
+import com.quadx.dungeons.states.mapstate.MapStateRender;
+
+import static com.quadx.dungeons.Game.player;
 
 /**
  * Created by Tom on 11/17/2015.
@@ -22,19 +26,21 @@ public class SpellMods {
         MapState.statPopup=null;
         switch (mod){
             case -1:{
-                //s= Game.player.name +" used "+ name;
             }
             case 0:{
                 break;
             }
             case 1:{//DRAIN
-                Game.player.hp+= Game.player.damage;
-                MapState.out(Game.player.name +" stole "+ Game.player.damage+" HP");
+                player.hp+= player.mDamage/2;
+                MapState.out(player.name +" stole "+ player.mDamage/2+" HP");
                 break;
             }
-            case 2:{
-                Game.player.hp= Game.player.hpMax;
-                Game.player.mana= Game.player.manaMax;
+            case 2:{//Heal
+                int total=player.getMana()+player.getEnergy()+player.getHp();
+                if(total>player.getHpMax())total=player.getHpMax();
+                player.setHp(total);
+                player.setMana(0);
+                player.setEnergy(0);
                 break;
             }
             case 3:{//BLIND
@@ -57,32 +63,26 @@ public class SpellMods {
                 break;
             }
             case 6: {//PROTECT
-                /*
-                levelA=new int[]{10,8,6,4,2};
-                int x=rn.nextInt(100)+1;
-                if(x<100-levelA[a.getLevel()]) {
-                    MapState.out(Game.player.getName()+" is protected from damage this turn.");
-                }*/
-                //else
-                MapState.out(Game.player.getName()+"'s Protect failed!");
+                player.safe=true;
+                MapState.out(player.getName()+" is protected from damage!");
                 break;
             }
             case 7:{//SACRIFICE
                 levelB=new double[]{.15,.20,.30,.40,.50};
-                double x= Game.player.hpMax *levelB[a.getLevel()];
-                double y= Game.player.manaMax*(levelB[a.getLevel()]*2);
-                Game.player.hp-=(x);
-                Game.player.mana+=(x);
-                MapState.out(Game.player.name+" sacrificed "+x+"HP for "+y+"M.");
+                double x= player.hpMax *levelB[a.getLevel()];
+                double y= player.manaMax*(levelB[a.getLevel()]*2);
+                player.hp-=(x);
+                player.mana+=(x);
+                MapState.out(player.name+" sacrificed "+x+"HP for "+y+"M.");
 
                 break;
             }
             case 8: {//REST
-                if(Game.player.getEnergy()<Game.player.getEnergyMax()) {
+                if(player.getEnergy()< player.getEnergyMax()) {
                     System.out.println("Resting");
-                    Game.player.setEnergy(Game.player.getEnergy() + a.getCost()/2);
-                    if(Game.player.getEnergy()>Game.player.getEnergyMax())
-                        Game.player.setEnergy(Game.player.getEnergyMax());
+                    player.setEnergy(player.getEnergy() + a.getCost()/2);
+                    if(player.getEnergy()> player.getEnergyMax())
+                        player.setEnergy(player.getEnergyMax());
                 }
             }
 

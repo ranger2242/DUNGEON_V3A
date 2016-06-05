@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.quadx.dungeons.Game;
+import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.items.*;
 
 import java.util.ArrayList;
@@ -38,6 +39,13 @@ public class ShopState extends State {
     }
     @Override
     protected void handleInput() {
+        //controller functions------------------------------------------------------
+        if(Game.controllerMode){
+            if(MainMenuState.controller.getButton(Xbox360Pad.BUTTON_B)){
+                gsm.pop();
+            }
+        }
+        //keyboard functions--------------------------------------------------------
         if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
             numberButtonHandler(0);
         }
