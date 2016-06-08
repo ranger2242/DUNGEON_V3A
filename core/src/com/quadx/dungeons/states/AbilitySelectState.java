@@ -49,7 +49,7 @@ public class AbilitySelectState extends State implements ControllerListener {
         if(Game.controllerMode)
         MainMenuState.controller.addListener(this);
         MyTextInputListener listener = new MyTextInputListener();
-        Gdx.input.getTextInput(listener, "Fucking name", "","a Fucking hint");
+        Gdx.input.getTextInput(listener, "Name", "","");
         Game.setFontSize(28);
 
         Gdx.gl.glClearColor(0,0,0,1);

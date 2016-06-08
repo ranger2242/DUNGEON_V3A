@@ -2,9 +2,9 @@ package com.quadx.dungeons.states.mapstate;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.*;
 import com.quadx.dungeons.abilities.Investor;
 import com.quadx.dungeons.abilities.Warp;
@@ -120,7 +120,35 @@ public class MapStateUpdater extends MapState{
         dtMove +=dt;
         dtAttack +=dt;
         dtInvSwitch += dt;
-        out(player.invList.size()+" "+MapStateRender.inventoryPos);
+
+
+        /*if(MapStateRender.inventoryPos>player.invList.size()-1){
+            MapStateRender.inventoryPos=player.invList.size()-1;
+        }*/
+        try {
+            if (!player.invList.isEmpty()) {
+                if (player.invList.get(MapStateRender.inventoryPos).get(0).isEquip) {
+                    boolean found = false;
+                    Equipment eq = (Equipment) player.invList.get(MapStateRender.inventoryPos).get(0);
+
+                    for (Equipment e : player.equipedList) {
+                        if (e.getType().equals(player.invList.get(MapStateRender.inventoryPos).get(0).getType())) {
+                            MapStateRender.statCompare = eq.compare(e);
+                            found = true;
+                        }
+                    }
+                    if (!found) MapStateRender.statCompare = eq.compare();
+                } else {
+                    MapStateRender.statCompare=null;
+                }
+            }
+            else{
+                MapStateRender.statCompare=null;
+            }
+        }catch (IndexOutOfBoundsException e){
+            Game.getFont().setColor(Color.WHITE);
+        }
+        //out(player.invList.size()+" "+MapStateRender.inventoryPos);
         if (Warp.isEnabled()) {
             Warp.updateTimeCounter();
         }

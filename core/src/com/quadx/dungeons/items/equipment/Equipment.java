@@ -34,31 +34,47 @@ public class Equipment extends Item {
         return type.toString();
     }
     void setMods(){
-        switch (boost){
-            case Perception:{
-                intelmod=calculateBuff();
-                break;
+        int buffCount=1;
+        if(grade==Grade.Elite){
+            buffCount=2;
+        }
+        if(grade==Grade.Legendary){
+            buffCount=3;
+        }
+        while(buffCount>=1) {
+            int x;
+            if(buffCount>1){
+                x=rn.nextInt(6);
+                setBoost(x);
             }
-            case Power:{
-                attackmod=calculateBuff();
-                break;
+            else setBoost();
+            switch (boost) {
+                case Perception: {
+                    intelmod += calculateBuff();
+                    break;
+                }
+                case Power: {
+                    attackmod += calculateBuff();
+                    break;
+                }
+                case Haste: {
+                    speedmod += calculateBuff();
+                    break;
+                }
+                case Health: {
+                    hpmod += calculateBuff();
+                    break;
+                }
+                case Resistance: {
+                    defensemod += calculateBuff();
+                    break;
+                }
+                case Magic: {
+                    manamod += calculateBuff();
+                    break;
+                }
             }
-            case Haste:{
-                speedmod=calculateBuff();
-                break;
-            }
-            case Health:{
-                hpmod=calculateBuff();
-                break;
-            }
-            case Resistance:{
-                defensemod=calculateBuff();
-                break;
-            }
-            case Magic:{
-                manamod=calculateBuff();
-                break;
-            }
+            buffCount--;
         }
     }
     private int calculateBuff(){
@@ -68,26 +84,106 @@ public class Equipment extends Item {
                 buff=rn.nextInt(5);
                 break;
             case Low:
-                buff=rn.nextInt(10);
+                buff=rn.nextInt(10)+5;
                 break;
             case Standard:
-                buff=rn.nextInt(15);
+                buff=rn.nextInt(15)+10;
                 break;
             case High:
-                buff=rn.nextInt(20);
+                buff=rn.nextInt(20)+15;
                 break;
             case Elite:
-                buff=rn.nextInt(25);
+                buff=rn.nextInt(25)+20;
                 break;
             case Legendary:
-                buff=rn.nextInt(35);
+                buff=rn.nextInt(35)+25;
                 break;
         }
         return buff;
     }
+    public int[] compare(Equipment eq2){
+        int[] x=new int[7];
+        if(this.getType().equals(eq2.getType())){
+            if(this.hpmod>eq2.hpmod){
+                x[0]=1;
+            }else if(this.hpmod<eq2.hpmod){
+                x[0]=2;
+            }else{
+                x[0]=0;
+            }
+            if(this.manamod>eq2.manamod){
+                x[1]=1;
+            }else if(this.manamod<eq2.manamod){
+                x[1]=2;
+            }else{
+                x[1]=0;
+            }
+            if(this.attackmod>eq2.attackmod){
+                x[2]=1;
+            }else if(this.attackmod<eq2.attackmod){
+                x[2]=2;
+            }else{
+                x[2]=0;
+            }
+            if(this.defensemod>eq2.defensemod){
+                x[3]=1;
+            }else if(this.defensemod<eq2.defensemod){
+                x[3]=2;
+            }else{
+                x[3]=0;
+            }
+            if(this.intelmod>eq2.intelmod){
+                x[4]=1;
+            }else if(this.intelmod<eq2.intelmod){
+                x[4]=2;
+            }else{
+                x[4]=0;
+            }
+            if(this.speedmod>eq2.speedmod){
+                x[5]=1;
+            }else if(this.speedmod<eq2.speedmod){
+                x[5]=2;
+            }else{
+                x[5]=0;
+            }
+        }
 
+        return x;
+    }
+    public int[] compare(){
+        int[] x=new int[7];
+        if(this.hpmod>0) {
+            x[0] = 1;
+        }
+        if(this.manamod>0)
+        {
+            x[1] = 1;
+        }
+        if(this.attackmod>0){
+            x[2]=1;}
+
+        if(this.defensemod>0){
+            x[3]=1;
+        }
+        if(this.intelmod>0){
+            x[4]=1;
+        }
+        if(this.speedmod>0){
+            x[5]=1;
+        }
+        return x;
+    }
     void setBoost(){
         int x= rn.nextInt(6);
+        if(x==0)boost=Boost.Haste;
+        if(x==1)boost=Boost.Resistance;
+        if(x==2)boost=Boost.Magic;
+        if(x==3)boost=Boost.Health;
+        if(x==4)boost=Boost.Perception;
+        if(x==5)boost=Boost.Power;
+
+    }
+    void setBoost(int x){
         if(x==0)boost=Boost.Haste;
         if(x==1)boost=Boost.Resistance;
         if(x==2)boost=Boost.Magic;

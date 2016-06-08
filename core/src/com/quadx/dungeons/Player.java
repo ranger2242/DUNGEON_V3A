@@ -60,7 +60,7 @@ public class Player {
     public boolean safe=false;
 
     public float dtSafe=0;
-    private float moveSpeed=.2f;
+    private float moveSpeed=.12f;
     private float gold=0;
 
     private Random rn =new Random();
@@ -268,65 +268,67 @@ public class Player {
     //MISC Functions------------------------------------------------------------------
     public void useItem(int i){
         String s="";
-        Item item =invList.get(i).get(0);
-        if(item.isEquip){
-            Equipment temp=null;
-            for(Equipment eq : equipedList){
-                if(eq.getType().equals(item.getType())){
-                    temp=eq;
+        if(i>=0) {
+            Item item = invList.get(i).get(0);
+            if (item.isEquip) {
+                Equipment temp = null;
+                for (Equipment eq : equipedList) {
+                    if (eq.getType().equals(item.getType())) {
+                        temp = eq;
+                    }
                 }
-            }
-            invList.get(i).remove(0);
-            invList.remove(i);
-            if(MapStateRender.inventoryPos>=invList.size()-1){
-                MapStateRender.inventoryPos=0;
-            }
-            if(temp != null) {
-                equipedList.remove(temp);
-                addItemToInventory(temp);
-            }
+                invList.get(i).remove(0);
+                invList.remove(i);
+                if (MapStateRender.inventoryPos >= invList.size() - 1) {
+                    MapStateRender.inventoryPos = 0;
+                }
+                if (temp != null) {
+                    equipedList.remove(temp);
+                    addItemToInventory(temp);
+                }
 
-            equipedList.add((Equipment) item);
+                equipedList.add((Equipment) item);
 
 
-        }else {
-            try {
+            } else {
                 try {
-                    invList.get(i).remove(0);
-                } catch (IndexOutOfBoundsException e) {
-                }
+                    try {
+                        invList.get(i).remove(0);
+                    } catch (IndexOutOfBoundsException e) {
+                    }
 
-                if (item.getHpmod() != 0) {
-                    hp += item.getHpmod();
-                    s = name + "'s HP changed by " + item.getHpmod();
+                    if (item.getHpmod() != 0) {
+                        hp += item.getHpmod();
+                        s = name + "'s HP changed by " + item.getHpmod();
+                    }
+                    //Mana
+                    if (item.getManamod() != 0) {
+                        mana += item.getManamod();
+                        s = name + "'s M changed by " + item.getManamod();
+                    }
+                    //attack
+                    if (item.getAttackmod() != 0) {
+                        attack += item.getAttackmod();
+                        s = name + "'s ATT changed by " + item.getAttackmod();
+                    }
+                    //defense
+                    if (item.getDefensemod() != 0) {
+                        defense += item.getDefensemod();
+                        s = name + "'s DEF changed by " + item.getDefensemod();
+                    }
+                    //intel
+                    if (item.getIntelmod() != 0) {
+                        intel += item.getIntelmod();
+                        s = player.getName() + "'s INT changed by " + item.getIntelmod();
+                    }
+                    //speed
+                    if (item.getSpeedmod() != 0) {
+                        speed += item.getSpeedmod();
+                        s = player.getName() + "'s SPD changed by " + item.getSpeedmod();
+                    }
+                    MapState.out(s);
+                } catch (NullPointerException e) {
                 }
-                //Mana
-                if (item.getManamod() != 0) {
-                    mana += item.getManamod();
-                    s = name + "'s M changed by " + item.getManamod();
-                }
-                //attack
-                if (item.getAttackmod() != 0) {
-                    attack += item.getAttackmod();
-                    s = name + "'s ATT changed by " + item.getAttackmod();
-                }
-                //defense
-                if (item.getDefensemod() != 0) {
-                    defense += item.getDefensemod();
-                    s = name + "'s DEF changed by " + item.getDefensemod();
-                }
-                //intel
-                if (item.getIntelmod() != 0) {
-                    intel += item.getIntelmod();
-                    s = player.getName() + "'s INT changed by " + item.getIntelmod();
-                }
-                //speed
-                if (item.getSpeedmod() != 0) {
-                    speed += item.getSpeedmod();
-                    s = player.getName() + "'s SPD changed by " + item.getSpeedmod();
-                }
-                MapState.out(s);
-            } catch (NullPointerException e) {
             }
         }
        // invList.get(i).remove(0);

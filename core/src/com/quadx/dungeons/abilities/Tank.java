@@ -23,7 +23,7 @@ public class Tank extends Ability {
         Game.player.setDefense(Game.player.getDefense()*2);
         Game.player.setHp((int)(Game.player.getHp()*1.5));
         Game.player.setHpMax((int)(Game.player.getHpMax()*1.5));        Game.player.setHpRegen(Game.player.getHpRegen()*2);
-        Game.player.setMoveSpeed(Game.player.getMoveSpeed()/2);
+        Game.player.setMoveSpeed(Game.player.getMoveSpeed()*2);
         MapState.out("----------------------------------");
         MapState.out(Game.player.getName()+" activated the TANK ability!");
         MapState.out("HP Max raised 50%!");

@@ -40,8 +40,6 @@ public class MapState extends State implements ControllerListener {
     static ArrayList<QButton> qButtonList =new ArrayList<>();
     static ArrayList<Texture> attackIconList =new ArrayList<>();
     static ArrayList<Texture> invIcon=new ArrayList<>();
-    static ArrayList<Texture> equipIcon=new ArrayList<>();
-    static ArrayList<Integer> invSize=new ArrayList<>();
     static ArrayList<Cell> hitList=new ArrayList<>();
 
     static Texture lootPopup;
@@ -54,8 +52,6 @@ public class MapState extends State implements ControllerListener {
     static Random rn = new Random();
     static Attack attack;
     static Attack attack2;
-
-    static Item item;
     static Item popupItem;
     static Monster targetMon;
 
@@ -70,7 +66,6 @@ public class MapState extends State implements ControllerListener {
     static int attackListCount = 0;
     static int playerDamage = 0;
     static int messageCounter=0;
-    public static int invSlotHovered=0;
     public static int cellW=30;
     static int mHitX=0;
     static int mHitY=0;
@@ -94,8 +89,6 @@ public class MapState extends State implements ControllerListener {
 
     public MapState(GameStateManager gsm) {
         super(gsm);
-
-        //Controllers.addListener(this);
         inGame=true;
         gm = new GridManager();
         shapeR = new ShapeRenderer();
@@ -111,28 +104,18 @@ public class MapState extends State implements ControllerListener {
         attack= player.attackList.get(0);
         attack2=player.attackList.get(1);
 
-        player.addItemToInventory(new Arms());
-        player.addItemToInventory(new Legs());
-        player.addItemToInventory(new Chest());
-        player.addItemToInventory(new Arms());
 
-
-    }
-    void countWarps(){
-        int c1=0,c2=0;
-        for(int i=0;i<Map2State.res;i++){
-            for(int j=0;j<Map2State.res;j++){
-                if(gm.dispArray[i][j].hasWarp()){
-                    c1++;
-                }
+        for(int i=0; i<12;i++){
+            for(int j=0;j<12; j++){
+                System.out.print((i*j)% 12+"\t");
             }
+            System.out.print("\n");
         }
-        for(Cell c: gm.liveCellList){
-            if(c.hasWarp())c2++;
-        }
-        out("Warps ARR:"+c1);
-        out("Warps List:"+c2);
+        out((8*12)%15+"");
+        for(int i=0;i<20;i++){
 
+ //          player.addItemToInventory(new Arms());
+        }
     }
     public void handleInput() {
     }
@@ -179,12 +162,20 @@ public class MapState extends State implements ControllerListener {
         if(hovering) MapStateRender.drawPopup(sb);
         //if (effectLoaded) {MapStateRender.drawParticleEffects(sb, Game.player.getPX(), Game.player.getPY());}
         MapStateRender.drawHovText(sb);
+        MapStateRender.drawMiniMap(sb);
+
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         shapeR.setColor(Color.RED);
          if(qButtonList.size()>0)   shapeR.rect(qButtonList.get(0).getPx(), qButtonList.get(0).getPx(), 12, 12);
             shapeR.end();
         if(MapStateRender.showCircle)
             MapStateRender.drawPlayerFinder(sb);
+        sb.begin();
+        for(Monster m: GridManager.monsterList){
+            Texture t=m.getIcon();
+                    sb.draw(t, m.getX() * cellW -t.getWidth()/4, m.getY() * cellW -t.getHeight()/4);
+        }
+        sb.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
     public void dispose() {
@@ -384,7 +375,7 @@ public class MapState extends State implements ControllerListener {
     }
     static void openCrate(){
         int q=rn.nextInt(18)+1;
-        if(q>=16){
+        if(q>=17){
             double rand=rn.nextFloat()/16;
             if(rand<0)rand*=-1;
             int gold=(int)(player.getGold()*(rand));
@@ -403,7 +394,7 @@ public class MapState extends State implements ControllerListener {
             else if(q==7||q==8)item=new SpeedPlus();
             else if(q>=9&&q<=11)item=new ManaPlus();
             else if(q>11&&q<=14) item=new Potion();
-            else if(q==15) item=generateEquipment();
+            else if(q==15 || q==16) item=generateEquipment();
             player.addItemToInventory(item);
             String s=item.getName();
             if(item.isEquip)

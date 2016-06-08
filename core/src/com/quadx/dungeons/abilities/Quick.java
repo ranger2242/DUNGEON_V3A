@@ -21,7 +21,7 @@ public class Quick extends Ability {
     @Override
 
     public  void onActivate() {
-        Game.player.setMoveSpeed(Game.player.getMoveSpeed() *2);
+        Game.player.setMoveSpeed(Game.player.getMoveSpeed()/2);
         Game.player.setSpeed(Game.player.getSpeed()*2);
         Game.player.setEnergyRegen(Game.player.getEnergyRegen()*2);
         Game.player.setManaRegen(Game.player.getManaRegenRate()*2);
