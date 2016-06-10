@@ -147,7 +147,7 @@ public class MainMenuState extends State implements ControllerListener {
 //DRAWING FUNCTIONS
 private void drawTitle(SpriteBatch sb){
         sb.begin();
-        Game.setFontSize(40);
+        Game.setFontSize(5);
         Game.font.setColor(Color.WHITE);
         Game.getFont().draw(sb,"DUNGEON", titlePosX,titlePosY);
         effect.draw(sb);
@@ -155,7 +155,7 @@ private void drawTitle(SpriteBatch sb){
     }
     private void drawOptions(SpriteBatch sb){
         sb.begin();
-        Game.setFontSize(20);
+        Game.setFontSize(5);
         if(MapState.inGame)
             Game.getFont().draw(sb,"CONTINUE", optionsPosX, optionsPosY);
         else

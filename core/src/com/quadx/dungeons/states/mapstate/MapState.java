@@ -27,6 +27,8 @@ import java.util.Random;
 
 import static com.quadx.dungeons.Game.controllerMode;
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.GridManager.dispArray;
+import static com.quadx.dungeons.GridManager.liveCellList;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtAttack;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtScrollAtt;
 
@@ -57,14 +59,11 @@ public class MapState extends State implements ControllerListener {
 
     public static boolean inGame=false;
     public static char lastPressed = 'w';
-    static boolean attackMenuOpen = false;
-    static boolean inventoryOpen = false;
     static boolean displayPlayerDamage = false;
     static boolean hovering=false;
     static boolean effectLoaded = false;
     static final String DIVIDER= "_________________________";
     static int attackListCount = 0;
-    static int playerDamage = 0;
     static int messageCounter=0;
     public static int cellW=30;
     static int mHitX=0;
@@ -73,6 +72,8 @@ public class MapState extends State implements ControllerListener {
     static int mouseY=0;
     static int mouseRealitiveX=0;
     static int mouseRealitiveY=0;
+    public static int warpX=0;
+    public static int warpY=0;
 
     static int qButtonBeingHovered;
 
@@ -89,6 +90,7 @@ public class MapState extends State implements ControllerListener {
 
     public MapState(GameStateManager gsm) {
         super(gsm);
+        player.loadIcons();
         inGame=true;
         gm = new GridManager();
         shapeR = new ShapeRenderer();
@@ -97,7 +99,7 @@ public class MapState extends State implements ControllerListener {
         MainMenuState.controller.addListener(this);
         MapStateRender.loadAttackIcons();
         bufferOutput();
-        Game.setFontSize(10);
+        Game.setFontSize(1);
         cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT);
         gm.initializeGrid();
         out("---Welcome to DUNGEON---");
@@ -112,6 +114,7 @@ public class MapState extends State implements ControllerListener {
             System.out.print("\n");
         }
         out((8*12)%15+"");
+
         for(int i=0;i<20;i++){
 
  //          player.addItemToInventory(new Arms());
@@ -205,20 +208,13 @@ public class MapState extends State implements ControllerListener {
             player.attackList.get(pos).setUses();
             player.attackList.get(pos).checkLvlUp();
         }
-        hitList.add(GridManager.liveCellList.get(player.getLiveListIndex()));
+        hitList.add(liveCellList.get(player.getLiveListIndex()));
         if(lastPressed=='w') {
             xrange = (px) + spread;
             yrange = py + range;
             for (int i = px; i < xrange; i++) {
                 for (int j = py; j < yrange; j++) {
-                    try {
-                        GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j].setAttArea(true);
-                        GridManager.liveCellList.set(GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j].getIndex(), GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j]);
-                        hitList.add(GridManager.liveCellList.get(GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j].getIndex()));
-                    }
-                    catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
-                      //  Game.printLOG(e);
-                    }
+                    setHitList((int) (i - Math.ceil(spread / 2)) - 1,j);
                 }
             }
         }
@@ -227,15 +223,7 @@ public class MapState extends State implements ControllerListener {
             yrange = py - range;
             for (int i = px; i < xrange; i++) {
                 for (int j = yrange; j < py; j++) {
-                    try {
-                        GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j-1].setAttArea(true);
-                        GridManager.liveCellList.set(GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j-1].getIndex(), GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j-1]);
-                        hitList.add(GridManager.liveCellList.get(GridManager.dispArray[(int) (i - Math.ceil(spread / 2)) - 1][j-1].getIndex()));
-
-                    }
-                    catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
-                        Game.printLOG(e);
-                    }
+                    setHitList((int) (i - Math.ceil(spread / 2)) - 1,j-1);
                 }
             }
         }
@@ -244,15 +232,7 @@ public class MapState extends State implements ControllerListener {
             yrange = py + spread;
             for (int i = px; i < xrange; i++) {
                 for (int j = py; j < yrange; j++) {
-                    try {
-                        GridManager.dispArray[i][(int)(j - Math.ceil(spread / 2))-1].setAttArea(true);
-                        GridManager.liveCellList.set(GridManager.dispArray[i][(int)(j - Math.ceil(spread / 2))-1].getIndex(), GridManager.dispArray[i][(int)(j - Math.ceil(spread / 2))-1]);
-                        hitList.add(GridManager.liveCellList.get(GridManager.dispArray[i][(int)(j - Math.ceil(spread / 2))-1].getIndex()));
-
-                    }
-                    catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
-                        Game.printLOG(e);
-                    }
+                    setHitList(i,(int)(j - Math.ceil(spread / 2))-1);
                 }
             }
         }
@@ -261,38 +241,30 @@ public class MapState extends State implements ControllerListener {
             yrange = py + spread;
             for (int i = xrange; i < px; i++) {
                 for (int j = py; j < yrange; j++) {
-                    try {
-                        GridManager.dispArray[(i -1)][(int)(j - Math.ceil(spread / 2))-1].setAttArea(true);
-                        GridManager.liveCellList.set(GridManager.dispArray[i  -1][(int)(j - Math.ceil(spread / 2))-1].getIndex(), GridManager.dispArray[i -1][(int)(j - Math.ceil(spread / 2))-1]);
-                        hitList.add(GridManager.liveCellList.get(GridManager.dispArray[i  -1][(int)(j - Math.ceil(spread / 2))-1].getIndex()));
-
-                    }
-                    catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
-                        Game.printLOG(e);
-                    }
+                    setHitList((i -1),(int)(j - Math.ceil(spread / 2))-1);
                 }
             }
         }
         Monster tempMon=null;
         boolean killed= false;
-        for(Cell c:hitList){
+        for(Cell c:hitList)    {
+            dispArray[c.getX()][c.getY()].setAttArea(true);
             for(Monster m: GridManager.monsterList){
                 if(c.getX()==m.getX() && c.getY()==m.getY()){
                     int tempMonIndex;
-
                     dtDamageTextFloat = 0;
                     tempMon=m;
                     tempMonIndex=GridManager.monsterList.indexOf(m);
-                    playerDamage = Damage.playerMagicDamage(player, m, player.attackList.get(pos).getPower());
-                    out("Hit "+playerDamage+" damage");
+                    player.setDamage(Damage.playerMagicDamage(player, m, player.attackList.get(pos).getPower()));
+                    out("Hit "+player.getDamage()+" damage");
                     if(player.attackList.get(pos).getType() !=3) {
 
                         player.attackList.get(pos).setUses();
                         player.attackList.get(pos).checkLvlUp();
                     }
                     //displayPlayerDamage = true;
-                    MapStateRender.setHoverText("-"+playerDamage,.8f,Color.RED,m.getPX(),m.getPY(),true);
-                    m.takeAttackDamage(playerDamage);
+                    MapStateRender.setHoverText("-"+player.getDamage(),.8f,Color.RED,m.getPX(),m.getPY(),true);
+                    m.takeAttackDamage(player.getDamage());
                     GridManager.monsterList.get(tempMonIndex).setHit();
 
                     if (m.getHp() < 1) {
@@ -321,6 +293,19 @@ public class MapState extends State implements ControllerListener {
         }
     }
 
+    static void setHitList(int x, int y){
+        try {
+            Cell cell= GridManager.dispArray[x][y];
+            cell.setAttArea(true);
+            //liveCellList.set(cell.getIndex(), cell);
+            hitList.add(cell);
+
+        }
+        catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+            Game.printLOG(e);
+        }
+    }
+
     static void makeGold(int x){
         float f= rn.nextFloat();
         while(f<.05){
@@ -339,38 +324,6 @@ public class MapState extends State implements ControllerListener {
             player.setGold(player.getGold() + gold);
             out(player.getName() + " recieved " + gold + "G");
             MapStateRender.setHoverText(gold+"G",.5f,Color.GOLD, player.getPX(), player.getPY(),false);
-        }
-    }
-    static void clearFront(){
-        int j= player.getX();
-        int k= player.getY();
-
-        try {
-            GridManager.dispArray[j][k].setFront(false);
-            if (j + 1 < GridManager.res) GridManager.dispArray[j + 1][k].setFront(false);
-            if (j - 1 >= 0) GridManager.dispArray[j - 1][k].setFront(false);
-            if (k + 1 < GridManager.res) GridManager.dispArray[j][k + 1].setFront(false);
-            if (k - 1 >= 0) GridManager.dispArray[j][k - 1].setFront(false);
-        }
-        catch (NullPointerException | ArrayIndexOutOfBoundsException e){
-            Game.printLOG(e);
-
-        }
-    }
-    static void setFront(char c, int j, int k){
-        clearFront();
-        lastPressed =c;
-        try{
-            switch (lastPressed) {
-                case 'w':{if(k+1< GridManager.res) GridManager.dispArray[j][k+1].setFront(true);break;}
-                case 'a':{if(j-1>=0) GridManager.dispArray[j-1][k].setFront(true);break;}
-                case 's':{if(k-1>=0) GridManager.dispArray[j][k-1].setFront(true);break;}
-                case 'd':{if(j+1< GridManager.res) GridManager.dispArray[j+1][k].setFront(true);break;}
-            }
-        }
-        catch (NullPointerException | ArrayIndexOutOfBoundsException e){
-            Game.printLOG(e);
-
         }
     }
     static void openCrate(){

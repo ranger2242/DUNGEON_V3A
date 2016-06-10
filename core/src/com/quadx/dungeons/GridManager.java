@@ -1,25 +1,25 @@
 package com.quadx.dungeons;
 
 
-import com.quadx.dungeons.abilities.DigPlus;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.Map2State;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
-import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-public class GridManager {
-    private static ArrayList<Cell> warpList = new ArrayList<>();
-    public static ArrayList<Monster> monsterList = new ArrayList<>();
+import static com.quadx.dungeons.states.mapstate.MapState.*;
 
-    public static int res = Map2State.res;
-    public static Cell[][] dispArray;
-    public static ArrayList<Cell> liveCellList = new ArrayList<>();
+public class GridManager {
     private static Random rn = new Random();
+    public static ArrayList<Cell> liveCellList = new ArrayList<>();
+    public static ArrayList<Cell> drawList = new ArrayList<>();
+    public static ArrayList<Monster> monsterList = new ArrayList<>();
+    public static int liveCount=0;
+    public static Cell[][] dispArray;
+    public static int res = Map2State.res;
 
     public void initializeGrid() {
         clearMonsterList();
@@ -32,67 +32,80 @@ public class GridManager {
         plotPlayer();
         MapStateRender.showCircle = true;
     }
-    public void clearArea(int x, int y, boolean player) {
-        x -= 1;
-        y -= 1;
-        unNullWallCells();
-        try {dispArray[x + 1][y + 1].setState();}
-        catch (ArrayIndexOutOfBoundsException e) {}
-        try {dispArray[x + 1][y].setState();}
-        catch (ArrayIndexOutOfBoundsException e) {}
-        try {dispArray[x + 1][y - 1].setState();}
-        catch (ArrayIndexOutOfBoundsException e) {}
-        try {dispArray[x][y - 1].setState();}
-        catch (ArrayIndexOutOfBoundsException e) {}
-        try {dispArray[x][y + 1].setState();}
-        catch (ArrayIndexOutOfBoundsException e) {}
-        try {dispArray[x - 1][y + 1].setState();}
-        catch (ArrayIndexOutOfBoundsException e) {}
-        try {dispArray[x - 1][y].setState();}
-        catch (ArrayIndexOutOfBoundsException e) {}
-        try {dispArray[x - 1][y - 1].setState();}
-        catch (ArrayIndexOutOfBoundsException e) {}
-            if (player && AbilityMod.modifier==1) {//checks if players dig ability is active
-                if (MapState.lastPressed == 'd')
-                    for (int i = 0; i < 9; i++) {
-                        for (int j = 0; j < 3; j++) {
-                            try{dispArray[x + i][y - 1 + j].setState();}
-                            catch (ArrayIndexOutOfBoundsException e) {}
-                        }
+    ArrayList<Cell> getSurroundingCells(int x, int y){
+        ArrayList<Cell> list=new ArrayList<>();
+        //x -= 1;
+        //y -= 1;
+        boolean a =x+1<res;
+        boolean b=x-1>=0;
+        boolean c=y+1<res;
+        boolean d=y-1>=0;
+        if(a && c)  list.add(dispArray[x + 1][y + 1]);
+        if(a &&b && d)       list.add(dispArray[x + 1][y]);
+        if(a && d)  list.add(dispArray[x + 1][y - 1]);
+        if(c)       list.add(dispArray[x][y + 1]);
+        if(b && c)  list.add(dispArray[x - 1][y + 1]);
+        if(b)       list.add(dispArray[x - 1][y]);
+        if(b && d)  list.add(dispArray[x - 1][y - 1]);
+        if(d)       list.add(dispArray[x][y - 1]);
+
+        return list;
+    }
+    void clearDigPlusCells(int ii, int jj, int x, int y){
+    //    x -= 1;
+    //    y -= 1;
+        for (int i = 0; i < ii; i++) {
+            for (int j = 0; j < jj; j++) {
+                int nx=0;
+                int ny=0;
+                switch (MapState.lastPressed){
+                    case 'w':{nx=x - 1 + i; ny=y + j;       break;}
+                    case 'd':{nx=x + i;     ny=y - 1 + j;   break;}
+                    case 's':{nx=x - 1 + i; ny=y - j;       break;}
+                    case 'a':{nx=x - i;     ny=y - 1 + j;   break;}
+                }
+                try {
+                    if (!dispArray[nx][ny].getState()) {
+                        dispArray[nx][ny].setState();
                     }
-                if (MapState.lastPressed == 'a')
-                    for (int i = 0; i < 9; i++) {
-                        for (int j = 0; j < 3; j++) {
-                            try{dispArray[x - i][y - 1 + j].setState();}
-                            catch (ArrayIndexOutOfBoundsException e) {}
-                        }
-                    }
-                if (MapState.lastPressed == 's')
-                    for (int i = 0; i < 3; i++) {
-                        for (int j = 0; j < 9; j++) {
-                            try{dispArray[x - 1 + i][y - j].setState();}
-                            catch (ArrayIndexOutOfBoundsException e) {}
-                        }
-                    }
-                if (MapState.lastPressed == 'w')
-                    for (int i = 0; i < 3; i++) {
-                        for (int j = 0; j < 9; j++) {
-                            try{dispArray[x - 1 + i][y + j].setState();}
-                            catch (ArrayIndexOutOfBoundsException e) {}
-                        }
-                    }
+                }
+                catch (ArrayIndexOutOfBoundsException e) {}
             }
+        }
+    }
+    public void clearArea(int x, int y, boolean player) {
+        //unNullWallCells();
+        ArrayList<Cell> temp= getSurroundingCells(x,y);
+        for(Cell c:temp){
+            if(!c.getState()) {
+                c.setState();
+            }
+        }
+        temp.clear();
+        if (player && AbilityMod.modifier==1) {//checks if players dig ability is active
+            if (MapState.lastPressed == 'd' ||MapState.lastPressed == 'a')
+                clearDigPlusCells(9,3,x,y);
+            if (MapState.lastPressed == 's' ||MapState.lastPressed == 'w')
+                clearDigPlusCells(3,9,x,y);
+        }
             splitMapDataToList();
         }
-    public void clearMonsterPositions() {
-        for (Cell c : liveCellList)
-            c.setMon(false);
-    }
-    private void unNullWallCells() {
-        for (int i = 0; i < res; i++) {
-            for (int j = 0; j < res; j++) {
-                if (dispArray[i][j] == null) dispArray[i][j] = new Cell();
+    public static void loadDrawList(){
+        drawList.clear();
+        for(Cell c: liveCellList){
+            int screenLeftBound= (int) viewX;
+            int screenRightBound= (int) viewX+Game.WIDTH;
+            int screenBotBound= (int) viewY;
+            int screenTopBound= (int) viewY+Game.HEIGHT;
+            int x=(c.getX()+1)*cellW;
+            int y=(c.getY()+1)*cellW;
+
+
+            if(x>=screenLeftBound &&x-cellW<=screenRightBound
+                    && y>=screenBotBound && y-cellW<=screenTopBound){
+                drawList.add(c);
             }
+            c.setAttArea(false);
         }
     }
     private void createMap() {
@@ -103,32 +116,29 @@ public class GridManager {
     }
     public static void loadLiveCells(){
         liveCellList.clear();
+        int count=0;
         for(int i=0;i<res;i++){
             for(int j=0;j<res;j++){
-                try {
-                    if (dispArray[i][j].getState())
+               // try {
+                    //if (dispArray[i][j].getState())
+                        dispArray[i][j].setCords(i,j);
+                        dispArray[i][j].setLLIndex(count);
                         liveCellList.add(dispArray[i][j]);
-                }catch (NullPointerException e){}
+                        count++;
+               // }catch (NullPointerException e){}
             }
         }
     }
     private void splitMapDataToList() {
         liveCellList.clear();
+        liveCount=0;
         for (int i = 0; i < res; i++) {
-            for (int j = 0; j < res; j++)
-                //Trim wall Cells from array to make memory taken smaller
-                if (!dispArray[i][j].getState()) {
-                    dispArray[i][j] = null;
-                } else {
-                    //set live cells into list
-                    dispArray[i][j].setCords(i + 1, j + 1);
-                    liveCellList.add(dispArray[i][j]);
+            for (int j = 0; j < res; j++) {
+                if (dispArray[i][j].getState()) {
+                    liveCount++;
                 }
-        }
-        try {
-
-        } catch (ArrayIndexOutOfBoundsException e) {
-
+                liveCellList.add(dispArray[i][j]);
+            }
         }
     }
     private void clearMonsterList() {
@@ -139,9 +149,8 @@ public class GridManager {
         int index=0;
         while(!placed){
             index = rn.nextInt(liveCellList.size());
-
             Cell c = liveCellList.get(index);
-            if(!c.hasWater){
+            if(!c.hasWater && c.getState()){
                 int x=c.getX();
                 int y=c.getY();
                 int count=0;
@@ -150,31 +159,26 @@ public class GridManager {
                     if (dispArray[x - 1][y].hasWater) count++;
                     if (dispArray[x][y + 1].hasWater) count++;
                     if (dispArray[x][y - 1].hasWater) count++;
-                    if (count < 4) placed = true;
+                    if (count < 4) {
+                        placed = true;
+                        MapState.warpX=x;
+                        MapState.warpY=y;
+                    }
                 }
                 else index = rn.nextInt(liveCellList.size());
             }
         }
         liveCellList.get(index).setWarp();
-        Cell c = liveCellList.get(index);
-        int x=c.getX();
-        int y=c.getY();
-        for(int i=0;i<4;i++){
-            if(y + i + 1<res)
-                dispArray[x][y + i + 1].setState();
-        }
     }
     private void plotMonsters() {
-        double temp = liveCellList.size() * .005;
-
-        //double temp=rng.nextGaussian(10,6);
+        double temp = liveCount * .005;
         while (temp <= 0) {
             temp = rn.nextGaussian() * 20;
         }
         while (temp > 0) {
             Monster m = new Monster();
             int index = rn.nextInt(liveCellList.size());
-            if (!liveCellList.get(index).hasWater) {
+            if (!liveCellList.get(index).hasWater&& liveCellList.get(index).getState()) {
 
                 Cell c = liveCellList.get(index);
                 m.setCords(c.getX(), c.getY());
@@ -194,7 +198,7 @@ public class GridManager {
     private void plotShop() {
 
         int index = rn.nextInt(liveCellList.size());
-        if (!liveCellList.get(index).hasWater)
+        if (!liveCellList.get(index).hasWater && liveCellList.get(index).getState())
             liveCellList.get(index).setShop(true);
     }
     private void plotLoot() {
@@ -223,7 +227,7 @@ public class GridManager {
 
         while(!placed){
             Cell c = liveCellList.get(index);
-            if(!c.hasWater){
+            if(!c.hasWater && c.getState()){
                 int x=c.getX();
                 int y=c.getY();
                 int count=0;
@@ -241,7 +245,7 @@ public class GridManager {
 
         Game.player.setLiveListIndex(index);
         Cell c = liveCellList.get(index);
-        int w = MapState.cellW;
+        int w = cellW;
         Game.player.setCordsPX(c.getX() * w, c.getY() * w);
         int range = 20;
         ArrayList<Integer> monsFound = new ArrayList<>();
@@ -274,6 +278,6 @@ public class GridManager {
             } catch (IndexOutOfBoundsException e) {
             }
         }
-        loadLiveCells();
+        //loadLiveCells();
     }
 }

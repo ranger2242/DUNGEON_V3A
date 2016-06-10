@@ -21,21 +21,21 @@ public class Quick extends Ability {
     @Override
 
     public  void onActivate() {
-        Game.player.setMoveSpeed(Game.player.getMoveSpeed()/2);
+        Game.player.setMoveSpeed((float) (Game.player.getMoveSpeed()/1.5));
         Game.player.setSpeed(Game.player.getSpeed()*2);
-        Game.player.setEnergyRegen(Game.player.getEnergyRegen()*2);
-        Game.player.setManaRegen(Game.player.getManaRegenRate()*2);
+        Game.player.setEnergyRegen((int) (Game.player.getEnergyRegen()*1.5));
+        Game.player.setManaRegen((int) (Game.player.getManaRegenRate()*1.5));
         Game.player.setDefense((int) (Game.player.getDefense()*.75));
         Game.player.setIntel((int)(Game.player.getIntel()*.75));
         MapState.out("----------------------------------");
         MapState.out(Game.player.getName()+" activated the QUICK ability!");
-        MapState.out("Move Speed doubled");
-        MapState.out("Speed doubled!");
-        MapState.out("M Regen doubled!");
-        MapState.out("E Regen doubled!");
+        MapState.out("Move Speed x1.5");
+        MapState.out("M Regen x1.5!");
+        MapState.out("E Regen x1.5!");
         MapState.out("DEF x.75 !");
         MapState.out("INT x.75 !");
         MapState.out("EXP x1.25");
+        MapState.out("SPD x2!");
 
         MapStateRender.setHoverText("QUICK!",1.5f, Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
 
@@ -50,13 +50,13 @@ public class Quick extends Ability {
         output.clear();
 
         output.add("-QUICK-");
-        output.add("Move Speed x2");
-        output.add("SPD x2");
-        output.add("M Regen x2");
-        output.add("E Regen x2");
+        output.add("Move Speed x1.5");
+        output.add("M Regen x1.5");
+        output.add("E Regen x1.5");
         output.add("DEF x0.5");
         output.add("INT x0.75");
         output.add("EXP x1.25");
+        output.add("SPD x2");
 
         return output;
     }

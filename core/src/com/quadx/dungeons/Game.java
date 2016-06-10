@@ -4,7 +4,6 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
-import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -14,16 +13,13 @@ import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.MainMenuState;
-import com.quadx.dungeons.states.mapstate.Map2State;
-import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 import com.quadx.dungeons.tools.Score;
 
-import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 
@@ -38,15 +34,20 @@ public class Game extends ApplicationAdapter implements ControllerListener{
 	public static Player player= new Player();
 	private static GameStateManager gameStateManager;
 	public static boolean controllerMode =false;
-
+	static BitmapFont[] fonts = new BitmapFont[6];
 
 	@Override
 	public void create () {
-
+		fonts[0]=createFont(8);
+		fonts[1]=createFont(10);
+		fonts[2]=createFont(12);
+		fonts[3]=createFont(14);
+		fonts[4]=createFont(16);
+		fonts[5]=createFont(20);
 		initFile();
 		gameStateManager=new GameStateManager();
 		Gdx.graphics.setWindowedMode(WIDTH,HEIGHT);
-		setFontSize(20);
+		setFontSize(5);
 		spriteBatch = new SpriteBatch();
 		 gameStateManager.push(new MainMenuState(gameStateManager));
 	}
@@ -75,26 +76,23 @@ public class Game extends ApplicationAdapter implements ControllerListener{
 	public static void console(String s){
 		System.out.println(s);
 	}
-	public static void setFontSize(int x){
+	public static BitmapFont createFont(int x){
+		BitmapFont temp=new BitmapFont();
 
-		try{
-			font.dispose();
-			//generator.dispose();
-		}
-		catch (NullPointerException e)
-		{
-			//console("Null pointer disposing generator or font");
-		}
 		try {
 			FreeTypeFontGenerator generator= new FreeTypeFontGenerator(Gdx.files.internal("fonts\\prstart.ttf"));
 			FreeTypeFontGenerator.FreeTypeFontParameter parameter= new FreeTypeFontGenerator.FreeTypeFontParameter();
 			parameter.size = x;
-			font = generator.generateFont(parameter);
+			temp = generator.generateFont(parameter);
 			//console("Font Generated");
 		}
-			catch (Exception e){
+		catch (Exception e){
 			e.printStackTrace();
 		}
+		return temp;
+	}
+	public static void setFontSize(int x){
+		font=fonts[x];
 	}
 	public static void printLOG(Exception e) {
 		/*

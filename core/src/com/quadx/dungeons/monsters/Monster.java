@@ -12,6 +12,7 @@ import com.quadx.dungeons.states.mapstate.MapStateRender;
 import java.util.Random;
 
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.states.mapstate.MapState.out;
 
 /**
  * Created by Tom on 11/10/2015.
@@ -21,9 +22,9 @@ public class Monster {
     public static Texture[] icons={  new Texture(Gdx.files.internal("images/icons/monsters/test/testBack.png")),
                                      new Texture(Gdx.files.internal("images/icons/monsters/test/testRight.png")),
                                      new Texture(Gdx.files.internal("images/icons/monsters/test/testFront.png")),
-                                    new Texture(Gdx.files.internal("images/icons/monsters/test/testLeft.png"))};
+                                     new Texture(Gdx.files.internal("images/icons/monsters/test/testLeft.png"))};
     private static Random rn;
-    private static double level = 1;
+    protected double level = 1;
     public double attack;
     public double intel;
     public String name = "monster";
@@ -113,6 +114,7 @@ public class Monster {
 
     private void genLevel() {
         level = player.level + rn.nextInt(player.floor);
+        out(level+"");
     }
 
     private void genStats() {
@@ -309,9 +311,8 @@ public class Monster {
         }
         boolean placed = false;
         boolean cont = false;
-        for (Cell c : GridManager.liveCellList) {//checks if there is monster already on chosen cell
+        for (Monster c : GridManager.monsterList) {//checks if there is monster already on chosen cell
             if (c.getX() == tx && c.getY() == ty) {
-                if (c.hasMon())
                     cont = true;
             }
         }
@@ -321,7 +322,7 @@ public class Monster {
                 if (c1.getMonsterIndex() == monListIndex) {
                     c1.setMon(false);                           //remove
                 }
-                if (c1.getX() == tx && c1.getY() == ty) {
+                if (c1.getX() == tx && c1.getY() == ty && c1.getState()) {
                     c1.setMonsterIndex(monListIndex);
                     c1.setMon(true);
                     setCords(tx, ty);
@@ -337,7 +338,7 @@ public class Monster {
                         c.setMon(true);
                     }
                 }
-                if (rn.nextBoolean()) MapState.gm.clearArea(x, y, false);
+                if (rn.nextBoolean() || rn.nextBoolean()) MapState.gm.clearArea(x, y, false);
             }
         }
         dtMove = 0;

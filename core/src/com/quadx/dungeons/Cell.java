@@ -15,9 +15,9 @@ public class Cell {
     private boolean isWarp=false;
     private boolean hasShop=false;
     private boolean agroPoint=false;
-    private boolean playerFront=false;
     private boolean attArea=false;
     int monsterIndex;
+    public int LLIndex;
     private int x;
     private int y;
     Color color = null;
@@ -39,8 +39,22 @@ public class Cell {
     }
     public boolean getCrate(){return hasCrate;}
     public int     getIndex(){return monsterIndex;}
-    public boolean isPlayerFront(){return playerFront;}
-    public Color getColor(){return color;}
+    public int getLLIndex(){
+        return LLIndex;
+    }
+    public Color getColor(){
+        if(getState()){
+            color=new Color(.235f, .235f, .196f, 1);
+            if(hasLoot()) color=new Color(1f, .647f, 0f, 1);
+            if(hasCrate())color=new Color(.627f, .322f, .176f, 1);
+            if(getShop()) color=new Color(1f, 0f, 1f, 1);
+            if(hasWarp()) color=new Color(0f, 1f, 0f, 1);
+            if(getAttArea())color=new Color(.7f,0,0f,1);
+        }
+        else            color=new Color(0f, 0f, 0f, 1);
+
+        return color;
+    }
     public void setAttArea(boolean a){attArea=a;}
     public void setCords(int a, int b){x=a;y=b;}
     public void setAgro(boolean b, int a){agroPoint=b; monsterIndex =a;}
@@ -56,6 +70,7 @@ public class Cell {
     public void setColor(Color c){
         color=c;
     }
+    public void setLLIndex(int i){LLIndex=i;}
     public void setHasLoot(boolean set) {
         hasLoot =set;
         if(set){
@@ -63,7 +78,6 @@ public class Cell {
         }
     }
     public void setPlayer(boolean set){hasPlayer=set;}
-    public void setFront(boolean set){playerFront=set;}
     public void setMonsterIndex(int set){monsterIndex=set;}
     public boolean hasWarp(){return isWarp;}
     public boolean hasMon(){return hasMon;}

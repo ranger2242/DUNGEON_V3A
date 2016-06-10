@@ -1,9 +1,10 @@
 package com.quadx.dungeons;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.items.*;
 import com.quadx.dungeons.attacks.*;
-import com.quadx.dungeons.items.equipment.Arms;
+import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.MapState;
@@ -13,17 +14,21 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.GridManager.liveCellList;
+import static com.quadx.dungeons.states.mapstate.MapState.cellW;
+import static com.quadx.dungeons.states.mapstate.MapState.lastPressed;
+import static com.quadx.dungeons.states.mapstate.MapStateUpdater.setAim;
 
 /**
  * Created by Tom on 11/9/2015.
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class Player {
+
     public ArrayList<Attack> attackList = new ArrayList<>();
     public ArrayList<ArrayList<Item>> invList = new ArrayList<>();
     public ArrayList<Equipment> equipedList = new ArrayList<>();
     private ArrayList<String> statsList= new ArrayList<>();
-    private Damage d = new Damage();
     private Vector2 pospx=new Vector2(0,0);
     private int x;
     private int px;//(Game.WIDTH/2)+1;
@@ -54,13 +59,17 @@ public class Player {
     int mana = 100;
     int manaMax = 100;
     int prevInvSize=0;
-    int abilityPoints=1;
+    int damage=0;
+
     double mDamage=0;
     double pDamage=0;
+
+    public boolean canMove=false;
     public boolean safe=false;
 
     public float dtSafe=0;
-    private float moveSpeed=.12f;
+    public float dtMove=0;
+    private float moveSpeed=.1f;
     private float gold=0;
 
     private Random rn =new Random();
@@ -76,6 +85,7 @@ public class Player {
     private Attack sacrificeSp= new Sacrifice();
     Attack slashSp = new Slash();
     Attack stabSp = new Stab();
+    Texture[] icons=new Texture[4];
 
     public Player(){
         System.out.println("5");
@@ -88,9 +98,16 @@ public class Player {
         attackList.add(protectSp);
         attackList.add(stabSp);
         attackList.add(slashSp);
-
     }
     //SETTERS------------------------------------------------------------------
+    public void loadIcons(){
+        Texture t1 = new Texture(Gdx.files.internal("images/icons/player/playerUp.png"));
+        Texture t2 = new Texture(Gdx.files.internal("images/icons/player/playerRight.png"));
+        Texture t3 = new Texture(Gdx.files.internal("images/icons/player/playerDown.png"));
+        Texture t4 = new Texture(Gdx.files.internal("images/icons/player/playerLeft.png"));
+        icons = new Texture[]{t1, t2, t3, t4};
+
+    }
     public void setEnergy(int e){
         energy=e;
     }
@@ -101,6 +118,9 @@ public class Player {
     public void setCords(int a, int b) {
         x=a;
         y=b;
+        px=a*cellW;
+        py=a*cellW;
+        pospx.set(px,py);
     }
     public void setName(String n)
     {
@@ -127,8 +147,8 @@ public class Player {
         pospx.set(i,i1);
         px=i;
         py=i1;
-        x=px/MapState.cellW;
-        y=py/MapState.cellW;
+        x=px/ cellW;
+        y=py/ cellW;
     }
     public void setMoveSpeed(float moveSpeed) {
         this.moveSpeed = moveSpeed;
@@ -160,10 +180,15 @@ public class Player {
     public void setSpeed(int speed) {
         this.speed = speed;
     }
+    public void setDamage(int d){damage=d;}
 
     //GETTERS------------------------------------------------------------------
     public Vector2 getCordsPX(){
         return pospx;
+    }
+    private int getLevel()
+    {
+        return level;
     }
     public int getGold()
     {
@@ -187,10 +212,6 @@ public class Player {
     public int getPY()
     {
         return py;
-    }
-    private int getLevel()
-    {
-        return level;
     }
     public int getHp()
     {
@@ -231,6 +252,23 @@ public class Player {
         return  manaRegenRate;
     }
     public int getHpRegen(){return hpRegen;}
+    public int getManaMax() {
+        return manaMax;
+    }
+    public int getEnergyRegen() {
+        return energyRegen;
+    }
+    public int getDamage(){return damage;}
+    public float getMoveSpeed() {
+        return moveSpeed;
+    }
+    public String getKills() {
+        return ""+killcount;
+    }
+    public String getName()
+    {
+        return name;
+    }
     public ArrayList<String> getStatsList(){
         statsList.clear();
 
@@ -248,24 +286,62 @@ public class Player {
         statsList.add("D:        " + floor);
         return  statsList;
     }
-    public String getName()
-    {
-        return name;
-    }
-    public int getManaMax() {
-        return manaMax;
-    }
-    public float getMoveSpeed() {
-        return moveSpeed;
-    }
-    public int getEnergyRegen() {
-        return energyRegen;
-    }
-    public String getKills() {
-        return ""+killcount;
+    public Texture getIcon(){
+        int u=0;
+        switch (lastPressed){
+            case 'w':{
+                u=0;
+                break;
+            }
+            case 'd':{
+                u=1;
+                break;
+            }
+            case 's':{
+                u=2;
+
+                break;
+            }
+            case 'a':{
+                u=3;
+
+                break;
+            }
+        }
+
+        return icons[u];
     }
 
     //MISC Functions------------------------------------------------------------------
+    public void move(int xmod, int ymod, char c){
+        int nx=x+xmod;
+        int ny=y+ymod;
+        Cell c1;
+        try {
+            int index1=-1;
+            int index2=-1;
+            for(Cell cell:liveCellList){
+                if(cell.getX()==x && cell.getY()==y) {index1=liveCellList.indexOf(cell);}
+                if(cell.getX()==nx && cell.getY()==ny){index2=liveCellList.indexOf(cell);}
+            }
+            if(index1 !=-1 && index2 !=-1 &&liveCellList.get(index2).getState()) {
+                liveCellList.get(index1).setPlayer(false);
+                liveCellList.get(index2).setPlayer(true);
+                setCordsPX(nx * cellW, ny * cellW);
+            }
+
+            c1 = GridManager.dispArray[nx][ny];
+            if (c1.getState()&& !c1.hasWater){
+                setCordsPX(nx*cellW, ny*cellW);
+                dtMove = 0;
+            }
+        }catch (IndexOutOfBoundsException e){}
+         catch ( NullPointerException e){
+             MapStateRender.setHoverText("NONONO",.5f, Color.RED,player.getPX(),player.getPY(),false);
+         }
+       // lastPressed = c;
+        setAim();
+    }
     public void useItem(int i){
         String s="";
         if(i>=0) {
@@ -336,6 +412,9 @@ public class Player {
     }
     public void addKills(){killcount++;}
     public void updateVariables(float dt){
+        dtMove+=dt;
+        if(dtMove>moveSpeed)canMove=true;
+        else canMove=false;
         calculateArmorBuff();
         if(hp>hpMax)hp=hpMax;
         if(mana>manaMax)mana=manaMax;

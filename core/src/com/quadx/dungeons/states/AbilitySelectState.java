@@ -50,11 +50,11 @@ public class AbilitySelectState extends State implements ControllerListener {
         MainMenuState.controller.addListener(this);
         MyTextInputListener listener = new MyTextInputListener();
         Gdx.input.getTextInput(listener, "Name", "","");
-        Game.setFontSize(28);
+        Game.setFontSize(5);
 
         Gdx.gl.glClearColor(0,0,0,1);
         CharSequence cs="Select Ability";
-        Game.setFontSize(10);
+        Game.setFontSize(1);
         gl.setText(Game.getFont(),cs);
 
         titlex=(int)((Game.WIDTH/2)-(gl.width/2));
@@ -142,7 +142,7 @@ public class AbilitySelectState extends State implements ControllerListener {
     @Override
     public void render(SpriteBatch sb) {
         sb.begin();
-        Game.setFontSize(12);
+        Game.setFontSize(2);
         Game.font.setColor(Color.WHITE);
         Game.getFont().draw(sb,"Select Ability",viewX+ titlex,viewY+titley);
         Game.getFont().draw(sb,"-PRIMARY-",viewX+titlex+100,viewY+titley-20);

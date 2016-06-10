@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.controllerMode;
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.GridManager.liveCellList;
 import static com.quadx.dungeons.states.MainMenuState.controller;
 
 
@@ -28,25 +29,19 @@ import static com.quadx.dungeons.states.MainMenuState.controller;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class MapStateUpdater extends MapState{
-    static boolean moveLeft;
-    static boolean moveRight;
-    static boolean moveUp;
-    static boolean moveDown;
-
-    public static float dtWater = 0;
-    public static float dtHovText = 0;
-    public static float dtCollision = 0;
-    public static float dtScrollAtt=0;
     private static float dtRun = 0;
     private static float dtDig = 0;
-    private static float dtMove = 0;
-    public static float dtAttack = 0;
     private static float dtRegen = 0;
     private static float dtEnergyRe = 0;
     private static float dtInfo = 0;
     private static float dtItem = 0;
-    public static float dtInvSwitch = 0;
     private static float dtMap = 0;
+    public static float dtWater = 0;
+    public static float dtHovText = 0;
+    public static float dtCollision = 0;
+    public static float dtScrollAtt=0;
+    public static float dtAttack = 0;
+    public static float dtInvSwitch = 0;
 
 
     public MapStateUpdater(GameStateManager gsm) {
@@ -60,15 +55,9 @@ public class MapStateUpdater extends MapState{
             }
         }
     }
-    static void updateMousePosition() {
-        mouseX = Gdx.input.getX();
-        mouseY = Gdx.input.getY();
-        mouseRealitiveX = (int) (mouseX + viewX);
-        mouseRealitiveY = (int) (Game.HEIGHT - mouseY + viewY);
-    }
     public static void updateCamPosition() {
         Vector3 position = cam.position;
-        float lerp = 0.2f;
+        float lerp = 0.1f;
         position.x += (player.getCordsPX().x - position.x) * lerp;
         position.y += (player.getCordsPX().y - position.y) * lerp;
         cam.position.set(position);
@@ -79,7 +68,6 @@ public class MapStateUpdater extends MapState{
     }
     public static void regenPlayer(float dt) {
         dtRegen += dt; //move all this shit to PLAYER
-        dtMove+=dt;
         if (player.safe) player.dtSafe += dt;
         if (dtEnergyRe > .2 && player.getEnergy() < player.getEnergyMax()) {
             player.setEnergy(player.getEnergy() + player.getEnergyRegen());
@@ -102,7 +90,6 @@ public class MapStateUpdater extends MapState{
     }
     public static void fuckingStupidUpdateFunction(float dt) {
         updateCamPosition();
-        updateMousePosition();
         regenPlayer(dt);
         player.updateVariables(dt);
         MapStateRender.updateVariables(dt);
@@ -117,14 +104,10 @@ public class MapStateUpdater extends MapState{
         dtEnergyRe += dt;
         dtCollision += dt;
         dtScrollAtt+=dt;
-        dtMove +=dt;
         dtAttack +=dt;
         dtInvSwitch += dt;
-
-
-        /*if(MapStateRender.inventoryPos>player.invList.size()-1){
-            MapStateRender.inventoryPos=player.invList.size()-1;
-        }*/
+        //find coordinates to draw on screen by finding four corners of screen on grid
+        GridManager.loadDrawList();
         try {
             if (!player.invList.isEmpty()) {
                 if (player.invList.get(MapStateRender.inventoryPos).get(0).isEquip) {
@@ -165,58 +148,38 @@ public class MapStateUpdater extends MapState{
         }
     }
     static void getMovementInput(){
-        if(controllerMode){
-            if (dtMove > player.getMoveSpeed()) {
-                if (controller.getAxis(Xbox360Pad.AXIS_LEFT_Y) < -.2) {
-                    if(controller.getAxis(Xbox360Pad.AXIS_LEFT_X) < -.2){movementHandler(-1, 1, 'w');}
-                    else if(controller.getAxis(Xbox360Pad.AXIS_LEFT_X) > .2){movementHandler(1, 1, 'w');}
-                    else{movementHandler(0, 1, 'w');}
-                }
-                if (controller.getAxis(Xbox360Pad.AXIS_LEFT_Y) > .2){
-                    if(controller.getAxis(Xbox360Pad.AXIS_LEFT_X) < -.2){movementHandler(-1, -1, 's');}
-                    else if(controller.getAxis(Xbox360Pad.AXIS_LEFT_X) > .2){movementHandler(1, -1, 's');}
-                    else{movementHandler(0, -1, 's');}
-                }
-                if (controller.getAxis(Xbox360Pad.AXIS_LEFT_X) < -.2){
-                    if(controller.getAxis(Xbox360Pad.AXIS_LEFT_Y) < -.2){movementHandler(-1, 1, 'a');
-                    }else if(controller.getAxis(Xbox360Pad.AXIS_LEFT_Y) > .2){movementHandler(-1, -1, 'a');}
-                    else{movementHandler(-1, 0, 'a');}
-                }
-                if (controller.getAxis(Xbox360Pad.AXIS_LEFT_X) > .2){
-                    if(controller.getAxis(Xbox360Pad.AXIS_LEFT_Y) < -.2){movementHandler(1, 1, 'd');}
-                    else if(controller.getAxis(Xbox360Pad.AXIS_LEFT_Y) > .2){movementHandler(1, -1, 'd');}
-                    else{movementHandler(1, 0, 'd');}
-                    moveLeft=false;
-                }
-                dtMove = 0;
-            }
+        int x=0,y=0;
+        char c='t';
+        boolean up;
+        boolean down;
+        boolean right;
+        boolean left;
+        if(controllerMode) {
+            up = controller.getAxis(Xbox360Pad.AXIS_LEFT_Y) < -.2;
+            down = controller.getAxis(Xbox360Pad.AXIS_LEFT_Y) > .2;
+            right = controller.getAxis(Xbox360Pad.AXIS_LEFT_X) > .2;
+            left = controller.getAxis(Xbox360Pad.AXIS_LEFT_X) < -.2;
+        }else {
+            up=Gdx.input.isKeyPressed(Input.Keys.W);
+            down=Gdx.input.isKeyPressed(Input.Keys.S);
+            right=Gdx.input.isKeyPressed(Input.Keys.D);
+            left=Gdx.input.isKeyPressed(Input.Keys.A);
         }
-        else{
-            if (dtMove > player.getMoveSpeed()) {
-                if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                    if(Gdx.input.isKeyPressed(Input.Keys.A)){movementHandler(-1, 1, 'w');}
-                    else if(Gdx.input.isKeyPressed(Input.Keys.D)){movementHandler(1, 1, 'w');}
-                    else{movementHandler(0, 1, 'w');}
-                }
-                if (Gdx.input.isKeyPressed(Input.Keys.S)){
-                    if(Gdx.input.isKeyPressed(Input.Keys.A)){movementHandler(-1, -1, 's');}
-                    else if(Gdx.input.isKeyPressed(Input.Keys.D)){movementHandler(1, -1, 's');}
-                    else{movementHandler(0, -1, 's');}
-                }
-                if (Gdx.input.isKeyPressed(Input.Keys.A)){
-                    if(Gdx.input.isKeyPressed(Input.Keys.W)){movementHandler(-1, 1, 'a');}
-                    else if(Gdx.input.isKeyPressed(Input.Keys.S)){movementHandler(-1, -1, 'a');}
-                    else{movementHandler(-1, 0, 'a');}
-                }
-                if (Gdx.input.isKeyPressed(Input.Keys.D)){
-                    if(Gdx.input.isKeyPressed(Input.Keys.W)){movementHandler(1, 1, 'd');}
-                    else if(Gdx.input.isKeyPressed(Input.Keys.S)){movementHandler(1, -1, 'd');}
-                    else{movementHandler(1, 0, 'd');}
-                    moveLeft=false;
-                }
-                dtMove = 0;
-            }
+        if (player.canMove) {
+            if (up) {y=1;c='w';x=checkMove(left,right);}
+            if (down){y=-1;c='s';x=checkMove(left,right);}
+            if (left){x=-1;c='a';y=checkMove(down,up);}
+            if (right){x=1;c='d';y=checkMove(down,up);}
+            player.move(x,y,c);
+            player.dtMove = 0;
         }
+    }
+    static int checkMove(boolean b2, boolean b3){
+        int x;
+        if(b2){x=-1;}
+        else if(b3){x=1;}
+        else{x=0;}
+        return x;
     }
     static void keyboardAttackSelector(){
         if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
@@ -371,55 +334,59 @@ public class MapStateUpdater extends MapState{
             }
         }
     }
-    public static void movementHandler(int xmod, int ymod, char c) {
-        int x = player.getPX() + xmod * cellW;
-        int y = player.getPY() + ymod * cellW;
-        for (Cell cell : GridManager.liveCellList) {
-            if(dtMove>player.getMoveSpeed())
-            if (cell.getY() * cellW == y && cell.getX() * cellW == x && !cell.getWater()) {
-                player.setCordsPX(x, y);
-                player.setLiveListIndex(GridManager.liveCellList.indexOf(cell));
-                dtMove=0;
-            }
-        }
-        lastPressed = c;
-        setAim();
-
-    }
-    static void setAim(){
+    public static void setAim(){
+        boolean up;
+        boolean down;
+        boolean right;
+        boolean left;
         if(controllerMode){
-            if (controller.getAxis(Xbox360Pad.AXIS_RIGHT_X)<-.2) setFront('a' , player.getX(), player.getY());
-            if (controller.getAxis(Xbox360Pad.AXIS_RIGHT_X)>.2) setFront('d',player.getX(), player.getY());
-            if (controller.getAxis(Xbox360Pad.AXIS_RIGHT_Y)<-.2) setFront('w',player.getX(), player.getY());
-            if (controller.getAxis(Xbox360Pad.AXIS_RIGHT_Y)>.2) setFront('s',player.getX(), player.getY());
+            up=controller.getAxis(Xbox360Pad.AXIS_RIGHT_Y)<-.2;
+            down=controller.getAxis(Xbox360Pad.AXIS_RIGHT_Y)>.2;
+            right=controller.getAxis(Xbox360Pad.AXIS_RIGHT_X)>.2;
+            left=controller.getAxis(Xbox360Pad.AXIS_RIGHT_X)<-.2;
         }
         else {
-            if (Gdx.input.isKeyPressed(Input.Keys.J)) setFront('a' , player.getX(), player.getY());
-            if (Gdx.input.isKeyPressed(Input.Keys.L)) setFront('d',player.getX(), player.getY());
-            if (Gdx.input.isKeyPressed(Input.Keys.I)) setFront('w',player.getX(), player.getY());
-            if (Gdx.input.isKeyPressed(Input.Keys.K)) setFront('s',player.getX(), player.getY());
+            up = Gdx.input.isKeyPressed(Input.Keys.I);
+            down = Gdx.input.isKeyPressed(Input.Keys.K);
+            right = Gdx.input.isKeyPressed(Input.Keys.L);
+            left = Gdx.input.isKeyPressed(Input.Keys.J);
+            if(!up && !down && !left && !right) {
+                up=Gdx.input.isKeyPressed(Input.Keys.W);
+                down=Gdx.input.isKeyPressed(Input.Keys.S);
+                right=Gdx.input.isKeyPressed(Input.Keys.D);
+                left=Gdx.input.isKeyPressed(Input.Keys.A);
+            }
         }
+        char c=lastPressed;
+        if (up) c='w';
+        if (right) c='d';
+        if (down) c='s';
+        if (left) c='a';
+        lastPressed =c;
     }
     public static void collisionHandler() {
-        int index = player.getLiveListIndex();
-        Cell c = GridManager.liveCellList.get(index);
-        if (player.getX() == c.getX() && player.getY() == c.getY()) {
+        int x=player.getX();
+        int y=player.getY();
+        Cell c = GridManager.dispArray[x][y];
+        int index=liveCellList.indexOf(c);
+        if(c .getState())
+        if (x == c.getX() && y == c.getY()) {
             if (c.hasLoot()) {
                 MapStateRender.dtLootPopup = 0;
                 lootPopup = new Texture(Gdx.files.internal("images/imCoin.png"));
                 makeGold(player.level);
-                GridManager.liveCellList.get(index).setHasLoot(false);
+                liveCellList.get(index ).setHasLoot(false);
             }
             if (c.hasCrate()) {
                 openCrate();
-                GridManager.liveCellList.get(index).setCrate(false);
+                liveCellList.get(index).setCrate(false);
             }
             if (c.hasWarp()) {
                 player.floor++;
                 gm.initializeGrid();
             }
             if (c.getShop()) {
-                GridManager.liveCellList.get(index).setShop(false);
+                liveCellList.get(index).setShop(false);
                 gsm.push(new ShopState(gsm));
             }
         }

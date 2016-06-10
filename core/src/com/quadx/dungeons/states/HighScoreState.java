@@ -7,15 +7,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.tools.Score;
-import com.sun.corba.se.impl.oa.poa.ActiveObjectMap;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 
 import static com.quadx.dungeons.states.mapstate.MapState.viewX;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
@@ -93,7 +88,7 @@ public class HighScoreState extends State {
         Gdx.gl.glClearColor(1,0,0,1);
 
         sb.begin();
-        Game.setFontSize(14);
+        Game.setFontSize(3);
         sb.setColor(Color.WHITE);
         Game.getFont().draw(sb,"HIGHSCORES",viewX+ Game.WIDTH/2,viewY+ Game.HEIGHT-30);
         int count =10;

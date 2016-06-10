@@ -43,7 +43,7 @@ public class ControlState extends State {
     }
     public void render(SpriteBatch sb) {
         sb.begin();
-        Game.setFontSize(14);
+        Game.setFontSize(3);
         for(int i=0;i<controlList.size();i++)
         Game.getFont().draw(sb,controlList.get(i),30,Game.HEIGHT-(30*(i+1)));
         sb.end();

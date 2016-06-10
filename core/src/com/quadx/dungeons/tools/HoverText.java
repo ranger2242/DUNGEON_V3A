@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.quadx.dungeons.Game;
-import com.quadx.dungeons.items.equipment.Equipment;
 
 import static com.quadx.dungeons.states.MainMenuState.gl;
 
@@ -43,7 +42,7 @@ public class HoverText {
     public void draw(SpriteBatch sb){
         if(active) {
             if (dtHov < time) {
-                Game.setFontSize(14);
+                Game.setFontSize(3);
                 CharSequence cs = text;
                 gl.setText(Game.getFont(), cs);
                 Game.getFont().setColor(color);

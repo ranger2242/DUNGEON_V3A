@@ -175,7 +175,7 @@ public class MapStateRender extends MapState {
         shapeR.end();
     }
     private static void drawMonsterHp(SpriteBatch sb){
-        Game.setFontSize(10);
+        Game.setFontSize(1);
         for(Monster m: GridManager.monsterList){
             sb.begin();
             Game.getFont().draw(sb,"LVL "+m.getLevel(),m.getX()*cellW-22,m.getY()*cellW-10);
@@ -220,7 +220,7 @@ public class MapStateRender extends MapState {
     public static void drawMessageOutput(SpriteBatch sb){
 
         sb.begin();
-        Game.setFontSize(10);
+        Game.setFontSize(1);
         Game.font.setColor(Color.WHITE);
         for(int i=0;i<10;i++){
             //if(output.size()>=0&&i+messageCounter<output.size()  )
@@ -252,7 +252,7 @@ public class MapStateRender extends MapState {
         double pEnergyBarMax=(Game.WIDTH/barWidth)-margin-15;
         double pEnergyBar=(pEnergy/pEnergyMax*pEnergyBarMax);
 
-        Game.setFontSize(10);
+        Game.setFontSize(1);
         Game.font.setColor(Color.WHITE);
         ArrayList<String> a = player.getStatsList();
         for (int i = 0; i < a.size(); i++) {
@@ -527,7 +527,7 @@ public class MapStateRender extends MapState {
         sb.begin();
         //Game.setFontSize(20);
         Game.font.setColor(1f,0f,0f,1f);
-        Game.getFont().draw(sb, "-" + playerDamage, x*cellW, y*cellW);
+        Game.getFont().draw(sb, "-" + player.getDamage(), x*cellW, y*cellW);
         sb.end();
     }
     public static void drawStatChanges(SpriteBatch sb){
@@ -542,10 +542,10 @@ public class MapStateRender extends MapState {
         sb.end();
     }
     public static void drawPlayer(SpriteBatch sb){
-        shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        shapeR.setColor(Color.PURPLE);
-        shapeR.rect(player.getPX(), player.getPY(),cellW,cellW);
-        shapeR.end();
+        sb.begin();
+        Texture t=Game.player.getIcon();
+        sb.draw(t,player.getPX()-t.getWidth()/4, player.getPY()-t.getHeight()/4);
+        sb.end();
     }
     public static void drawMonsterAgro(){
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
@@ -565,32 +565,18 @@ public class MapStateRender extends MapState {
     }
     public static void drawGrid(boolean map) {
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        int tx = 0;
-        int ty=0;
-        int px=0;
-        int py=0;
-        for(Cell c: GridManager.liveCellList) {
-            if(c.hasWarp()){
-
-                tx= (int) (viewX + Game.WIDTH - (Map2State.res + 50))+c.getX();
-                ty=(int) (viewY + Game.HEIGHT - (Map2State.res + 50))+c.getY();
-            }
+        int tx= (int) (viewX + Game.WIDTH - (Map2State.res + 50))+warpX;
+        int ty=(int) (viewY + Game.HEIGHT - (Map2State.res + 50))+warpY;
+        int px= (int) (viewX + Game.WIDTH - (Map2State.res + 50))+ player.getX();
+        int py=(int) (viewY + Game.HEIGHT - (Map2State.res + 50))+ player.getY();
+        ArrayList<Cell> temp=GridManager.drawList;
+        if(map){
+            temp=GridManager.liveCellList;
         }
-        px= (int) (viewX + Game.WIDTH - (Map2State.res + 50))+ player.getX();
-        py=(int) (viewY + Game.HEIGHT - (Map2State.res + 50))+ player.getY();
-        for(Cell c: GridManager.liveCellList){
+        for(Cell c: temp){
             int x=c.getX();
             int y=c.getY();
-            if(c.getState())shapeR.setColor(.235f, .235f, .196f, 1);
-            else            shapeR.setColor(0f, 1f, 0f, 1);
-            if(c.hasLoot()) shapeR.setColor(1f, .647f, 0f, 1);
-            if(c.hasCrate())shapeR.setColor(.627f, .322f, .176f, 1);
-            if(c.getShop()) shapeR.setColor(1f, 0f, 1f, 1);
-            if(c.hasWarp()) shapeR.setColor(0f, 1f, 0f, 1);
-            shapeR.end();
-            //if(c.hasMon())  shapeR.setColor(1, 0, 0, 1);
-            shapeR.begin(ShapeRenderer.ShapeType.Filled);
-            if(c.getAttArea())shapeR.setColor(.7f,0,0f,1);
+            shapeR.setColor(c.getColor());
             if(map && player.getX()==x && player.getY()==y){
                 if(blink)
                     shapeR.setColor(0,0,1,1);
@@ -622,9 +608,6 @@ public class MapStateRender extends MapState {
                 shapeR.rect(xa,ya, 1, 1);
             }
         }
-        for(Cell c: GridManager.liveCellList){
-            c.setAttArea(false);
-        }
 
         shapeR.end();
         shapeR.begin(ShapeRenderer.ShapeType.Line);
@@ -644,6 +627,8 @@ public class MapStateRender extends MapState {
             if(blradius>5)blradius=0;
         }
         shapeR.end();
-
+        for(Cell c: hitList){
+          //  c.setAttArea(false);
+        }
     }
 }
