@@ -11,11 +11,12 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.states.mapstate.MapState;
+
+import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.controllerMode;
 import static com.quadx.dungeons.states.mapstate.MapState.viewX;
@@ -26,13 +27,14 @@ import static com.quadx.dungeons.states.mapstate.MapState.viewY;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class MainMenuState extends State implements ControllerListener {
+    ArrayList<String> options=new ArrayList<>();
     public static GlyphLayout gl=new GlyphLayout();
-    private static ShapeRenderer shapeR=new ShapeRenderer();
     private static ParticleEffect effect;
     private static int selector=0;
+
     private int titlePosX =0;
     private int titlePosY=0;
-    private int selectorPosX=0;
+    int selectorPosX;
     private int optionsPosX =0;
     private int optionsPosY =0;
     private float dtCursor = 0;
@@ -50,19 +52,22 @@ public class MainMenuState extends State implements ControllerListener {
         Gdx.gl.glClearColor(0,0,0,1);
 
         effect = new ParticleEffect();
-
-
-       // Game.controller.addListener(this);
         ParticleEmitter emitter = new ParticleEmitter();
         String s = "StartScreen";
         effect.load(Gdx.files.internal("particles\\pt" + s), Gdx.files.internal("particles"));
         emitter = effect.findEmitter("StartScreen");
         emitter.setContinuous(true);
-        font.setColor(1,1,1,1);
-        //Game.setFontSize(40);
         CharSequence cs="DUNGEON";
         gl.setText(Game.getFont(),cs);
         selector=0;
+        if(!MapState.inGame)
+            options.add("Start");
+        else
+            options.add("Continue");
+        options.add("Options");
+        options.add("Controls");
+        options.add("Extra");
+        options.add("Exit");
 
     }
     @Override
@@ -123,7 +128,7 @@ public class MainMenuState extends State implements ControllerListener {
         titlePosX = (int)(viewX+(Game.WIDTH/2)-(gl.width/2));
         titlePosY=(int)(viewY+ (Game.HEIGHT/3)*2);
         effect.setPosition(viewX+ Game.WIDTH/2,viewY+ 0);
-        selectorPosX=(int)(viewX+(Game.WIDTH/2)-100);
+        selectorPosX = (int) (viewX + (Game.WIDTH / 2) - 100);
         optionsPosX =(int)(viewX+(Game.WIDTH/2));
         optionsPosY =(int)(viewY+ (Game.HEIGHT/3));
     }
@@ -136,7 +141,6 @@ public class MainMenuState extends State implements ControllerListener {
         }*/
         drawTitle(sb);
         drawOptions(sb);
-        drawSelector();
         sb.begin();
         Game.getFont().draw(sb,Controllers.getControllers().size+"",viewX+30,viewY+140);
 
@@ -154,23 +158,17 @@ private void drawTitle(SpriteBatch sb){
         sb.end();
     }
     private void drawOptions(SpriteBatch sb){
+
         sb.begin();
         Game.setFontSize(5);
-        if(MapState.inGame)
-            Game.getFont().draw(sb,"CONTINUE", optionsPosX, optionsPosY);
-        else
-            Game.getFont().draw(sb,"START", optionsPosX, optionsPosY);
-        Game.getFont().draw(sb,"OPTIONS", optionsPosX, optionsPosY -(20));
-        Game.getFont().draw(sb,"CONTROLS", optionsPosX, optionsPosY -(2*20));
-        Game.getFont().draw(sb,"EXTRA", optionsPosX, optionsPosY -(3*20));
-        Game.getFont().draw(sb,"EXIT", optionsPosX, optionsPosY -(4*20));
+        for(int i=0;i<options.size();i++){
+            if(selector==i)
+                Game.getFont().setColor(Color.BLUE);
+            else
+                Game.getFont().setColor(Color.WHITE);
+            Game.getFont().draw(sb,options.get(i),optionsPosX,optionsPosY-(i*20));
+        }
         sb.end();
-    }
-    private void drawSelector(){
-        shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        shapeR.setColor(1,1,1,1);
-        shapeR.rect(viewX+(Game.WIDTH/3),viewY+ (Game.HEIGHT/3)-((selector+1)*20),20,20);
-        shapeR.end();
     }
 /////////////////////////////////////////////////////////////////////////////////////////
     @Override

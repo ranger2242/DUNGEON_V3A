@@ -74,14 +74,9 @@ public class Player {
 
     private Random rn =new Random();
     String name ="DEMO";
-    private Attack fullhealSp = new Heal();
-    private Attack flameSp= new Flame();
-    private Attack restSp =new Rest();
-    private Attack drainSp= new Drain();
     private Attack blindSp = new Blind();
     private Attack tormentSp = new Torment();
     private Attack illusionSp= new Illusion();
-    private Attack protectSp= new Protect();
     private Attack sacrificeSp= new Sacrifice();
     Attack slashSp = new Slash();
     Attack stabSp = new Stab();
@@ -91,10 +86,15 @@ public class Player {
         System.out.println("5");
         level=1;
         attackList.clear();
+        Attack flameSp = new Flame();
         attackList.add(flameSp);
+        Attack restSp = new Rest();
         attackList.add(restSp);
+        Attack drainSp = new Drain();
         attackList.add (drainSp);
+        Attack fullhealSp = new Heal();
         attackList.add(fullhealSp);
+        Attack protectSp = new Protect();
         attackList.add(protectSp);
         attackList.add(stabSp);
         attackList.add(slashSp);
@@ -124,6 +124,9 @@ public class Player {
     }
     public void setName(String n)
     {
+        if(name.length()>19){
+            name=name.substring(0,19);
+        }
         name = n;
     }
     public void setHp(int hp) {
@@ -186,7 +189,7 @@ public class Player {
     public Vector2 getCordsPX(){
         return pospx;
     }
-    private int getLevel()
+    public int getLevel()
     {
         return level;
     }
@@ -260,7 +263,11 @@ public class Player {
     }
     public int getDamage(){return damage;}
     public float getMoveSpeed() {
-        return moveSpeed;
+        float f;
+        if(speed<1000)
+        f=moveSpeed- (1/(1000-speed));
+        else f=0;
+        return f;
     }
     public String getKills() {
         return ""+killcount;
@@ -324,7 +331,7 @@ public class Player {
                 if(cell.getX()==x && cell.getY()==y) {index1=liveCellList.indexOf(cell);}
                 if(cell.getX()==nx && cell.getY()==ny){index2=liveCellList.indexOf(cell);}
             }
-            if(index1 !=-1 && index2 !=-1 &&liveCellList.get(index2).getState()) {
+            if(index1 !=-1 && index2 !=-1 &&liveCellList.get(index2).getState() && !liveCellList.get(index2).getWater()) {
                 liveCellList.get(index1).setPlayer(false);
                 liveCellList.get(index2).setPlayer(true);
                 setCordsPX(nx * cellW, ny * cellW);
@@ -343,7 +350,6 @@ public class Player {
         setAim();
     }
     public void useItem(int i){
-        String s="";
         if(i>=0) {
             Item item = invList.get(i).get(0);
             if (item.isEquip) {
@@ -364,57 +370,55 @@ public class Player {
                 }
 
                 equipedList.add((Equipment) item);
-
-
             } else {
                 try {
                     try {
                         invList.get(i).remove(0);
                     } catch (IndexOutOfBoundsException e) {
                     }
-
-                    if (item.getHpmod() != 0) {
-                        hp += item.getHpmod();
-                        s = name + "'s HP changed by " + item.getHpmod();
-                    }
-                    //Mana
-                    if (item.getManamod() != 0) {
-                        mana += item.getManamod();
-                        s = name + "'s M changed by " + item.getManamod();
-                    }
-                    //attack
-                    if (item.getAttackmod() != 0) {
-                        attack += item.getAttackmod();
-                        s = name + "'s ATT changed by " + item.getAttackmod();
-                    }
-                    //defense
-                    if (item.getDefensemod() != 0) {
-                        defense += item.getDefensemod();
-                        s = name + "'s DEF changed by " + item.getDefensemod();
-                    }
-                    //intel
-                    if (item.getIntelmod() != 0) {
-                        intel += item.getIntelmod();
-                        s = player.getName() + "'s INT changed by " + item.getIntelmod();
-                    }
-                    //speed
-                    if (item.getSpeedmod() != 0) {
-                        speed += item.getSpeedmod();
-                        s = player.getName() + "'s SPD changed by " + item.getSpeedmod();
-                    }
-                    MapState.out(s);
+                    useItem(item);
                 } catch (NullPointerException e) {
                 }
             }
         }
-       // invList.get(i).remove(0);
-
+    }
+    public void useItem(Item item){
+        String s="";
+        if (item.getHpmod() != 0) {
+            hp += item.getHpmod();
+            s ="+" + item.getHpmod()+" HP";
+        }
+        //Mana
+        if (item.getManamod() != 0) {
+            mana += item.getManamod();
+            s = "+" + item.getManamod()+" M";
+        }
+        //attack
+        if (item.getAttackmod() != 0) {
+            attack += item.getAttackmod();
+            s = "+" +  item.getAttackmod()+" ATT";
+        }
+        //defense
+        if (item.getDefensemod() != 0) {
+            defense += item.getDefensemod();
+            s ="+" +  item.getDefensemod()+" DEF";
+        }
+        //intel
+        if (item.getIntelmod() != 0) {
+            intel += item.getIntelmod();
+            s = "+" + item.getIntelmod()+" INT";
+        }
+        //speed
+        if (item.getSpeedmod() != 0) {
+            speed += item.getSpeedmod();
+            s = "+" + item.getSpeedmod()+" SPD";
+        }
+        MapStateRender.setHoverText(s,.5f,Color.GREEN,px,py,false);
     }
     public void addKills(){killcount++;}
     public void updateVariables(float dt){
         dtMove+=dt;
-        if(dtMove>moveSpeed)canMove=true;
-        else canMove=false;
+        canMove = dtMove > moveSpeed;
         calculateArmorBuff();
         if(hp>hpMax)hp=hpMax;
         if(mana>manaMax)mana=manaMax;
@@ -447,26 +451,27 @@ public class Player {
 
     }
     public void addItemToInventory(Item item){
-        boolean added=false;
-        if(!item.isEquip) {
-            for (ArrayList<Item> al : invList) {
-                if (!al.isEmpty()) {
-                    try {
-                        if (al.get(0).getName().equals(item.getName())) {
-                            al.add(item);
-                            added = true;
-                        }
-                    } catch (NullPointerException e) {
-
+        if(item != null) {
+            boolean added = false;
+            if (!item.isEquip) {
+                for (ArrayList<Item> al : invList) {
+                    if (!al.isEmpty()) {
+                        try {
+                            if (al.get(0).getName().equals(item.getName())) {
+                                al.add(item);
+                                added = true;
+                            }
+                        } catch (NullPointerException e) {}
                     }
                 }
             }
+            if (!added) {
+                ArrayList<Item> al = new ArrayList<>();
+                al.add(item);
+                invList.add(al);
+            }
         }
-        if(!added){
-            ArrayList<Item> al = new ArrayList<>();
-            al.add(item);
-            invList.add(al);
-        }
+
     }
     public void calculateArmorBuff() {
         int sum1=0;

@@ -19,8 +19,8 @@ public abstract class Ability {
 
     Ability(){
     }
-    public static Texture loadIcon(String s){icon= new Texture(Gdx.files.internal(s));return icon;}
-    public static Texture getIcon(){return icon;}
+    public Texture loadIcon(String s){icon= new Texture(Gdx.files.internal(s));return icon;}
+    public  Texture getIcon(){return icon;}
 
     public abstract void onActivate();
     public abstract int getMod();

@@ -1,6 +1,7 @@
 package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
 
@@ -49,7 +50,10 @@ public class Warp extends Ability {
             MapStateRender.setHoverText(""+(cooldown-timeCounter),.5f,Color.GRAY, player.getPX(), player.getPY(),false);
         }
     }
-
+    @Override
+    public Texture getIcon(){
+        return icon;
+    }
 
     public ArrayList<String> details() {
         //ArrayList<String> output=new ArrayList<>();

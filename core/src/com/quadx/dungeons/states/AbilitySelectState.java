@@ -79,14 +79,21 @@ public class AbilitySelectState extends State implements ControllerListener {
             abilityIconList.add(new Texture(Gdx.files.internal("images/icons/abilities/icMage.png")));
             abilityIconList.add(new Texture(Gdx.files.internal("images/icons/abilities/icQuick.png")));
             abilityIconList.add(new Texture(Gdx.files.internal("images/icons/abilities/icBrawler.png")));
-            secondaryIconList.add(new Texture(Gdx.files.internal("images/icons/abilities/icDigPlus.png")));
-            secondaryIconList.add(warp.getIcon());
+          /*  abilityIconList.add(tank.getIcon());
+            abilityIconList.add(inv.getIcon());
+            abilityIconList.add(mage.getIcon());
+            abilityIconList.add(quick.getIcon());
+            abilityIconList.add(brawler.getIcon());
+*/
+            //secondaryIconList.add(new Texture(Gdx.files.internal("images/icons/abilities/icDigPlus.png")));
+            //secondaryIconList.add(warp.getIcon());
         }catch (GdxRuntimeException e){
 
         }
 
 
     }
+
     @Override
     protected void handleInput() {
         //controller functions
@@ -167,18 +174,16 @@ public class AbilitySelectState extends State implements ControllerListener {
         for(int i=0;i<secondaryIconList.size();i++){
             sb.draw(secondaryIconList.get(i), viewX+i*150+Game.WIDTH/2,viewY+Game.HEIGHT*2/3-100);
         }
-        sb.end();
-        drawInfo(sb);
-        shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        shapeR.setColor(Color.WHITE);
+
         if(posx<0)posx=0;
         if(posy<0)posy=0;
         if(posy>4)posy=4;
-        if(posx<abilityIconList.size()){
-        shapeR.rect(viewX+posx*150+Game.WIDTH/2,viewY+ Game.HEIGHT*2/3 -(posy*100),10,10);}
-
+        if(posx<abilityIconList.size()) {
+            Game.getFont().draw(sb, "-", viewX + posx * 150 + Game.WIDTH / 2, viewY + Game.HEIGHT * 2 / 3 - (posy * 100));
+        }
         else posx=abilityIconList.size()-1;
-        shapeR.end();
+        sb.end();
+        drawInfo(sb);
     }
     public void drawInfo(SpriteBatch sb){
         ArrayList<Ability> temp=null;

@@ -1,6 +1,7 @@
 package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
@@ -15,8 +16,13 @@ public class Mage extends Ability {
    // protected static ArrayList<String> output=new ArrayList<>();
 
     public Mage(){
+        icon= loadIcon("images/icons/abilities/icMage.png");
         details();
 
+    }
+    @Override
+    public Texture getIcon(){
+        return icon;
     }
     @Override
 

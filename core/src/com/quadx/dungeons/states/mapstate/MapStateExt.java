@@ -1,11 +1,8 @@
 package com.quadx.dungeons.states.mapstate;
 
-import com.badlogic.gdx.graphics.Color;
-import com.quadx.dungeons.Game;
 import com.quadx.dungeons.QButton;
 import com.quadx.dungeons.SpellMods;
 import com.quadx.dungeons.attacks.Attack;
-import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.states.GameStateManager;
 
 import static com.quadx.dungeons.Game.player;
@@ -31,39 +28,41 @@ class MapStateExt extends MapState{
         }
     }
     public static void battleFunctions(int i) {
-        int x=player.attackList.get(i).getType();
-        boolean condition=false;
-        Attack a;
-        if(i==altNumPressed)a=player.attackList.get(altNumPressed);
-        else a=player.attackList.get(lastNumPressed);
-        switch (a.getType()){
-            case 1:{
-                condition= player.getEnergy()>=a.getCost();
-                break;
-            }
-            case 2:
-            case 3:{
-                condition=player.getMana() >=a.getCost();
-                break;
-            }
-        }
-        if (condition) {
-            switch (a.getType()){
-                case 1:{
-                    player.setEnergy(player.getEnergy()-a.getCost());
+        if (i < player.attackList.size()) {
+            int x = player.attackList.get(i).getType();
+            boolean condition = false;
+            Attack a;
+            if (i == altNumPressed) a = player.attackList.get(altNumPressed);
+            else a = player.attackList.get(lastNumPressed);
+            switch (a.getType()) {
+                case 1: {
+                    condition = player.getEnergy() >= a.getCost();
                     break;
                 }
                 case 2:
-                case 3:{
-                    player.setMana(player.getMana() - a.getCost());
+                case 3: {
+                    condition = player.getMana() >= a.getCost();
                     break;
                 }
             }
-            MapStateRender.loadParticleEffects(i);
-            MapState.attackCollisionHandler(i);
-            SpellMods.runMod(targetMon,player.attackList.get(player.attackList.indexOf(a)));
-            player.attackList.get(player.attackList.indexOf(a)).checkLvlUp();
+            if (condition) {
+                switch (a.getType()) {
+                    case 1: {
+                        player.setEnergy(player.getEnergy() - a.getCost());
+                        break;
+                    }
+                    case 2:
+                    case 3: {
+                        player.setMana(player.getMana() - a.getCost());
+                        break;
+                    }
+                }
+                MapStateRender.loadParticleEffects(i);
+                MapState.attackCollisionHandler(i);
+                SpellMods.runMod(targetMon, player.attackList.get(player.attackList.indexOf(a)));
+                player.attackList.get(player.attackList.indexOf(a)).checkLvlUp();
 
+            }
         }
     }
 }

@@ -12,7 +12,6 @@ import com.quadx.dungeons.states.mapstate.MapStateRender;
 import java.util.Random;
 
 import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.states.mapstate.MapState.out;
 
 /**
  * Created by Tom on 11/10/2015.
@@ -59,7 +58,7 @@ public class Monster {
     private double defense;
     private double speed;
     private float dtMove = 0;
-    private float moveSpeed = .12f;
+    private float moveSpeed = .15f;
 
     public Monster() {
         rn = new Random();
@@ -114,7 +113,7 @@ public class Monster {
 
     private void genLevel() {
         level = player.level + rn.nextInt(player.floor);
-        out(level+"");
+        //out(level+"");
     }
 
     private void genStats() {

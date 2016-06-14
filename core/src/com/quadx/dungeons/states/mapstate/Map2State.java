@@ -19,7 +19,7 @@ import java.util.Random;
 public class Map2State extends State {
     private static ShapeRenderer shapeR= new ShapeRenderer();
     private static Random rn= new Random();
-    public static int res =150;
+    public static int res =200;
     private static Cell[][] dispArray  = new Cell[res][res];
     private static Cell[][] buffArray  = new Cell[res][res];
     private float dtChange=0;
@@ -120,7 +120,7 @@ public class Map2State extends State {
 
         ArrayList<Cell> endpointList = new ArrayList<>();
         ArrayList<Cell> liveList=new ArrayList<>();
-        int runs = rn.nextInt(50)+30;
+        int runs = rn.nextInt(80)+30;
         int initPoints =rn.nextInt(8)+1;
 
         initArray(buffArray);//buffers the buffArray
@@ -138,17 +138,25 @@ public class Map2State extends State {
             growPaths(endpointList);
         }
         //search for single off bits
-        liveList= fillBits(2,liveList);
-        liveList= fillBits(4,liveList);
+        for(int i=0;i<rn.nextInt(3)+1;i++){
+            if(rn.nextBoolean())
+                liveList= fillBits(rn.nextInt(4)+1,liveList);
+        }
         plotWater(liveList);
         dispArray=buffArray;
         return dispArray;
     }
     private static void plotWater(ArrayList<Cell> liveList){
         int cycles = rn.nextInt(20);
-        int grow=rn.nextInt(1)+1;
+        int grow=rn.nextInt(2)+1;
         for(int i=0;i<cycles;i++) {
-            liveList.get(rn.nextInt(liveList.size())).setWater();
+            int x=rn.nextInt(liveList.size());
+            int x1=liveList.get(x).getX();
+            int y1=liveList.get(x).getY();
+            liveList.get(x).setState();
+            liveList.get(x).setWater();
+            buffArray[x1][y1].setState();
+            buffArray[x1][y1].setWater();
         }
         for(int i=0;i<grow;i++) {
             for (Cell c : liveList) {
@@ -168,11 +176,6 @@ public class Map2State extends State {
                     catch (ArrayIndexOutOfBoundsException e){}
 
                 }
-            }
-        }
-        for(Cell c : liveList){
-            if(c.getWater()) {
-                buffArray[c.getX()][c.getY()].setColor(new Color(0f, 0f, .8f, 1f));
             }
         }
     }

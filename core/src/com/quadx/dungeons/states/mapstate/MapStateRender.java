@@ -2,6 +2,7 @@ package com.quadx.dungeons.states.mapstate;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
@@ -13,12 +14,17 @@ import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
+import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.tools.ColorConverter;
 import com.quadx.dungeons.tools.HoverText;
 
 import java.util.ArrayList;
 
+import static com.badlogic.gdx.graphics.GL20.GL_BLEND;
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.GridManager.dispArray;
+import static com.quadx.dungeons.GridManager.drawList;
+import static com.quadx.dungeons.GridManager.res;
 import static com.quadx.dungeons.states.MainMenuState.gl;
 
 /**
@@ -28,9 +34,7 @@ import static com.quadx.dungeons.states.MainMenuState.gl;
 public class MapStateRender extends MapState {
 
     public static int[] statCompare=null;
-    private static ArrayList<String> equipList=new ArrayList<>();
     private static Texture abilityIcon;
-    public static boolean hovText=false;
     public static boolean showCircle=false;
     private static boolean blink=false;
     public static float dtCircle=1f;
@@ -95,7 +99,7 @@ public class MapStateRender extends MapState {
                     hoverTexts.remove(i);
                 }
             }
-            while (hoverTexts.size()>4)hoverTexts.remove(0);
+            while (hoverTexts.size()>10)hoverTexts.remove(0);
         }
     }
     public static void loadAttackIcons(){
@@ -202,7 +206,11 @@ public class MapStateRender extends MapState {
         CharSequence cs= player.getPoints()+"";
         gl.setText(Game.getFont(),cs);
         Game.getFont().setColor(Color.WHITE);
-        Game.getFont().draw(sb, player.getPoints()+"",(int)(viewX+Game.WIDTH/2-(gl.width/2)) ,(int)(viewY+ Game.HEIGHT-50));
+        Game.getFont().draw(sb, "SCORE: "+player.getPoints()+"",(int)(viewX+Game.WIDTH/2-(gl.width/2))-100 ,(int)(viewY+ Game.HEIGHT-50));
+        try {
+            Game.getFont().draw(sb, "HIGH SCORE: " + HighScoreState.scores.get(0).getScore(), (int) (viewX + Game.WIDTH / 2 + 100), (int) (viewY + Game.HEIGHT - 50));
+        }catch (NullPointerException | IndexOutOfBoundsException e){}
+
         try {
             if (dtLootPopup < .4)
                 sb.draw(lootPopup, player.getPX()-(lootPopup.getWidth()/2)-(cellW/4), player.getPY()+5);
@@ -210,7 +218,7 @@ public class MapStateRender extends MapState {
         catch (NullPointerException e){
             //Game.printLOG(e);
         }
-        for(int i=0;i<gm.res;i+=10)
+        for(int i = 0; i< res; i+=10)
             Game.getFont().draw(sb,i+"",i*cellW,-10);
         sb.end();
 
@@ -450,10 +458,6 @@ public class MapStateRender extends MapState {
         effect.draw(sb, Gdx.graphics.getDeltaTime());
         effect.start();
         sb.end();
-        /*if(effect.isComplete()) {
-            effect.dispose();
-            effect.reset();
-        }*/
     }
     private static void particleAngleHandler() {
         EmitterAngles.getAttackIndex(emitter.getName());
@@ -547,7 +551,22 @@ public class MapStateRender extends MapState {
         sb.draw(t,player.getPX()-t.getWidth()/4, player.getPY()-t.getHeight()/4);
         sb.end();
     }
+    public static void drawTiles(SpriteBatch sb){
+        sb.begin();
+        for(int i=0;i<drawList.size();i++){
+            Cell c=drawList.get(i);
+            try {
+                sb.draw(c.getTile(), (cellW * c.getX()), cellW * c.getY());
+                if(c.getItem() != null && c.getState()){
+                    sb.draw(c.getItem().getIcon(),(cellW * c.getX()), cellW * c.getY());
+                }
+            }catch (NullPointerException e){}
+        }
+        sb.end();
+    }
     public static void drawMonsterAgro(){
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         for(int i = 0; i< GridManager.monsterList.size(); i++){
             Monster m= GridManager.monsterList.get(i);
@@ -558,10 +577,12 @@ public class MapStateRender extends MapState {
             shapeR.rect((int)x1,(int)y1,side,side);
         }
         shapeR.setColor(.1f, .1f, .1f, .5f);
-        shapeR.rect(viewX,viewY, (float) (Game.WIDTH/3.5),Game.HEIGHT);
-        //shapeR.rect((float) (viewX+Game.WIDTH-(Game.WIDTH/3.5)),viewY, (float) (Game.WIDTH/3.5),Game.HEIGHT);
+        shapeR.rect(viewX,viewY, (float) Game.WIDTH,Game.HEIGHT);
 
+        shapeR.setColor(.1f, .1f, .1f, .7f);
+        shapeR.rect(viewX,viewY, (float) (Game.WIDTH/3.5),Game.HEIGHT);
         shapeR.end();
+        Gdx.gl.glDisable(GL_BLEND);
     }
     public static void drawGrid(boolean map) {
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
@@ -583,25 +604,9 @@ public class MapStateRender extends MapState {
                 else
                     shapeR.setColor(1,1,1,1);
             }
-
-            if(dtWaterEffect>Game.frame*60){
-                if (blink&& rn.nextBoolean())
-                    c.setColor( new Color(.12f,.12f,.8f,1f));
-                else if(blink )
-                    c.setColor( new Color(0f,0f,.8f,1f));
-                else {
-                    c.setColor( new Color(.07f, .07f, .8f, 1f));
-                }
-                dtWaterEffect=0;
+            if(!map && !c.getWater() ) {
+                  //  shapeR.rect((cellW * x), cellW * y, cellW, cellW);
             }
-            else dtWaterEffect+=Gdx.graphics.getDeltaTime();
-
-            try {
-                if (c.getWater()) shapeR.setColor(c.getColor());
-            }catch (NullPointerException e){}
-
-            if(!map)
-                shapeR.rect((cellW * x), cellW * y, cellW, cellW);
             else {
                 int xa= (int) (viewX + Game.WIDTH - (Map2State.res + 50))+x;
                 int ya= (int) (viewY + Game.HEIGHT - (Map2State.res + 50))+y;
@@ -627,8 +632,8 @@ public class MapStateRender extends MapState {
             if(blradius>5)blradius=0;
         }
         shapeR.end();
-        for(Cell c: hitList){
-          //  c.setAttArea(false);
+        for(Cell c :hitList){
+            dispArray[c.getX()][c.getY()].setAttArea(false);
         }
     }
 }

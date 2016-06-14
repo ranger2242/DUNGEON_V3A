@@ -3,12 +3,12 @@ package com.quadx.dungeons.items;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.attacks.Attack;
-import com.quadx.dungeons.items.equipment.Equipment;
+import com.quadx.dungeons.tools.ImageLoader;
 
 public class Item
 {
     protected String name;
-    int cost;
+    protected int cost;
     protected int hpmod;
     protected int manamod;
     protected int attackmod;
@@ -18,7 +18,8 @@ public class Item
     private int levelmod;
     public boolean isEquip=false;
     public boolean isSpell=false;
-    protected Texture icon;
+    protected Texture icon=ImageLoader.crate;
+    int gold;
     Attack attack;
 
     public Item(Texture t,int a, int b, int c, int d, int e, int f, int g,String h)
@@ -35,6 +36,9 @@ public class Item
     }
 
     public Item() {
+    }
+    public int getGold(){
+        return gold;
     }
 
     public void itemDetails()
@@ -87,5 +91,9 @@ public class Item
 
     public Texture getIcon() {
         return icon;
+    }
+
+    public void setIcon(Texture icon) {
+        this.icon = icon;
     }
 }

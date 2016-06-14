@@ -76,6 +76,8 @@ public class Equipment extends Item {
             }
             buffCount--;
         }
+        setCost();
+
     }
     private int calculateBuff(){
         int buff=0;
@@ -200,5 +202,16 @@ public class Equipment extends Item {
         if(x>60)grade=Grade.High;
         if(x>80)grade=Grade.Elite;
         if(x>90)grade=Grade.Legendary;
+    }
+    void setCost(){
+        int x=0;
+        x+= hpmod;
+        x+=manamod;
+        x+=attackmod;
+        x+=defensemod;
+        x+=intelmod;
+        x+=speedmod;
+        x=x*100;
+        cost=x;
     }
 }

@@ -1,6 +1,7 @@
 package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
@@ -14,8 +15,13 @@ import java.util.ArrayList;
 public class Tank extends Ability {
    // protected static ArrayList<String> output=new ArrayList<>();
 
-    public Tank(){
+    public Tank() {
+        icon= loadIcon("images/icons/abilities/icTank.png");
         details();
+    }
+    @Override
+    public Texture getIcon(){
+        return icon;
     }
     @Override
 
@@ -23,7 +29,7 @@ public class Tank extends Ability {
         Game.player.setDefense(Game.player.getDefense()*2);
         Game.player.setHp((int)(Game.player.getHp()*1.5));
         Game.player.setHpMax((int)(Game.player.getHpMax()*1.5));        Game.player.setHpRegen(Game.player.getHpRegen()*2);
-        Game.player.setMoveSpeed((float) (Game.player.getMoveSpeed()*.75));
+        Game.player.setMoveSpeed((float) (Game.player.getMoveSpeed()*1.005));
         MapState.out("----------------------------------");
         MapState.out(Game.player.getName()+" activated the TANK ability!");
         MapState.out("HP Max x1.5!");

@@ -1,10 +1,12 @@
 package com.quadx.dungeons;
 
 
+import com.quadx.dungeons.items.*;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.Map2State;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +24,10 @@ public class GridManager {
     public static int res = Map2State.res;
 
     public void initializeGrid() {
+        MapStateUpdater.spawnCount=1;
+        MapStateUpdater.dtRespawn=0;
+        Game.player.setMana(Game.player.manaMax);
+        Game.player.setEnergy(Game.player.getEnergyMax());
         clearMonsterList();
         createMap();
         plotLoot();
@@ -105,7 +111,7 @@ public class GridManager {
                     && y>=screenBotBound && y-cellW<=screenTopBound){
                 drawList.add(c);
             }
-            c.setAttArea(false);
+           // c.setAttArea(false);
         }
     }
     private void createMap() {
@@ -125,7 +131,6 @@ public class GridManager {
                         dispArray[i][j].setLLIndex(count);
                         liveCellList.add(dispArray[i][j]);
                         count++;
-               // }catch (NullPointerException e){}
             }
         }
     }
@@ -196,19 +201,27 @@ public class GridManager {
         }
     }
     private void plotShop() {
-
         int index = rn.nextInt(liveCellList.size());
-        if (!liveCellList.get(index).hasWater && liveCellList.get(index).getState())
-            liveCellList.get(index).setShop(true);
+        boolean placed=false;
+        while(!placed) {
+            if (!liveCellList.get(index).hasWater) {
+                liveCellList.get(index).setState();
+                liveCellList.get(index).setShop(true);
+                placed=true;
+            }
+        }
     }
     private void plotLoot() {
         float fillPercent = .01f;
         int loot = (int) (liveCellList.size() * fillPercent);
         while (loot > 0) {
             int index = rn.nextInt(liveCellList.size());
-            if (!liveCellList.get(index).hasWater)
+            if (!liveCellList.get(index).hasWater) {
+                Item i =new Gold();
+                liveCellList.get(index).setItem(i);
                 liveCellList.get(index).setHasLoot(true);
-            loot--;
+                loot--;
+            }
         }
     }
     private void plotCrates() {
@@ -216,8 +229,31 @@ public class GridManager {
         int crates = (int) (liveCellList.size() * fillPercent);
         while (crates > 0) {
             int index = rn.nextInt(liveCellList.size());
-            if (!liveCellList.get(index).hasWater)
+            if (!liveCellList.get(index).hasWater) {
+                if(rn.nextFloat()<.4){
+                    if(rn.nextBoolean()){
+                        liveCellList.get(index).setBoosterItem(1);
+                    }else{
+                        liveCellList.get(index).setBoosterItem(2);
+                    }
+                }
+                else{
+                    int q = rn.nextInt(14) + 1;
+                    if (q >= 11) {
+                        Item i=new Gold();
+                        liveCellList.get(index).setItem(i);
+                    } else {
+                        Item item = new Item();
+                        if (q == 1 || q == 2) item = new AttackPlus();
+                        else if (q == 3 || q == 4) item = new DefPlus();
+                        else if (q == 5 || q == 6) item = new IntPlus();
+                        else if (q == 7 || q == 8) item = new SpeedPlus();
+                        else if (q == 9 || q == 10) item = generateEquipment();
+                        liveCellList.get(index).setItem(item);
+                    }
+                }
                 liveCellList.get(index).setCrate(true);
+            }
             crates--;
         }
     }
@@ -247,7 +283,7 @@ public class GridManager {
         Cell c = liveCellList.get(index);
         int w = cellW;
         Game.player.setCordsPX(c.getX() * w, c.getY() * w);
-        int range = 20;
+        int range = 35;
         ArrayList<Integer> monsFound = new ArrayList<>();
         for (int i = 0; i < range; i++) {
             for (int j = 0; j < range; j++) {

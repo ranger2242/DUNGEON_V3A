@@ -12,6 +12,7 @@ import com.quadx.dungeons.items.*;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.states.mapstate.MapState.viewX;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
 
@@ -24,7 +25,11 @@ public class ShopState extends State {
 
   //  public static float viewX=0;
     //public static float viewY=0;
+    int soldItemCost=0;
     private static float dtBuy=0;
+    float dtSold=0;
+
+    boolean dispSold = false;
     private static Random rn = new Random();
     private static ShapeRenderer shapeR=new ShapeRenderer();
     private static ArrayList<Item> shopInv = new ArrayList<>();
@@ -33,6 +38,7 @@ public class ShopState extends State {
 
         super(gsm);
         cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT);
+        cam.position.set(viewX,viewY,0);
         genShopInv();
         Gdx.gl.glClearColor(0,0,0,1);
         //Game.setFontSize(14);
@@ -75,6 +81,26 @@ public class ShopState extends State {
         }
     }
     private void numberButtonHandler(int i){
+        if(Gdx.input.isKeyPressed(Input.Keys.MINUS) && dtBuy>.3){
+                if(i>=0) {
+                        try {
+                            try {
+                                Item item = player.invList.get(i).get(0);
+                                player.invList.get(i).remove(0);
+                                soldItemCost= (int) (item.getCost()*.75);
+                                Game.player.setGold((float) (Game.player.getGold()+soldItemCost));
+                                dispSold=true;
+                                dtBuy=0;
+                                if(player.invList.get(i).isEmpty()){
+                                    player.invList.remove(i);
+                                }
+                            } catch (IndexOutOfBoundsException e) {
+                            }
+                        } catch (NullPointerException e) {
+                        }
+                    }
+
+        }
         if(i<shopInv.size() && dtBuy>.3 && Game.player.getGold()>=shopInv.get(i).getCost()){
             Game.player.setGold(Game.player.getGold()-shopInv.get(i).getCost());
             Game.player.addItemToInventory(shopInv.get(i));
@@ -87,6 +113,7 @@ public class ShopState extends State {
     public void update(float dt) {
         handleInput();
         dtBuy+=dt;
+        if(dispSold) dtSold+=dt;
         cam.update();
     }
 
@@ -107,7 +134,7 @@ public class ShopState extends State {
 
         shapeR.begin(ShapeRenderer.ShapeType.Line);
         shapeR.setColor(1,0,0,1);
-        shapeR.rect(1,40,viewX+ Game.WIDTH-50,viewY+ Game.HEIGHT-120);
+        shapeR.rect(viewX+40,viewY+40,Game.WIDTH-80,Game.HEIGHT-80);
         shapeR.end();
         drawShopInv(sb);
     }
@@ -116,6 +143,13 @@ public class ShopState extends State {
 
         Game.getFont().draw(sb,"INV",viewX+ Game.WIDTH/2,viewY+ Game.HEIGHT-50);
         Game.getFont().draw(sb,"G "+ Game.player.getGold(),viewX+(Game.WIDTH/2)+100,viewY+ Game.HEIGHT-50);
+        if(dtSold<.3 && dispSold){
+            Game.getFont().draw(sb,"+"+soldItemCost,viewX+Game.WIDTH-150,viewY+Game.HEIGHT-50);
+        }
+        else{
+            dtSold=0;
+            dispSold=false;
+        }
 
         for(int i = 0; i< Game.player.invList.size(); i++)
         {

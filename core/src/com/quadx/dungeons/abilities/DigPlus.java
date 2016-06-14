@@ -1,6 +1,7 @@
 package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
@@ -12,10 +13,14 @@ import java.util.ArrayList;
  */
 public class DigPlus extends Ability {
     //protected static ArrayList<String> output=new ArrayList<>();
-    public DigPlus(){
+    public DigPlus() {
+        icon= loadIcon("images/icons/abilities/icDigPlus.png");
         details();
     }
-
+    @Override
+    public Texture getIcon(){
+        return icon;
+    }
     @Override
     public void onActivate() {
         enabled=true;

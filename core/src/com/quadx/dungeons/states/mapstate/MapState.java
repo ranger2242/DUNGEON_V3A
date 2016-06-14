@@ -5,7 +5,6 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
@@ -27,16 +26,17 @@ import java.util.Random;
 
 import static com.quadx.dungeons.Game.controllerMode;
 import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.GridManager.dispArray;
-import static com.quadx.dungeons.GridManager.liveCellList;
+import static com.quadx.dungeons.GridManager.*;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtAttack;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtScrollAtt;
+import static com.quadx.dungeons.tools.ImageLoader.gold;
 
 /**
  * Created by Brent on 6/26/2015.
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class MapState extends State implements ControllerListener {
+    public static boolean debug=true;
     static ShapeRenderer shapeR;
     static ArrayList<String> output;
     static ArrayList<QButton> qButtonList =new ArrayList<>();
@@ -106,18 +106,18 @@ public class MapState extends State implements ControllerListener {
         attack= player.attackList.get(0);
         attack2=player.attackList.get(1);
 
-
-        for(int i=0; i<12;i++){
-            for(int j=0;j<12; j++){
-                System.out.print((i*j)% 12+"\t");
+        int x3=26;
+        for(int i=0; i<x3;i++){
+            for(int j=0;j<x3; j++){
+                System.out.print((i*j)% x3+"\t");
             }
             System.out.print("\n");
         }
         out((8*12)%15+"");
 
         for(int i=0;i<20;i++){
-
- //          player.addItemToInventory(new Arms());
+       //    openCrate();
+    //         player.addItemToInventory(new Arms());
         }
     }
     public void handleInput() {
@@ -134,12 +134,10 @@ public class MapState extends State implements ControllerListener {
     }
     public void render(SpriteBatch sb) {
         Gdx.gl.glClearColor(0,0,0,1);
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-            shapeR.setProjectionMatrix(cam.combined);
-            sb.setProjectionMatrix(cam.combined);
-       // Game.player.checkNullInventory();
+        shapeR.setProjectionMatrix(cam.combined);
+        sb.setProjectionMatrix(cam.combined);
         MapStateRender.drawGrid(false);
+        MapStateRender.drawTiles(sb);
         MapStateRender.drawMonsterAgro();
         MapStateRender.drawHUD(sb);
         MapStateRender.drawAbilityIcon(sb);
@@ -179,7 +177,6 @@ public class MapState extends State implements ControllerListener {
                     sb.draw(t, m.getX() * cellW -t.getWidth()/4, m.getY() * cellW -t.getHeight()/4);
         }
         sb.end();
-        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
     public void dispose() {
         //unload attack icons
@@ -248,6 +245,7 @@ public class MapState extends State implements ControllerListener {
         Monster tempMon=null;
         boolean killed= false;
         for(Cell c:hitList)    {
+            liveCellList.get(liveCellList.indexOf(c)).setAttArea(true);
             dispArray[c.getX()][c.getY()].setAttArea(true);
             for(Monster m: GridManager.monsterList){
                 if(c.getX()==m.getX() && c.getY()==m.getY()){
@@ -265,7 +263,7 @@ public class MapState extends State implements ControllerListener {
                     //displayPlayerDamage = true;
                     MapStateRender.setHoverText("-"+player.getDamage(),.8f,Color.RED,m.getPX(),m.getPY(),true);
                     m.takeAttackDamage(player.getDamage());
-                    GridManager.monsterList.get(tempMonIndex).setHit();
+                    monsterList.get(tempMonIndex).setHit();
 
                     if (m.getHp() < 1) {
                         out(DIVIDER);
@@ -276,7 +274,7 @@ public class MapState extends State implements ControllerListener {
                         player.checkLvlUp();
                         makeGold(m.getLevel());
                         try {
-                            GridManager.dispArray[m.getX()][m.getY()].setMon(false);
+                            dispArray[m.getX()][m.getY()].setMon(false);
                         }catch (NullPointerException |ArrayIndexOutOfBoundsException e){
                             //Game.printLOG(e);
                         }
@@ -288,18 +286,13 @@ public class MapState extends State implements ControllerListener {
             if(tempMon !=null && killed){
                 GridManager.monsterList.remove(tempMon);
             }
-
-
         }
+        loadLiveCells();
     }
 
     static void setHitList(int x, int y){
         try {
-            Cell cell= GridManager.dispArray[x][y];
-            cell.setAttArea(true);
-            //liveCellList.set(cell.getIndex(), cell);
-            hitList.add(cell);
-
+            hitList.add(dispArray[x][y]);
         }
         catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
             Game.printLOG(e);
@@ -326,54 +319,31 @@ public class MapState extends State implements ControllerListener {
             MapStateRender.setHoverText(gold+"G",.5f,Color.GOLD, player.getPX(), player.getPY(),false);
         }
     }
-    static void openCrate(){
-        int q=rn.nextInt(18)+1;
-        if(q>=17){
-            double rand=rn.nextFloat()/16;
-            if(rand<0)rand*=-1;
-            int gold=(int)(player.getGold()*(rand));
-            if(gold<=0)gold=1;
-            player.setGold(player.getGold()+gold);
-            lootPopup = new Texture(Gdx.files.internal("images/imCoin.png"));
-            out(gold+" added to stash");
-            MapStateRender.setHoverText(gold+"G",1,Color.GOLD, player.getPX(), player.getPY(),false);
+    static void openCrate(int index){
+            int q = rn.nextInt(14) + 1;
+            if (liveCellList.get(index).getGold() !=0) {
+                lootPopup = new Texture(Gdx.files.internal("images/imCoin.png"));
+                player.setGold(player.getGold() +liveCellList.get(index).getGold());
+                out(gold + " added to stash");
+                MapStateRender.setHoverText(gold + "G", 1, Color.GOLD, player.getPX(), player.getPY(), false);
 
-        }
-        else{
-            Item item =new Item();
-            if(q==1||q==2) item=new AttackPlus();
-            else if(q==3||q==4) item=new DefPlus();
-            else if(q==5||q==6) item=new IntPlus();
-            else if(q==7||q==8)item=new SpeedPlus();
-            else if(q>=9&&q<=11)item=new ManaPlus();
-            else if(q>11&&q<=14) item=new Potion();
-            else if(q==15 || q==16) item=generateEquipment();
-            player.addItemToInventory(item);
-            String s=item.getName();
-            if(item.isEquip)
-                s=item.getType();
-            if(item.isSpell)
-                s="SpellBook";
-            try {
-                lootPopup = item.getIcon();
-                MapStateRender.dtLootPopup=0;
+            } else {
+                Item item = liveCellList.get(index).getItem();
+                try {
+                    lootPopup = item.getIcon();
+                    MapStateRender.dtLootPopup = 0;
+                } catch (GdxRuntimeException e) {
+                    Game.printLOG(e);
+                }
+                if(item != null) {
+                    player.addItemToInventory(item);
+                    out(item.getName() + " added to inventory");
+                    MapStateRender.setHoverText(item.getName(), 1, Color.WHITE, player.getPX(), player.getPY(), false);
+                }
             }
-            catch (GdxRuntimeException e){
-                Game.printLOG(e);
-            }
-            if(item.getName()==null){
-               // MapStateRender.setHoverText("ERR:0002", 1,Color.RED);
-                item=new Potion();
-                out(item.getName() + " added to inventory");
-                MapStateRender.setHoverText(item.getName(), 1,Color.WHITE, player.getPX(), player.getPY(),false);
 
-            }else {
-                out(item.getName() + " added to inventory");
-                MapStateRender.setHoverText(item.getName(), 1,Color.WHITE, player.getPX(), player.getPY(),false);
-            }
-        }
     }
-    private static Item generateEquipment(){
+    public static Item generateEquipment(){
         Item item=new Item();
         int x=rn.nextInt(8)+1;
         switch (x){

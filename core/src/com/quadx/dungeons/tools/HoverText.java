@@ -39,33 +39,34 @@ public class HoverText {
         dtHov+= Gdx.graphics.getDeltaTime();
         if(flash)dtFlash+=Gdx.graphics.getDeltaTime();
     }
-    public void draw(SpriteBatch sb){
-        if(active) {
-            if (dtHov < time) {
-                Game.setFontSize(3);
-                CharSequence cs = text;
-                gl.setText(Game.getFont(), cs);
-                Game.getFont().setColor(color);
-                if(dtFlash>.1){
-                    if(cycle){
-                        Game.getFont().setColor(Color.WHITE);
+    public void draw(SpriteBatch sb) {
+        try {
+            if (active) {
+                if (dtHov < time) {
+                    Game.setFontSize(3);
+                    CharSequence cs = text;
+                    gl.setText(Game.getFont(), cs);
+                    Game.getFont().setColor(color);
+                    if (dtFlash > .1) {
+                        if (cycle) {
+                            Game.getFont().setColor(Color.WHITE);
+                        } else Game.getFont().setColor(color);
+                        cycle = !cycle;
+                        dtFlash = 0;
                     }
-                    else Game.getFont().setColor(color);
-                    cycle=!cycle;
-                    dtFlash=0;
+                    int px = (int) (x - (gl.width / 2));
+                    int py = y + ymod;
+                    sb.begin();
+                    Game.getFont().draw(sb, text, px, py);
+                    sb.end();
+                    ymod++;
+                } else {
+                    dtHov = 0;
+                    ymod = 0;
+                    active = false;
                 }
-                int px = (int) (x - (gl.width / 2));
-                int py = y + ymod;
-                sb.begin();
-                Game.getFont().draw(sb, text, px, py);
-                sb.end();
-                ymod++;
-            } else {
-                dtHov = 0;
-                ymod = 0;
-                active = false;
             }
-        }
+        }catch (NullPointerException e){}
     }
     public boolean isActive() {
         return active;

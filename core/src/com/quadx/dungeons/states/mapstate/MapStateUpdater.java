@@ -11,6 +11,8 @@ import com.quadx.dungeons.abilities.Warp;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.Protect;
 import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.items.ManaPlus;
+import com.quadx.dungeons.items.Potion;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.*;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import static com.quadx.dungeons.Game.controllerMode;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.liveCellList;
+import static com.quadx.dungeons.GridManager.monsterList;
 import static com.quadx.dungeons.states.MainMenuState.controller;
 
 
@@ -42,13 +45,15 @@ public class MapStateUpdater extends MapState{
     public static float dtScrollAtt=0;
     public static float dtAttack = 0;
     public static float dtInvSwitch = 0;
+    public static float dtRespawn=0;
+    public static int spawnCount=1;
 
 
     public MapStateUpdater(GameStateManager gsm) {
         super(gsm);
     }
     public static void moveMonsters() {
-        for (Monster m : GridManager.monsterList) {
+        for (Monster m : monsterList) {
             m.updateVariables(Gdx.graphics.getDeltaTime());
             if (m.getdtMove() > m.getMoveSpeed()) {
                 m.move();
@@ -93,6 +98,7 @@ public class MapStateUpdater extends MapState{
         regenPlayer(dt);
         player.updateVariables(dt);
         MapStateRender.updateVariables(dt);
+        dtRespawn+=dt;
         dtDig += dt;
         dtRun += dt;
         dtItem += dt;
@@ -106,6 +112,33 @@ public class MapStateUpdater extends MapState{
         dtScrollAtt+=dt;
         dtAttack +=dt;
         dtInvSwitch += dt;
+        if(dtRespawn>10f) {
+            for (int i = 0; i < spawnCount; i++) {
+                if(monsterList.size()<150) {
+                    Monster m = new Monster();
+                    int index = rn.nextInt(liveCellList.size());
+                    if (!liveCellList.get(index).getWater() && liveCellList.get(index).getState()) {
+
+                        Cell c = liveCellList.get(index);
+                        if (rn.nextBoolean()) m.setHit();
+                        m.setCords(c.getX(), c.getY());
+                        monsterList.add(m);
+                        c.setMon(true);
+                        c.setMonsterIndex(monsterList.indexOf(m));
+                        liveCellList.set(index, c);
+                        m.setMonListIndex(monsterList.indexOf(m));
+                        m.setLiveCellIndex(index);
+                        //liveCellList.get(index).setMon(true);
+                        //liveCellList.get(index).setMonsterIndex(monsterList.indexOf(m));
+                        Game.console("MList:" + monsterList.indexOf(m));
+                        spawnCount++;
+                        MapStateRender.setHoverText("!", .5f, Color.RED, player.getPX(), player.getPY(), true);
+                    }
+                }
+            }
+            GridManager.loadLiveCells();
+            dtRespawn=0;
+        }
         //find coordinates to draw on screen by finding four corners of screen on grid
         GridManager.loadDrawList();
         try {
@@ -243,7 +276,7 @@ public class MapStateUpdater extends MapState{
         if (Gdx.input.isKeyPressed(Input.Keys.Z)) {//use item
             selectItemFromInventory(0);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {//to main menu
+        if (Gdx.input.isKeyPressed(Input.Keys.F2)) {//to main menu
             gsm.push(new MainMenuState(gsm));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {//use primary attack
@@ -259,18 +292,18 @@ public class MapStateUpdater extends MapState{
                 dtAttack = 0;
             }
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.T)) {//test crates
-            MapState.openCrate();
+        if (Gdx.input.isKeyPressed(Input.Keys.T) && debug) {//test crates
+            player.setSpeed(player.getSpeed()+1);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)
                 || Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {//dig
             activateDig();
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.COMMA)) {//test shopstate
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {//test shopstate
             cam.position.set(0, 0, 0);
             gsm.push(new ShopState(gsm));
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.M)) {//reload map
+        if (Gdx.input.isKeyPressed(Input.Keys.F1) && debug) {//reload map
             if (dtMap > .6) {
                 gm.initializeGrid();
                 dtMap = 0;
@@ -293,7 +326,16 @@ public class MapStateUpdater extends MapState{
             altNumPressed=x;
             attack2 = player.attackList.get(attackListCount + x);
         }
-        else numberButtonHandler(x);
+        else if(Gdx.input.isKeyPressed(Input.Keys.X) &&dtItem >.15){
+            if(x<player.equipedList.size()) {
+                Equipment e = player.equipedList.get(x);
+                player.equipedList.remove(x);
+                player.addItemToInventory(e);
+                dtItem =0;
+            }
+        }
+        else if(!Gdx.input.isKeyPressed(Input.Keys.X) && !Gdx.input.isKeyPressed(Input.Keys.MINUS))
+            numberButtonHandler(x);
     }
     private static void selectItemFromInventory(int i) {
         if (dtItem > itemMinTime && player.invList.size() > i) {            //check if cooldown is over
@@ -346,10 +388,10 @@ public class MapStateUpdater extends MapState{
             left=controller.getAxis(Xbox360Pad.AXIS_RIGHT_X)<-.2;
         }
         else {
-            up = Gdx.input.isKeyPressed(Input.Keys.I);
-            down = Gdx.input.isKeyPressed(Input.Keys.K);
-            right = Gdx.input.isKeyPressed(Input.Keys.L);
-            left = Gdx.input.isKeyPressed(Input.Keys.J);
+            up = Gdx.input.isKeyPressed(Input.Keys.I)||Gdx.input.isKeyPressed(Input.Keys.UP);
+            down = Gdx.input.isKeyPressed(Input.Keys.K)||Gdx.input.isKeyPressed(Input.Keys.DOWN);
+            right = Gdx.input.isKeyPressed(Input.Keys.L)||Gdx.input.isKeyPressed(Input.Keys.RIGHT);
+            left = Gdx.input.isKeyPressed(Input.Keys.J)||Gdx.input.isKeyPressed(Input.Keys.LEFT);
             if(!up && !down && !left && !right) {
                 up=Gdx.input.isKeyPressed(Input.Keys.W);
                 down=Gdx.input.isKeyPressed(Input.Keys.S);
@@ -376,10 +418,20 @@ public class MapStateUpdater extends MapState{
                 lootPopup = new Texture(Gdx.files.internal("images/imCoin.png"));
                 makeGold(player.level);
                 liveCellList.get(index ).setHasLoot(false);
+                liveCellList.get(index).setItem(null);
             }
             if (c.hasCrate()) {
-                openCrate();
+                int x1=liveCellList.get(index).getBoosterItem();
+                if(x1==1){
+                    player.useItem(new Potion());
+                }else if(x1==2){
+                    player.useItem(new ManaPlus());
+                }else{
+                    openCrate(index);
+                }
+                liveCellList.get(index).setBoosterItem(0);
                 liveCellList.get(index).setCrate(false);
+                liveCellList.get(index).setItem(null);
             }
             if (c.hasWarp()) {
                 player.floor++;
