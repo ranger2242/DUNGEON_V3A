@@ -46,6 +46,7 @@ public class MapStateUpdater extends MapState{
     public static float dtAttack = 0;
     public static float dtInvSwitch = 0;
     public static float dtRespawn=0;
+    public static float dtClearHits =0;
     public static int spawnCount=1;
 
 
@@ -98,6 +99,7 @@ public class MapStateUpdater extends MapState{
         regenPlayer(dt);
         player.updateVariables(dt);
         MapStateRender.updateVariables(dt);
+        dtClearHits+=dt;
         dtRespawn+=dt;
         dtDig += dt;
         dtRun += dt;
@@ -359,7 +361,7 @@ public class MapStateUpdater extends MapState{
     private static void numberButtonHandler(int i) {
         lastNumPressed = i;
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-            if (dtInfo > .4) {
+            if (dtInfo > .4 && i<player.attackList.size()) {
                 Attack a = player.attackList.get(i);
                 out(DIVIDER);
                 out(a.getName() + ":");

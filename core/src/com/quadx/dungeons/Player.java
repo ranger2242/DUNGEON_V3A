@@ -124,10 +124,10 @@ public class Player {
     }
     public void setName(String n)
     {
+        name = n;
         if(name.length()>19){
             name=name.substring(0,19);
         }
-        name = n;
     }
     public void setHp(int hp) {
         this.hp = hp;

@@ -17,15 +17,15 @@ import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.tools.ColorConverter;
 import com.quadx.dungeons.tools.HoverText;
+import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.ArrayList;
 
 import static com.badlogic.gdx.graphics.GL20.GL_BLEND;
 import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.GridManager.dispArray;
-import static com.quadx.dungeons.GridManager.drawList;
-import static com.quadx.dungeons.GridManager.res;
+import static com.quadx.dungeons.GridManager.*;
 import static com.quadx.dungeons.states.MainMenuState.gl;
+import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtClearHits;
 
 /**
  * Created by Tom on 12/28/2015.
@@ -560,6 +560,9 @@ public class MapStateRender extends MapState {
                 if(c.getItem() != null && c.getState()){
                     sb.draw(c.getItem().getIcon(),(cellW * c.getX()), cellW * c.getY());
                 }
+                if(c.hasWarp()){
+                    sb.draw(ImageLoader.warp,(cellW * c.getX()), cellW * c.getY());
+                }
             }catch (NullPointerException e){}
         }
         sb.end();
@@ -576,13 +579,24 @@ public class MapStateRender extends MapState {
             shapeR.setColor(1,0,0,.2f);
             shapeR.rect((int)x1,(int)y1,side,side);
         }
-        shapeR.setColor(.1f, .1f, .1f, .5f);
+        for(Cell c:drawList){
+            if(c.getAttArea()){
+                shapeR.rect(c.getX()*cellW,c.getY()*cellW,cellW,cellW);
+            }
+        }
+        shapeR.setColor(.1f, .1f, .1f, .2f);
         shapeR.rect(viewX,viewY, (float) Game.WIDTH,Game.HEIGHT);
 
         shapeR.setColor(.1f, .1f, .1f, .7f);
         shapeR.rect(viewX,viewY, (float) (Game.WIDTH/3.5),Game.HEIGHT);
         shapeR.end();
         Gdx.gl.glDisable(GL_BLEND);
+        if(dtClearHits>.1) {
+            for (Cell c : hitList) {
+                dispArray[c.getX()][c.getY()].setAttArea(false);
+            }
+            dtClearHits=0;
+        }
     }
     public static void drawGrid(boolean map) {
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
@@ -604,19 +618,17 @@ public class MapStateRender extends MapState {
                 else
                     shapeR.setColor(1,1,1,1);
             }
-            if(!map && !c.getWater() ) {
-                  //  shapeR.rect((cellW * x), cellW * y, cellW, cellW);
-            }
-            else {
+            if(map){
                 int xa= (int) (viewX + Game.WIDTH - (Map2State.res + 50))+x;
                 int ya= (int) (viewY + Game.HEIGHT - (Map2State.res + 50))+y;
                 shapeR.rect(xa,ya, 1, 1);
+
             }
         }
 
         shapeR.end();
-        shapeR.begin(ShapeRenderer.ShapeType.Line);
         if(map){
+            shapeR.begin(ShapeRenderer.ShapeType.Line);
             shapeR.setColor(Color.GREEN);
             shapeR.circle(tx,ty,5);
 
@@ -630,10 +642,8 @@ public class MapStateRender extends MapState {
             }
             shapeR.circle(px,py,blradius);
             if(blradius>5)blradius=0;
+            shapeR.end();
         }
-        shapeR.end();
-        for(Cell c :hitList){
-            dispArray[c.getX()][c.getY()].setAttArea(false);
-        }
+
     }
 }

@@ -15,6 +15,7 @@ import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.MainMenuState;
 import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.Score;
+import com.quadx.dungeons.tools.WallPattern;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -40,6 +41,7 @@ public class Game extends ApplicationAdapter implements ControllerListener{
 	@Override
 	public void create () {
 		ImageLoader il=new ImageLoader();
+		WallPattern wp=new WallPattern();
 		fonts[0]=createFont(8);
 		fonts[1]=createFont(10);
 		fonts[2]=createFont(12);

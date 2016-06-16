@@ -14,7 +14,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.*;
 import com.quadx.dungeons.attacks.Attack;
-import com.quadx.dungeons.items.*;
+import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.*;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
@@ -205,7 +205,7 @@ public class MapState extends State implements ControllerListener {
             player.attackList.get(pos).setUses();
             player.attackList.get(pos).checkLvlUp();
         }
-        hitList.add(liveCellList.get(player.getLiveListIndex()));
+        hitList.add(dispArray[player.getX()][player.getY()]);
         if(lastPressed=='w') {
             xrange = (px) + spread;
             yrange = py + range;
@@ -245,6 +245,9 @@ public class MapState extends State implements ControllerListener {
         Monster tempMon=null;
         boolean killed= false;
         for(Cell c:hitList)    {
+            try {
+                drawList.get(drawList.indexOf(c)).setAttArea(true);
+            }catch (ArrayIndexOutOfBoundsException e){}
             liveCellList.get(liveCellList.indexOf(c)).setAttArea(true);
             dispArray[c.getX()][c.getY()].setAttArea(true);
             for(Monster m: GridManager.monsterList){
@@ -332,7 +335,7 @@ public class MapState extends State implements ControllerListener {
                 try {
                     lootPopup = item.getIcon();
                     MapStateRender.dtLootPopup = 0;
-                } catch (GdxRuntimeException e) {
+                } catch (GdxRuntimeException | NullPointerException e) {
                     Game.printLOG(e);
                 }
                 if(item != null) {

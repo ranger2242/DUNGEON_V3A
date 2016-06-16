@@ -1,12 +1,14 @@
 package com.quadx.dungeons;
 
 
+import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.items.*;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.Map2State;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
 import com.quadx.dungeons.states.mapstate.MapStateUpdater;
+import com.quadx.dungeons.tools.WallPattern;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,23 +40,21 @@ public class GridManager {
         plotPlayer();
         MapStateRender.showCircle = true;
     }
-    ArrayList<Cell> getSurroundingCells(int x, int y){
+    static ArrayList<Cell> getSurroundingCells(int x, int y){
         ArrayList<Cell> list=new ArrayList<>();
-        //x -= 1;
-        //y -= 1;
         boolean a =x+1<res;
         boolean b=x-1>=0;
         boolean c=y+1<res;
         boolean d=y-1>=0;
-        if(a && c)  list.add(dispArray[x + 1][y + 1]);
-        if(a &&b && d)       list.add(dispArray[x + 1][y]);
-        if(a && d)  list.add(dispArray[x + 1][y - 1]);
-        if(c)       list.add(dispArray[x][y + 1]);
+
         if(b && c)  list.add(dispArray[x - 1][y + 1]);
+        if(c)       list.add(dispArray[x][y + 1]);
+        if(a && c)  list.add(dispArray[x + 1][y + 1]);
         if(b)       list.add(dispArray[x - 1][y]);
+        if(a &&b && d)       list.add(dispArray[x + 1][y]);
         if(b && d)  list.add(dispArray[x - 1][y - 1]);
         if(d)       list.add(dispArray[x][y - 1]);
-
+        if(a && d)  list.add(dispArray[x + 1][y - 1]);
         return list;
     }
     void clearDigPlusCells(int ii, int jj, int x, int y){
@@ -109,9 +109,40 @@ public class GridManager {
 
             if(x>=screenLeftBound &&x-cellW<=screenRightBound
                     && y>=screenBotBound && y-cellW<=screenTopBound){
+                if(!c.getState() ||c.getWater()){
+                    int x1= c.getX();
+                    int y1=c.getY();
+                    ArrayList<Cell> temp= getSurroundingCells(x1,y1);
+                    int count=0;
+                    Texture t=c.getTile();
+                    if(temp.size()==8){
+                        for(int i=0;i<3;i++){
+                            for(int j=0;j<3;j++){
+                                if(count <temp.size()){
+                                    if(i==1 && j==1){
+                                        WallPattern.p[i][j]=false;
+                                    }else {
+
+                                        if(c.getWater()){
+                                            WallPattern.p[i][j] = !temp.get(count).getWater();
+                                        }else {
+                                            WallPattern.p[i][j] = temp.get(count).getState();
+                                        }
+                                        count++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    int a=0;
+                    if(c.getWater())a=1;
+                    Texture t1=WallPattern.getTile(a);
+                    if(t1 != null && t!=t1){
+                        c.setTile(t1);
+                    }
+                }
                 drawList.add(c);
             }
-           // c.setAttArea(false);
         }
     }
     private void createMap() {
@@ -125,8 +156,6 @@ public class GridManager {
         int count=0;
         for(int i=0;i<res;i++){
             for(int j=0;j<res;j++){
-               // try {
-                    //if (dispArray[i][j].getState())
                         dispArray[i][j].setCords(i,j);
                         dispArray[i][j].setLLIndex(count);
                         liveCellList.add(dispArray[i][j]);

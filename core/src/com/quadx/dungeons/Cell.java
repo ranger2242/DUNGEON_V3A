@@ -111,11 +111,12 @@ public class Cell {
         setTile(ImageLoader.floors[rn.nextInt(8)]);
         isLive = true;
     }
-    private void setTile(Texture t) {
+    public void setTile(Texture t) {
         tile=t;
     }
     public void setCrate(boolean set){hasCrate=set;}
     public void setWater(){
+        tile= ImageLoader.w[0];
         hasWater= true;
     }
     public void setColor(Color c){
@@ -152,9 +153,9 @@ public class Cell {
         return monsterIndex;
     }
     public Texture getTile(){
-        if(getWater()){
-            tile=ImageLoader.waters[0];
-        }
+       // if(getWater()){
+         //   tile=ImageLoader.w[0];
+        //}
         return tile;
     }
     public void setGold(int i) {
