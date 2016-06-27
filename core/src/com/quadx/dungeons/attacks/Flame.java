@@ -1,5 +1,7 @@
 package com.quadx.dungeons.attacks;
 
+import com.quadx.dungeons.tools.ImageLoader;
+
 /**
  * Created by Tom on 11/17/2015.
  */
@@ -17,5 +19,6 @@ public class Flame extends Attack {
         description="Player creates a burst of fire.";
         spread=3;
         range=6;
+        setIcon(ImageLoader.attacks.get(2));
     }
 }

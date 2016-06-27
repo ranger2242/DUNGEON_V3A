@@ -41,7 +41,7 @@ public class Damage {
     }
     public static int playerMagicDamage(Player p, Monster m, int power){
         double a=((2*(double)p.level+10)/250);
-        double b= ((double)(p.intel+p.intelMod)/m.intel);
+        double b= ((double)(p.intel+p.intelMod)/m.getIntel());
         double c=(power+2);
         damage =(int) (a *b * c );
         if (damage < 0) //checks for negative damage

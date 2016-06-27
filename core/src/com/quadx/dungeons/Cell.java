@@ -40,11 +40,7 @@ public class Cell {
     Texture tile;
 
     public Cell() {
-        int a=0;
-        if(rn.nextFloat()<.1){
-            a=rn.nextInt(2)+1;
-        }
-        setTile(ImageLoader.walls[a]);
+        setTile(ImageLoader.a[0]);
     }
 
     public boolean getAttArea(){return  attArea;}
@@ -108,7 +104,14 @@ public class Cell {
     public void setMon(boolean set){hasMon=set;}
     public void setWarp(){isWarp= true;}
     public void setState() {
-        setTile(ImageLoader.floors[rn.nextInt(8)]);
+        if(rn.nextFloat()>.2){
+
+            setTile(ImageLoader.floors[0]);
+        }
+        else{
+            setTile(ImageLoader.floors[rn.nextInt(13)]);
+
+        }
         isLive = true;
     }
     public void setTile(Texture t) {
@@ -153,9 +156,6 @@ public class Cell {
         return monsterIndex;
     }
     public Texture getTile(){
-       // if(getWater()){
-         //   tile=ImageLoader.w[0];
-        //}
         return tile;
     }
     public void setGold(int i) {

@@ -12,7 +12,5 @@ public class Cape extends Equipment {
         setBoost();
         setMods();
         name=grade.toString()+" "+boost.toString()+" Cape";
-        loadIcon("Cape");
-
     }
 }

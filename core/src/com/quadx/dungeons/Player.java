@@ -5,10 +5,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.attacks.*;
 import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.items.SpellBook;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.tools.Score;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -60,54 +62,25 @@ public class Player {
     int manaMax = 100;
     int prevInvSize=0;
     int damage=0;
+    int ability=0;
 
     double mDamage=0;
     double pDamage=0;
 
     public boolean canMove=false;
     public boolean safe=false;
-
     public float dtSafe=0;
     public float dtMove=0;
     private float moveSpeed=.1f;
     private float gold=0;
-
     private Random rn =new Random();
     String name ="DEMO";
-    private Attack blindSp = new Blind();
-    private Attack tormentSp = new Torment();
-    private Attack illusionSp= new Illusion();
-    private Attack sacrificeSp= new Sacrifice();
-    Attack slashSp = new Slash();
-    Attack stabSp = new Stab();
     Texture[] icons=new Texture[4];
 
     public Player(){
-        System.out.println("5");
         level=1;
-        attackList.clear();
-        Attack flameSp = new Flame();
-        attackList.add(flameSp);
-        Attack restSp = new Rest();
-        attackList.add(restSp);
-        Attack drainSp = new Drain();
-        attackList.add (drainSp);
-        Attack fullhealSp = new Heal();
-        attackList.add(fullhealSp);
-        Attack protectSp = new Protect();
-        attackList.add(protectSp);
-        attackList.add(stabSp);
-        attackList.add(slashSp);
     }
     //SETTERS------------------------------------------------------------------
-    public void loadIcons(){
-        Texture t1 = new Texture(Gdx.files.internal("images/icons/player/playerUp.png"));
-        Texture t2 = new Texture(Gdx.files.internal("images/icons/player/playerRight.png"));
-        Texture t3 = new Texture(Gdx.files.internal("images/icons/player/playerDown.png"));
-        Texture t4 = new Texture(Gdx.files.internal("images/icons/player/playerLeft.png"));
-        icons = new Texture[]{t1, t2, t3, t4};
-
-    }
     public void setEnergy(int e){
         energy=e;
     }
@@ -184,6 +157,7 @@ public class Player {
         this.speed = speed;
     }
     public void setDamage(int d){damage=d;}
+    public void setAbility(int o){ ability=o;}
 
     //GETTERS------------------------------------------------------------------
     public Vector2 getCordsPX(){
@@ -262,11 +236,13 @@ public class Player {
         return energyRegen;
     }
     public int getDamage(){return damage;}
+    public int getAbility(){return ability;}
+
     public float getMoveSpeed() {
         float f;
-        if(speed<1000)
-        f=moveSpeed- (1/(1000-speed));
-        else f=0;
+        float a=moveSpeed/1000;
+        f=moveSpeed-(a*speed);
+        if(f<0)f=0;
         return f;
     }
     public String getKills() {
@@ -317,6 +293,9 @@ public class Player {
         }
 
         return icons[u];
+    }
+    public Score getScore(){
+        return new Score( ""+name, ""+getPoints(),""+(int)(gold), AbilityMod.ability.getName() + " Lvl " + level, ""+killcount);
     }
 
     //MISC Functions------------------------------------------------------------------
@@ -370,7 +349,13 @@ public class Player {
                 }
 
                 equipedList.add((Equipment) item);
-            } else {
+            }
+            else if(item.isSpell){
+                SpellBook temp= (SpellBook) invList.get(i).get(0);
+                invList.get(i).remove(0);
+                player.attackList.add(temp.getAttack());
+            }
+            else {
                 try {
                     try {
                         invList.get(i).remove(0);
@@ -444,12 +429,6 @@ public class Player {
             speed=speed+((int) (Math.random() * 4));
         }
     }
-    public void addSpell(){
-
-
-
-
-    }
     public void addItemToInventory(Item item){
         if(item != null) {
             boolean added = false;
@@ -505,20 +484,6 @@ public class Player {
         }
         manaMod=sum6;
     }
-    public void checkNullInventory() {
-        ArrayList<Integer> toRemove=new ArrayList<>();
-        if(prevInvSize!=invList.size()){
-            for(ArrayList<Item> list :invList){
-                if(list.get(0).getName()==null){
-                    toRemove.add(invList.indexOf(list));
-                }
-            }
-            for(int i=0;i<toRemove.size();i++){
-                invList.remove(toRemove.get(i));
-            }
-            prevInvSize=invList.size();
-        }
-    }
     public boolean checkIfDead() {
         boolean dead=false;
         if(hp<1){
@@ -526,5 +491,28 @@ public class Player {
         }
 
         return dead;
+    }
+
+    public double getmDamage() {
+        return mDamage;
+    }
+
+    public int getFloor() {
+        return floor;
+    }
+    public void loadAttacks(){
+        attackList.clear();
+        Attack flameSp = new Flame();
+        Attack stab = new Stab();
+        attackList.add(flameSp);
+        attackList.add(stab);
+    }
+    public void loadIcons(){
+        Texture t1 = new Texture(Gdx.files.internal("images/icons/player/playerUp.png"));
+        Texture t2 = new Texture(Gdx.files.internal("images/icons/player/playerRight.png"));
+        Texture t3 = new Texture(Gdx.files.internal("images/icons/player/playerDown.png"));
+        Texture t4 = new Texture(Gdx.files.internal("images/icons/player/playerLeft.png"));
+        icons = new Texture[]{t1, t2, t3, t4};
+
     }
 }

@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.items.*;
+import com.quadx.dungeons.items.equipment.Equipment;
+import com.quadx.dungeons.states.mapstate.MapState;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -35,13 +37,12 @@ public class ShopState extends State {
     private static ArrayList<Item> shopInv = new ArrayList<>();
 
     public ShopState(GameStateManager gsm){
-
         super(gsm);
         cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT);
-        cam.position.set(viewX,viewY,0);
+        cam.position.set(viewX+Game.WIDTH/2,viewY+Game.HEIGHT/2,0);
+        if(!MapState.pause)
         genShopInv();
         Gdx.gl.glClearColor(0,0,0,1);
-        //Game.setFontSize(14);
     }
     @Override
     protected void handleInput() {
@@ -52,40 +53,33 @@ public class ShopState extends State {
             }
         }
         //keyboard functions--------------------------------------------------------
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
-            numberButtonHandler(0);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {
-            numberButtonHandler(1);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_3)) {
-            numberButtonHandler(2);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_4)) {
-            numberButtonHandler(3);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_5)) {
-            numberButtonHandler(4);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_6)) {
-            numberButtonHandler(5);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_7)) {
-            numberButtonHandler(6);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_8)) {
-            numberButtonHandler(7);
-        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) numberButtonHandler(0);
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) numberButtonHandler(1);
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_3)) numberButtonHandler(2);
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_4)) numberButtonHandler(3);
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_5)) numberButtonHandler(4);
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_6)) numberButtonHandler(5);
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_7)) numberButtonHandler(6);
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_8)) numberButtonHandler(7);
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_9)) numberButtonHandler(8);
+
         if(Gdx.input.isKeyPressed(Input.Keys.TAB)){
+            MapState.pause=false;
             gsm.pop();
         }
+
     }
     private void numberButtonHandler(int i){
-        if(Gdx.input.isKeyPressed(Input.Keys.MINUS) && dtBuy>.3){
+        if(!MapState.pause && Gdx.input.isKeyPressed(Input.Keys.MINUS) && dtBuy>.3){
                 if(i>=0) {
                         try {
                             try {
                                 Item item = player.invList.get(i).get(0);
+                                if(item.isEquip)
+                                    item.loadIcon(item.getType());
+                                else
+                                    item.loadIcon(item.getName());
                                 player.invList.get(i).remove(0);
                                 soldItemCost= (int) (item.getCost()*.75);
                                 Game.player.setGold((float) (Game.player.getGold()+soldItemCost));
@@ -104,7 +98,7 @@ public class ShopState extends State {
         if(i<shopInv.size() && dtBuy>.3 && Game.player.getGold()>=shopInv.get(i).getCost()){
             Game.player.setGold(Game.player.getGold()-shopInv.get(i).getCost());
             Game.player.addItemToInventory(shopInv.get(i));
-            if(i>=5) shopInv.remove(i);
+            if(i>=6) shopInv.remove(i);
             dtBuy=0;
         }
     }
@@ -122,6 +116,7 @@ public class ShopState extends State {
         sb.setProjectionMatrix(cam.combined);
         shapeR.setProjectionMatrix(cam.combined);
 
+        if(!MapState.pause)
         drawShopInv(sb);
         drawPlayerInv(sb);
 
@@ -136,7 +131,6 @@ public class ShopState extends State {
         shapeR.setColor(1,0,0,1);
         shapeR.rect(viewX+40,viewY+40,Game.WIDTH-80,Game.HEIGHT-80);
         shapeR.end();
-        drawShopInv(sb);
     }
     private void drawPlayerInv(SpriteBatch sb){
         sb.begin();
@@ -183,30 +177,13 @@ public class ShopState extends State {
         shopInv.add(new DefPlus());
         shopInv.add(new IntPlus());
         shopInv.add(new SpeedPlus());
+        Equipment e=Equipment.generateEquipment();
+        shopInv.add(e);
+        e=Equipment.generateEquipment();
+        shopInv.add(e);
+        SpellBook s = new SpellBook();
+        shopInv.add(s);
 
-    }
-    private Item statItemPicker(){
-        Item item=null;
-
-        switch (rn.nextInt(4)){
-            case(0):{
-                item=new AttackPlus();
-                break;
-            }
-            case(1):{
-                item=new DefPlus();
-                break;
-            }
-            case(2):{
-                item=new SpeedPlus();
-                break;
-            }
-            case(3):{
-                item=new IntPlus();
-                break;
-            }
-        }
-        return item;
     }
     public void dispose() {
 

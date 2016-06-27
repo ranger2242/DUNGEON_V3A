@@ -8,6 +8,8 @@ import com.quadx.dungeons.states.mapstate.MapStateRender;
 
 import java.util.ArrayList;
 
+import static com.quadx.dungeons.Game.player;
+
 
 /**
  * Created by range on 5/20/2016.
@@ -28,9 +30,11 @@ public class Investor extends Ability {
     @Override
 
     public void onActivate() {
+        player.setAbility(1);
+
         Game.player.setHpRegen(Game.player.getHpRegen()*2);
-        Game.player.setIntel(Game.player.getIntel()*2);
-        Game.player.setGold(100);
+      //  Game.player.setIntel(Game.player.getIntel()*2);
+     //   Game.player.setGold(100);
         MapState.out("----------------------------------");
         MapState.out(Game.player.getName()+" activated the INVESTOR ability!");
         MapState.out("HP Regen doubled!");
@@ -49,11 +53,11 @@ public class Investor extends Ability {
 
         output.add("-INVESTOR-");
         output.add("Gold increases by .1% often");
-        output.add("Start with 100g");
-        output.add("INT x2");
+    //    output.add("Start with 100g");
+  //   output.add("INT x2");
         output.add("HP Regen x2");
-        output.add("!Gold can go negative");
-        output.add("if you don't save enough!");
+   //     output.add("!Gold can go negative");
+  //      output.add("if you don't save enough!");
         return output;
     }
 

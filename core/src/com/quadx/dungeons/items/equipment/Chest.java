@@ -12,6 +12,5 @@ public class Chest extends Equipment {
         setBoost();
         setMods();
         name=grade.toString()+" "+boost.toString()+" Chest";
-        loadIcon("Chest");
     }
 }

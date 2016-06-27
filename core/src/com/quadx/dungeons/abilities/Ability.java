@@ -16,7 +16,6 @@ public abstract class Ability {
     protected static float cooldown=0;
     protected static float timeCounter=0;
     protected static float mod=0;
-
     Ability(){
     }
     public Texture loadIcon(String s){icon= new Texture(Gdx.files.internal(s));return icon;}

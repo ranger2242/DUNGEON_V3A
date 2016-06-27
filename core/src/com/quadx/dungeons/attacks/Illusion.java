@@ -1,12 +1,14 @@
 package com.quadx.dungeons.attacks;
 
+import com.quadx.dungeons.tools.ImageLoader;
+
 /**
  * Created by Tom on 11/18/2015.
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class Illusion extends Attack {
     public Illusion()  {
-        costGold=50;
+        costGold=5000;
         type=2;
         powerA = new int[]{0,0,0,0,0};
         costA =new int[]{45,50,60,65,70};
@@ -19,5 +21,7 @@ public class Illusion extends Attack {
         spread=3;
         range=4;
         description="Lowers INT by increasing amounts.";
+        setIcon(ImageLoader.attacks.get(5));
+
     }
 }

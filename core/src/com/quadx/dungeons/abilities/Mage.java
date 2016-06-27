@@ -8,6 +8,8 @@ import com.quadx.dungeons.states.mapstate.MapStateRender;
 
 import java.util.ArrayList;
 
+import static com.quadx.dungeons.Game.player;
+
 /**
  * Created by range on 5/20/2016.
  */
@@ -27,6 +29,7 @@ public class Mage extends Ability {
     @Override
 
     public  void onActivate() {
+        player.setAbility(2);
         Game.player.setMana(Game.player.getMana()*2);
         Game.player.setManaMax(Game.player.getManaMax()*2);
         Game.player.setManaRegen(Game.player.getManaRegenRate()*2);

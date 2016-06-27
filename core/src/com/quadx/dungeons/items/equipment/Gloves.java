@@ -12,6 +12,5 @@ public class Gloves extends Equipment {
         setBoost();
         setMods();
         name=grade.toString()+" "+boost.toString()+" Gloves";
-        loadIcon("Gloves");
     }
 }

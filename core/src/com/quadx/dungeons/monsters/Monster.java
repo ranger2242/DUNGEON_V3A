@@ -1,6 +1,5 @@
 package com.quadx.dungeons.monsters;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Cell;
@@ -9,114 +8,174 @@ import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
 
-import java.util.Random;
-
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.GridManager.rn;
 
 /**
  * Created by Tom on 11/10/2015.
  */
 @SuppressWarnings("ALL")
 public class Monster {
-    public static Texture[] icons={  new Texture(Gdx.files.internal("images/icons/monsters/test/testBack.png")),
-                                     new Texture(Gdx.files.internal("images/icons/monsters/test/testRight.png")),
-                                     new Texture(Gdx.files.internal("images/icons/monsters/test/testFront.png")),
-                                     new Texture(Gdx.files.internal("images/icons/monsters/test/testLeft.png"))};
-    private static Random rn;
+    protected Texture[] icons= new Texture[4];
+    protected Texture icon = null;
+    protected Damage d = new Damage();
+    protected String name = "monster";
+    protected String status = "0";
+    protected boolean hit = false;
+    protected boolean moved = false;
+    protected boolean aa = false;
+    protected boolean bb = false;
     protected double level = 1;
-    public double attack;
-    public double intel;
-    public String name = "monster";
-    private boolean hit = false;
-    private boolean moved = false;
-    private Texture icon = null;
-    private int front = 0;
-    int oldFront =0;
-    double power = 20;
-    double hpBase = 60;
-    double attBase = 40;
-    double defBase = 40;
-    double intBase = 40;
-    double spdBase = 40;
-    float moveSpeedMin = .12f;
-    private float moveSpeedMax = .09f;
-    private int liveCellIndex = -1;
-    private int monListIndex = -1;
-    private int healCount = 0;
-    String status = "0";
-    int sight = 6;
-    private boolean aa = false;
-    private boolean bb = false;
-    private Damage d = new Damage();
-    private int x;
-    private int px;
-    private int y;
-    private int py;
-    private double hp = 0;
-    private double hpMax = 0;
-    private double hpsoft = 0;
-    private double defense;
-    private double speed;
-    private float dtMove = 0;
-    private float moveSpeed = .15f;
+    protected double attack;
+    protected double intel;
+    protected double power = 20;
+    protected double hpBase = 60;
+    protected double attBase = 40;
+    protected double defBase = 40;
+    protected double intBase = 40;
+    protected double spdBase = 40;
+    protected double hp = 0;
+    protected double hpMax = 0;
+    protected double hpsoft = 0;
+    protected double defense;
+    protected double speed;
+    protected int front = 0;
+    protected int oldFront =0;
+    protected int liveCellIndex = -1;
+    protected int monListIndex = -1;
+    protected int healCount = 0;
+    protected int sight = 6;
+    protected int x;
+    protected int px;
+    protected int y;
+    protected int py;
+    protected int iconSet=0;
+    protected float moveSpeedMin = .12f;
+    protected float moveSpeedMax = .09f;
+    protected float dtMove = 0;
+    protected float moveSpeed = .15f;
 
     public Monster() {
-        rn = new Random();
-        genLevel();
-        genStats();
-        loadIcon();
-    }
-
-    private void loadIcon() {
-        icon=icons[front];
     }
 
     public int getLiveCellIndex() {
         return liveCellIndex;
     }
+    public int getMonListIndex() {
+        return monListIndex;
+    }
+    public float getdtMove() {
+        return dtMove;
+    }
+    public float getMoveSpeed() {
+        return moveSpeed;
+    }
+    public String getName() {
+        return name;
+    }
+    public double getHp() {
+        return hp;
+    }
+    public double getHpMax() {
+        return hpsoft;
+    }
+    public double getSpeed() {
+        return speed;
+    }
+    public double getDefense() {
+        return defense;
+    }
+    public double getIntel() {
+        return intel;
+    }
+    public double getAttack() {
+        return attack;
+    }
+    public int getLevel() {
+        return (int) level;
+    }
+    public int getX() {
+        return x;
+    }
+    public int getY() {
+        return y;
+    }
+    public int getPX() {
+        return px;
+    }
+    public int getPY() {
+        return py;
+    }
+    public Texture getIcon() {
+        return icon;
+    }
+    public double getIntelDamage() {
+        double damage = d.monsterMagicDamage(player, this, (int) power);
+        return damage;
+    }
+    public int getSight() {
+        return sight;
+    }
 
     public void setLiveCellIndex(int i) {
         liveCellIndex = i;
     }
-
-    public int getMonListIndex() {
-        return monListIndex;
-    }
-
     public void setMonListIndex(int i) {
         monListIndex = i;
     }
+    public void setLevel(int l) {
+        level = l;
+    }
+    public void setCords(int a, int b) {
+        x = a;
+        y = b;
+        px = a * MapState.cellW;
+        py = b * MapState.cellW;
+    }
+    public void setCordsPX(int a, int b) {
+        x = a / MapState.cellW;
+        y = b / MapState.cellW;
+        px = a;
+        py = b;
+    }
+    void setFront(int x){
+        oldFront=front;
+        front=x;
+        if(oldFront !=front){
+                loadIcon();
+        }
+    }
+    public void setHit() {
+        hit = true;
+    }
+    public void setIntel(double intel) {
+        this.intel = intel;
+    }
+    public void setAttack(double attack) {
+        this.attack = attack;
+    }
+    public void setMoved() {
+        moved = true;
+    }
 
+    protected void loadIcon() {
+        icon=icons[front];
+    }
     public void updateVariables(float dt) {
         dtMove += dt;
         aa = rn.nextBoolean();
         bb = rn.nextBoolean();
     }
-
-    public float getdtMove() {
-        return dtMove;
-    }
-
-    public float getMoveSpeed() {
-        return moveSpeed;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public void stattest() {
         for (int i = 0; i < 100; i++) {
             sayStats();
         }
     }
-
-    private void genLevel() {
+    protected void genLevel() {
         level = player.level + rn.nextInt(player.floor);
         //out(level+"");
     }
-
-    private void genStats() {
+    protected void genStats() {
         // System.out.println("---------------------------------------");
         genHp();
         genAttack();
@@ -124,35 +183,30 @@ public class Monster {
         genIntel();
         genSpeed();
     }
-
     private void genAttack() {
         double a = attBase + rn.nextInt(31);
         double b = Math.sqrt(rn.nextInt(65535)) / 4;
         attack = (((a * 2 + b) * level) / 100) + 5;
         //System.out.println("Attack :"+attack);
     }
-
     private void genDefense() {
         double a = defBase + rn.nextInt(31);
         double b = Math.sqrt(rn.nextInt(65535)) / 4;
         defense = (((a * 2 + b) * level) / 100) + 5;
         //System.out.println("Defense :"+defense);
     }
-
     private void genSpeed() {
         double a = spdBase + rn.nextInt(31);
         double b = Math.sqrt(rn.nextInt(65535)) / 4;
         speed = (((a * 2 + b) * level) / 100) + 5;
         //System.out.println("Speed :"+speed);
     }
-
     private void genIntel() {
         double a = intBase + rn.nextInt(31);
         double b = Math.sqrt(rn.nextInt(65535)) / 4;
         intel = (((a * 2 + b) * level) / 100) + 5;
         //System.out.println("Intel :"+intel);
     }
-
     private void genHp() {
         double a = hpBase + rn.nextInt(31);
         double b = Math.sqrt(rn.nextInt(65535)) / 4;
@@ -160,77 +214,12 @@ public class Monster {
         hpMax = hp;
         hpsoft = hp;
     }
-
-    public double getHp() {
-        return hp;
-    }
-
-    public double getHpMax() {
-        return hpsoft;
-    }
-
-    public double getDefense() {
-        return defense;
-    }
-
-    public double getIntel() {
-        return intel;
-    }
-
-    public int getLevel() {
-        return (int) level;
-    }
-
-    public void setLevel(int l) {
-        level = l;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public int getPX() {
-        return px;
-    }
-
-    public int getPY() {
-        return py;
-    }
-
-    public Texture getIcon() {
-        return icon;
-    }
-
-    public void setCords(int a, int b) {
-        x = a;
-        y = b;
-        px = a * MapState.cellW;
-        py = b * MapState.cellW;
-    }
-
-    public void setCordsPX(int a, int b) {
-        x = a / MapState.cellW;
-        y = b / MapState.cellW;
-        px = a;
-        py = b;
-    }
-
-    public double getIntelDamage() {
-        double damage = d.monsterMagicDamage(player, this, (int) power);
-        return damage;
-    }
-
     public void takeAttackDamage(double i) {
         hp = hp - (int) i;
         if (hp < 0) {
             hp = 0;
         }
     }
-
     private void sayStats() {
         System.out.println("\nHP: " + (int) hp);
         System.out.println("Level: " + level);
@@ -239,11 +228,6 @@ public class Monster {
         System.out.println("Intel: " + (int) intel);
         System.out.println("Speed: " + (int) speed);
     }
-
-    public void setHit() {
-        hit = true;
-    }
-
     public void move() {
         int a = rn.nextInt(3) + 1;
         int b = rn.nextInt(3) + 1;
@@ -277,12 +261,12 @@ public class Monster {
                     switch (a) {
                         case (1): {
                             tx += rn.nextInt(2);
-                            setFront(1);
+                            setFront(3);
                             break;
                         }
                         case (2): {
                             tx -= rn.nextInt(2);
-                            setFront(3);
+                            setFront(2);
                             break;
                         }
                         case (3): {
@@ -297,7 +281,7 @@ public class Monster {
                         }
                         case (2): {
                             ty -= rn.nextInt(2);
-                            setFront(2);
+                            setFront(1);
                             break;
                         }
                         case (3): {
@@ -342,26 +326,18 @@ public class Monster {
         }
         dtMove = 0;
     }
-    void setFront(int x){
-        oldFront=front;
-        front=x;
-        if(oldFront !=front){
-            loadIcon();
-        }
-    }
-
     private int[] chasePlayer() {
         int tx;
         if (player.getX() > this.getX()) {
             tx = this.x + 1;
-            setFront(1);
+            setFront(3);
         }       //set new coordinates based on
         else if (player.getX() == this.getX()) {
             tx = player.getX();
         }        //players relative position
         else {
             tx = this.x - 1;
-            setFront(3);
+            setFront(2);
         }
         int ty;
         if (player.getY() > this.getY()) {
@@ -371,36 +347,33 @@ public class Monster {
             ty = player.getY();
         } else {
             ty = this.y - 1;
-            setFront(2);
+            setFront(1);
         }
         return new int[]{tx, ty};
     }
-
     private int[] flee(int tx, int ty) {
         moveSpeed = moveSpeedMax;                                           //set new coordinates based on
         if (player.getX() > this.getX() && aa) {
             tx = this.x - 1;
-            setFront(3);
+            setFront(2);
         }   //players relative position
         else if (player.getX() < this.getX()) {
             tx = this.x + 1;
-            setFront(1);
+            setFront(3);
         }
         if (player.getY() > this.getY() && bb) {
             ty = this.y - 1;
-            setFront(2);
+            setFront(1);
         } else if (player.getY() < this.getY()) {
             ty = this.y + 1;
             setFront(0);
         }
         return new int[]{tx, ty};
     }
-
     private boolean PlayerInSight() {
         return player.getX() > this.getX() - this.getSight() && player.getX() < this.getX() + this.getSight()
                 && player.getY() > this.getY() - this.getSight() && player.getY() < this.getY() + this.getSight();
     }
-
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean checkForDamageToPlayer(int px, int py) {
         boolean hit = false;
@@ -413,28 +386,41 @@ public class Monster {
         }
         return hit;
     }
-
     public boolean isHit() {
         return hit;
     }
-
-    public void setMoved() {
-        moved = true;
-    }
-
     public boolean isMoved() {
-        return moved;
-    }
-
-    public double getAttack() {
-        return attack;
-    }
-
-    public double getSpeed() {
-        return speed;
-    }
-
-    public int getSight() {
-        return sight;
+    return moved;
+}
+    public static Monster getNew(){
+        Monster m;
+        int total=player.getAttack()+player.getIntel()+player.getSpeed()+player.getDefense();
+        if(total>300 && rn.nextBoolean()){
+            m=new Muk();
+        }
+        else if(total>230 && rn.nextBoolean()){
+            m=new Dodrio();
+        }
+        else if(total>200 && rn.nextBoolean()){
+            if(rn.nextBoolean())
+            m=new Gengar();
+            else m = new Dragonair();
+        }
+        else if(total>140 && rn.nextBoolean()){
+            m=new Ponyta();
+        }
+        else if(total >80 && rn.nextBoolean()){
+            if(rn.nextBoolean())
+            m=new Porygon();
+            else
+                m=new Krabby();
+        }
+        else{
+            if(rn.nextBoolean())
+                m = new Kabuto();
+            else
+                m= new Anortih();
+        }
+        return m;
     }
 }

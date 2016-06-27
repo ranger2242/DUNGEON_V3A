@@ -1,5 +1,7 @@
 package com.quadx.dungeons.attacks;
 
+import com.quadx.dungeons.tools.ImageLoader;
+
 /**
  * Created by Tom on 11/17/2015.
  */
@@ -17,6 +19,8 @@ public class Drain extends Attack {
         spread=1;
         range=10;
         description="Heals user the same amount as damage done to opponent.";
+        setIcon(ImageLoader.attacks.get(1));
+
     }
 }
 

@@ -2,11 +2,12 @@ package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.quadx.dungeons.Game;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
 
 import java.util.ArrayList;
+
+import static com.quadx.dungeons.Game.player;
 
 /**
  * Created by range on 5/20/2016.
@@ -25,19 +26,20 @@ public class Brawler extends Ability {
     }
     @Override
     public  void onActivate() {
-        Game.player.setEnergy(Game.player.getEnergy()*2);
-        Game.player.setEnergyMax(Game.player.getEnergyMax()*2);
-        Game.player.setEnergyRegen(Game.player.getEnergyRegen()*2);
-        Game.player.setMana(Game.player.getMana()/2);
-        Game.player.setManaMax(Game.player.getManaMax()/2);
-        Game.player.setAttack(Game.player.getAttack()*2);
+        player.setAbility(4);
+        player.setEnergy(player.getEnergy()*2);
+        player.setEnergyMax(player.getEnergyMax()*2);
+        player.setEnergyRegen(player.getEnergyRegen()*2);
+        player.setMana(player.getMana()/2);
+        player.setManaMax(player.getManaMax()/2);
+        player.setAttack(player.getAttack()*2);
         MapState.out("----------------------------------");
-        MapState.out(Game.player.getName()+" activated the BRAWLER ability!");
+        MapState.out(player.getName()+" activated the BRAWLER ability!");
         MapState.out("E Max doubled!");
         MapState.out("E Regen doubled!");
         MapState.out("M Max was halved!");
         MapState.out("1.2x DMG for E Attacks");
-        MapStateRender.setHoverText("BRAWLER!",1.5f, Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
+        MapStateRender.setHoverText("BRAWLER!",1.5f, Color.WHITE, player.getPX(), player.getPY(),false);
 
         //super.onActivate();
     }

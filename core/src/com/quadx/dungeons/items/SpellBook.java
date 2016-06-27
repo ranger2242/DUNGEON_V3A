@@ -1,6 +1,7 @@
 package com.quadx.dungeons.items;
 
 import com.quadx.dungeons.attacks.*;
+import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.Random;
 
@@ -12,10 +13,9 @@ public class SpellBook extends Item {
     public SpellBook(){
         isSpell=true;
         Random rn = new Random();
-        int x= rn.nextInt(10);
-        setAttack(x);
+        setAttack(rn.nextInt(13));
         name="Spell Book ("+attack.getName()+")";
-        loadIcon(name);
+        icon= ImageLoader.spellbook;
     }
 
     public Attack getAttack(){
@@ -53,7 +53,7 @@ public class SpellBook extends Item {
                 break;
             }
             case(7):{
-                attack=new Slash();
+                attack=new Earthquake();
                 break;
             }
             case(8):{
@@ -61,6 +61,18 @@ public class SpellBook extends Item {
                 break;
             }
             case(9):{
+                attack=new Torment();
+                break;
+            }
+            case(10):{
+                attack=new Lightning();
+                break;
+            }
+            case(11):{
+                attack=new Rest();
+                break;
+            }
+            case(12):{
                 attack=new Torment();
                 break;
             }

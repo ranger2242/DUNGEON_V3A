@@ -1,6 +1,6 @@
 package com.quadx.dungeons.attacks;
 
-import com.badlogic.gdx.scenes.scene2d.actions.ScaleToAction;
+import com.badlogic.gdx.graphics.Texture;
 
 import java.util.Arrays;
 
@@ -22,8 +22,8 @@ public class Attack {
     int range=0;
     int spread=0;
     int costGold=0;
-   // int[] usesCheck={125,270,400,875,1200};
     int[] usesCheck={80,300,650,1000,1500};
+    protected Texture icon;
 
     String description="s";
     public void checkLvlUp(){
@@ -65,5 +65,11 @@ public class Attack {
     public void setUses(){
         uses++;
     }
+    public void setIcon(Texture t){
+        icon=t;
+    }
 
+    public Texture getIcon() {
+        return icon;
+    }
 }

@@ -9,6 +9,5 @@ public class Potion extends Item {
         name="Potion+";
         hpmod=60;
         cost=100;
-        loadIcon(name);
     }
 }

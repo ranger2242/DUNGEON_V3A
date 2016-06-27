@@ -107,7 +107,7 @@ public class MainMenuState extends State implements ControllerListener {
                 gsm.push(new ControlState(gsm));
                 break;
             }case(3):{
-                gsm.push(new ExtraState(gsm));
+                gsm.push(new HighScoreState(gsm));
                 break;
             }case(4):{
                 System.exit(0);

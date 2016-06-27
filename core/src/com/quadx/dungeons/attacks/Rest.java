@@ -1,12 +1,14 @@
 package com.quadx.dungeons.attacks;
 
+import com.quadx.dungeons.tools.ImageLoader;
+
 /**
  * Created by range on 5/17/2016.
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class Rest extends Attack {
     public Rest(){
-        costGold = 0;
+        costGold = 30000;
         type = 2;
         powerA = new int[]{0, 0, 0, 0, 0};
         costA = new int[]{10, 20, 30, 40, 50};
@@ -17,5 +19,7 @@ public class Rest extends Attack {
         range = 0;
         spread = 0;
         description = "Converts M to Energy";
+        setIcon(ImageLoader.attacks.get(7));
+
     }
 }

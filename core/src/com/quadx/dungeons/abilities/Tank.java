@@ -8,13 +8,13 @@ import com.quadx.dungeons.states.mapstate.MapStateRender;
 
 import java.util.ArrayList;
 
+import static com.quadx.dungeons.Game.player;
+
 /**
  * Created by range on 5/20/2016.
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class Tank extends Ability {
-   // protected static ArrayList<String> output=new ArrayList<>();
-
     public Tank() {
         icon= loadIcon("images/icons/abilities/icTank.png");
         details();
@@ -26,6 +26,8 @@ public class Tank extends Ability {
     @Override
 
     public void onActivate() {
+        player.setAbility(1);
+
         Game.player.setDefense(Game.player.getDefense()*2);
         Game.player.setHp((int)(Game.player.getHp()*1.5));
         Game.player.setHpMax((int)(Game.player.getHpMax()*1.5));        Game.player.setHpRegen(Game.player.getHpRegen()*2);

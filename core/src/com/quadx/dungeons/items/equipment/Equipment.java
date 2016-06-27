@@ -23,7 +23,7 @@ public class Equipment extends Item {
     public enum Boost{
         Perception, Power, Health, Magic, Haste, Resistance
     }
-    Equipment(){
+   public Equipment(){
     isEquip=true;
     }
     public String getName(){
@@ -213,5 +213,44 @@ public class Equipment extends Item {
         x+=speedmod;
         x=x*100;
         cost=x;
+    }
+    public static Equipment generateEquipment(){
+        Equipment item=new Equipment();
+        int x=rn.nextInt(8)+1;
+        switch (x){
+            case(1):{
+                item=new Arms();
+                break;
+            }
+            case(2):{
+                item=new Boots();
+                break;
+            }
+            case(3):{
+                item= new Cape();
+                break;
+            }
+            case(4):{
+                item=new Chest();
+                break;
+            }
+            case(5):{
+                item= new Gloves();
+                break;
+            }
+            case(6):{
+                item=new Helmet();
+                break;
+            }
+            case(7):{
+                item=new Legs();
+                break;
+            }
+            case(8):{
+                item=new Ring();
+                break;
+            }
+        }
+        return item;
     }
 }

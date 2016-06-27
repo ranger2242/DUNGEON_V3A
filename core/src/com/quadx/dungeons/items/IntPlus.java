@@ -9,6 +9,5 @@ public class IntPlus extends Item {
         name="Intel+";
         intelmod+=1;
         cost=1000;
-        loadIcon(name);
     }
 }

@@ -30,7 +30,7 @@ public class HighScoreState extends State {
             int high = 0;
             for (int i = 0; i < scores.size(); i++) {
                 try {
-                    int score = Integer.parseInt(scores.get(i).getScore());
+                    int score = (int) Double.parseDouble(scores.get(i).getScore());
                     if (score > high) {
                         high = score;
                         pos = i;

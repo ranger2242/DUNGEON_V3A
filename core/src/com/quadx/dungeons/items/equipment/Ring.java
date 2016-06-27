@@ -12,6 +12,5 @@ public class Ring extends Equipment {
         setBoost();
         setMods();
         name=grade.toString()+" "+boost.toString()+" Ring";
-        loadIcon("Ring");
     }
 }

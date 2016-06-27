@@ -12,6 +12,5 @@ public class Helmet extends Equipment {
         setBoost();
         setMods();
         name=grade.toString()+" "+boost.toString()+" Helmet";
-        loadIcon("Helmet");
     }
 }

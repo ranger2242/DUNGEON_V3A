@@ -14,8 +14,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.*;
 import com.quadx.dungeons.attacks.Attack;
+import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
-import com.quadx.dungeons.items.equipment.*;
+import com.quadx.dungeons.items.SpeedPlus;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.MainMenuState;
@@ -37,6 +38,8 @@ import static com.quadx.dungeons.tools.ImageLoader.gold;
 @SuppressWarnings("DefaultFileTemplate")
 public class MapState extends State implements ControllerListener {
     public static boolean debug=true;
+    public static boolean pause=false;
+
     static ShapeRenderer shapeR;
     static ArrayList<String> output;
     static ArrayList<QButton> qButtonList =new ArrayList<>();
@@ -77,34 +80,31 @@ public class MapState extends State implements ControllerListener {
 
     static int qButtonBeingHovered;
 
-    static float dtMessage=0;
     public static float dtStatPopup=0;
     public static float viewX;
     public static float viewY;
     static float itemMinTime=.4f;
     static float attackMintime = Game.frame*10;
-
-    static float dtDamageTextFloat = 0;
     static int lastNumPressed=0;
     static int altNumPressed=1;
 
     public MapState(GameStateManager gsm) {
         super(gsm);
         player.loadIcons();
+        player.loadAttacks();
         inGame=true;
         gm = new GridManager();
         shapeR = new ShapeRenderer();
         output= new ArrayList<>();
         if(controllerMode)
         MainMenuState.controller.addListener(this);
-        MapStateRender.loadAttackIcons();
         bufferOutput();
         Game.setFontSize(1);
         cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT);
         gm.initializeGrid();
         out("---Welcome to DUNGEON---");
         attack= player.attackList.get(0);
-        attack2=player.attackList.get(1);
+        attack2=player.attackList.get(0);
 
         int x3=26;
         for(int i=0; i<x3;i++){
@@ -113,7 +113,6 @@ public class MapState extends State implements ControllerListener {
             }
             System.out.print("\n");
         }
-        out((8*12)%15+"");
 
         for(int i=0;i<20;i++){
        //    openCrate();
@@ -123,22 +122,24 @@ public class MapState extends State implements ControllerListener {
     public void handleInput() {
     }
     public void update(float dt) {
-        if(output.size()>11){
-            output.remove(0);
-        }
+        MapStateUpdater.updateVariables(dt);
+        GridManager.loadDrawList();
+        MapStateUpdater.compareItemToEquipment();
+        MapStateUpdater.spawnMonsters();
         MapStateUpdater.buttonHandler();
-        if(MapStateUpdater.dtCollision>Game.frame/2)
-        MapStateUpdater.collisionHandler();
+        if(MapStateUpdater.dtCollision>Game.frame/2) {
+            MapStateUpdater.collisionHandler();
+        }
         MapStateUpdater.moveMonsters();
-        MapStateUpdater.fuckingStupidUpdateFunction(dt);
+        MapStateUpdater.checkPlayerIsAlive();
     }
     public void render(SpriteBatch sb) {
         Gdx.gl.glClearColor(0,0,0,1);
         shapeR.setProjectionMatrix(cam.combined);
         sb.setProjectionMatrix(cam.combined);
-        MapStateRender.drawGrid(false);
+       // MapStateRender.drawGrid(false);
         MapStateRender.drawTiles(sb);
-        MapStateRender.drawMonsterAgro();
+        MapStateRender.drawTransparentThings();
         MapStateRender.drawHUD(sb);
         MapStateRender.drawAbilityIcon(sb);
         MapStateRender.drawMessageOutput(sb);
@@ -179,11 +180,6 @@ public class MapState extends State implements ControllerListener {
         sb.end();
     }
     public void dispose() {
-        //unload attack icons
-        for(Texture t : attackIconList){
-            t.dispose();
-        }
-        attackIconList.clear();
     }
     public static void out(String s){
         try {
@@ -193,7 +189,7 @@ public class MapState extends State implements ControllerListener {
         }catch (NullPointerException e){}
     }
 
-    static void attackCollisionHandler(int pos) {
+    static void attackCollisionHandler(int pos, Attack att) {
         int range = player.attackList.get(attackListCount + pos).getRange();
         int spread = player.attackList.get(attackListCount + pos).getSpread();
         int px = player.getX();
@@ -211,7 +207,7 @@ public class MapState extends State implements ControllerListener {
             yrange = py + range;
             for (int i = px; i < xrange; i++) {
                 for (int j = py; j < yrange; j++) {
-                    setHitList((int) (i - Math.ceil(spread / 2)) - 1,j);
+                    setHitList((int) (i - Math.ceil(spread / 2)),j);
                 }
             }
         }
@@ -220,7 +216,7 @@ public class MapState extends State implements ControllerListener {
             yrange = py - range;
             for (int i = px; i < xrange; i++) {
                 for (int j = yrange; j < py; j++) {
-                    setHitList((int) (i - Math.ceil(spread / 2)) - 1,j-1);
+                    setHitList((int) (i - Math.ceil(spread / 2)),j);
                 }
             }
         }
@@ -229,7 +225,7 @@ public class MapState extends State implements ControllerListener {
             yrange = py + spread;
             for (int i = px; i < xrange; i++) {
                 for (int j = py; j < yrange; j++) {
-                    setHitList(i,(int)(j - Math.ceil(spread / 2))-1);
+                    setHitList(i,(int)(j - Math.ceil(spread / 2)));
                 }
             }
         }
@@ -238,12 +234,19 @@ public class MapState extends State implements ControllerListener {
             yrange = py + spread;
             for (int i = xrange; i < px; i++) {
                 for (int j = py; j < yrange; j++) {
-                    setHitList((i -1),(int)(j - Math.ceil(spread / 2))-1);
+                    setHitList((i),(int)(j - Math.ceil(spread / 2)));
                 }
             }
         }
         Monster tempMon=null;
         boolean killed= false;
+        if(att.getMod()==10){//check earthquake
+
+            hitList.clear();
+            for(Cell c:drawList){
+                setHitList(c.getX(),c.getY());
+            }
+        }
         for(Cell c:hitList)    {
             try {
                 drawList.get(drawList.indexOf(c)).setAttArea(true);
@@ -253,7 +256,6 @@ public class MapState extends State implements ControllerListener {
             for(Monster m: GridManager.monsterList){
                 if(c.getX()==m.getX() && c.getY()==m.getY()){
                     int tempMonIndex;
-                    dtDamageTextFloat = 0;
                     tempMon=m;
                     tempMonIndex=GridManager.monsterList.indexOf(m);
                     player.setDamage(Damage.playerMagicDamage(player, m, player.attackList.get(pos).getPower()));
@@ -332,58 +334,41 @@ public class MapState extends State implements ControllerListener {
 
             } else {
                 Item item = liveCellList.get(index).getItem();
-                try {
-                    lootPopup = item.getIcon();
-                    MapStateRender.dtLootPopup = 0;
-                } catch (GdxRuntimeException | NullPointerException e) {
-                    Game.printLOG(e);
+                if (item != null) {
+                    if (item.isEquip) {
+                        item.loadIcon(item.getType());
+                    } else
+                        item.loadIcon(item.getName());
+                    try {
+                        lootPopup = item.getIcon();
+                        MapStateRender.dtLootPopup = 0;
+                    } catch (GdxRuntimeException | NullPointerException e) {
+                        Game.printLOG(e);
+                    }
+                    try {
+                        if (item.getClass() != Gold.class) {
+                            boolean a = false;
+                            if (player.invList.isEmpty()) {
+                                a = true;
+                            }
+                            player.addItemToInventory(item);
+                            if (a) MapStateRender.inventoryPos = 0;
+                            out(item.getName() + " added to inventory");
+                            MapStateRender.setHoverText(item.getName(), 1, Color.WHITE, player.getPX(), player.getPY(), false);
+                        }
+                    } catch (NullPointerException e) {
+                        item = new SpeedPlus();
+                        boolean a = false;
+                        if (player.invList.isEmpty()) {
+                            a = true;
+                        }
+                        player.addItemToInventory(item);
+                        if (a) MapStateRender.inventoryPos = 0;
+                        out(item.getName() + " added to inventory");
+                        MapStateRender.setHoverText(item.getName(), 1, Color.WHITE, player.getPX(), player.getPY(), false);
+                    }
                 }
-                if(item != null) {
-                    player.addItemToInventory(item);
-                    out(item.getName() + " added to inventory");
-                    MapStateRender.setHoverText(item.getName(), 1, Color.WHITE, player.getPX(), player.getPY(), false);
-                }
             }
-
-    }
-    public static Item generateEquipment(){
-        Item item=new Item();
-        int x=rn.nextInt(8)+1;
-        switch (x){
-            case(1):{
-                item=new Arms();
-                break;
-            }
-            case(2):{
-                item=new Boots();
-                break;
-            }
-            case(3):{
-                item= new Cape();
-                break;
-            }
-            case(4):{
-                item=new Chest();
-                break;
-            }
-            case(5):{
-                item= new Gloves();
-                break;
-            }
-            case(6):{
-                item=new Helmet();
-                break;
-            }
-            case(7):{
-                item=new Legs();
-                break;
-            }
-            case(8):{
-                item=new Ring();
-                break;
-            }
-        }
-        return item;
     }
 
     private void bufferOutput(){

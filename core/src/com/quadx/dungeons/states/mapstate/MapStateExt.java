@@ -1,7 +1,7 @@
 package com.quadx.dungeons.states.mapstate;
 
 import com.quadx.dungeons.QButton;
-import com.quadx.dungeons.SpellMods;
+import com.quadx.dungeons.attacks.SpellMods;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.states.GameStateManager;
 
@@ -29,7 +29,6 @@ class MapStateExt extends MapState{
     }
     public static void battleFunctions(int i) {
         if (i < player.attackList.size()) {
-            int x = player.attackList.get(i).getType();
             boolean condition = false;
             Attack a;
             if (i == altNumPressed) a = player.attackList.get(altNumPressed);
@@ -57,12 +56,13 @@ class MapStateExt extends MapState{
                         break;
                     }
                 }
-                MapStateRender.loadParticleEffects(i);
-                MapState.attackCollisionHandler(i);
-                SpellMods.runMod(targetMon, player.attackList.get(player.attackList.indexOf(a)));
+                MapState.attackCollisionHandler(i,a);
+                SpellMods.runMod(targetMon,a);
                 player.attackList.get(player.attackList.indexOf(a)).checkLvlUp();
 
             }
         }
     }
+
+
 }

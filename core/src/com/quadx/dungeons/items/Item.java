@@ -2,6 +2,7 @@ package com.quadx.dungeons.items;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.tools.ImageLoader;
 
@@ -18,7 +19,7 @@ public class Item
     private int levelmod;
     public boolean isEquip=false;
     public boolean isSpell=false;
-    protected Texture icon=ImageLoader.crate;
+    protected Texture icon= ImageLoader.crate;
     int gold;
     Attack attack;
 
@@ -77,12 +78,10 @@ public class Item
     public String getType(){
         return null;
     }
-    protected void loadIcon(String s){
-        if(icon ==null)
-        {
-            icon= new Texture(Gdx.files.internal("images/icons/items/ic" + s + ".png"));
-        }
-
+    public void loadIcon(String s){
+        try {
+            icon = new Texture(Gdx.files.internal("images\\icons\\items\\ic" + s + ".png"));
+        }catch (GdxRuntimeException e){}
     }
 
     public int getManamod() {

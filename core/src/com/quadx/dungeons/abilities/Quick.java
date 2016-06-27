@@ -8,6 +8,8 @@ import com.quadx.dungeons.states.mapstate.MapStateRender;
 
 import java.util.ArrayList;
 
+import static com.quadx.dungeons.Game.player;
+
 /**
  * Created by range on 5/20/2016.
  */
@@ -27,6 +29,8 @@ public class Quick extends Ability {
     @Override
 
     public  void onActivate() {
+        player.setAbility(3);
+
         Game.player.setMoveSpeed((float) (Game.player.getMoveSpeed()/1.5));
         Game.player.setSpeed(Game.player.getSpeed()*2);
         Game.player.setEnergyRegen((int) (Game.player.getEnergyRegen()*1.5));

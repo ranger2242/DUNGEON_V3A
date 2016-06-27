@@ -3,21 +3,24 @@ package com.quadx.dungeons;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.items.*;
+import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.Map2State;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
 import com.quadx.dungeons.states.mapstate.MapStateUpdater;
+import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.WallPattern;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
+import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.states.mapstate.MapState.*;
 
 public class GridManager {
-    private static Random rn = new Random();
+    public static Random rn = new Random();
     public static ArrayList<Cell> liveCellList = new ArrayList<>();
     public static ArrayList<Cell> drawList = new ArrayList<>();
     public static ArrayList<Monster> monsterList = new ArrayList<>();
@@ -28,8 +31,8 @@ public class GridManager {
     public void initializeGrid() {
         MapStateUpdater.spawnCount=1;
         MapStateUpdater.dtRespawn=0;
-        Game.player.setMana(Game.player.manaMax);
-        Game.player.setEnergy(Game.player.getEnergyMax());
+        player.setMana(player.manaMax);
+        player.setEnergy(player.getEnergyMax());
         clearMonsterList();
         createMap();
         plotLoot();
@@ -133,12 +136,16 @@ public class GridManager {
                                 }
                             }
                         }
+                        int a=0;
+                        if(c.getWater())a=1;
+                        Texture t1=WallPattern.getTile(a);
+                        if(t1 != null && t!=t1){
+                            c.setTile(t1);
+                        }
                     }
-                    int a=0;
-                    if(c.getWater())a=1;
-                    Texture t1=WallPattern.getTile(a);
-                    if(t1 != null && t!=t1){
-                        c.setTile(t1);
+                    else{
+                        if(!c.getTile().equals(ImageLoader.a[0]))
+                        c.setTile(ImageLoader.a[0]);
                     }
                 }
                 drawList.add(c);
@@ -205,12 +212,13 @@ public class GridManager {
         liveCellList.get(index).setWarp();
     }
     private void plotMonsters() {
-        double temp = liveCount * .005;
-        while (temp <= 0) {
-            temp = rn.nextGaussian() * 20;
+        int temp ;
+        if(player.getFloor()==1){
+            splitMapDataToList();
         }
+        temp= (int) (liveCount * .0075);
         while (temp > 0) {
-            Monster m = new Monster();
+            Monster m= Monster.getNew();
             int index = rn.nextInt(liveCellList.size());
             if (!liveCellList.get(index).hasWater&& liveCellList.get(index).getState()) {
 
@@ -222,8 +230,7 @@ public class GridManager {
                 liveCellList.set(index,c);
                 m.setMonListIndex(monsterList.indexOf(m));
                 m.setLiveCellIndex(index);
-                //liveCellList.get(index).setMon(true);
-                //liveCellList.get(index).setMonsterIndex(monsterList.indexOf(m));
+
                 Game.console("MList:" + monsterList.indexOf(m));
                 temp--;
             }
@@ -254,7 +261,7 @@ public class GridManager {
         }
     }
     private void plotCrates() {
-        float fillPercent = .003f;
+        float fillPercent = .01f;
         int crates = (int) (liveCellList.size() * fillPercent);
         while (crates > 0) {
             int index = rn.nextInt(liveCellList.size());
@@ -277,7 +284,12 @@ public class GridManager {
                         else if (q == 3 || q == 4) item = new DefPlus();
                         else if (q == 5 || q == 6) item = new IntPlus();
                         else if (q == 7 || q == 8) item = new SpeedPlus();
-                        else if (q == 9 || q == 10) item = generateEquipment();
+                        else if (q == 9 || q == 10){
+                            if(rn.nextFloat()<.1){
+                                item=new SpellBook();
+                            }else
+                            item = Equipment.generateEquipment();
+                        }
                         liveCellList.get(index).setItem(item);
                     }
                 }
@@ -308,10 +320,10 @@ public class GridManager {
             else index = rn.nextInt(liveCellList.size());
         }
 
-        Game.player.setLiveListIndex(index);
+        player.setLiveListIndex(index);
         Cell c = liveCellList.get(index);
         int w = cellW;
-        Game.player.setCordsPX(c.getX() * w, c.getY() * w);
+        player.setCordsPX(c.getX() * w, c.getY() * w);
         int range = 35;
         ArrayList<Integer> monsFound = new ArrayList<>();
         for (int i = 0; i < range; i++) {

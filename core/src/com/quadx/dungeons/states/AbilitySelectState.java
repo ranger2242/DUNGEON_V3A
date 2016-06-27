@@ -126,6 +126,7 @@ public class AbilitySelectState extends State implements ControllerListener {
             selectAbiltiy();
         }
         if(Gdx.input.isKeyPressed(Input.Keys.TAB)){
+            exitScreen();
         }
         if(pressed){gsm.push(new MapState(gsm));}
     }
