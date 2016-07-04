@@ -16,11 +16,16 @@ import static com.quadx.dungeons.GridManager.rn;
  */
 @SuppressWarnings("ALL")
 public class Monster {
+    public MonAIv1 ai= new MonAIv1();
     protected Texture[] icons= new Texture[4];
     protected Texture icon = null;
     protected Damage d = new Damage();
     protected String name = "monster";
     protected String status = "0";
+    protected boolean caller = true;
+    protected boolean clockwise = rn.nextBoolean();
+    protected boolean willCircle = rn.nextBoolean();
+    protected boolean circling = false;
     protected boolean hit = false;
     protected boolean moved = false;
     protected boolean aa = false;
@@ -39,6 +44,7 @@ public class Monster {
     protected double hpsoft = 0;
     protected double defense;
     protected double speed;
+    protected double percentHP=1;
     protected int front = 0;
     protected int oldFront =0;
     protected int liveCellIndex = -1;
@@ -49,29 +55,30 @@ public class Monster {
     protected int px;
     protected int y;
     protected int py;
+    protected int circleAgro=rn.nextInt(12);
+    protected int circleCount=0;
     protected int iconSet=0;
     protected float moveSpeedMin = .12f;
     protected float moveSpeedMax = .09f;
     protected float dtMove = 0;
     protected float moveSpeed = .15f;
+    protected float callRadius= 0;
+    protected int circleAngle=0;
 
     public Monster() {
     }
-
-    public int getLiveCellIndex() {
-        return liveCellIndex;
+//GETTERS---------------------------------------------------------------------------------
+    public Texture getIcon() {
+        return icon;
     }
-    public int getMonListIndex() {
-        return monListIndex;
+    public String getName() {
+        return name;
     }
     public float getdtMove() {
         return dtMove;
     }
     public float getMoveSpeed() {
         return moveSpeed;
-    }
-    public String getName() {
-        return name;
     }
     public double getHp() {
         return hp;
@@ -91,6 +98,11 @@ public class Monster {
     public double getAttack() {
         return attack;
     }
+    public double getPercentHP(){return hp/hpMax;}
+    public double getIntelDamage() {
+        double damage = d.monsterMagicDamage(player, this, (int) power);
+        return damage;
+    }
     public int getLevel() {
         return (int) level;
     }
@@ -106,17 +118,16 @@ public class Monster {
     public int getPY() {
         return py;
     }
-    public Texture getIcon() {
-        return icon;
-    }
-    public double getIntelDamage() {
-        double damage = d.monsterMagicDamage(player, this, (int) power);
-        return damage;
-    }
     public int getSight() {
         return sight;
     }
-
+    public int getLiveCellIndex() {
+        return liveCellIndex;
+    }
+    public int getMonListIndex() {
+        return monListIndex;
+    }
+//SETTERS---------------------------------------------------------------------------------
     public void setLiveCellIndex(int i) {
         liveCellIndex = i;
     }
@@ -138,7 +149,7 @@ public class Monster {
         px = a;
         py = b;
     }
-    void setFront(int x){
+    public void setFront(int x){
         oldFront=front;
         front=x;
         if(oldFront !=front){
@@ -157,7 +168,7 @@ public class Monster {
     public void setMoved() {
         moved = true;
     }
-
+//OTHER----------------------------------------------------------------------------------
     protected void loadIcon() {
         icon=icons[front];
     }
@@ -234,26 +245,34 @@ public class Monster {
         int tx = x;
         int ty = y;
         if (hit) {                                                                       //If the monster was hit
-            if (!checkForDamageToPlayer(player.getX(), player.getY())) {                 //if player was not found
-                if (hp > hpMax / 4) {                                                   //if not fleeing from damage
-                    int[] arr = chasePlayer();
+            if (!checkForDamageToPlayer(player.getX(), player.getY())) {//if player was not found
+                if(willCircle) {                                                         //If mon will circle player
+                    moveSpeed = moveSpeedMax;
+                    int[] arr = ai.circle(this);
                     tx = arr[0];
                     ty = arr[1];
-                } else {                                                                //if monster is fleeing
-                    int[] arr = flee(tx, ty);
-                    tx = arr[0];
-                    ty = arr[1];
-                    if (healCount > 15) {                                                  //begin hp regen
-                        hp++;
-                        healCount = 0;
+
+                }else{
+                    if (hp > hpMax / 4) {                                                   //if not fleeing from damage
+                        int[] arr = ai.moveToPoint(this, player.getX(),player.getY());
+                        tx = arr[0];
+                        ty = arr[1];
+                    } else {//if monster is fleeing
+                        int[] arr = ai.flee(this, tx, ty);
+                        tx = arr[0];
+                        ty = arr[1];
+                        if (healCount > 15) {                                                  //begin hp regen
+                            hp++;
+                            healCount = 0;
+                        }
+                        healCount++;
                     }
-                    healCount++;
                 }
             }
         } else {                                                                          //if monster has not been hit
             if (!checkForDamageToPlayer(player.getX(), player.getY())) {                  //if not hitting player
                 if (PlayerInSight()) {
-                    int[] arr = chasePlayer();
+                    int[] arr = ai.moveToPoint(this, player.getX(),player.getY());
                     tx = arr[0];
                     ty = arr[1];
                     MapState.gm.clearArea(tx, ty, false);
@@ -294,24 +313,24 @@ public class Monster {
         }
         boolean placed = false;
         boolean cont = false;
-        for (Monster c : GridManager.monsterList) {//checks if there is monster already on chosen cell
+        //checks if there is monster already on chosen cell
+        for (Monster c : GridManager.monsterList) {
             if (c.getX() == tx && c.getY() == ty) {
                     cont = true;
             }
         }
         if (!cont) {    //if there is no monster
-            for (Cell c1 : GridManager.liveCellList) { //search list for cell
-                //if (c1.getX() == this.x && c1.getY() == this.y) {//if cell position matches monster
-                if (c1.getMonsterIndex() == monListIndex) {
-                    c1.setMon(false);                           //remove
+            for (Cell c1 : GridManager.liveCellList) {
+                //search list for cell
+                //if cell position matches monster
+                if(c1.getMonster() != null) {
+                    if (c1.getMonster().equals(this))
+                        c1.clearMonster(); //remove
                 }
                 if (c1.getX() == tx && c1.getY() == ty && c1.getState()) {
-                    c1.setMonsterIndex(monListIndex);
-                    c1.setMon(true);
-                    setCords(tx, ty);
+                    c1.setMonster(this);
                     placed = true;
                     moved = true;
-
                 }
             }
             if (!placed) {//if it didnt move because wall use dig
@@ -326,50 +345,7 @@ public class Monster {
         }
         dtMove = 0;
     }
-    private int[] chasePlayer() {
-        int tx;
-        if (player.getX() > this.getX()) {
-            tx = this.x + 1;
-            setFront(3);
-        }       //set new coordinates based on
-        else if (player.getX() == this.getX()) {
-            tx = player.getX();
-        }        //players relative position
-        else {
-            tx = this.x - 1;
-            setFront(2);
-        }
-        int ty;
-        if (player.getY() > this.getY()) {
-            ty = this.y + 1;
-            setFront(0);
-        } else if (player.getY() == this.getY()) {
-            ty = player.getY();
-        } else {
-            ty = this.y - 1;
-            setFront(1);
-        }
-        return new int[]{tx, ty};
-    }
-    private int[] flee(int tx, int ty) {
-        moveSpeed = moveSpeedMax;                                           //set new coordinates based on
-        if (player.getX() > this.getX() && aa) {
-            tx = this.x - 1;
-            setFront(2);
-        }   //players relative position
-        else if (player.getX() < this.getX()) {
-            tx = this.x + 1;
-            setFront(3);
-        }
-        if (player.getY() > this.getY() && bb) {
-            ty = this.y - 1;
-            setFront(1);
-        } else if (player.getY() < this.getY()) {
-            ty = this.y + 1;
-            setFront(0);
-        }
-        return new int[]{tx, ty};
-    }
+
     private boolean PlayerInSight() {
         return player.getX() > this.getX() - this.getSight() && player.getX() < this.getX() + this.getSight()
                 && player.getY() > this.getY() - this.getSight() && player.getY() < this.getY() + this.getSight();

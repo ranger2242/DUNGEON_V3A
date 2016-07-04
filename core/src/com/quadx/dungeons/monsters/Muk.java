@@ -5,7 +5,7 @@ import com.quadx.dungeons.tools.ImageLoader;
 /**
  * Created by Chris Cavazos on 6/22/2016.
  */
-public class Muk extends Monster {
+class Muk extends Monster {
     public Muk(){
         power=70;
         hpBase =200;

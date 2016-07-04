@@ -10,8 +10,9 @@ import static com.quadx.dungeons.Game.player;
  * Created by Chris Cavazos on 6/14/2016.
  */
 public class Gold extends Item{
-    Random rn = new Random();
+    private int value=0;
     public Gold(){
+        Random rn = new Random();
         float f = rn.nextFloat();
         while (f < .05) {
             f = rn.nextFloat();
@@ -30,6 +31,9 @@ public class Gold extends Item{
         if(gold>=666){
             icon=ImageLoader.gold[2];
         }
+        value=gold;
     }
-
+    public int getValue(){
+        return value;
+    }
 }

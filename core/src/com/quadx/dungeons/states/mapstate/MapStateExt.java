@@ -1,8 +1,7 @@
 package com.quadx.dungeons.states.mapstate;
 
-import com.quadx.dungeons.QButton;
-import com.quadx.dungeons.attacks.SpellMods;
 import com.quadx.dungeons.attacks.Attack;
+import com.quadx.dungeons.attacks.SpellMods;
 import com.quadx.dungeons.states.GameStateManager;
 
 import static com.quadx.dungeons.Game.player;
@@ -14,18 +13,6 @@ import static com.quadx.dungeons.Game.player;
 class MapStateExt extends MapState{
     public MapStateExt(GameStateManager gsm) {
         super(gsm);
-    }
-
-    public static void mouseOverHandler(){
-        for(int i=0;i<qButtonList.size();i++) {
-            QButton button = qButtonList.get(i);
-            if (mouseRealitiveX >= button.getPx() && mouseRealitiveX < (button.getPx() + button.getWidth())
-                    && mouseRealitiveY >= button.getPy() && mouseRealitiveY <= (button.getPy() + button.getHeight())) {
-                popupItem = player.invList.get(i).get(0);
-                qButtonBeingHovered = i;
-                hovering = true;
-            }
-        }
     }
     public static void battleFunctions(int i) {
         if (i < player.attackList.size()) {
@@ -57,7 +44,7 @@ class MapStateExt extends MapState{
                     }
                 }
                 MapState.attackCollisionHandler(i,a);
-                SpellMods.runMod(targetMon,a);
+                SpellMods.runMod(a);
                 player.attackList.get(player.attackList.indexOf(a)).checkLvlUp();
 
             }

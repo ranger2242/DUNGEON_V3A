@@ -8,7 +8,7 @@ import com.quadx.dungeons.tools.ImageLoader;
 @SuppressWarnings("DefaultFileTemplate")
 public class Rest extends Attack {
     public Rest(){
-        costGold = 30000;
+        costGold = 3000;
         type = 2;
         powerA = new int[]{0, 0, 0, 0, 0};
         costA = new int[]{10, 20, 30, 40, 50};

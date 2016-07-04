@@ -27,16 +27,16 @@ import static com.quadx.dungeons.states.mapstate.MapStateUpdater.setAim;
 @SuppressWarnings("DefaultFileTemplate")
 public class Player {
 
-    public ArrayList<Attack> attackList = new ArrayList<>();
-    public ArrayList<ArrayList<Item>> invList = new ArrayList<>();
-    public ArrayList<Equipment> equipedList = new ArrayList<>();
-    private ArrayList<String> statsList= new ArrayList<>();
-    private Vector2 pospx=new Vector2(0,0);
+    public final ArrayList<Attack> attackList = new ArrayList<>();
+    public final ArrayList<ArrayList<Item>> invList = new ArrayList<>();
+    public final ArrayList<Equipment> equipedList = new ArrayList<>();
+    private final ArrayList<String> statsList= new ArrayList<>();
+    private final Vector2 pospx=new Vector2(0,0);
+    public Item lastItem = null;
     private int x;
     private int px;//(Game.WIDTH/2)+1;
     private int y;
     private int py;//(Game.HEIGHT/2)-2;
-    private int liveCellListIndex;
     private int hpMod =0;
     private int attackMod=0;
     private int defenseMod=0;
@@ -52,17 +52,16 @@ public class Player {
     private int energyRegen=2 ;
     public int level =1;
     public int floor= 1;
-    int hpMax = 100;
+    private int hpMax = 100;
     int intelMod=0;
-    int hp =100;
+    private int hp =100;
     int attack=15;
-    int defense=15;
+    private int defense=15;
     int intel=15;
-    int mana = 100;
+    private int mana = 100;
     int manaMax = 100;
-    int prevInvSize=0;
-    int damage=0;
-    int ability=0;
+    private int damage=0;
+    private int ability=0;
 
     double mDamage=0;
     double pDamage=0;
@@ -73,9 +72,9 @@ public class Player {
     public float dtMove=0;
     private float moveSpeed=.1f;
     private float gold=0;
-    private Random rn =new Random();
-    String name ="DEMO";
-    Texture[] icons=new Texture[4];
+    private final Random rn =new Random();
+    private String name ="DEMO";
+    private Texture[] icons=new Texture[4];
 
     public Player(){
         level=1;
@@ -88,13 +87,6 @@ public class Player {
         energyMax=e;
     }
     public void setGold(float g){gold=g;}
-    public void setCords(int a, int b) {
-        x=a;
-        y=b;
-        px=a*cellW;
-        py=a*cellW;
-        pospx.set(px,py);
-    }
     public void setName(String n)
     {
         name = n;
@@ -116,9 +108,6 @@ public class Player {
         MapState.out(name+" gained "+ expGain +" EXP");
     }
     public void setExp(int a){exp=a;}
-    public void setLiveListIndex(int i){
-        liveCellListIndex=i;
-    }
     public void setCordsPX(int i, int i1) {
         pospx.set(i,i1);
         px=i;
@@ -170,9 +159,6 @@ public class Player {
     public int getGold()
     {
         return (int)gold;
-    }
-    public int getLiveListIndex(){
-        return liveCellListIndex;
     }
     public int getX()
     {
@@ -245,9 +231,6 @@ public class Player {
         if(f<0)f=0;
         return f;
     }
-    public String getKills() {
-        return ""+killcount;
-    }
     public String getName()
     {
         return name;
@@ -297,9 +280,10 @@ public class Player {
     public Score getScore(){
         return new Score( ""+name, ""+getPoints(),""+(int)(gold), AbilityMod.ability.getName() + " Lvl " + level, ""+killcount);
     }
+    public Item getLastItem(){return lastItem;}
 
     //MISC Functions------------------------------------------------------------------
-    public void move(int xmod, int ymod, char c){
+    public void move(int xmod, int ymod){
         int nx=x+xmod;
         int ny=y+ymod;
         Cell c1;
@@ -311,8 +295,8 @@ public class Player {
                 if(cell.getX()==nx && cell.getY()==ny){index2=liveCellList.indexOf(cell);}
             }
             if(index1 !=-1 && index2 !=-1 &&liveCellList.get(index2).getState() && !liveCellList.get(index2).getWater()) {
-                liveCellList.get(index1).setPlayer(false);
-                liveCellList.get(index2).setPlayer(true);
+             //   liveCellList.get(index1).setPlayer(false);
+             //   liveCellList.get(index2).setPlayer(true);
                 setCordsPX(nx * cellW, ny * cellW);
             }
 
@@ -329,7 +313,7 @@ public class Player {
         setAim();
     }
     public void useItem(int i){
-        if(i>=0) {
+        if(i>=0 && i<invList.size()) {
             Item item = invList.get(i).get(0);
             if (item.isEquip) {
                 Equipment temp = null;
@@ -373,6 +357,10 @@ public class Player {
             hp += item.getHpmod();
             s ="+" + item.getHpmod()+" HP";
         }
+        if (item.getEmod() != 0) {
+            energy += item.getEmod();
+            s ="+" + item.getEmod()+" E";
+        }
         //Mana
         if (item.getManamod() != 0) {
             mana += item.getManamod();
@@ -405,6 +393,7 @@ public class Player {
         dtMove+=dt;
         canMove = dtMove > moveSpeed;
         calculateArmorBuff();
+        if(energy>energyMax)energy=energyMax;
         if(hp>hpMax)hp=hpMax;
         if(mana>manaMax)mana=manaMax;
 
@@ -431,6 +420,7 @@ public class Player {
     }
     public void addItemToInventory(Item item){
         if(item != null) {
+            lastItem=item;
             boolean added = false;
             if (!item.isEquip) {
                 for (ArrayList<Item> al : invList) {
@@ -452,7 +442,7 @@ public class Player {
         }
 
     }
-    public void calculateArmorBuff() {
+    private void calculateArmorBuff() {
         int sum1=0;
         int sum2=0;
         int sum3=0;

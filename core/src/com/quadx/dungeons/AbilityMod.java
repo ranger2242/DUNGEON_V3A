@@ -8,7 +8,7 @@ import com.quadx.dungeons.abilities.*;
 @SuppressWarnings("DefaultFileTemplate")
 public class AbilityMod {
     public static int modifier=1;
-    public static boolean digPlus=false;
+   // public static boolean digPlus=false;
     public static boolean investor=false;
     public static Ability ability = null;
 
@@ -23,17 +23,14 @@ public class AbilityMod {
             case 2:
             {//Brawler
                 ability =new Brawler();
-                boolean brawler = true;
                 break;
             }
             case 3:{//Mage
                 ability =new Mage();
-                boolean mage = true;
                 break;
             }
             case 4:{//Quick
                 ability =new Quick();
-                boolean quick = true;
                 break;
             }
             case 5: {//Investor
@@ -43,7 +40,6 @@ public class AbilityMod {
             }
             case 6: {//Tank
                 ability =new Tank();
-                boolean tank = true;
                 break;
             }
             case 7:{//Lucky
@@ -52,10 +48,8 @@ public class AbilityMod {
             }
 
         }
-        try {
-            ability.onActivate();
-        }
-        catch (NullPointerException e){}
-
+        if(ability == null)
+            ability=new Tank();
+        ability.onActivate();
     }
 }

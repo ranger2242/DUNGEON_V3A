@@ -11,6 +11,7 @@ import com.quadx.dungeons.tools.Score;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static com.quadx.dungeons.states.mapstate.MapState.viewX;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
@@ -19,11 +20,44 @@ import static com.quadx.dungeons.states.mapstate.MapState.viewY;
  * Created by Chris Cavazos on 5/29/2016.
  */
 public class HighScoreState extends State {
-    public static  ArrayList<Score> scores= new ArrayList<>();
-    Score[] highscores=new Score[10];
+    public static final ArrayList<Score> scores= new ArrayList<>();
+    private final Score[] highscores=new Score[10];
 
     public HighScoreState(GameStateManager gsm) {
         super(gsm);
+        /*
+         stats to check
+
+         ----overall
+         total gold
+         total kills
+         total items picked up
+         total shots fired
+         total misses
+         overall accuracy
+         longest play time
+         shortest play time
+         highest floor
+         highest player level
+         most used class
+         total games played
+         total play time
+
+         most used attack
+
+
+         ----per round
+         shots fired
+         shots missed
+         accuracy
+         items used/ picked up
+         avg kills per min
+         avg gold per min
+         killed by --
+         most used attack
+
+
+         */
 
         for(int j=0;j<10;j++) {
             int pos = 0;
@@ -35,28 +69,22 @@ public class HighScoreState extends State {
                         high = score;
                         pos = i;
                     }
-                }catch (NullPointerException e){
-
-                }
+                }catch(NullPointerException e){}
             }
+
             try {
                 highscores[j] = scores.get(pos);
                 scores.remove(pos);
-            }catch (Exception e){}
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
-        //scores.clear();
-        for(int i=0;i<10;i++){
-            scores.add(highscores[i]);
-        }
+        scores.addAll(Arrays.asList(highscores).subList(0, 10));
         try {
             PrintWriter pw = new PrintWriter("scores.txt");
             for(Score s: highscores){
-            try {
-                pw.println(s.getSaveFormat());
-            }
-            catch (NullPointerException e){
-
-            }
+                try {pw.println(s.getSaveFormat());}
+                catch (NullPointerException e){}
             }
             pw.close();
         } catch (IOException e) {
@@ -88,16 +116,19 @@ public class HighScoreState extends State {
         Gdx.gl.glClearColor(1,0,0,1);
 
         sb.begin();
-        Game.setFontSize(3);
-        sb.setColor(Color.WHITE);
+        Game.setFontSize(1);
+        Game.getFont().setColor(Color.WHITE);
         Game.getFont().draw(sb,"HIGHSCORES",viewX+ Game.WIDTH/2,viewY+ Game.HEIGHT-30);
-        int count =10;
-        for(int i=9;i>=0;i--){
-            try {
-                Game.getFont().draw(sb,(i+1)+": "+ highscores[i].toString(), viewX + 30, viewY + Game.HEIGHT - 60 - (i * 60));
-                count++;
-            }catch (NullPointerException e){}
-
+        for(int i=9;i>=0;i--) {
+            if(i+1!= 10) {
+                if (highscores[i] != null) {
+                    Game.getFont().draw(sb, (i + 1) + ":  " + highscores[i].toString(), viewX + 30, viewY + Game.HEIGHT - 60 - (i * 14));
+                }
+            }
+            else
+            if (highscores[i] != null) {
+                Game.getFont().draw(sb, (i + 1) + ": " + highscores[i].toString(), viewX + 30, viewY + Game.HEIGHT - 60 - (i * 14));
+            }
         }
         sb.end();
     }

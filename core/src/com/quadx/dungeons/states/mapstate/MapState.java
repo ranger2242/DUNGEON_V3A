@@ -7,7 +7,6 @@ import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
@@ -17,6 +16,7 @@ import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.SpeedPlus;
+import com.quadx.dungeons.monsters.MonAIv1;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.MainMenuState;
@@ -30,61 +30,39 @@ import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.*;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtAttack;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtScrollAtt;
-import static com.quadx.dungeons.tools.ImageLoader.gold;
 
 /**
  * Created by Brent on 6/26/2015.
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class MapState extends State implements ControllerListener {
-    public static boolean debug=true;
+    static final boolean debug=true;
     public static boolean pause=false;
 
     static ShapeRenderer shapeR;
     static ArrayList<String> output;
-    static ArrayList<QButton> qButtonList =new ArrayList<>();
-    static ArrayList<Texture> attackIconList =new ArrayList<>();
-    static ArrayList<Texture> invIcon=new ArrayList<>();
-    static ArrayList<Cell> hitList=new ArrayList<>();
+    static final ArrayList<Cell> hitList=new ArrayList<>();
 
     static Texture lootPopup;
     public static Texture statPopup;
-
-    public static AbilityMod am;
     public static GridManager gm;
     static ParticleEffect effect;
-    static ParticleEmitter emitter;
-    static Random rn = new Random();
+    static final Random rn = new Random();
     static Attack attack;
     static Attack attack2;
-    static Item popupItem;
-    static Monster targetMon;
-
     public static boolean inGame=false;
     public static char lastPressed = 'w';
-    static boolean displayPlayerDamage = false;
-    static boolean hovering=false;
     static boolean effectLoaded = false;
     static final String DIVIDER= "_________________________";
-    static int attackListCount = 0;
-    static int messageCounter=0;
-    public static int cellW=30;
-    static int mHitX=0;
-    static int mHitY=0;
-    static int mouseX=0;
-    static int mouseY=0;
-    static int mouseRealitiveX=0;
-    static int mouseRealitiveY=0;
+    private static final int attackListCount = 0;
+    public static final int cellW=30;
     public static int warpX=0;
     public static int warpY=0;
-
-    static int qButtonBeingHovered;
-
     public static float dtStatPopup=0;
     public static float viewX;
     public static float viewY;
-    static float itemMinTime=.4f;
-    static float attackMintime = Game.frame*10;
+    static final float itemMinTime=.4f;
+    static final float attackMintime = Game.frame*10;
     static int lastNumPressed=0;
     static int altNumPressed=1;
 
@@ -114,10 +92,10 @@ public class MapState extends State implements ControllerListener {
             System.out.print("\n");
         }
 
-        for(int i=0;i<20;i++){
+       /* for(int i=0;i<20;i++){
        //    openCrate();
     //         player.addItemToInventory(new Arms());
-        }
+        }*/
     }
     public void handleInput() {
     }
@@ -137,41 +115,21 @@ public class MapState extends State implements ControllerListener {
         Gdx.gl.glClearColor(0,0,0,1);
         shapeR.setProjectionMatrix(cam.combined);
         sb.setProjectionMatrix(cam.combined);
-       // MapStateRender.drawGrid(false);
         MapStateRender.drawTiles(sb);
         MapStateRender.drawTransparentThings();
         MapStateRender.drawHUD(sb);
         MapStateRender.drawAbilityIcon(sb);
         MapStateRender.drawMessageOutput(sb);
-        MapStateRender.drawStatChanges(sb);
         MapStateRender.drawEquipment(sb);
         MapStateRender.drawPlayer(sb);
-        float textY = 0;
-
-
-        if (displayPlayerDamage) {
-            for(Cell c:hitList) {
-                for (Monster m : GridManager.monsterList) {
-                    if (c.getX() == m.getX() && c.getY() == m.getY()) {
-                        MapStateRender.drawPlayerDamageOutput(sb, m.getX(), m.getY()+10 + textY);
-                    }
-                }
-            }
-        }
-
-
-
-        if(hovering) MapStateRender.drawPopup(sb);
-        //if (effectLoaded) {MapStateRender.drawParticleEffects(sb, Game.player.getPX(), Game.player.getPY());}
         MapStateRender.drawHovText(sb);
-        MapStateRender.drawMiniMap(sb);
-
-        shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        shapeR.setColor(Color.RED);
-         if(qButtonList.size()>0)   shapeR.rect(qButtonList.get(0).getPx(), qButtonList.get(0).getPx(), 12, 12);
-            shapeR.end();
+        MapStateRender.drawMiniMap();
         if(MapStateRender.showCircle)
-            MapStateRender.drawPlayerFinder(sb);
+            MapStateRender.drawPlayerFinder();
+
+        for(Monster m: GridManager.monsterList)
+            MonAIv1.callForHelp(m);
+
         sb.begin();
         for(Monster m: GridManager.monsterList){
             Texture t=m.getIcon();
@@ -182,11 +140,10 @@ public class MapState extends State implements ControllerListener {
     public void dispose() {
     }
     public static void out(String s){
-        try {
+        if(output != null) {
             output.add(s);
-            if(output.size()>10)output.remove(0);
-
-        }catch (NullPointerException e){}
+            if (output.size() > 10) output.remove(0);
+        }
     }
 
     static void attackCollisionHandler(int pos, Attack att) {
@@ -250,7 +207,7 @@ public class MapState extends State implements ControllerListener {
         for(Cell c:hitList)    {
             try {
                 drawList.get(drawList.indexOf(c)).setAttArea(true);
-            }catch (ArrayIndexOutOfBoundsException e){}
+            }catch (ArrayIndexOutOfBoundsException ignored){}
             liveCellList.get(liveCellList.indexOf(c)).setAttArea(true);
             dispArray[c.getX()][c.getY()].setAttArea(true);
             for(Monster m: GridManager.monsterList){
@@ -273,7 +230,7 @@ public class MapState extends State implements ControllerListener {
                     if (m.getHp() < 1) {
                         out(DIVIDER);
                         out(m.getName() + " Level " + m.getLevel() + " was killed.");
-                        c.setMon(false);
+                        c.clearMonster();
                         player.addKills();
                         player.setExp(m);
                         player.checkLvlUp();
@@ -292,10 +249,13 @@ public class MapState extends State implements ControllerListener {
                 GridManager.monsterList.remove(tempMon);
             }
         }
+        for(Monster m:monsterList){
+            m.setMonListIndex(monsterList.indexOf(m));
+        }
         loadLiveCells();
     }
 
-    static void setHitList(int x, int y){
+    private static void setHitList(int x, int y){
         try {
             hitList.add(dispArray[x][y]);
         }
@@ -325,13 +285,13 @@ public class MapState extends State implements ControllerListener {
         }
     }
     static void openCrate(int index){
-            int q = rn.nextInt(14) + 1;
-            if (liveCellList.get(index).getGold() !=0) {
+        if(liveCellList.get(index) !=null &&liveCellList.get(index).getItem() != null)
+            if (liveCellList.get(index).getItem().getClass() == Gold.class) {
                 lootPopup = new Texture(Gdx.files.internal("images/imCoin.png"));
                 player.setGold(player.getGold() +liveCellList.get(index).getGold());
-                out(gold + " added to stash");
-                MapStateRender.setHoverText(gold + "G", 1, Color.GOLD, player.getPX(), player.getPY(), false);
-
+                Gold g= (Gold) liveCellList.get(index).getItem();
+                out(g.getValue() + " added to stash");
+                MapStateRender.setHoverText(g.getValue() + "G", 1, Color.GOLD, player.getPX(), player.getPY(), false);
             } else {
                 Item item = liveCellList.get(index).getItem();
                 if (item != null) {
@@ -355,6 +315,9 @@ public class MapState extends State implements ControllerListener {
                             if (a) MapStateRender.inventoryPos = 0;
                             out(item.getName() + " added to inventory");
                             MapStateRender.setHoverText(item.getName(), 1, Color.WHITE, player.getPX(), player.getPY(), false);
+                        }
+                        else{
+                            player.lastItem=new Gold();
                         }
                     } catch (NullPointerException e) {
                         item = new SpeedPlus();

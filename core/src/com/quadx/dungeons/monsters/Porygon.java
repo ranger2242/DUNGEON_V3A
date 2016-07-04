@@ -5,7 +5,7 @@ import com.quadx.dungeons.tools.ImageLoader;
 /**
  * Created by Chris Cavazos on 6/19/2016.
  */
-public class Porygon extends Monster {
+class Porygon extends Monster {
     public Porygon(){
         power=50;
         hpBase =95;

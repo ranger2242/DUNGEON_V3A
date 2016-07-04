@@ -5,13 +5,13 @@ import com.badlogic.gdx.graphics.Color;
 /**
  * Created by Tom on 1/5/2016.
  */
-@SuppressWarnings("DefaultFileTemplate")
+@SuppressWarnings({"DefaultFileTemplate", "SameParameterValue", "unused"})
 public class ColorConverter {
     private int redI=0;
     private float redF=0;
     private float greenF=0;
     private float blueF=0;
-     private Color color;
+    private final Color color;
 
     public ColorConverter(int r, int g, int b,int a){
         redI=r;

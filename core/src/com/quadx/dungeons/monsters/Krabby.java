@@ -5,7 +5,7 @@ import com.quadx.dungeons.tools.ImageLoader;
 /**
  * Created by Chris Cavazos on 6/20/2016.
  */
-public class Krabby extends  Monster {
+class Krabby extends  Monster {
     public Krabby(){
         power=40;
         hpBase =20;

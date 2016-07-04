@@ -2,57 +2,52 @@ package com.quadx.dungeons.tools;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 
 /**
  * Created by Chris Cavazos on 6/14/2016.
  */
 public class ImageLoader {
-    public static ArrayList<Texture[]> enemies = new ArrayList<>();
-    public static ArrayList<Texture> attacks = new ArrayList<>();
-    public static ArrayList<Texture> abilities = new ArrayList<>();
-
-
-    public Random rn=new Random();
-    public static Texture[] floors=new Texture[13];
-    public static Texture[] w =new Texture[48];
-    public static Texture[] a=new Texture[48];
-    public static Texture[] gold=new Texture[3];
-    public static Texture[] en0=new Texture[4];
-    public static Texture[] en1=new Texture[4];
-    public static Texture[] en3=new Texture[4];
-    public static Texture[] en4=new Texture[4];
-    public static Texture[] en5=new Texture[4];
-    public static Texture[] en6=new Texture[4];
-    public static Texture[] en7=new Texture[4];
-    public static Texture[] en8=new Texture[4];
-    public static Texture[] en9=new Texture[4];
+    public static final ArrayList<Texture> attacks = new ArrayList<>();
+    public static final ArrayList<Texture> abilities = new ArrayList<>();
+    public static final Texture[] floors=new Texture[13];
+    public static final Texture[] w =new Texture[48];
+    public static final Texture[] a=new Texture[48];
+    public static final Texture[] gold=new Texture[3];
+    public static final Texture[] en0=new Texture[4];
+    public static final Texture[] en1=new Texture[4];
+    public static final Texture[] en3=new Texture[4];
+    public static final Texture[] en4=new Texture[4];
+    public static final Texture[] en5=new Texture[4];
+    public static final Texture[] en6=new Texture[4];
+    public static final Texture[] en7=new Texture[4];
+    public static final Texture[] en8=new Texture[4];
+    public static final Texture[] en9=new Texture[4];
+    public static final Texture[] energy=new Texture[3];
 
 
 
-    public static Texture potion = new Texture("images\\icons\\items\\icPotion.png");
-    public static Texture mana = new Texture("images\\icons\\items\\icMPlus.png");
-    public static Texture crate=new Texture("images\\icons\\items\\icCrate.png");
-    public static Texture warp=new Texture("images\\tiles\\icWarp.png");
-    public static Texture spellbook= new Texture("images\\icons\\items\\icSpellBook.png");
+    public static final Texture potion = new Texture("images\\icons\\items\\icHpSmall.png");
+    public static final Texture mana = new Texture("images\\icons\\items\\icMSmall.png");
+    public static final Texture crate=new Texture("images\\icons\\items\\icCrate.png");
+    public static final Texture warp=new Texture("images\\tiles\\icWarp.png");
+    public static final Texture spellbook= new Texture("images\\icons\\items\\icSpellBook.png");
 
     public ImageLoader(){
         for(int i=0;i<13;i++){
             floors[i]=new Texture("images\\tiles\\floor\\f"+(i)+".png");
         }
         for(int i=0;i<48;i++){
-            try {
                 a[i] = new Texture("images\\tiles\\walls\\a" + (i) + ".png");
-            }
-            catch (GdxRuntimeException e){}
         }
         gold[0]=new Texture("images\\icons\\items\\icCoinS.png");
         gold[1]=new Texture("images\\icons\\items\\icCoinM.png");
         gold[2]=new Texture("images\\icons\\items\\icCoinL.png");
+        energy[0]=new Texture("images\\icons\\items\\icESmall.png");
+//        energy[1]=new Texture("images\\icons\\items\\icEMid.png");
+//        energy[2]=new Texture("images\\icons\\items\\icELarge.png");
         for(int i=0;i<48;i++){
                 w[i] = new Texture("images\\tiles\\water\\w" +i + ".png");
         }
@@ -61,7 +56,7 @@ public class ImageLoader {
         loadMonsters();
         loadAbilities();
     }
-    void loadAbilities(){
+    private void loadAbilities(){
         abilities.add(new Texture("images\\icons\\abilities\\icTank.png"));
         abilities.add(new Texture("images\\icons\\abilities\\icInvestor.png"));
         abilities.add(new Texture("images\\icons\\abilities\\icMage.png"));
@@ -69,7 +64,7 @@ public class ImageLoader {
         abilities.add(new Texture("images\\icons\\abilities\\icBrawler.png"));
 
     }
-    void loadAttacks(){
+    private void loadAttacks(){
         attacks.add(new Texture("images\\icons\\attacks\\icBlind.png"));
         attacks.add(new Texture("images\\icons\\attacks\\icDrain.png"));
         attacks.add(new Texture("images\\icons\\attacks\\icFlame.png"));
@@ -85,7 +80,7 @@ public class ImageLoader {
         attacks.add(new Texture("images\\icons\\attacks\\icLightning.png"));
 
     }
-    void loadMonsters(){
+    private void loadMonsters(){
         for(int i=0;i<4;i++){
             en0[i]=  new Texture(Gdx.files.internal("images\\icons\\monsters\\en0\\en0"+i+".png"));
 

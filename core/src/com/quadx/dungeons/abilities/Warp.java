@@ -36,14 +36,17 @@ public class Warp extends Ability {
 
     public static void warpPlayer(){
         if(timeCounter>cooldown){
-            char front=MapState.lastPressed;
+            //char front=MapState.lastPressed;
+                /*
+
             for(int i=0;i<10;i++) {
                 if(front=='w')player.move(0, 1, 'w');
                 if(front=='s')player.move(0, -1, 's');
                 if(front=='a')player.move(-1, 0, 'a');
                 if(front=='d')player.move(1, 0, 'd');
-
             }
+*/
+
             timeCounter=0;
         }
         else{

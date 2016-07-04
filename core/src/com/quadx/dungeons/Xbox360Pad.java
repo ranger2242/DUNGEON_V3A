@@ -5,7 +5,7 @@ import com.badlogic.gdx.controllers.PovDirection;
 /**
  * Created by Tom on 12/29/2015.
  */
-@SuppressWarnings("DefaultFileTemplate")
+@SuppressWarnings({"DefaultFileTemplate", "unused"})
 public class Xbox360Pad
 {
     /*

@@ -17,11 +17,11 @@ import java.util.Random;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class Map2State extends State {
-    private static ShapeRenderer shapeR= new ShapeRenderer();
-    private static Random rn= new Random();
-    public static int res =200;
+    private static final ShapeRenderer shapeR= new ShapeRenderer();
+    private static final Random rn= new Random();
+    public static final int res =200;
     private static Cell[][] dispArray  = new Cell[res][res];
-    private static Cell[][] buffArray  = new Cell[res][res];
+    private static final Cell[][] buffArray  = new Cell[res][res];
     private float dtChange=0;
 
     public Map2State(GameStateManager gsm) {
@@ -53,16 +53,8 @@ public class Map2State extends State {
             secRunDepth =rn.nextInt(4)+1;
             triRunDepth =rn.nextInt(3)+1;
         }
-
-        int seedPoints = rn.nextInt(15) + 2;
-        int secondaryPoints = rn.nextInt(15) + 2;
-        int triPoints = rn.nextInt(15) + 2;
-        //fillPercent=(float) rn.nextGaussian();
-        //stdDvX=res/(rn.nextInt(20)+1);
-        //stdDvY=res/(rn.nextInt(20)+1);
     }
     private void initBools(){
-        boolean mainroom = rn.nextBoolean();
         boolean[][] randBools = new boolean[5][9];
         for(long i=0;i<5; i++) {
             for (int j = 0; j < 9; j++) {
@@ -82,10 +74,10 @@ public class Map2State extends State {
         shapeR.end();
     }
     ////////////////////////////////////////
-    private static void initArray(Cell[][] arr){
+    private static void initArray(){
         for(int i=0;i<res;i++){
             for(int j=0;j<res;j++){
-                arr[i][j]=new Cell();
+                Map2State.buffArray[i][j]=new Cell();
             }
         }
     }
@@ -105,17 +97,6 @@ public class Map2State extends State {
             }
         }
     }
-//New maze algorithm
-    public static Cell[][] generateMapTEST(){
-        initArray(buffArray);
-        for(int i=0;i<10;i++){
-            for(int j=0;j<10;j++){
-                buffArray[i][j].setState();
-            }
-        }
-        dispArray=buffArray;
-        return buffArray;
-    }
     public static Cell[][] generateMap2(){
 
         ArrayList<Cell> endpointList = new ArrayList<>();
@@ -123,7 +104,7 @@ public class Map2State extends State {
         int runs = rn.nextInt(80)+30;
         int initPoints =rn.nextInt(8)+1;
 
-        initArray(buffArray);//buffers the buffArray
+        initArray();//buffers the buffArray
         plotInitPoints(endpointList,initPoints);
         growPaths(endpointList);
         //make sure there grid is more than 1 size
@@ -159,24 +140,22 @@ public class Map2State extends State {
             buffArray[x1][y1].setWater();
         }
         for(int i=0;i<grow;i++) {
-            for (Cell c : liveList) {
-                if (c.getWater()) {
-                    int x = c.getX();
-                    int y = c.getY();
-                    try {
-                        if (rn.nextBoolean()) buffArray[x - 1][y - 1].setWater();
-                        if (rn.nextBoolean()) buffArray[x - 1][y].setWater();
-                        if (rn.nextBoolean()) buffArray[x - 1][y + 1].setWater();
-                        if (rn.nextBoolean()) buffArray[x][y + 1].setWater();
-                        if (rn.nextBoolean()) buffArray[x + 1][y + 1].setWater();
-                        if (rn.nextBoolean()) buffArray[x + 1][y].setWater();
-                        if (rn.nextBoolean()) buffArray[x + 1][y - 1].setWater();
-                        if (rn.nextBoolean()) buffArray[x][y - 1].setWater();
-                    }
-                    catch (ArrayIndexOutOfBoundsException e){}
-
+            liveList.stream().filter(c -> c.getWater()).forEach(c -> {
+                int x = c.getX();
+                int y = c.getY();
+                try {
+                    if (rn.nextBoolean()) buffArray[x - 1][y - 1].setWater();
+                    if (rn.nextBoolean()) buffArray[x - 1][y].setWater();
+                    if (rn.nextBoolean()) buffArray[x - 1][y + 1].setWater();
+                    if (rn.nextBoolean()) buffArray[x][y + 1].setWater();
+                    if (rn.nextBoolean()) buffArray[x + 1][y + 1].setWater();
+                    if (rn.nextBoolean()) buffArray[x + 1][y].setWater();
+                    if (rn.nextBoolean()) buffArray[x + 1][y - 1].setWater();
+                    if (rn.nextBoolean()) buffArray[x][y - 1].setWater();
+                } catch (ArrayIndexOutOfBoundsException ignored) {
                 }
-            }
+
+            });
         }
     }
     private static ArrayList<Cell> fillBits(int factor, ArrayList<Cell> liveList){
@@ -194,7 +173,7 @@ public class Map2State extends State {
                         liveList.add(buffArray[i][j]);
                     }
                 }
-                catch (ArrayIndexOutOfBoundsException e){}
+                catch (ArrayIndexOutOfBoundsException ignored){}
             }
         }
         return liveList;
@@ -229,19 +208,19 @@ public class Map2State extends State {
             int count =0;
             try {
                 if (buffArray[x - 1][y].getState()) count++;
-            }catch (ArrayIndexOutOfBoundsException e){}
+            }catch (ArrayIndexOutOfBoundsException ignored){}
             try {
 
                 if(buffArray[x+1][y].getState())count++;
-            }catch (ArrayIndexOutOfBoundsException e){}
+            }catch (ArrayIndexOutOfBoundsException ignored){}
             try {
 
                 if(buffArray[x][y-1].getState())count++;
-            }catch (ArrayIndexOutOfBoundsException e){}
+            }catch (ArrayIndexOutOfBoundsException ignored){}
             try {
 
                 if(buffArray[x][y+1].getState())count++;
-            }catch (ArrayIndexOutOfBoundsException e){}
+            }catch (ArrayIndexOutOfBoundsException ignored){}
             if(count==1){
                 endpointList.add(c);
             }

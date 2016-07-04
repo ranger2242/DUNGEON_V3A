@@ -11,12 +11,8 @@ import java.util.Random;
 public class Damage {
     private static int crit;
     private static int damage;
-    private static int defaultDamage = 1;
-    private static Random rn =new Random();
-
-
-    //damage = ( ((2*p.level+10)/250) * (p.attack/m.defense) * (power+2) ) * Mod
-    //Mod = stab * type bonus* crit* other *(random[.85,1]
+    private static final int defaultDamage = 1;
+    private static final Random rn =new Random();
 
     public int playerPhysicalDamage(Player p, Monster m, int power){
         int baseDamage=((p.attack*3)+(power))-(int)((m.getDefense()));

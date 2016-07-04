@@ -3,15 +3,12 @@ package com.quadx.dungeons.states.mapstate;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.*;
 import com.quadx.dungeons.abilities.Investor;
 import com.quadx.dungeons.abilities.Warp;
 import com.quadx.dungeons.attacks.Attack;
-import com.quadx.dungeons.items.Item;
-import com.quadx.dungeons.items.ManaPlus;
-import com.quadx.dungeons.items.Potion;
+import com.quadx.dungeons.items.*;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.*;
@@ -42,23 +39,22 @@ public class MapStateUpdater extends MapState{
     public static float dtInvSwitch = 0;
     public static float dtRespawn=0;
     public static float dtClearHits =0;
-    public static float dtShowStats =0;
+    private static float dtShowStats =0;
 
     public static int spawnCount=1;
-
 
     public MapStateUpdater(GameStateManager gsm) {
         super(gsm);
     }
-    public static void moveMonsters() {
-        for (Monster m : monsterList) {
-            m.updateVariables(Gdx.graphics.getDeltaTime());
-            if (m.getdtMove() > m.getMoveSpeed()) {
-                m.move();
-            }
-        }
+
+    private static int checkMove(boolean b2, boolean b3){
+        int x;
+        if(b2){x=-1;}
+        else if(b3){x=1;}
+        else{x=0;}
+        return x;
     }
-    public static void updateCamPosition() {
+    private static void updateCamPosition() {
         Vector3 position = cam.position;
         float lerp = 0.1f;
         position.x += (player.getCordsPX().x - position.x) * lerp;
@@ -69,7 +65,7 @@ public class MapStateUpdater extends MapState{
         viewY = cam.position.y - cam.viewportHeight / 2;
 
     }
-    public static void regenPlayer(float dt) {
+    private static void regenPlayer(float dt) {
         dtRegen += dt; //move all this shit to PLAYER
         if (player.safe) player.dtSafe += dt;
         if (dtEnergyRe > .2 && player.getEnergy() < player.getEnergyMax()) {
@@ -86,10 +82,136 @@ public class MapStateUpdater extends MapState{
                 player.setHp(player.getHp() + player.getHpRegen());
             dtRegen = 0;
         }
-        for(Attack a :player.attackList){
-            if(a.getMod()==6 &&(player.dtSafe > a.getLevel()) ){
-                player.safe = false;
-                player.dtSafe = 0;
+        player.attackList.stream().filter(a -> a.getMod() == 6 && (player.dtSafe > a.getLevel())).forEach(a -> {
+            player.safe = false;
+            player.dtSafe = 0;
+        });
+    }
+    private static void getMovementInput(){
+        int x=0,y=0;
+        boolean up;
+        boolean down;
+        boolean right;
+        boolean left;
+        if(controllerMode) {
+            up = controller.getAxis(Xbox360Pad.AXIS_LEFT_Y) < -.2;
+            down = controller.getAxis(Xbox360Pad.AXIS_LEFT_Y) > .2;
+            right = controller.getAxis(Xbox360Pad.AXIS_LEFT_X) > .2;
+            left = controller.getAxis(Xbox360Pad.AXIS_LEFT_X) < -.2;
+        }else {
+            up=Gdx.input.isKeyPressed(Input.Keys.W);
+            down=Gdx.input.isKeyPressed(Input.Keys.S);
+            right=Gdx.input.isKeyPressed(Input.Keys.D);
+            left=Gdx.input.isKeyPressed(Input.Keys.A);
+        }
+        if (player.canMove) {
+            if (up) {y=1;x=checkMove(left,right);}
+            if (down){y=-1;x=checkMove(left,right);}
+            if (left){x=-1;y=checkMove(down,up);}
+            if (right){x=1;y=checkMove(down,up);}
+            player.move(x,y);
+            player.dtMove = 0;
+        }
+    }
+    private static void keyboardAttackSelector(){
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
+            setAttackButton(0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {
+            setAttackButton(1);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_3)) {
+            setAttackButton(2);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_4)) {
+            setAttackButton(3);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_5)) {
+            setAttackButton(4);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_6)) {
+            setAttackButton(5);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_7)) {
+            setAttackButton(6);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_8)) {
+            setAttackButton(7);
+        }
+    }
+    private static void activateDig(){
+        if (dtDig > player.getMoveSpeed()) {
+            if (player.getEnergy() > 2) {
+                int x = player.getX();
+                int y = player.getY();
+                gm.clearArea(x, y, true);
+                player.setEnergy(player.getEnergy() - 2);
+            }
+            dtDig = 0;
+        }
+    }
+    private static void setAttackButton(int x){
+        if(Gdx.input.isKeyPressed(Input.Keys.MINUS)){
+            if(player.attackList.get(x) != null) {
+                altNumPressed = x;
+                attack2 = player.attackList.get(x);
+            }
+        }
+        else if(Gdx.input.isKeyPressed(Input.Keys.X) &&dtItem >.15){
+            if(x<player.equipedList.size()) {
+                Equipment e = player.equipedList.get(x);
+                player.equipedList.remove(x);
+                player.addItemToInventory(e);
+                dtItem =0;
+            }
+        }
+        else if(!Gdx.input.isKeyPressed(Input.Keys.X) && !Gdx.input.isKeyPressed(Input.Keys.MINUS))
+            numberButtonHandler(x);
+    }
+    private static void selectItemFromInventory() {
+        if (dtItem > itemMinTime && player.invList.size() > 0) {            //check if cooldown is over
+            player.useItem(MapStateRender.inventoryPos);                    //actually use the item
+            dtItem = 0;                                                     //reset cooldown
+
+            int remove=-1;
+            for(ArrayList<Item> arr : player.invList){                      //search for empty list just created
+                if(arr.isEmpty()){
+                    remove=player.invList.indexOf(arr);                     //get index if any
+                }
+            }
+            if(remove>-1) {                                                 //if empty list is found
+                player.invList.remove(remove);                              //remove at index
+                if(MapStateRender.inventoryPos>=player.invList.size()-1){   //reset inventory postion if out of bounds
+                    MapStateRender.inventoryPos=player.invList.size()-1;
+                }
+            }
+        }
+    }
+    private static void numberButtonHandler(int i) {
+        lastNumPressed = i;
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+            if (dtInfo > .4 && i<player.attackList.size()) {
+                Attack a = player.attackList.get(i);
+                out(DIVIDER);
+                out(a.getName() + ":");
+                out("P:" + a.getPowerArr());
+                out("M:" + a.getCostArr());
+                out(a.getDescription());
+                dtInfo = 0;
+            }
+        } else {
+            if (dtAttack > attackMintime) {
+                try {
+                    attack = player.attackList.get( i);
+                }catch (IndexOutOfBoundsException e){}
+            }
+        }
+    }
+    public static void moveMonsters() {
+        for (Monster m : monsterList) {
+            m.updateVariables(Gdx.graphics.getDeltaTime());
+            if (m.getdtMove() > m.getMoveSpeed()) {
+                m.move();
             }
         }
     }
@@ -193,73 +315,13 @@ public class MapStateUpdater extends MapState{
             gsm.push(new HighScoreState(gsm));
         }
     }
-    static void getMovementInput(){
-        int x=0,y=0;
-        char c='t';
-        boolean up;
-        boolean down;
-        boolean right;
-        boolean left;
-        if(controllerMode) {
-            up = controller.getAxis(Xbox360Pad.AXIS_LEFT_Y) < -.2;
-            down = controller.getAxis(Xbox360Pad.AXIS_LEFT_Y) > .2;
-            right = controller.getAxis(Xbox360Pad.AXIS_LEFT_X) > .2;
-            left = controller.getAxis(Xbox360Pad.AXIS_LEFT_X) < -.2;
-        }else {
-            up=Gdx.input.isKeyPressed(Input.Keys.W);
-            down=Gdx.input.isKeyPressed(Input.Keys.S);
-            right=Gdx.input.isKeyPressed(Input.Keys.D);
-            left=Gdx.input.isKeyPressed(Input.Keys.A);
-        }
-        if (player.canMove) {
-            if (up) {y=1;c='w';x=checkMove(left,right);}
-            if (down){y=-1;c='s';x=checkMove(left,right);}
-            if (left){x=-1;c='a';y=checkMove(down,up);}
-            if (right){x=1;c='d';y=checkMove(down,up);}
-            player.move(x,y,c);
-            player.dtMove = 0;
-        }
-    }
-    static int checkMove(boolean b2, boolean b3){
-        int x;
-        if(b2){x=-1;}
-        else if(b3){x=1;}
-        else{x=0;}
-        return x;
-    }
-    static void keyboardAttackSelector(){
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
-            setAttackButton(0);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {
-            setAttackButton(1);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_3)) {
-            setAttackButton(2);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_4)) {
-            setAttackButton(3);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_5)) {
-            setAttackButton(4);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_6)) {
-            setAttackButton(5);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_7)) {
-            setAttackButton(6);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_8)) {
-            setAttackButton(7);
-        }
-    }
     public static void buttonHandler() {
         getMovementInput();
         setAim();
         //controller functions------------------------------------------------------
         if(controllerMode){
             if(controller.getButton(Xbox360Pad.BUTTON_Y)){//use item
-                selectItemFromInventory(0);
+                selectItemFromInventory();
             }
             if(controller.getButton(Xbox360Pad.BUTTON_X)){//dig
                 activateDig();
@@ -287,7 +349,7 @@ public class MapStateUpdater extends MapState{
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.Z)) {//use item
-            selectItemFromInventory(0);
+            selectItemFromInventory();
         }
         if (Gdx.input.isKeyPressed(Input.Keys.F2)) {//to main menu
             gsm.push(new MainMenuState(gsm));
@@ -359,72 +421,6 @@ public class MapStateUpdater extends MapState{
             }
         }
     }
-    static void activateDig(){
-        if (dtDig > player.getMoveSpeed()) {
-            if (player.getEnergy() > 5) {
-                int x = player.getX();
-                int y = player.getY();
-                gm.clearArea(x, y, true);
-                player.setEnergy(player.getEnergy() - 2);
-            }
-            dtDig = 0;
-        }
-    }
-    private static  void setAttackButton(int x){
-        if(Gdx.input.isKeyPressed(Input.Keys.MINUS)){
-            altNumPressed=x;
-            attack2 = player.attackList.get( x);
-        }
-        else if(Gdx.input.isKeyPressed(Input.Keys.X) &&dtItem >.15){
-            if(x<player.equipedList.size()) {
-                Equipment e = player.equipedList.get(x);
-                player.equipedList.remove(x);
-                player.addItemToInventory(e);
-                dtItem =0;
-            }
-        }
-        else if(!Gdx.input.isKeyPressed(Input.Keys.X) && !Gdx.input.isKeyPressed(Input.Keys.MINUS))
-            numberButtonHandler(x);
-    }
-    private static void selectItemFromInventory(int i) {
-        if (dtItem > itemMinTime && player.invList.size() > i) {            //check if cooldown is over
-            player.useItem(MapStateRender.inventoryPos + i);                //actually use the item
-            dtItem = 0;                                                     //reset cooldown
-
-            int remove=-1;
-            for(ArrayList<Item> arr : player.invList){                      //search for empty list just created
-                if(arr.isEmpty()){
-                    remove=player.invList.indexOf(arr);                     //get index if any
-                }
-            }
-            if(remove>-1) {                                                 //if empty list is found
-                player.invList.remove(remove);                              //remove at index
-                if(MapStateRender.inventoryPos>=player.invList.size()-1){   //reset inventory postion if out of bounds
-                    MapStateRender.inventoryPos=player.invList.size()-1;
-                }
-            }
-        }
-    }
-    private static void numberButtonHandler(int i) {
-        lastNumPressed = i;
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-            if (dtInfo > .4 && i<player.attackList.size()) {
-                Attack a = player.attackList.get(i);
-                out(DIVIDER);
-                out(a.getName() + ":");
-                out("P:" + a.getPowerArr());
-                out("M:" + a.getCostArr());
-                out(a.getDescription());
-                dtInfo = 0;
-            }
-        } else {
-            if (dtAttack > attackMintime) {
-                try {
-                    attack = player.attackList.get( i);
-                }catch (IndexOutOfBoundsException e){}
-            }
-        }
-    }
     public static void setAim(){
         boolean up;
         boolean down;
@@ -464,21 +460,23 @@ public class MapStateUpdater extends MapState{
         if (x == c.getX() && y == c.getY()) {
             if (c.hasLoot()) {
                 MapStateRender.dtLootPopup = 0;
-                lootPopup = new Texture(Gdx.files.internal("images/imCoin.png"));
                 makeGold(player.level);
                 liveCellList.get(index ).setHasLoot(false);
                 liveCellList.get(index).setItem(null);
+                player.lastItem=new Gold();
             }
             if (c.hasCrate()) {
                 int x1=liveCellList.get(index).getBoosterItem();
-                if(x1==1){
+                if(x1==0){
+                    player.useItem(new EnergyPlus());}
+                else if(x1==1){
                     player.useItem(new Potion());
                 }else if(x1==2){
                     player.useItem(new ManaPlus());
                 }else{
                     openCrate(index);
                 }
-                liveCellList.get(index).setBoosterItem(0);
+                liveCellList.get(index).setBoosterItem(-1);
                 liveCellList.get(index).setCrate(false);
                 liveCellList.get(index).setItem(null);
             }

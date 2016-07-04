@@ -1,24 +1,15 @@
 package com.quadx.dungeons.tools;
 
 
-import com.quadx.dungeons.abilities.Ability;
-
 /**
  * Created by Chris Cavazos on 5/29/2016.
  */
 public class Score {
-    protected String score;
-    protected String name;
-    protected String ability;
-    protected String gold;
-    protected String kills;
-    public Score(int s, int g, String n, String a,String as){
-        score=""+s;
-        name=n;
-        gold=""+g;
-        ability=a;
-        kills=as;
-    }
+    private final String score;
+    private final String name;
+    private final String ability;
+    private final String gold;
+    private final String kills;
     public Score(String n, String s, String g, String a,String as){
         score=""+s;
         name=n;
@@ -32,15 +23,15 @@ public class Score {
             s+=" ";
         }
         s+=score;
-        while (s.length()<40){
+        while (s.length()<30){
             s+=" ";
         }
         s+=gold+"G";
-        while (s.length()<60){
+        while (s.length()<45){
             s+=" ";
         }
         s+=ability;
-        while (s.length()<80){
+        while (s.length()<60){
             s+=" ";
         }
         s+=kills+" KILLS";

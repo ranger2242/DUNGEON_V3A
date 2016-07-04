@@ -12,7 +12,6 @@ import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.states.mapstate.MapState;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.states.mapstate.MapState.viewX;
@@ -27,14 +26,13 @@ public class ShopState extends State {
 
   //  public static float viewX=0;
     //public static float viewY=0;
-    int soldItemCost=0;
+  private int soldItemCost=0;
     private static float dtBuy=0;
-    float dtSold=0;
+    private float dtSold=0;
 
-    boolean dispSold = false;
-    private static Random rn = new Random();
-    private static ShapeRenderer shapeR=new ShapeRenderer();
-    private static ArrayList<Item> shopInv = new ArrayList<>();
+    private boolean dispSold = false;
+    private static final ShapeRenderer shapeR=new ShapeRenderer();
+    private static final ArrayList<Item> shopInv = new ArrayList<>();
 
     public ShopState(GameStateManager gsm){
         super(gsm);

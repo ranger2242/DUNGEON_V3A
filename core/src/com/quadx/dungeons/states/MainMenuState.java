@@ -27,19 +27,18 @@ import static com.quadx.dungeons.states.mapstate.MapState.viewY;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class MainMenuState extends State implements ControllerListener {
-    ArrayList<String> options=new ArrayList<>();
-    public static GlyphLayout gl=new GlyphLayout();
+    private final ArrayList<String> options=new ArrayList<>();
+    public static final GlyphLayout gl=new GlyphLayout();
     private static ParticleEffect effect;
     private static int selector=0;
 
     private int titlePosX =0;
     private int titlePosY=0;
-    int selectorPosX;
     private int optionsPosX =0;
     private int optionsPosY =0;
     private float dtCursor = 0;
     public static Controller controller;
-    public static String s="";
+    private static String s="";
 
     public MainMenuState(GameStateManager gsm)
     {
@@ -52,7 +51,7 @@ public class MainMenuState extends State implements ControllerListener {
         Gdx.gl.glClearColor(0,0,0,1);
 
         effect = new ParticleEffect();
-        ParticleEmitter emitter = new ParticleEmitter();
+        ParticleEmitter emitter;
         String s = "StartScreen";
         effect.load(Gdx.files.internal("particles\\pt" + s), Gdx.files.internal("particles"));
         emitter = effect.findEmitter("StartScreen");
@@ -90,7 +89,7 @@ public class MainMenuState extends State implements ControllerListener {
             if(selector>4)selector=0;
         }
     }
-    void selectOption(){
+    private void selectOption(){
         switch (selector){
             case(0):{
                 if(MapState.inGame)
@@ -128,7 +127,6 @@ public class MainMenuState extends State implements ControllerListener {
         titlePosX = (int)(viewX+(Game.WIDTH/2)-(gl.width/2));
         titlePosY=(int)(viewY+ (Game.HEIGHT/3)*2);
         effect.setPosition(viewX+ Game.WIDTH/2,viewY+ 0);
-        selectorPosX = (int) (viewX + (Game.WIDTH / 2) - 100);
         optionsPosX =(int)(viewX+(Game.WIDTH/2));
         optionsPosY =(int)(viewY+ (Game.HEIGHT/3));
     }
@@ -147,9 +145,9 @@ public class MainMenuState extends State implements ControllerListener {
         Game.getFont().draw(sb,s,viewX+30,viewY+100);
         sb.end();
     }
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
 //DRAWING FUNCTIONS
-private void drawTitle(SpriteBatch sb){
+    private void drawTitle(SpriteBatch sb){
         sb.begin();
         Game.setFontSize(5);
         Game.font.setColor(Color.WHITE);
@@ -170,16 +168,16 @@ private void drawTitle(SpriteBatch sb){
         }
         sb.end();
     }
-/////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void dispose() {
-      //  shapeR.dispose();
-       effect.dispose();
+        //  shapeR.dispose();
+        effect.dispose();
     }
 
     @Override
     public void connected(Controller controller) {
-       // controllerMode=true;
+        // controllerMode=true;
     }
 
     @Override

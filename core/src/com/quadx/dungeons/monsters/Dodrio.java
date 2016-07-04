@@ -5,7 +5,7 @@ import com.quadx.dungeons.tools.ImageLoader;
 /**
  * Created by Chris Cavazos on 6/22/2016.
  */
-public class Dodrio extends Monster {
+class Dodrio extends Monster {
     public Dodrio(){
         power=90;
         hpBase =100;

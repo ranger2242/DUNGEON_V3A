@@ -5,7 +5,7 @@ import com.quadx.dungeons.tools.ImageLoader;
 /**
  * Created by Chris Cavazos on 6/20/2016.
  */
-public class Ponyta extends Monster {
+class Ponyta extends Monster {
     public Ponyta(){
         power=90;
         hpBase =50;

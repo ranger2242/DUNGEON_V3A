@@ -1,7 +1,5 @@
 package com.quadx.dungeons;
 
-import java.util.ArrayList;
-
 /**
  * Created by Tom on 12/17/2015.
  */
@@ -13,8 +11,6 @@ public class EmitterAngles {
     public static int angleLHigh[];
 
     public static void getAttackIndex(String s) {
-        int index=0;
-        //angle[] {w,a,s,d}
         switch (s) {
             case ("Flame"): {
                 angleHigh=new int[]{135,135,315,45};

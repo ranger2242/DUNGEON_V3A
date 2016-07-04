@@ -3,13 +3,15 @@ package com.quadx.dungeons.states;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
- * Created by range on 5/10/2016.
+ * Created by Chris Cavazos on 7/3/2016.
  */
-@SuppressWarnings("DefaultFileTemplate")
-public class TestState extends State {
-    public TestState(GameStateManager gsm){
+public class ClientState extends State {
+   // Scanner sc = new Scanner(System.in);
+   // Socket socket = new Socket(127.0.0.1);
+    protected ClientState(GameStateManager gsm) {
         super(gsm);
     }
+
     @Override
     protected void handleInput() {
 

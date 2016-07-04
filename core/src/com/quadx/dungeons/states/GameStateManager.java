@@ -9,7 +9,7 @@ import java.util.Stack;
 @SuppressWarnings("DefaultFileTemplate")
 public class GameStateManager {
 
-    private Stack<State> states;
+    private final Stack<State> states;
 
     public GameStateManager(){
         states = new Stack<>();

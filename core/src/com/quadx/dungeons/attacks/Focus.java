@@ -5,7 +5,7 @@ import com.quadx.dungeons.tools.ImageLoader;
 /**
  * Created by Chris Cavazos on 6/21/2016.
  */
-public class Focus extends Attack {
+class Focus extends Attack {
     public Focus()  {
         costGold=2510;
         type=1;

@@ -2,9 +2,10 @@ package com.quadx.dungeons.tools;
 
 import com.badlogic.gdx.graphics.Texture;
 
+@SuppressWarnings("ConstantConditions")
 public class WallPattern{
 
-    public static boolean[][] p =new boolean[3][3];
+    public static final boolean[][] p =new boolean[3][3];
     public WallPattern(){
     }
 
@@ -14,7 +15,7 @@ public class WallPattern{
         boolean w=p[0][1];
         boolean e=p[0][2];
         boolean a=p[1][0];
-        boolean s=p[1][1];
+       // boolean s=p[1][1];
         boolean d=p[1][2];
         boolean z=p[2][0];
         boolean x=p[2][1];

@@ -9,21 +9,21 @@ import java.util.Random;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class Equipment extends Item {
-    private static Random rn=new Random();
+    private static final Random rn=new Random();
     Grade grade;
     Boost boost;
-    public Type type;
+    Type type;
 
-    public enum Type{
+    enum Type{
         Arms,Boots,Cape,Gloves,Helmet,Legs,Ring,Chest
     }
-    public enum Grade{
+    enum Grade{
         Poor,Low,Standard,High,Elite,Legendary
     }
-    public enum Boost{
+    enum Boost{
         Perception, Power, Health, Magic, Haste, Resistance
     }
-   public Equipment(){
+   Equipment(){
     isEquip=true;
     }
     public String getName(){
@@ -185,7 +185,7 @@ public class Equipment extends Item {
         if(x==5)boost=Boost.Power;
 
     }
-    void setBoost(int x){
+    private void setBoost(int x){
         if(x==0)boost=Boost.Haste;
         if(x==1)boost=Boost.Resistance;
         if(x==2)boost=Boost.Magic;
@@ -203,7 +203,7 @@ public class Equipment extends Item {
         if(x>80)grade=Grade.Elite;
         if(x>90)grade=Grade.Legendary;
     }
-    void setCost(){
+    private void setCost(){
         int x=0;
         x+= hpmod;
         x+=manamod;

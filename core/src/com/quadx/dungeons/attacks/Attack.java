@@ -22,8 +22,8 @@ public class Attack {
     int range=0;
     int spread=0;
     int costGold=0;
-    int[] usesCheck={80,300,650,1000,1500};
-    protected Texture icon;
+    private final int[] usesCheck={80,300,650,1000,1500};
+    private Texture icon;
 
     String description="s";
     public void checkLvlUp(){
@@ -35,13 +35,7 @@ public class Attack {
 
     }
     Attack(){}
-    public Attack(String na, int lvl, int pow, int co, int mo){
-        name=na;
-        power=pow;
-        cost=co;
-        mod=mo;
-        level=lvl;
-    }
+
     public String getName(){return name;}
     public String getDescription(){return description;}
     public String getPowerArr(){
@@ -65,7 +59,7 @@ public class Attack {
     public void setUses(){
         uses++;
     }
-    public void setIcon(Texture t){
+    void setIcon(Texture t){
         icon=t;
     }
 

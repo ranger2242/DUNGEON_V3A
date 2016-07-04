@@ -5,7 +5,7 @@ import com.quadx.dungeons.tools.ImageLoader;
 /**
  * Created by Chris Cavazos on 6/19/2016.
  */
-public class Anortih extends Monster {
+class Anortih extends Monster {
     public Anortih(){
         power=40;
         hpBase =50;

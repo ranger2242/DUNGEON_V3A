@@ -1,6 +1,5 @@
 package com.quadx.dungeons.attacks;
 
-import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.MapState;
 
 import static com.quadx.dungeons.Game.player;
@@ -10,11 +9,8 @@ import static com.quadx.dungeons.Game.player;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class SpellMods {
-    public static boolean earthquake=false;
-    static public void runMod(Monster m, Attack a){
+    static public void runMod(Attack a){
         int mod=a.getMod();
-        int[] levelA;
-        double[] levelB;
         MapState.statPopup=null;
         switch (mod){
             case -1:{
@@ -91,7 +87,6 @@ public class SpellMods {
 
             }
             case 10:{//EARTHQUAKE
-                earthquake=true;
                 break;
             }
 

@@ -6,7 +6,7 @@ import com.quadx.dungeons.tools.ImageLoader;
  * Created by Tom on 12/30/2015.
  */
 @SuppressWarnings("DefaultFileTemplate")
-public class Kabuto extends Monster {
+class Kabuto extends Monster {
     public Kabuto(){
         power=20;
         hpBase =60;
@@ -17,7 +17,7 @@ public class Kabuto extends Monster {
         sight=3;
         moveSpeedMin=.15f;
         moveSpeed=.12f;
-        moveSpeedMax =.09f;
+        moveSpeedMax =.11f;
         name= "Kabuto";
         icons= ImageLoader.en0;
         icon=icons[0];

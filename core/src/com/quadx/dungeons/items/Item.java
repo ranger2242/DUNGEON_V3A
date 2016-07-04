@@ -16,43 +16,13 @@ public class Item
     protected int defensemod;
     protected int intelmod;
     protected int speedmod;
-    private int levelmod;
+    protected int emod;
     public boolean isEquip=false;
     public boolean isSpell=false;
-    protected Texture icon= ImageLoader.crate;
+    Texture icon= ImageLoader.crate;
     int gold;
     Attack attack;
-
-    public Item(Texture t,int a, int b, int c, int d, int e, int f, int g,String h)
-    {
-        cost=a;
-        hpmod=b;
-        attackmod=c;
-        defensemod=d;
-        intelmod=e;
-        speedmod=f;
-        levelmod=g;
-        name=h;
-        icon=t;
-    }
-
-    public Item() {
-    }
-    public int getGold(){
-        return gold;
-    }
-
-    public void itemDetails()
-    {
-        System.out.println(name);
-        System.out.println("HP mod "+hpmod);
-        System.out.println("Attack mod "+attackmod);
-        System.out.println("Defense mod "+defensemod);
-        System.out.println("Intel mod "+intelmod);
-        System.out.println("Speed mod "+speedmod);
-        System.out.println("Level mod "+levelmod);
-    }
-
+    public Item() {}
     public int getDefensemod()
     {
         return defensemod;
@@ -73,6 +43,11 @@ public class Item
     {
         return hpmod;
     }
+    public int getEmod()
+    {
+        return emod;
+    }
+
     public int getCost() {return cost;}
     public String getName(){return name;}
     public String getType(){
@@ -81,7 +56,9 @@ public class Item
     public void loadIcon(String s){
         try {
             icon = new Texture(Gdx.files.internal("images\\icons\\items\\ic" + s + ".png"));
-        }catch (GdxRuntimeException e){}
+        }catch (GdxRuntimeException e){
+            icon= ImageLoader.crate;
+        }
     }
 
     public int getManamod() {

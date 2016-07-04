@@ -8,7 +8,7 @@ import com.quadx.dungeons.tools.ImageLoader;
 @SuppressWarnings("DefaultFileTemplate")
 public class Drain extends Attack {
     public Drain()  {
-        costGold=50;
+        costGold=6045;
         type=2;
         powerA = new int[]{25,35,45,50,70};
         costA =new int[]{15,25,35,50,60};

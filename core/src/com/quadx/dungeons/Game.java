@@ -18,7 +18,6 @@ import com.quadx.dungeons.tools.Score;
 import com.quadx.dungeons.tools.WallPattern;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
@@ -26,17 +25,18 @@ import java.util.List;
 
 
 
+@SuppressWarnings("UnusedParameters")
 public class Game extends ApplicationAdapter implements ControllerListener{
 
 	public static BitmapFont font;
 	private SpriteBatch spriteBatch;
 	public static final int WIDTH = 1366;
 	public static final int HEIGHT = 724;
-	public static float frame = .01666f;
+	public static final float frame = .01666f;
 	public static Player player= new Player();
 	private static GameStateManager gameStateManager;
 	public static boolean controllerMode =false;
-	static BitmapFont[] fonts = new BitmapFont[6];
+	private static final BitmapFont[] fonts = new BitmapFont[6];
 
 	@Override
 	public void create () {
@@ -69,9 +69,7 @@ public class Game extends ApplicationAdapter implements ControllerListener{
 				List<String> split = Arrays.asList(s.split(","));
 				HighScoreState.addScore(new Score(split.get(0),split.get(1),split.get(2),split.get(3),split.get(4)));
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}//penis
+		} //penis
 		catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -80,7 +78,7 @@ public class Game extends ApplicationAdapter implements ControllerListener{
 	public static void console(String s){
 		System.out.println(s);
 	}
-	public static BitmapFont createFont(int x){
+	private static BitmapFont createFont(int x){
 		BitmapFont temp=new BitmapFont();
 
 		try {
@@ -98,6 +96,7 @@ public class Game extends ApplicationAdapter implements ControllerListener{
 	public static void setFontSize(int x){
 		font=fonts[x];
 	}
+	@SuppressWarnings("EmptyMethod")
 	public static void printLOG(Exception e) {
 		/*
 		sw=new StringWriter();

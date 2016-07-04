@@ -7,7 +7,7 @@ import com.quadx.dungeons.tools.ImageLoader;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class Protect extends Attack {
-    public static float[] time={1f,1.2f,1.5f,2f,2.4f};
+   // public static float[] time={1f,1.2f,1.5f,2f,2.4f};
 
     public Protect()  {
         costGold=14000;

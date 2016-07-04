@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class ControlState extends State {
-    private ArrayList<String> controlList = new ArrayList<>();
+    private final ArrayList<String> controlList = new ArrayList<>();
 
     public ControlState(GameStateManager gsm){
         super(gsm);
