@@ -3,11 +3,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.attacks.*;
+import com.quadx.dungeons.attacks.Attack;
+import com.quadx.dungeons.attacks.Flame;
+import com.quadx.dungeons.attacks.Stab;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.SpellBook;
 import com.quadx.dungeons.items.equipment.Equipment;
-import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
 import com.quadx.dungeons.tools.Score;
@@ -38,7 +39,7 @@ public class Player {
     private int y;
     private int py;//(Game.HEIGHT/2)-2;
     private int hpMod =0;
-    private int attackMod=0;
+    public int attackMod=0;
     private int defenseMod=0;
     private int speedMod=0;
     private int manaMod = 0;
@@ -46,7 +47,7 @@ public class Player {
     private int speed=15;
     private int hpRegen =2;
     private int exp=0;
-    private int killcount=0;
+    private int killCount =0;
     private int energy=100;
     private int energyMax=100;
     private int energyRegen=2 ;
@@ -64,7 +65,6 @@ public class Player {
     private int ability=0;
 
     double mDamage=0;
-    double pDamage=0;
 
     public boolean canMove=false;
     public boolean safe=false;
@@ -100,14 +100,13 @@ public class Player {
     public void setMana(int m) {
         this.mana = m;
     }
-    public void setExp(Monster m) {
-        int expmax=m.getLevel()*25;
-        int expGain = (int) ((rn.nextFloat()* expmax)+(m.getLevel() * 10));
+    public void setExp(int l) {
+        int expmax=l*25;
+        int expGain = (int) ((rn.nextFloat()* expmax)+(l * 10));
         MapStateRender.setHoverText(expGain +" EXP",.8f, Color.GREEN ,Game.player.getPX(),Game.player.getPY()+10,false);
         exp=exp+ expGain;
         MapState.out(name+" gained "+ expGain +" EXP");
     }
-    public void setExp(int a){exp=a;}
     public void setCordsPX(int i, int i1) {
         pospx.set(i,i1);
         px=i;
@@ -203,7 +202,7 @@ public class Player {
     public int getExp(){return exp;}
     public int getMana(){return mana;}
     public int getPoints(){
-        return ((int)gold*10)+(attack*100)+(defense*100)+(speed*100)+(level*2000)+(intel*100)+(hpMax*10)+(manaMax*10)+(energyMax*10)+(floor*1000)+(killcount*200);
+        return ((int)gold*10)+(attack*100)+(defense*100)+(speed*100)+(level*2000)+(intel*100)+(hpMax*10)+(manaMax*10)+(energyMax*10)+(floor*1000)+(killCount *200);
     }
     public int getEnergy(){
         return  energy;
@@ -246,7 +245,7 @@ public class Player {
         statsList.add("DEF:      " + defense+" + "+defenseMod+": "+(defense+defenseMod));
         statsList.add("INT:      " + intel+" + "+intelMod+": "+(intel+intelMod));
         statsList.add("SPD:      " + speed+" + "+speedMod+": "+(speed+speedMod));
-        statsList.add("KILLS:    " + killcount);
+        statsList.add("KILLS:    " + killCount);
         statsList.add("GOLD:     " + gold);
         statsList.add("EXP:      " + exp + "/" + (int) ((((Math.pow(1.5, Game.player.getLevel())) * 1000) / 2) - 300));
         statsList.add("D:        " + floor);
@@ -278,7 +277,7 @@ public class Player {
         return icons[u];
     }
     public Score getScore(){
-        return new Score( ""+name, ""+getPoints(),""+(int)(gold), AbilityMod.ability.getName() + " Lvl " + level, ""+killcount);
+        return new Score( ""+name, ""+getPoints(),""+(int)(gold), AbilityMod.ability.getName() + " Lvl " + level, ""+ killCount);
     }
     public Item getLastItem(){return lastItem;}
 
@@ -388,7 +387,8 @@ public class Player {
         }
         MapStateRender.setHoverText(s,.5f,Color.GREEN,px,py,false);
     }
-    public void addKills(){killcount++;}
+    public void addKills(){
+        killCount++;}
     public void updateVariables(float dt){
         dtMove+=dt;
         canMove = dtMove > moveSpeed;
@@ -504,5 +504,9 @@ public class Player {
         Texture t4 = new Texture(Gdx.files.internal("images/icons/player/playerLeft.png"));
         icons = new Texture[]{t1, t2, t3, t4};
 
+    }
+
+    public int getKillCount() {
+        return killCount;
     }
 }

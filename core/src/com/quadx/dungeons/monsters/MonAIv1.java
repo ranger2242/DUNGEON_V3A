@@ -24,6 +24,28 @@ public class MonAIv1 {
             return new int[]{x,y};
         }
     }
+    public int[] agro(Monster m,int x,int y){
+        //If the monster was hit
+        int[] pos={x,y};
+        if (!m.checkForDamageToPlayer(player.getX(), player.getY())) {//if player was not found
+            if (m.willCircle) {                                                         //If mon will circle player
+                m.moveSpeed = m.moveSpeedMax;
+                pos =circle(m);
+            } else {
+                if (m.hp > m.hpMax / 4) {                                                   //if not fleeing from damage
+                    pos= moveToPoint(m, player.getX(), player.getY());;
+                } else {//if monster is fleeing
+                    pos = flee(m, pos[0], pos[1]);
+                    if (m.healCount > 15) {                                                  //begin hp regen
+                        m.hp++;
+                        m.healCount = 0;
+                    }
+                    m.healCount++;
+                }
+            }
+        }
+        return  pos;
+    }
     public int[] flee(Monster m, int tx, int ty) {
         m.moveSpeed = m.moveSpeedMax;                                           //set new coordinates based on
         if (player.getX() > m.getX() && m.aa) {

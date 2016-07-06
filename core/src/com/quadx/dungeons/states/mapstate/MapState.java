@@ -16,11 +16,11 @@ import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.SpeedPlus;
-import com.quadx.dungeons.monsters.MonAIv1;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.MainMenuState;
 import com.quadx.dungeons.states.State;
+import com.quadx.dungeons.tools.StatManager;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -28,8 +28,10 @@ import java.util.Random;
 import static com.quadx.dungeons.Game.controllerMode;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.*;
+import static com.quadx.dungeons.states.mapstate.MapStateRender.renderLayers;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtAttack;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtScrollAtt;
+
 
 /**
  * Created by Brent on 6/26/2015.
@@ -54,7 +56,6 @@ public class MapState extends State implements ControllerListener {
     public static char lastPressed = 'w';
     static boolean effectLoaded = false;
     static final String DIVIDER= "_________________________";
-    private static final int attackListCount = 0;
     public static final int cellW=30;
     public static int warpX=0;
     public static int warpY=0;
@@ -65,9 +66,12 @@ public class MapState extends State implements ControllerListener {
     static final float attackMintime = Game.frame*10;
     static int lastNumPressed=0;
     static int altNumPressed=1;
+    public static long  millis =0;
 
     public MapState(GameStateManager gsm) {
         super(gsm);
+        millis= System.nanoTime();
+        StatManager.reset();
         player.loadIcons();
         player.loadAttacks();
         inGame=true;
@@ -112,30 +116,7 @@ public class MapState extends State implements ControllerListener {
         MapStateUpdater.checkPlayerIsAlive();
     }
     public void render(SpriteBatch sb) {
-        Gdx.gl.glClearColor(0,0,0,1);
-        shapeR.setProjectionMatrix(cam.combined);
-        sb.setProjectionMatrix(cam.combined);
-        MapStateRender.drawTiles(sb);
-        MapStateRender.drawTransparentThings();
-        MapStateRender.drawHUD(sb);
-        MapStateRender.drawAbilityIcon(sb);
-        MapStateRender.drawMessageOutput(sb);
-        MapStateRender.drawEquipment(sb);
-        MapStateRender.drawPlayer(sb);
-        MapStateRender.drawHovText(sb);
-        MapStateRender.drawMiniMap();
-        if(MapStateRender.showCircle)
-            MapStateRender.drawPlayerFinder();
-
-        for(Monster m: GridManager.monsterList)
-            MonAIv1.callForHelp(m);
-
-        sb.begin();
-        for(Monster m: GridManager.monsterList){
-            Texture t=m.getIcon();
-                    sb.draw(t, m.getX() * cellW -t.getWidth()/4, m.getY() * cellW -t.getHeight()/4);
-        }
-        sb.end();
+        renderLayers(sb);
     }
     public void dispose() {
     }
@@ -145,110 +126,85 @@ public class MapState extends State implements ControllerListener {
             if (output.size() > 10) output.remove(0);
         }
     }
-
+    static void calculateHitBox(int xlim,int ylim, int x,int y,int a,int b){
+        for (int i = x; i < xlim; i++) {
+            for (int j = y; j < ylim; j++) {
+                setHitList(i+a,j+b);
+            }
+        }
+    }
     static void attackCollisionHandler(int pos, Attack att) {
-        int range = player.attackList.get(attackListCount + pos).getRange();
-        int spread = player.attackList.get(attackListCount + pos).getSpread();
+        int range = player.attackList.get(pos).getRange();
+        int spread = player.attackList.get(pos).getSpread();
         int px = player.getX();
         int py = player.getY();
-        int xrange;
-        int yrange;
+        if(player.attackList.get(pos).getType()!=3)
+            StatManager.shotsFired++;
         hitList.clear();
         if(player.attackList.get(pos).getType()==3) {
             player.attackList.get(pos).setUses();
             player.attackList.get(pos).checkLvlUp();
         }
         hitList.add(dispArray[player.getX()][player.getY()]);
-        if(lastPressed=='w') {
-            xrange = (px) + spread;
-            yrange = py + range;
-            for (int i = px; i < xrange; i++) {
-                for (int j = py; j < yrange; j++) {
-                    setHitList((int) (i - Math.ceil(spread / 2)),j);
-                }
-            }
-        }
-        else if(lastPressed=='s'){
-            xrange = (px) + spread;
-            yrange = py - range;
-            for (int i = px; i < xrange; i++) {
-                for (int j = yrange; j < py; j++) {
-                    setHitList((int) (i - Math.ceil(spread / 2)),j);
-                }
-            }
-        }
-        else if(lastPressed=='d'){
-            xrange = (px) + range;
-            yrange = py + spread;
-            for (int i = px; i < xrange; i++) {
-                for (int j = py; j < yrange; j++) {
-                    setHitList(i,(int)(j - Math.ceil(spread / 2)));
-                }
-            }
-        }
-        else if(lastPressed=='a'){
-            xrange = (px) - range;
-            yrange = py + spread;
-            for (int i = xrange; i < px; i++) {
-                for (int j = py; j < yrange; j++) {
-                    setHitList((i),(int)(j - Math.ceil(spread / 2)));
-                }
-            }
-        }
-        Monster tempMon=null;
+        if(lastPressed=='w')
+            calculateHitBox((px) + spread,py + range,px,py, (int) - Math.ceil(spread / 2),0);
+        else if(lastPressed=='s')
+            calculateHitBox( (px) + spread,py,px,py - range, (int) - Math.ceil(spread / 2),0);
+        else if(lastPressed=='d')
+            calculateHitBox((px) + range, py + spread,px,py,0, (int) - Math.ceil(spread / 2));
+        else if(lastPressed=='a')
+            calculateHitBox(px, py + spread,(px) - range,py,0, (int) - Math.ceil(spread / 2));
         boolean killed= false;
         if(att.getMod()==10){//check earthquake
-
             hitList.clear();
             for(Cell c:drawList){
                 setHitList(c.getX(),c.getY());
             }
         }
+        boolean hit=false;
         for(Cell c:hitList)    {
             try {
                 drawList.get(drawList.indexOf(c)).setAttArea(true);
             }catch (ArrayIndexOutOfBoundsException ignored){}
             liveCellList.get(liveCellList.indexOf(c)).setAttArea(true);
             dispArray[c.getX()][c.getY()].setAttArea(true);
-            for(Monster m: GridManager.monsterList){
-                if(c.getX()==m.getX() && c.getY()==m.getY()){
-                    int tempMonIndex;
-                    tempMon=m;
-                    tempMonIndex=GridManager.monsterList.indexOf(m);
-                    player.setDamage(Damage.playerMagicDamage(player, m, player.attackList.get(pos).getPower()));
-                    out("Hit "+player.getDamage()+" damage");
-                    if(player.attackList.get(pos).getType() !=3) {
-
-                        player.attackList.get(pos).setUses();
-                        player.attackList.get(pos).checkLvlUp();
-                    }
-                    //displayPlayerDamage = true;
-                    MapStateRender.setHoverText("-"+player.getDamage(),.8f,Color.RED,m.getPX(),m.getPY(),true);
-                    m.takeAttackDamage(player.getDamage());
-                    monsterList.get(tempMonIndex).setHit();
-
-                    if (m.getHp() < 1) {
-                        out(DIVIDER);
-                        out(m.getName() + " Level " + m.getLevel() + " was killed.");
-                        c.clearMonster();
-                        player.addKills();
-                        player.setExp(m);
-                        player.checkLvlUp();
-                        makeGold(m.getLevel());
-                        try {
-                            dispArray[m.getX()][m.getY()].setMon(false);
-                        }catch (NullPointerException |ArrayIndexOutOfBoundsException e){
-                            //Game.printLOG(e);
-                        }
-                        tempMon = m;
-                        killed=true;
-                    }
+            if(c.getMonster()!=null) {//monster was hit
+                hit=true;
+                Monster m = c.getMonster();
+                int damage = 0;
+                if (player.attackList.get(pos).getType() == 1)
+                    damage = Damage.playerPhysicalDamage(player, m, player.attackList.get(pos).getPower());
+                else if (player.attackList.get(pos).getType() == 2)
+                    damage = Damage.playerMagicDamage(player, m, player.attackList.get(pos).getPower());
+                m.takeAttackDamage(damage);
+                out(m.getName()+ " hit " + damage + " damage");
+                if (player.attackList.get(pos).getType() != 3) {
+                    player.attackList.get(pos).setUses();
+                    player.attackList.get(pos).checkLvlUp();
+                }
+                MapStateRender.setHoverText("-" + damage, .8f, Color.RED, m.getPX(), m.getPY(), true);
+                m.setHit();
+                if (m.getHp() < 1) {
+                    out(DIVIDER);
+                    out(m.getName() + " Level " + m.getLevel() + " was killed.");
+                    c.clearMonster();
+                    player.addKills();
+                    player.setExp(m.getLevel());
+                    player.checkLvlUp();
+                    makeGold(m.getLevel());
+                    try {
+                        dispArray[m.getX()][m.getY()].setMon(false);
+                    } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {}
+                    killed = true;
+                }
+                if (killed) {
+                    GridManager.monsterList.remove(m);
                 }
             }
-            if(tempMon !=null && killed){
-                GridManager.monsterList.remove(tempMon);
-            }
         }
+        if(!hit)//Shot missed
+            StatManager.shotsMissed++;
+
         for(Monster m:monsterList){
             m.setMonListIndex(monsterList.indexOf(m));
         }
@@ -280,17 +236,19 @@ public class MapState extends State implements ControllerListener {
         }
         {
             player.setGold(player.getGold() + gold);
+            StatManager.totalGold+=gold;
             out(player.getName() + " recieved " + gold + "G");
             MapStateRender.setHoverText(gold+"G",.5f,Color.GOLD, player.getPX(), player.getPY(),false);
         }
     }
-    static void openCrate(int index){
-        if(liveCellList.get(index) !=null &&liveCellList.get(index).getItem() != null)
+    static void openCrate(int index) {
+        if (liveCellList.get(index) != null && liveCellList.get(index).getItem() != null)
             if (liveCellList.get(index).getItem().getClass() == Gold.class) {
                 lootPopup = new Texture(Gdx.files.internal("images/imCoin.png"));
-                player.setGold(player.getGold() +liveCellList.get(index).getGold());
-                Gold g= (Gold) liveCellList.get(index).getItem();
+                player.setGold(player.getGold() + liveCellList.get(index).getGold());
+                Gold g = (Gold) liveCellList.get(index).getItem();
                 out(g.getValue() + " added to stash");
+                StatManager.totalGold+=g.getValue();
                 MapStateRender.setHoverText(g.getValue() + "G", 1, Color.GOLD, player.getPX(), player.getPY(), false);
             } else {
                 Item item = liveCellList.get(index).getItem();
@@ -315,9 +273,8 @@ public class MapState extends State implements ControllerListener {
                             if (a) MapStateRender.inventoryPos = 0;
                             out(item.getName() + " added to inventory");
                             MapStateRender.setHoverText(item.getName(), 1, Color.WHITE, player.getPX(), player.getPY(), false);
-                        }
-                        else{
-                            player.lastItem=new Gold();
+                        } else {
+                            player.lastItem = new Gold();
                         }
                     } catch (NullPointerException e) {
                         item = new SpeedPlus();
@@ -332,6 +289,7 @@ public class MapState extends State implements ControllerListener {
                     }
                 }
             }
+        StatManager.totalItems++;
     }
 
     private void bufferOutput(){

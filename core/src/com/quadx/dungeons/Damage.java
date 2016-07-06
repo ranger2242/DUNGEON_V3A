@@ -14,14 +14,15 @@ public class Damage {
     private static final int defaultDamage = 1;
     private static final Random rn =new Random();
 
-    public int playerPhysicalDamage(Player p, Monster m, int power){
-        int baseDamage=((p.attack*3)+(power))-(int)((m.getDefense()));
-        crit=(baseDamage/100)*15;
-        if(crit<1)crit=1;
-        damage= baseDamage+rn.nextInt(crit);
+    public static int playerPhysicalDamage(Player p, Monster m, int power){
+        double a=((2*(double)p.level+10)/250);
+        double b= ((double)(p.attack+p.attackMod)/m.getDefense());
+        double c=(power*2);
+        damage =(int) (a *b * c );
         if (damage < 0) //checks for negative damage
             damage = defaultDamage;
-        Game.player.pDamage=damage;
+        if(rn.nextFloat()<.15)
+            damage*=1.15;
         return damage;
     }
     public static int monsterPhysicalDamage(Player p, Monster m, int power){
@@ -38,14 +39,15 @@ public class Damage {
     public static int playerMagicDamage(Player p, Monster m, int power){
         double a=((2*(double)p.level+10)/250);
         double b= ((double)(p.intel+p.intelMod)/m.getIntel());
-        double c=(power+2);
+        double c=(power*2);
         damage =(int) (a *b * c );
+        if(rn.nextFloat()<.15)
+            damage*=1.15;
         if (damage < 0) //checks for negative damage
             damage = defaultDamage;
-        Game.player.mDamage=damage;
         return damage;
     }
-    public int monsterMagicDamage(Player p, Monster m, int power){
+    public static int monsterMagicDamage(Player p, Monster m, int power){
         int baseDamage=(int)((m.getIntel()*3)+(power))-((p.getIntel()));
         crit=(baseDamage/100)*15;
         if(crit<1)crit=1;

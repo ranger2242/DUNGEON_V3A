@@ -7,6 +7,9 @@ import com.quadx.dungeons.Damage;
 import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.tools.StatManager;
+
+import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.rn;
@@ -231,79 +234,60 @@ public class Monster {
             hp = 0;
         }
     }
-    private void sayStats() {
-        System.out.println("\nHP: " + (int) hp);
-        System.out.println("Level: " + level);
-        System.out.println("openAttackMenu: " + (int) attack);
-        System.out.println("Defense: " + (int) defense);
-        System.out.println("Intel: " + (int) intel);
-        System.out.println("Speed: " + (int) speed);
+    public ArrayList<String> sayStats() {
+        ArrayList<String> stats=new ArrayList<>();
+        stats.add(name);
+        stats.add("HP: " + (int) hp);
+        stats.add("Level: " + level);
+        stats.add("Attack: " + (int) attack);
+        stats.add("Defense: " + (int) defense);
+        stats.add("Intel: " + (int) intel);
+        stats.add("Speed: " + (int) speed);
+        return stats;
     }
+
     public void move() {
         int a = rn.nextInt(3) + 1;
         int b = rn.nextInt(3) + 1;
-        int tx = x;
-        int ty = y;
-        if (hit) {                                                                       //If the monster was hit
-            if (!checkForDamageToPlayer(player.getX(), player.getY())) {//if player was not found
-                if(willCircle) {                                                         //If mon will circle player
-                    moveSpeed = moveSpeedMax;
-                    int[] arr = ai.circle(this);
-                    tx = arr[0];
-                    ty = arr[1];
+        int[] pos={x,y};
 
-                }else{
-                    if (hp > hpMax / 4) {                                                   //if not fleeing from damage
-                        int[] arr = ai.moveToPoint(this, player.getX(),player.getY());
-                        tx = arr[0];
-                        ty = arr[1];
-                    } else {//if monster is fleeing
-                        int[] arr = ai.flee(this, tx, ty);
-                        tx = arr[0];
-                        ty = arr[1];
-                        if (healCount > 15) {                                                  //begin hp regen
-                            hp++;
-                            healCount = 0;
-                        }
-                        healCount++;
-                    }
-                }
-            }
+        if (hit) {
+            pos=ai.agro(this,pos[0],pos[1]);
         } else {                                                                          //if monster has not been hit
             if (!checkForDamageToPlayer(player.getX(), player.getY())) {                  //if not hitting player
                 if (PlayerInSight()) {
-                    int[] arr = ai.moveToPoint(this, player.getX(),player.getY());
-                    tx = arr[0];
-                    ty = arr[1];
-                    MapState.gm.clearArea(tx, ty, false);
+                    pos = ai.moveToPoint(this, player.getX(), player.getY());
+                   // MapState.gm.clearArea(pos[0], pos[1], false);
                 } else {
                     switch (a) {
                         case (1): {
-                            tx += rn.nextInt(2);
+                            pos[0] += rn.nextInt(2);
                             setFront(3);
                             break;
                         }
                         case (2): {
-                            tx -= rn.nextInt(2);
+                            pos[0] -= rn.nextInt(2);
                             setFront(2);
                             break;
                         }
                         case (3): {
+                            setFront(front);
                             break;
                         }
                     }
                     switch (b) {
                         case (1): {
-                            ty += rn.nextInt(2);
+                            pos[1]+= rn.nextInt(2);
                             setFront(0);
                             break;
                         }
                         case (2): {
-                            ty -= rn.nextInt(2);
+                            pos[1] -= rn.nextInt(2);
                             setFront(1);
                             break;
                         }
                         case (3): {
+                            setFront(front);
                             break;
                         }
                     }
@@ -315,19 +299,19 @@ public class Monster {
         boolean cont = false;
         //checks if there is monster already on chosen cell
         for (Monster c : GridManager.monsterList) {
-            if (c.getX() == tx && c.getY() == ty) {
-                    cont = true;
+            if (c.getX() == pos[0] && c.getY() == pos[1]) {
+                cont = true;
             }
         }
         if (!cont) {    //if there is no monster
             for (Cell c1 : GridManager.liveCellList) {
                 //search list for cell
                 //if cell position matches monster
-                if(c1.getMonster() != null) {
+                if (c1.getMonster() != null) {
                     if (c1.getMonster().equals(this))
                         c1.clearMonster(); //remove
                 }
-                if (c1.getX() == tx && c1.getY() == ty && c1.getState()) {
+                if (c1.getX() == pos[0] && c1.getY() == pos[1] && c1.getState()) {
                     c1.setMonster(this);
                     placed = true;
                     moved = true;
@@ -351,14 +335,25 @@ public class Monster {
                 && player.getY() > this.getY() - this.getSight() && player.getY() < this.getY() + this.getSight();
     }
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private boolean checkForDamageToPlayer(int px, int py) {
+    public boolean checkForDamageToPlayer(int px, int py) {
         boolean hit = false;
         if ((x == px && y == py) || (x + 1 == px && y == py) || (x - 1 == px && y == py)    //check surrounding tiles for player
                 || (x == px && y + 1 == py) || (x == px && y - 1 == py)) {                  //hurt if found
-            int d = Damage.monsterPhysicalDamage(player, this, (int) power);
+            int d ;
+            if(intel>attack)
+                d=Damage.monsterMagicDamage(player, this, (int) power);
+            else if(attack>intel)
+                d= Damage.monsterPhysicalDamage(player, this, (int) power);
+            else{
+                if(rn.nextBoolean())
+                    d=Damage.monsterMagicDamage(player, this, (int) power);
+                else
+                    d= Damage.monsterPhysicalDamage(player, this, (int) power);
+            }
             player.setHp(player.getHp() - d);                                     //apply damage
             MapStateRender.setHoverText("-" + d, 1, Color.RED, player.getPX(), player.getPY(), true);
             hit = true;
+            StatManager.killer=this;
         }
         return hit;
     }

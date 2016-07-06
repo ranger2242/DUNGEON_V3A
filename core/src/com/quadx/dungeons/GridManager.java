@@ -35,11 +35,13 @@ public class GridManager {
         player.setMana(player.manaMax);
         player.setEnergy(player.getEnergyMax());
         clearMonsterList();
+
         createMap();
         plotLoot();
         plotCrates();
         plotShop();
         plotWarps();
+
         plotMonsters();
         plotPlayer();
         MapStateRender.showCircle = true;
@@ -92,64 +94,71 @@ public class GridManager {
         }
             splitMapDataToList();
         }
-    public static void loadDrawList(){
-        drawList.clear();
-        monsOnScreen.clear();
-        for(Cell c: liveCellList){
-            int screenLeftBound= (int) viewX;
-            int screenRightBound= (int) viewX+Game.WIDTH;
-            int screenBotBound= (int) viewY;
-            int screenTopBound= (int) viewY+Game.HEIGHT;
-            int x=(c.getX()+1)*cellW;
-            int y=(c.getY()+1)*cellW;
+    static Cell loadTiles(Cell c){
+        int x1 = c.getX();
+        int y1 = c.getY();
+        ArrayList<Cell> temp = getSurroundingCells(x1, y1);
+        int count = 0;
+        Texture t = c.getTile();
+        if (temp.size() == 8) {
+            for (int ii = 0; ii < 3; ii++) {
+                for (int jj = 0; jj < 3; jj++) {
+                    if (count < temp.size()) {
+                        if (ii == 1 && jj == 1) {
+                            WallPattern.p[ii][jj] = false;
+                        } else {
 
-
-            if(x>=screenLeftBound &&x-cellW<=screenRightBound
-                    && y>=screenBotBound && y-cellW<=screenTopBound){
-                if(!c.getState() ||c.getWater()){
-                    int x1= c.getX();
-                    int y1=c.getY();
-                    ArrayList<Cell> temp= getSurroundingCells(x1,y1);
-                    int count=0;
-                    Texture t=c.getTile();
-                    if(temp.size()==8){
-                        for(int i=0;i<3;i++){
-                            for(int j=0;j<3;j++){
-                                if(count <temp.size()){
-                                    if(i==1 && j==1){
-                                        WallPattern.p[i][j]=false;
-                                    }else {
-
-                                        if(c.getWater()){
-                                            WallPattern.p[i][j] = !temp.get(count).getWater();
-                                        }else {
-                                            WallPattern.p[i][j] = temp.get(count).getState();
-                                        }
-                                        count++;
-                                    }
-                                }
+                            if (c.getWater()) {
+                                WallPattern.p[ii][jj] = !temp.get(count).getWater();
+                            } else {
+                                WallPattern.p[ii][jj] = temp.get(count).getState();
                             }
+                            count++;
                         }
-                        int a=0;
-                        if(c.getWater())a=1;
-                        Texture t1=WallPattern.getTile(a);
-                        if(t1 != null && t!=t1){
-                            c.setTile(t1);
-                        }
-                    }
-                    else{
-                        if(!c.getTile().equals(a[0]))
-                        c.setTile(a[0]);
                     }
                 }
-                drawList.add(c);
-                //check for monster
-                if(c.getMonster()!=null){
-                   monsOnScreen.add(c.getMonster());
+            }
+            int a = 0;
+            if (c.getWater()) a = 1;
+            Texture t1 = WallPattern.getTile(a);
+            if (t1 != null && t != t1) {
+                c.setTile(t1);
+            }
+        } else {
+            if (!c.getTile().equals(a[0]))
+                c.setTile(a[0]);
+        }
+        return c;
+    }
+
+    public static void loadDrawList() {
+        drawList.clear();
+        monsOnScreen.clear();
+        int x = (int) (viewX / cellW);
+        int y = (int) (viewY / cellW);
+        int endx = (int) ((viewX + Game.WIDTH) / cellW);
+        int endy = (int) ((viewY + Game.HEIGHT) / cellW);
+        for (int i = x - 1; i < endx + 1; i++) {
+            for (int j = y - 1; j < endy + 1; j++) {
+                Cell c;
+                try {
+                    c = dispArray[i][j];
+                    if (!c.getState() || c.getWater()) {
+                        c=loadTiles(c);
+
+                    }
+                    drawList.add(c);
+                    //check for monster
+                    if (c.getMonster() != null) {
+                        monsOnScreen.add(c.getMonster());
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+
                 }
             }
         }
     }
+
     private void createMap() {
         Map2State.updateVars();
         dispArray = Map2State.generateMap2();
@@ -182,7 +191,6 @@ public class GridManager {
     private void clearMonsterList() {
         monsterList.clear();
     }
-
     private void plotWarps() {
         boolean placed = false;
         int index = rn.nextInt(liveCellList.size());
@@ -210,31 +218,23 @@ public class GridManager {
         liveCellList.get(index).setWarp();
     }
     private void plotMonsters() {
-        if(player.getFloor()==1)
+        if (player.getFloor() == 1)
             splitMapDataToList();
-        int temp= (int) (liveCount * .0075);//calculate number of monsters
-        int tries=0;
+        int temp = (int) (liveCount * .01);//calculate number of monsters
         while (temp > 0) {
-            Monster m= Monster.getNew();
-            int listSize=liveCellList.size();
+            Monster m = Monster.getNew();
+            int listSize = liveCellList.size();
             int point = rn.nextInt(listSize);
             Cell c = liveCellList.get(point);
-            if (c.getState()) {
-                m.setMonListIndex(listSize+1);
-                m.setLiveCellIndex(point);
-                c.setMonster(m);
-                monsterList.add(c.getMonster());
-                c.setMonsterIndex(listSize+1);
-                liveCellList.set(point,c);
-                temp--;
-                tries=0;
-            }else {
-                tries++;
-                if (tries == 5) {
-                    tries = 0;
-                    temp--;
-                }
-            }
+            c.setState();
+            m.setMonListIndex(listSize + 1);
+            m.setLiveCellIndex(point);
+            c.setMonster(m);
+            monsterList.add(c.getMonster());
+            c.setMonsterIndex(listSize + 1);
+            liveCellList.set(point, c);
+            temp--;
+
         }
     }
     private void plotShop() {

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.tools.Score;
+import com.quadx.dungeons.tools.StatManager;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 
 import static com.quadx.dungeons.states.mapstate.MapState.viewX;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
+import static com.quadx.dungeons.tools.StatManager.stats;
 
 /**
  * Created by Chris Cavazos on 5/29/2016.
@@ -22,42 +24,10 @@ import static com.quadx.dungeons.states.mapstate.MapState.viewY;
 public class HighScoreState extends State {
     public static final ArrayList<Score> scores= new ArrayList<>();
     private final Score[] highscores=new Score[10];
-
+    ArrayList<Double> list;
     public HighScoreState(GameStateManager gsm) {
         super(gsm);
-        /*
-         stats to check
-
-         ----overall
-         total gold
-         total kills
-         total items picked up
-         total shots fired
-         total misses
-         overall accuracy
-         longest play time
-         shortest play time
-         highest floor
-         highest player level
-         most used class
-         total games played
-         total play time
-
-         most used attack
-
-
-         ----per round
-         shots fired
-         shots missed
-         accuracy
-         items used/ picked up
-         avg kills per min
-         avg gold per min
-         killed by --
-         most used attack
-
-
-         */
+         list= StatManager.getFinalStats();
 
         for(int j=0;j<10;j++) {
             int pos = 0;
@@ -116,19 +86,31 @@ public class HighScoreState extends State {
         Gdx.gl.glClearColor(1,0,0,1);
 
         sb.begin();
-        Game.setFontSize(1);
+        Game.setFontSize(2);
         Game.getFont().setColor(Color.WHITE);
         Game.getFont().draw(sb,"HIGHSCORES",viewX+ Game.WIDTH/2,viewY+ Game.HEIGHT-30);
+        Game.getFont().draw(sb,"KILLED BY",viewX+Game.WIDTH - 200,viewY+ Game.HEIGHT-30);
+        Game.getFont().draw(sb,"ROUND STATS",viewX+30,viewY+ (Game.HEIGHT/2)-30);
+
         for(int i=9;i>=0;i--) {
             if(i+1!= 10) {
                 if (highscores[i] != null) {
-                    Game.getFont().draw(sb, (i + 1) + ":  " + highscores[i].toString(), viewX + 30, viewY + Game.HEIGHT - 60 - (i * 14));
+                    Game.getFont().draw(sb, (i + 1) + ":  " + highscores[i].toString(), viewX + 30, viewY + Game.HEIGHT - 60 - (i * 20));
                 }
             }
             else
             if (highscores[i] != null) {
-                Game.getFont().draw(sb, (i + 1) + ": " + highscores[i].toString(), viewX + 30, viewY + Game.HEIGHT - 60 - (i * 14));
+                Game.getFont().draw(sb, (i + 1) + ": " + highscores[i].toString(), viewX + 30, viewY + Game.HEIGHT - 60 - (i *20));
             }
+        }
+        for(int i=0;i< stats.size();i++){
+            Game.getFont().draw(sb,stats.get(i)+list.get(i).toString(),viewX+30,viewY+(Game.HEIGHT/2)-60-(i*20));
+        }
+        ArrayList<String> list = StatManager.killer.sayStats();
+        StatManager.killer.setFront(2);
+        sb.draw(StatManager.killer.getIcon(),viewX+Game.WIDTH-200,viewY+(Game.HEIGHT-120));
+        for(int i=0;i<list.size();i++){
+            Game.getFont().draw(sb,list.get(i),viewX+Game.WIDTH- 200,viewY+(Game.HEIGHT-150)-(i*20));
         }
         sb.end();
     }

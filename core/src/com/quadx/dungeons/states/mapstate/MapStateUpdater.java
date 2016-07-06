@@ -27,20 +27,24 @@ import static com.quadx.dungeons.states.MainMenuState.controller;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class MapStateUpdater extends MapState{
+    static ArrayList<Integer> fpsList= new ArrayList<>();
+    public static boolean displayFPS=true;
+
     private static float dtDig = 0;
     private static float dtRegen = 0;
     private static float dtEnergyRe = 0;
     private static float dtInfo = 0;
     private static float dtItem = 0;
     private static float dtMap = 0;
+    private static float dtShowStats =0;
     public static float dtCollision = 0;
     public static float dtScrollAtt=0;
     public static float dtAttack = 0;
-    public static float dtInvSwitch = 0;
     public static float dtRespawn=0;
+    public static float dtFPS=0;
+    public static float fps=0;
     public static float dtClearHits =0;
-    private static float dtShowStats =0;
-
+    public static float dtInvSwitch = 0;
     public static int spawnCount=1;
 
     public MapStateUpdater(GameStateManager gsm) {
@@ -220,6 +224,16 @@ public class MapStateUpdater extends MapState{
         regenPlayer(dt);
         player.updateVariables(dt);
         MapStateRender.updateVariables(dt);
+        if(dtFPS>.05){
+            fps= 1/Gdx.graphics.getDeltaTime();
+            fpsList.add((int)fps);
+            if(fpsList.size()>50){
+                fpsList.remove(0);
+            }
+            dtFPS=0;
+        }else{
+            dtFPS+=dt;
+        }
         if(dtClearHits<=.1)
             dtClearHits+=dt;
         if(dtRespawn<=10f)
@@ -313,6 +327,7 @@ public class MapStateUpdater extends MapState{
             AbilitySelectState.pressed = false;
             inGame = false;
             gsm.push(new HighScoreState(gsm));
+
         }
     }
     public static void buttonHandler() {
@@ -351,9 +366,6 @@ public class MapStateUpdater extends MapState{
         if (Gdx.input.isKeyPressed(Input.Keys.Z)) {//use item
             selectItemFromInventory();
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.F2)) {//to main menu
-            gsm.push(new MainMenuState(gsm));
-        }
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {//use primary attack
             if (dtAttack > attackMintime) {
                 MapStateExt.battleFunctions(lastNumPressed);
@@ -365,6 +377,18 @@ public class MapStateUpdater extends MapState{
             if(dtAttack>attackMintime){
                 MapStateExt.battleFunctions(altNumPressed);
                 dtAttack = 0;
+            }
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.F1) && debug) {//reload map
+            if (dtMap > .6) {
+                gm.initializeGrid();
+                dtMap = 0;
+            }
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.F2)) {//to main menu
+            if(dtItem>.2){
+                displayFPS=!displayFPS;
+                dtItem=0;
             }
         }
         if (Gdx.input.isKeyPressed(Input.Keys.F8) && debug) {//change stats
@@ -413,12 +437,6 @@ public class MapStateUpdater extends MapState{
             pause=true;
             cam.position.set(0, 0, 0);
             gsm.push(new ShopState(gsm));
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.F1) && debug) {//reload map
-            if (dtMap > .6) {
-                gm.initializeGrid();
-                dtMap = 0;
-            }
         }
     }
     public static void setAim(){

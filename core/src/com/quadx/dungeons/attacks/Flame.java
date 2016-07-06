@@ -9,7 +9,7 @@ import com.quadx.dungeons.tools.ImageLoader;
 public class Flame extends Attack {
     public Flame()  {
         costGold=100;
-        type=3;
+        type=2;
         powerA = new int[]{20,30,60,100,120};
         costA =new int[]{10,20,30,50,70};
         name="Flame";

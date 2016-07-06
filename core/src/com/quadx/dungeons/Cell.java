@@ -3,10 +3,7 @@ package com.quadx.dungeons;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.quadx.dungeons.items.EnergyPlus;
-import com.quadx.dungeons.items.Item;
-import com.quadx.dungeons.items.ManaPlus;
-import com.quadx.dungeons.items.Potion;
+import com.quadx.dungeons.items.*;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.tools.ImageLoader;
 
