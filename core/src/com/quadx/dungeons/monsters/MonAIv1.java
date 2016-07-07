@@ -111,9 +111,12 @@ public class MonAIv1 {
                     angle=225;
                 }
             }
-            monsterList.get(m.getMonListIndex()).circleAngle = angle;
-            monsterList.get(m.getMonListIndex()).circling=true;
+            try {
+                monsterList.get(m.getMonListIndex()).circleAngle = angle;
+                monsterList.get(m.getMonListIndex()).circling = true;
+            }catch (IndexOutOfBoundsException e){}
         }
+        try {
 
         //move monster incrementally towards nearest circle spot
         int[] f;
@@ -139,6 +142,10 @@ public class MonAIv1 {
         return moveToPoint(m,f[0],f[1]);
         else
             return  moveToPoint(m,player.getX(),player.getY());
+        }catch (IndexOutOfBoundsException e){
+            return  moveToPoint(m,player.getX(),player.getY());
+        }
+
     }
     public int[] moveToPoint(Monster m, int x, int y) {
         int tx;

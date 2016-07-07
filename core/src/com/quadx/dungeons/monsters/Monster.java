@@ -12,7 +12,10 @@ import com.quadx.dungeons.tools.StatManager;
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.GridManager.rn;
+import static com.quadx.dungeons.states.mapstate.MapState.out;
+import static javax.swing.JSplitPane.DIVIDER;
 
 /**
  * Created by Tom on 11/10/2015.
@@ -33,7 +36,7 @@ public class Monster {
     protected boolean moved = false;
     protected boolean aa = false;
     protected boolean bb = false;
-    protected double level = 1;
+    protected int level = 1;
     protected double attack;
     protected double intel;
     protected double power = 20;
@@ -73,6 +76,37 @@ public class Monster {
 //GETTERS---------------------------------------------------------------------------------
     public Texture getIcon() {
         return icon;
+    }
+    public static Monster getNew(){
+        Monster m;
+        int total=player.getAttack()+player.getIntel()+player.getSpeed()+player.getDefense();
+        if(total>300 && rn.nextBoolean()){
+            m=new Muk();
+        }
+        else if(total>230 && rn.nextBoolean()){
+            m=new Dodrio();
+        }
+        else if(total>200 && rn.nextBoolean()){
+            if(rn.nextBoolean())
+                m=new Gengar();
+            else m = new Dragonair();
+        }
+        else if(total>140 && rn.nextBoolean()){
+            m=new Ponyta();
+        }
+        else if(total >80 && rn.nextBoolean()){
+            if(rn.nextBoolean())
+                m=new Porygon();
+            else
+                m=new Krabby();
+        }
+        else{
+            if(rn.nextBoolean())
+                m = new Kabuto();
+            else
+                m= new Anortih();
+        }
+        return m;
     }
     public String getName() {
         return name;
@@ -233,6 +267,9 @@ public class Monster {
         if (hp < 0) {
             hp = 0;
         }
+        setHit();
+        MapStateRender.setHoverText("-" + (int)i, .8f, Color.RED,px,py, true);
+        out("Hit "+name+" for " + (int)i + " damage.");
     }
     public ArrayList<String> sayStats() {
         ArrayList<String> stats=new ArrayList<>();
@@ -245,7 +282,6 @@ public class Monster {
         stats.add("Speed: " + (int) speed);
         return stats;
     }
-
     public void move() {
         int a = rn.nextInt(3) + 1;
         int b = rn.nextInt(3) + 1;
@@ -329,7 +365,6 @@ public class Monster {
         }
         dtMove = 0;
     }
-
     private boolean PlayerInSight() {
         return player.getX() > this.getX() - this.getSight() && player.getX() < this.getX() + this.getSight()
                 && player.getY() > this.getY() - this.getSight() && player.getY() < this.getY() + this.getSight();
@@ -363,35 +398,21 @@ public class Monster {
     public boolean isMoved() {
     return moved;
 }
-    public static Monster getNew(){
-        Monster m;
-        int total=player.getAttack()+player.getIntel()+player.getSpeed()+player.getDefense();
-        if(total>300 && rn.nextBoolean()){
-            m=new Muk();
+    public boolean checkIfDead(){
+        if (hp < 1) {
+            out(DIVIDER);
+            out(name + " Level " + level + " was killed.");
+            player.addKills();
+            player.setExp((int) level);
+            player.checkLvlUp();
+            MapState.makeGold(level);
+            try {
+                GridManager.monsterList.remove(this);
+                dispArray[x][y].clearMonster();
+            } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {}
+            return true;
         }
-        else if(total>230 && rn.nextBoolean()){
-            m=new Dodrio();
-        }
-        else if(total>200 && rn.nextBoolean()){
-            if(rn.nextBoolean())
-            m=new Gengar();
-            else m = new Dragonair();
-        }
-        else if(total>140 && rn.nextBoolean()){
-            m=new Ponyta();
-        }
-        else if(total >80 && rn.nextBoolean()){
-            if(rn.nextBoolean())
-            m=new Porygon();
-            else
-                m=new Krabby();
-        }
-        else{
-            if(rn.nextBoolean())
-                m = new Kabuto();
-            else
-                m= new Anortih();
-        }
-        return m;
+        else
+            return false;
     }
 }

@@ -509,4 +509,12 @@ public class Player {
     public int getKillCount() {
         return killCount;
     }
+
+    public int getAttackMod() {
+        return attackMod;
+    }
+
+    public int getIntelMod() {
+        return intelMod;
+    }
 }

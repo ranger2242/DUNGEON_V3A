@@ -1,5 +1,6 @@
 package com.quadx.dungeons.tools;
 
+import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.MapState;
 
@@ -46,6 +47,14 @@ public class StatManager {
     public static Monster killer =null;
 
     public StatManager(){
+    }
+    public static void shotMissed(boolean b){
+        if (!b)//Shot missed
+            StatManager.shotsMissed++;
+    }
+    public static void shotFired(Attack a){
+        if (a.getType() != 3)
+            StatManager.shotsFired++;
     }
     public static ArrayList<Double> getFinalStats(){
         NumberFormat formatter = new DecimalFormat("#0.00");

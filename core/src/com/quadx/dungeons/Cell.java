@@ -157,5 +157,6 @@ public class Cell {
 //OTHER----------------------------------------------------------------------------------
     public void clearMonster(){
         monster=null;
+        hasMon=false;
     }
 }

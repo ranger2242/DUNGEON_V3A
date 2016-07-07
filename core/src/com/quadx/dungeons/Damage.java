@@ -1,8 +1,13 @@
 package com.quadx.dungeons;
 
+import com.badlogic.gdx.graphics.Color;
+import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.monsters.Monster;
+import com.quadx.dungeons.states.mapstate.MapStateRender;
 
 import java.util.Random;
+
+import static com.quadx.dungeons.Game.player;
 
 /**
  * Created by Tom on 11/24/2015.
@@ -14,15 +19,24 @@ public class Damage {
     private static final int defaultDamage = 1;
     private static final Random rn =new Random();
 
-    public static int playerPhysicalDamage(Player p, Monster m, int power){
-        double a=((2*(double)p.level+10)/250);
-        double b= ((double)(p.attack+p.attackMod)/m.getDefense());
-        double c=(power*2);
+    public static int calcPlayerDamage(Attack att, Monster m){
+        double a=((2*(double)player.getLevel()+10)/250);
+        double b;
+        double c=att.getPower();
+        if(att.getType()==1){
+            b= ((double)(player.getAttack()+player.getAttackMod())/m.getDefense());
+        }
+        else if(att.getType()==2){
+            b= ((double)(player.getIntel()+player.getIntelMod())/m.getDefense());
+        }
+        else b=0;
         damage =(int) (a *b * c );
         if (damage < 0) //checks for negative damage
             damage = defaultDamage;
-        if(rn.nextFloat()<.15)
+        if(rn.nextFloat()<.1){
             damage*=1.15;
+            MapStateRender.setHoverText("-CRITICAL-",.2f, Color.BLUE,m.getPX(), m.getPY(),true);
+        }
         return damage;
     }
     public static int monsterPhysicalDamage(Player p, Monster m, int power){
@@ -32,19 +46,8 @@ public class Damage {
         damage= baseDamage+rn.nextInt(crit);
         if (damage < 0) //checks for negative damage
             damage = defaultDamage;
-        if(Game.player.safe)
+        if(player.safe)
             damage=0;
-        return damage;
-    }
-    public static int playerMagicDamage(Player p, Monster m, int power){
-        double a=((2*(double)p.level+10)/250);
-        double b= ((double)(p.intel+p.intelMod)/m.getIntel());
-        double c=(power*2);
-        damage =(int) (a *b * c );
-        if(rn.nextFloat()<.15)
-            damage*=1.15;
-        if (damage < 0) //checks for negative damage
-            damage = defaultDamage;
         return damage;
     }
     public static int monsterMagicDamage(Player p, Monster m, int power){
@@ -54,7 +57,7 @@ public class Damage {
         damage= baseDamage+rn.nextInt(crit);
         if (damage < 0) //checks for negative damage
             damage = defaultDamage;
-        if(Game.player.safe)
+        if(player.safe)
             damage=0;
         return damage;
     }

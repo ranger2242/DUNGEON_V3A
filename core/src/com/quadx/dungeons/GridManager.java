@@ -223,8 +223,9 @@ public class GridManager {
         int temp = (int) (liveCount * .01);//calculate number of monsters
         while (temp > 0) {
             Monster m = Monster.getNew();
-            int listSize = liveCellList.size();
-            int point = rn.nextInt(listSize);
+            if(rn.nextFloat()<.05)m.setHit();
+            int listSize = monsterList.size();
+            int point = rn.nextInt(liveCellList.size());
             Cell c = liveCellList.get(point);
             c.setState();
             m.setMonListIndex(listSize + 1);

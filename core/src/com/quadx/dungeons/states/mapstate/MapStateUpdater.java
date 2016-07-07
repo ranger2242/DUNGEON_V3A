@@ -391,6 +391,7 @@ public class MapStateUpdater extends MapState{
                 dtItem=0;
             }
         }
+        /*
         if (Gdx.input.isKeyPressed(Input.Keys.F8) && debug) {//change stats
             if(Gdx.input.isKeyPressed(Input.Keys.MINUS)&& player.getGold()>1){
                 player.setGold(player.getGold()-1000);
@@ -422,7 +423,7 @@ public class MapStateUpdater extends MapState{
                 player.setSpeed(player.getSpeed() - 1);
             }else
                 player.setSpeed(player.getSpeed() + 1);
-        }
+        }*/
         if (Gdx.input.isKeyPressed(Input.Keys.M) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)
                 || Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {//dig
             activateDig();

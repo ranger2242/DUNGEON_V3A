@@ -43,7 +43,7 @@ class MapStateExt extends MapState{
                         break;
                     }
                 }
-                MapState.attackCollisionHandler(i,a);
+                MapState.attackCollisionHandler(i);
                 SpellMods.runMod(a);
                 player.attackList.get(player.attackList.indexOf(a)).checkLvlUp();
 

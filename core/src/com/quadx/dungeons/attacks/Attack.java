@@ -58,6 +58,7 @@ public class Attack {
     public int getRange(){return range;}
     public void setUses(){
         uses++;
+        checkLvlUp();
     }
     void setIcon(Texture t){
         icon=t;
