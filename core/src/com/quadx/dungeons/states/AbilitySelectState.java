@@ -9,15 +9,16 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
-import com.quadx.dungeons.AbilityMod;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.abilities.*;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.ImageLoader;
+import com.quadx.dungeons.tools.MyTextInputListener;
 
 import java.util.ArrayList;
 
+import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.states.MainMenuState.controller;
 import static com.quadx.dungeons.states.mapstate.MapState.viewX;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
@@ -44,8 +45,10 @@ public class AbilitySelectState extends State implements ControllerListener {
         super(gsm);
         if(Game.controllerMode)
         controller.addListener(this);
-        MyTextInputListener listener = new MyTextInputListener();
-        Gdx.input.getTextInput(listener, "Name", "","");
+        if(!MapState.inGame) {
+            MyTextInputListener listener = new MyTextInputListener();
+            Gdx.input.getTextInput(listener, "Name", "", "");
+        }
         Game.setFontSize(5);
 
         Gdx.gl.glClearColor(0,0,0,1);
@@ -56,19 +59,18 @@ public class AbilitySelectState extends State implements ControllerListener {
         titlex=(int)((Game.WIDTH/2)-(gl.width/2));
         titley=(Game.HEIGHT-100);
         Tank tank = new Tank();
+        //Investor inv = new Investor();
+        //Mage mage = new Mage();
+        //Quick quick = new Quick();
+        //Brawler brawler = new Brawler();
+        //DigPlus dplus=new DigPlus();
+        //Warp warp = new Warp();
         abilityList.add(tank);
-        Investor inv = new Investor();
-        abilityList.add(inv);
-        Mage mage = new Mage();
-        abilityList.add(mage);
-        Quick quick = new Quick();
-        abilityList.add(quick);
-        Brawler brawler = new Brawler();
-        abilityList.add(brawler);
-        DigPlus dplus=new DigPlus();
-        secondaryList.add(dplus);
-        Warp warp = new Warp();
-        secondaryList.add(warp);
+        //abilityList.add(inv);
+        //abilityList.add(mage);
+        //abilityList.add(quick);
+        //abilityList.add(brawler);
+        //secondaryList.add(dplus);
     }
 
     @Override
@@ -105,12 +107,18 @@ public class AbilitySelectState extends State implements ControllerListener {
         if(Gdx.input.isKeyPressed(Input.Keys.TAB)){
             exitScreen();
         }
-        if(pressed){gsm.push(new MapState(gsm));}
+        if(pressed){
+            pressed=false;
+            gsm.push(new MapState(gsm));}
     }
     private void selectAbiltiy(){
         if(dtSel >.7f) {
-            pressed = true;
-            AbilityMod.enableAbility(hovering.getMod());
+            if(MapState.inGame){
+                player.getAbility().upgrade();
+            }else {
+                pressed = true;
+                player.setAbility(hovering);
+            }
             dtSel = 0;
         }
     }
@@ -132,8 +140,17 @@ public class AbilitySelectState extends State implements ControllerListener {
         Game.getFont().draw(sb,"Select Ability",viewX+ titlex,viewY+titley);
         Game.getFont().draw(sb,"-PRIMARY-",viewX+titlex+100,viewY+titley-20);
         Game.getFont().draw(sb,"-SECONDARY-",viewX+titlex+100,viewY+titley-170);
-        for(int i = 0; i< ImageLoader.abilities.size(); i++){
-            sb.draw(ImageLoader.abilities.get(i),viewX+ i*150+Game.WIDTH/2,viewY+ Game.HEIGHT*2/3);
+
+        if(MapState.inGame) {
+            sb.draw(player.getAbility().getIcon(), viewX + Game.WIDTH / 2, viewY + (Game.HEIGHT * 2 / 3));
+            for (int i = 0; i < ImageLoader.abilities2.size(); i++) {
+                sb.draw(ImageLoader.abilities2.get(i), viewX + i * 150 + Game.WIDTH / 2, viewY + (Game.HEIGHT * 2 / 3) - 100);
+            }
+        }
+        else{
+            for(int i = 0; i< ImageLoader.abilities.size(); i++){
+                sb.draw(ImageLoader.abilities.get(i),viewX+ i*150+Game.WIDTH/2,viewY+ Game.HEIGHT*2/3);
+            }
         }
         if(posx<0)posx=0;
         if(posy<0)posy=0;
@@ -146,20 +163,15 @@ public class AbilitySelectState extends State implements ControllerListener {
         drawInfo(sb);
     }
     private void drawInfo(SpriteBatch sb){
-        ArrayList<Ability> temp=null;
-        switch (posy){
-            case 0:{
-                temp=abilityList;
-                break;
-            }case 1:{
-                temp=secondaryList;
-            }
-        }
+        ArrayList<Ability> temp=new ArrayList<>();
         if(posy==0){
-            temp=abilityList;
+            if(MapState.inGame){
+                temp.add(player.getAbility());
+            }else{
+                temp=abilityList;}
         }
         sb.begin();
-        if(posy==0 &&temp.get(posx) != null) {
+        if(posy==0 &&posx<temp.size()) {
             for (int i = 0; i < temp.get(posx).details().size(); i++) {
                 Game.getFont().draw(sb, temp.get(posx).details().get(i), viewX + 30, viewY + Game.HEIGHT * 2 / 3 - (i * 20));
                 hovering = temp.get(posx);

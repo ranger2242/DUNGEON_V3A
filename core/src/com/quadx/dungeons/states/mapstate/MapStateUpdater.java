@@ -8,10 +8,19 @@ import com.quadx.dungeons.*;
 import com.quadx.dungeons.abilities.Investor;
 import com.quadx.dungeons.abilities.Warp;
 import com.quadx.dungeons.attacks.Attack;
-import com.quadx.dungeons.items.*;
+import com.quadx.dungeons.attacks.AttackMod;
+import com.quadx.dungeons.items.EnergyPlus;
+import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.items.ManaPlus;
+import com.quadx.dungeons.items.Potion;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
-import com.quadx.dungeons.states.*;
+import com.quadx.dungeons.states.AbilitySelectState;
+import com.quadx.dungeons.states.GameStateManager;
+import com.quadx.dungeons.states.HighScoreState;
+import com.quadx.dungeons.states.ShopState;
+import com.quadx.dungeons.tools.DebugTextInputListener;
+import com.quadx.dungeons.tools.Tests;
 
 import java.util.ArrayList;
 
@@ -30,6 +39,7 @@ public class MapStateUpdater extends MapState{
     static ArrayList<Integer> fpsList= new ArrayList<>();
     public static boolean displayFPS=true;
 
+
     private static float dtDig = 0;
     private static float dtRegen = 0;
     private static float dtEnergyRe = 0;
@@ -46,7 +56,6 @@ public class MapStateUpdater extends MapState{
     public static float dtClearHits =0;
     public static float dtInvSwitch = 0;
     public static int spawnCount=1;
-
     public MapStateUpdater(GameStateManager gsm) {
         super(gsm);
     }
@@ -70,26 +79,32 @@ public class MapStateUpdater extends MapState{
 
     }
     private static void regenPlayer(float dt) {
-        dtRegen += dt; //move all this shit to PLAYER
-        if (player.safe) player.dtSafe += dt;
-        if (dtEnergyRe > .2 && player.getEnergy() < player.getEnergyMax()) {
-            player.setEnergy(player.getEnergy() + player.getEnergyRegen());
-            if (player.getEnergy() > player.getEnergyMax()) player.setEnergy(player.getEnergyMax());
-            dtEnergyRe = 0;
+        if(!player.infiniteRegen) {
+            dtRegen += dt; //move all this shit to PLAYER
+            if (player.safe) player.dtSafe += dt;
+            if (dtEnergyRe > .2 && player.getEnergy() < player.getEnergyMax()) {
+                player.setEnergy(player.getEnergy() + player.getEnergyRegen());
+                if (player.getEnergy() > player.getEnergyMax()) player.setEnergy(player.getEnergyMax());
+                dtEnergyRe = 0;
+            }
+            if (dtRegen > .3) {
+                if (player.getAbility().getClass().equals(Investor.class))
+                    Investor.generatePlayerGold();
+                if (player.getMana() < player.getManaMax())
+                    player.setMana(player.getMana() + player.getManaRegenRate());
+                if (player.getHp() < player.getHpMax())
+                    player.setHp(player.getHp() + player.getHpRegen());
+                dtRegen = 0;
+            }
+            player.attackList.stream().filter(a -> a.getMod() == 6 && (player.dtSafe > a.getLevel())).forEach(a -> {
+                player.safe = false;
+                player.dtSafe = 0;
+            });
+        }else{
+            player.setHp(player.getHpMax());
+            player.setMana(player.getManaMax());
+            player.setEnergy(player.getEnergyMax());
         }
-        if (dtRegen > .3) {
-            if (AbilityMod.investor)
-                Investor.generatePlayerGold();
-            if (player.getMana() < player.getManaMax())
-                player.setMana(player.getMana() + player.getManaRegenRate());
-            if (player.getHp() < player.getHpMax())
-                player.setHp(player.getHp() + player.getHpRegen());
-            dtRegen = 0;
-        }
-        player.attackList.stream().filter(a -> a.getMod() == 6 && (player.dtSafe > a.getLevel())).forEach(a -> {
-            player.safe = false;
-            player.dtSafe = 0;
-        });
     }
     private static void getMovementInput(){
         int x=0,y=0;
@@ -211,61 +226,75 @@ public class MapStateUpdater extends MapState{
             }
         }
     }
-    public static void moveMonsters() {
-        for (Monster m : monsterList) {
-            m.updateVariables(Gdx.graphics.getDeltaTime());
-            if (m.getdtMove() > m.getMoveSpeed()) {
-                m.move();
+    static void moveMonsters() {
+        if(!Tests.allstop) {
+
+            for (Monster m : monsterList) {
+                m.updateVariables(Gdx.graphics.getDeltaTime());
+                if (m.getdtMove() > m.getMoveSpeed()) {
+                    m.move();
+                }
             }
         }
     }
-    public static void updateVariables(float dt){
+    static void updateVariables(float dt) {
+        Runtime runtime = Runtime.getRuntime();
+        long maxMemory = runtime.maxMemory()/(1024*1024);
+        long allocatedMemory = runtime.totalMemory()/(1024*1024);
+        //long freeMemory = runtime.freeMemory()/1024;
+        Tests.currentMemUsage=allocatedMemory;
+        Tests.memUsageList.add((double) (allocatedMemory/maxMemory));
+        if(Tests.memUsageList.size()>Tests.meterListMax)
+            Tests.memUsageList.remove(0);
+
         updateCamPosition();
         regenPlayer(dt);
+        AttackMod.updaterVariables(dt);
         player.updateVariables(dt);
         MapStateRender.updateVariables(dt);
-        if(dtFPS>.05){
-            fps= 1/Gdx.graphics.getDeltaTime();
-            fpsList.add((int)fps);
-            if(fpsList.size()>50){
+        //Tests.reloadMap(dt);
+        if (dtFPS > .05) {
+            fps = 1 / Gdx.graphics.getDeltaTime();
+            fpsList.add((int) fps);
+            if (fpsList.size() > Tests.meterListMax) {
                 fpsList.remove(0);
             }
-            dtFPS=0;
-        }else{
-            dtFPS+=dt;
+            dtFPS = 0;
+        } else {
+            dtFPS += dt;
         }
-        if(dtClearHits<=.1)
-            dtClearHits+=dt;
-        if(dtRespawn<=10f)
-            dtRespawn+=dt;
-        if(dtDig<=player.getMoveSpeed())
+        if (dtClearHits <= .1)
+            dtClearHits += dt;
+        if (dtRespawn <= 10f)
+            dtRespawn += dt;
+        if (dtDig <= player.getMoveSpeed())
             dtDig += dt;
-        if(dtItem<=itemMinTime)
+        if (dtItem <= itemMinTime)
             dtItem += dt;
-        if(dtInfo<=.4)
+        if (dtInfo <= .4)
             dtInfo += dt;
-        if(dtStatPopup<=.4)
+        if (dtStatPopup <= .4)
             dtStatPopup += dt;
-        if(dtMap<=.6)
+        if (dtMap <= .6)
             dtMap += dt;
-        if(dtEnergyRe<=.2)
+        if (dtEnergyRe <= .2)
             dtEnergyRe += dt;
-        if(dtCollision<=Game.frame/2)
+        if (dtCollision <= Game.frame / 2)
             dtCollision += dt;
-        if(dtScrollAtt<=.3)
-            dtScrollAtt+=dt;
-        if(dtAttack<=attackMintime)
-            dtAttack +=dt;
-        if(dtInvSwitch<=.3)
+        if (dtScrollAtt <= .3)
+            dtScrollAtt += dt;
+        if (dtAttack <= attackMintime)
+            dtAttack += dt;
+        if (dtInvSwitch <= .3)
             dtInvSwitch += dt;
-        if(dtShowStats<=.2)
-            dtShowStats+=dt;
+        if (dtShowStats <= .2)
+            dtShowStats += dt;
         if (Warp.isEnabled()) {
             Warp.updateTimeCounter();
         }
         if (effectLoaded) effect.update(Gdx.graphics.getDeltaTime());
     }
-    public static void spawnMonsters(){
+    static void spawnMonsters(){
         if(dtRespawn>10f) {
             for (int i = 0; i < spawnCount; i++) {
                 if(monsterList.size()<150) {
@@ -280,21 +309,18 @@ public class MapStateUpdater extends MapState{
                         c.setMon(true);
                         c.setMonsterIndex(monsterList.indexOf(m));
                         liveCellList.set(index, c);
-                        m.setMonListIndex(monsterList.indexOf(m));
-                        m.setLiveCellIndex(index);
-                        //liveCellList.get(index).setMon(true);
-                        //liveCellList.get(index).setMonsterIndex(monsterList.indexOf(m));
                         Game.console("MList:" + monsterList.indexOf(m));
                         spawnCount++;
                         MapStateRender.setHoverText("!", .5f, Color.RED, player.getPX(), player.getPY(), true);
                     }
                 }
             }
+            Monster.reindexMons=true;
             GridManager.loadLiveCells();
             dtRespawn=0;
         }
     }
-    public static void compareItemToEquipment(){
+    static void compareItemToEquipment(){
         try {
             if (!player.invList.isEmpty()) {
                 if (player.invList.get(MapStateRender.inventoryPos).get(0).isEquip) {
@@ -319,18 +345,19 @@ public class MapStateUpdater extends MapState{
             Game.getFont().setColor(Color.WHITE);
         }
     }
-    public static void checkPlayerIsAlive() {
+    static void checkPlayerIsAlive() {
         if (player.checkIfDead()) {
             HighScoreState.addScore(player.getScore());
             player = null;
             player = new Player();
             AbilitySelectState.pressed = false;
             inGame = false;
+            AttackMod.resetAttacks();
             gsm.push(new HighScoreState(gsm));
 
         }
     }
-    public static void buttonHandler() {
+    static void buttonHandler() {
         getMovementInput();
         setAim();
         //controller functions------------------------------------------------------
@@ -385,59 +412,132 @@ public class MapStateUpdater extends MapState{
                 dtMap = 0;
             }
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.F2)) {//to main menu
+        if (Gdx.input.isKeyPressed(Input.Keys.F2)) {//show FPS module
             if(dtItem>.2){
                 displayFPS=!displayFPS;
                 dtItem=0;
             }
         }
-        /*
-        if (Gdx.input.isKeyPressed(Input.Keys.F8) && debug) {//change stats
+        if(Gdx.input.isKeyPressed(Input.Keys.F3)){
+            Tests.calcAvgMapLoadTime();
+            Tests.loadEmptyMap();
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.F6)) {
+            player.setHpMax(500);
+            player.setManaMax(500);
+            player.setEnergyMax(500);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.F7) && debug) {//infinite regen
+            if(Gdx.input.isKeyPressed(Input.Keys.MINUS)){
+                player.infiniteRegen=false;
+            }else
+                player.infiniteRegen=true;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.F8) && debug) {//add gold
             if(Gdx.input.isKeyPressed(Input.Keys.MINUS)&& player.getGold()>1){
                 player.setGold(player.getGold()-1000);
             }else
                 player.setGold(player.getGold()+1000);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.F9) && debug) {//change stats
+        if (Gdx.input.isKeyPressed(Input.Keys.F9) && debug) {//add att
             if(Gdx.input.isKeyPressed(Input.Keys.MINUS)&& player.getAttack()>1){
                 player.setAttack(player.getAttack()-1);
             }else
             player.setAttack(player.getAttack()+1);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.F10) && debug) {//change stats
+        if (Gdx.input.isKeyPressed(Input.Keys.F10) && debug) {//add def
             if(Gdx.input.isKeyPressed(Input.Keys.MINUS )&& player.getDefense()>1) {
                 player.setDefense(player.getDefense() - 1);
             }else
                 player.setDefense(player.getDefense() + 1);
 
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.F11) && debug) {//change stats
+        if (Gdx.input.isKeyPressed(Input.Keys.F11) && debug) {//add int
             if(Gdx.input.isKeyPressed(Input.Keys.MINUS)&& player.getIntel()>1) {
                 player.setIntel(player.getIntel() - 1);
             }else
                 player.setIntel(player.getIntel() + 1);
 
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.F12) && debug) {//change stats
+        if (Gdx.input.isKeyPressed(Input.Keys.F12) && debug) {//add spd
             if(Gdx.input.isKeyPressed(Input.Keys.MINUS)&& player.getSpeed()>1) {
                 player.setSpeed(player.getSpeed() - 1);
             }else
                 player.setSpeed(player.getSpeed() + 1);
-        }*/
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.X)){
+            if(dtItem>itemMinTime){
+                try {
+                    player.invList.get(MapStateRender.inventoryPos).remove(0);
+                    if (player.invList.get(MapStateRender.inventoryPos).isEmpty()) {
+                        player.invList.remove(MapStateRender.inventoryPos);
+                        if (MapStateRender.inventoryPos >= player.invList.size())
+                            MapStateRender.inventoryPos = player.invList.size();
+                    }
+                }catch (IndexOutOfBoundsException e){}
+            }
+        }
         if (Gdx.input.isKeyPressed(Input.Keys.M) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)
                 || Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {//dig
             activateDig();
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.C)){//open charater menu
+        if(Gdx.input.isKeyPressed(Input.Keys.C)){//show stats
             if(dtShowStats>.2) {
                 MapStateRender.showStats = !MapStateRender.showStats;
                 dtShowStats=0;
             }
         }
+        if(Gdx.input.isKeyPressed(Input.Keys.T)){//open debug prompt
+            DebugTextInputListener listener = new DebugTextInputListener();
+            Gdx.input.getTextInput(listener, "Command", "","");
+        }
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {//test shopstate
             pause=true;
             cam.position.set(0, 0, 0);
             gsm.push(new ShopState(gsm));
+        }
+    }
+    static void collisionHandler() {
+        int x=player.getX();
+        int y=player.getY();
+        Cell c = GridManager.dispArray[x][y];
+        int index=liveCellList.indexOf(c);
+        if(c .getState())
+        if (x == c.getX() && y == c.getY()) {
+            if (c.hasLoot()) {
+                MapStateRender.dtLootPopup = 0;
+                liveCellList.get(index ).setHasLoot(false);
+                player.lastItem=liveCellList.get(index).getItem();
+                player.useItem(player.lastItem);
+                liveCellList.get(index).setItem(null);
+            }
+            if (c.hasCrate()) {
+                int x1=liveCellList.get(index).getBoosterItem();
+                if(x1==0){
+                    player.useItem(new EnergyPlus());}
+                else if(x1==1){
+                    player.useItem(new Potion());
+                }else if(x1==2){
+                    player.useItem(new ManaPlus());
+                }else{
+
+                    openCrate(index);
+                }
+                liveCellList.get(index).setBoosterItem(-1);
+                liveCellList.get(index).setCrate(false);
+                liveCellList.get(index).setItem(null);
+            }
+            if (c.hasWarp()) {
+                if(player.getAbilityPoints() !=0){
+                    gsm.push(new AbilitySelectState(gsm));
+                }
+                player.floor++;
+                gm.initializeGrid();
+            }
+            if (c.getShop()) {
+                liveCellList.get(index).setShop(false);
+                gsm.push(new ShopState(gsm));
+            }
         }
     }
     public static void setAim(){
@@ -469,45 +569,6 @@ public class MapStateUpdater extends MapState{
         if (down) c='s';
         if (left) c='a';
         lastPressed =c;
-    }
-    public static void collisionHandler() {
-        int x=player.getX();
-        int y=player.getY();
-        Cell c = GridManager.dispArray[x][y];
-        int index=liveCellList.indexOf(c);
-        if(c .getState())
-        if (x == c.getX() && y == c.getY()) {
-            if (c.hasLoot()) {
-                MapStateRender.dtLootPopup = 0;
-                makeGold(player.level);
-                liveCellList.get(index ).setHasLoot(false);
-                liveCellList.get(index).setItem(null);
-                player.lastItem=new Gold();
-            }
-            if (c.hasCrate()) {
-                int x1=liveCellList.get(index).getBoosterItem();
-                if(x1==0){
-                    player.useItem(new EnergyPlus());}
-                else if(x1==1){
-                    player.useItem(new Potion());
-                }else if(x1==2){
-                    player.useItem(new ManaPlus());
-                }else{
-                    openCrate(index);
-                }
-                liveCellList.get(index).setBoosterItem(-1);
-                liveCellList.get(index).setCrate(false);
-                liveCellList.get(index).setItem(null);
-            }
-            if (c.hasWarp()) {
-                player.floor++;
-                gm.initializeGrid();
-            }
-            if (c.getShop()) {
-                liveCellList.get(index).setShop(false);
-                gsm.push(new ShopState(gsm));
-            }
-        }
     }
 
 }

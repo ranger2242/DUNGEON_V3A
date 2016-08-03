@@ -2,13 +2,15 @@ package com.quadx.dungeons;
 
 
 import com.badlogic.gdx.graphics.Texture;
-import com.quadx.dungeons.items.*;
-import com.quadx.dungeons.items.equipment.Equipment;
+import com.quadx.dungeons.items.Gold;
+import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.Map2State;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
 import com.quadx.dungeons.states.mapstate.MapStateUpdater;
+import com.quadx.dungeons.tools.Tests;
+import com.quadx.dungeons.tools.Timer;
 import com.quadx.dungeons.tools.WallPattern;
 
 import java.util.ArrayList;
@@ -28,23 +30,37 @@ public class GridManager {
     private static int liveCount=0;
     public static Cell[][] dispArray;
     public static final int res = Map2State.res;
+    public static Timer mapLoadTime;
 
     public void initializeGrid() {
+        mapLoadTime=new Timer("MapLoadTime");
+        mapLoadTime.start();
         MapStateUpdater.spawnCount=1;
         MapStateUpdater.dtRespawn=0;
         player.setMana(player.manaMax);
         player.setEnergy(player.getEnergyMax());
+        Timer t=new Timer();
+        t.start();
         clearMonsterList();
-
         createMap();
         plotLoot();
         plotCrates();
         plotShop();
         plotWarps();
-
-        plotMonsters();
+        if(!Tests.nospawn)
+            plotMonsters();
+        t.end();
+        out("4:"+t.runtime());
+       // Game.console("7:"+t.runtime());
+        t.start();
         plotPlayer();
+        t.end();
+      //  Game.console("8:"+t.runtime());
         MapStateRender.showCircle = true;
+        mapLoadTime.end();
+        Tests.mapLoadTimes.add(mapLoadTime.getElapsedD());
+        out(GridManager.mapLoadTime.runtime());
+
     }
     private static ArrayList<Cell> getSurroundingCells(int x, int y){
         ArrayList<Cell> list=new ArrayList<>();
@@ -82,11 +98,11 @@ public class GridManager {
             }
         }
     }
-    public void clearArea(int x, int y, boolean player) {
+    public void clearArea(int x, int y, boolean isPlayer) {
         ArrayList<Cell> temp= getSurroundingCells(x,y);
         temp.stream().filter(c -> !c.getState()).forEach(Cell::setState);
         temp.clear();
-        if (player && AbilityMod.modifier==1) {//checks if players dig ability is active
+        if (isPlayer && player.hasDigPlus()) {//checks if players dig ability is active
             if (MapState.lastPressed == 'd' ||MapState.lastPressed == 'a')
                 clearDigPlusCells(9,3,x,y);
             if (MapState.lastPressed == 's' ||MapState.lastPressed == 'w')
@@ -167,16 +183,14 @@ public class GridManager {
     }
     public static void loadLiveCells(){
         liveCellList.clear();
-        int count=0;
         for(int i=0;i<res;i++){
             for(int j=0;j<res;j++){
                         dispArray[i][j].setCords(i,j);
                         liveCellList.add(dispArray[i][j]);
-                        count++;
             }
         }
     }
-    private void splitMapDataToList() {
+    private static void splitMapDataToList() {
         liveCellList.clear();
         liveCount=0;
         for (int i = 0; i < res; i++) {
@@ -196,47 +210,49 @@ public class GridManager {
         int index = rn.nextInt(liveCellList.size());
         Cell c = liveCellList.get(index);
         while (!placed) {
-            while (!(!c.getWater() && c.getState())) {
+            while (c.getWater()) {
+
                 index = rn.nextInt(liveCellList.size());
                 c = liveCellList.get(index);
+
             }
+            liveCellList.get(index).setState();
             int x = c.getX();
             int y = c.getY();
             int count = 0;
-            if (x - 1 >= 0 && x + 1 < res && y - 1 >= 0 && y + 1 < res) {
-                if (dispArray[x + 1][y].hasWater) count++;
-                if (dispArray[x - 1][y].hasWater) count++;
-                if (dispArray[x][y + 1].hasWater) count++;
-                if (dispArray[x][y - 1].hasWater) count++;
-                if (count < 4) {
-                    placed = true;
-                    MapState.warpX = x;
-                    MapState.warpY = y;
-                }
-            } else index = rn.nextInt(liveCellList.size());
+            for(Cell c1: getSurroundingCells(x,y)){
+                if(c1.hasWater) count++;
+            }
+            if (count < 7) {
+                placed = true;
+                MapState.warpX = x;
+                MapState.warpY = y;
+            }else index = rn.nextInt(liveCellList.size());
         }
         liveCellList.get(index).setWarp();
     }
-    private void plotMonsters() {
+    public static void plotMonsters() {
         if (player.getFloor() == 1)
             splitMapDataToList();
         int temp = (int) (liveCount * .01);//calculate number of monsters
         while (temp > 0) {
-            Monster m = Monster.getNew();
-            if(rn.nextFloat()<.05)m.setHit();
             int listSize = monsterList.size();
             int point = rn.nextInt(liveCellList.size());
             Cell c = liveCellList.get(point);
-            c.setState();
-            m.setMonListIndex(listSize + 1);
-            m.setLiveCellIndex(point);
-            c.setMonster(m);
-            monsterList.add(c.getMonster());
-            c.setMonsterIndex(listSize + 1);
-            liveCellList.set(point, c);
+            if(c.getState()) {
+                Monster m = Monster.getNew();
+                if(rn.nextFloat()<.05)m.setHit();
+                c.setState();
+                m.setLiveCellIndex(point);
+                c.setMonster(m);
+                monsterList.add(c.getMonster());
+                c.setMonsterIndex(listSize + 1);
+                liveCellList.set(point, c);
+            }
             temp--;
 
         }
+        Monster.reindexMons=true;
     }
     private void plotShop() {
         int index = rn.nextInt(liveCellList.size());
@@ -275,24 +291,7 @@ public class GridManager {
                 int x = rn.nextInt(3);
                 liveCellList.get(index).setBoosterItem(x);
             } else {
-                int q = rn.nextInt(14) + 1;
-                if (q >= 11) {
-                    Item i = new Gold();
-                    liveCellList.get(index).setItem(i);
-                } else {
-                    Item item = new Item();
-                    if (q == 1 || q == 2) item = new AttackPlus();
-                    else if (q == 3 || q == 4) item = new DefPlus();
-                    else if (q == 5 || q == 6) item = new IntPlus();
-                    else if (q == 7 || q == 8) item = new SpeedPlus();
-                    else if (q == 9 || q == 10) {
-                        if (rn.nextFloat() < .1) {
-                            item = new SpellBook();
-                        } else
-                            item = Equipment.generateEquipment();
-                    }
-                    liveCellList.get(index).setItem(item);
-                }
+                    liveCellList.get(index).setItem(Item.generate());
             }
             liveCellList.get(index).setCrate(true);
         }

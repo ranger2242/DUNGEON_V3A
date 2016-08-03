@@ -2,6 +2,7 @@ package com.quadx.dungeons;
 
 import com.badlogic.gdx.graphics.Color;
 import com.quadx.dungeons.attacks.Attack;
+import com.quadx.dungeons.attacks.Sacrifice;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
 
@@ -20,24 +21,26 @@ public class Damage {
     private static final Random rn =new Random();
 
     public static int calcPlayerDamage(Attack att, Monster m){
-        double a=((2*(double)player.getLevel()+10)/250);
-        double b;
-        double c=att.getPower();
-        if(att.getType()==1){
-            b= ((double)(player.getAttack()+player.getAttackMod())/m.getDefense());
+        if(att.getClass().equals(Sacrifice.class)){
+            return (int) m.getHpMax();
+        }else {
+            double a = ((2 * (double) player.getLevel() + 10) / 250);
+            double b;
+            double c = att.getPower();
+            if (att.getType() == 1) {
+                b = (double) player.getAttComp() / m.getDefense();
+            } else if (att.getType() == 2 || att.getType() == 4) {
+                b = (double) player.getIntComp() / m.getIntel();
+            } else b = 0;
+            damage = (int) (a * b * c);
+            if (damage < 0) //checks for negative damage
+                damage = defaultDamage;
+            if (rn.nextFloat() < .1) {
+                damage *= 1.15;
+                MapStateRender.setHoverText("-CRITICAL-", .2f, Color.BLUE, m.getPX(), m.getPY(), true);
+            }
+            return damage;
         }
-        else if(att.getType()==2){
-            b= ((double)(player.getIntel()+player.getIntelMod())/m.getDefense());
-        }
-        else b=0;
-        damage =(int) (a *b * c );
-        if (damage < 0) //checks for negative damage
-            damage = defaultDamage;
-        if(rn.nextFloat()<.1){
-            damage*=1.15;
-            MapStateRender.setHoverText("-CRITICAL-",.2f, Color.BLUE,m.getPX(), m.getPY(),true);
-        }
-        return damage;
     }
     public static int monsterPhysicalDamage(Player p, Monster m, int power){
         int baseDamage=(int)((m.getAttack()*3)+(power))-((p.getDefense()));

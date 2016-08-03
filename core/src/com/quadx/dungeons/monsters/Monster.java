@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Cell;
 import com.quadx.dungeons.Damage;
 import com.quadx.dungeons.GridManager;
+import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
 import com.quadx.dungeons.tools.StatManager;
@@ -12,8 +13,7 @@ import com.quadx.dungeons.tools.StatManager;
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.GridManager.dispArray;
-import static com.quadx.dungeons.GridManager.rn;
+import static com.quadx.dungeons.GridManager.*;
 import static com.quadx.dungeons.states.mapstate.MapState.out;
 import static javax.swing.JSplitPane.DIVIDER;
 
@@ -22,6 +22,8 @@ import static javax.swing.JSplitPane.DIVIDER;
  */
 @SuppressWarnings("ALL")
 public class Monster {
+    public static boolean reindexMons=false;
+
     public MonAIv1 ai= new MonAIv1();
     protected Texture[] icons= new Texture[4];
     protected Texture icon = null;
@@ -32,6 +34,7 @@ public class Monster {
     protected boolean clockwise = rn.nextBoolean();
     protected boolean willCircle = rn.nextBoolean();
     protected boolean circling = false;
+    protected boolean blind = false;
     protected boolean hit = false;
     protected boolean moved = false;
     protected boolean aa = false;
@@ -194,7 +197,9 @@ public class Monster {
         }
     }
     public void setHit() {
-        hit = true;
+        if(!blind) {
+            hit = true;
+        }
     }
     public void setIntel(double intel) {
         this.intel = intel;
@@ -334,7 +339,7 @@ public class Monster {
         boolean placed = false;
         boolean cont = false;
         //checks if there is monster already on chosen cell
-        for (Monster c : GridManager.monsterList) {
+        for (Monster c : monsterList) {
             if (c.getX() == pos[0] && c.getY() == pos[1]) {
                 cont = true;
             }
@@ -407,12 +412,28 @@ public class Monster {
             player.checkLvlUp();
             MapState.makeGold(level);
             try {
-                GridManager.monsterList.remove(this);
+                monsterList.remove(this);
                 dispArray[x][y].clearMonster();
             } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {}
             return true;
         }
         else
             return false;
+    }
+    public static void reindexMonsterList(){
+        if(reindexMons) {
+            for (Monster m : monsterList) {
+                m.setMonListIndex(monsterList.indexOf(m));
+            }
+            reindexMons=false;
+        }
+    }
+
+    public void takeEffect(Attack attack) {
+        if(attack.getName().equals("Blind")) {
+            blind=true;
+            hit = false;
+            sight=0;
+        }
     }
 }

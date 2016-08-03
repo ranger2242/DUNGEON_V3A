@@ -4,11 +4,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.attacks.Attack;
+import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.tools.ImageLoader;
+
+import static com.quadx.dungeons.GridManager.rn;
 
 public class Item
 {
     protected String name;
+    protected int value=0;
+
     protected int cost;
     protected int hpmod;
     protected int manamod;
@@ -71,5 +76,35 @@ public class Item
 
     public void setIcon(Texture icon) {
         this.icon = icon;
+    }
+
+    public int getValue() {
+        return value;
+    }
+    public static Item generateNoGold() {
+        Item a;
+        int q = rn.nextInt(10) + 1;
+            a = new Item();
+            if (q == 1 || q == 2) a = new AttackPlus();
+            else if (q == 3 || q == 4) a = new DefPlus();
+            else if (q == 5 || q == 6) a = new IntPlus();
+            else if (q == 7 || q == 8) a = new SpeedPlus();
+            else if (q == 9 || q == 10) {
+                if (rn.nextFloat() < .1) {
+                    a = new SpellBook();
+                } else
+                    a = Equipment.generateEquipment();
+            }
+        return a;
+    }
+    public static Item generate() {
+        Item a;
+        int q = rn.nextInt(14) + 1;
+        if (q >= 11) {
+            a = new Gold();
+        } else {
+            a =Item.generateNoGold();
+        }
+        return a;
     }
 }

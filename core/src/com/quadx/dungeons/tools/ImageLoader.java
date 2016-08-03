@@ -12,7 +12,8 @@ import java.util.ArrayList;
 public class ImageLoader {
     public static final ArrayList<Texture> attacks = new ArrayList<>();
     public static final ArrayList<Texture> abilities = new ArrayList<>();
-    public static final Texture[] floors=new Texture[13];
+    public static final ArrayList<Texture> abilities2 = new ArrayList<>();
+    public static final Texture[] floors=new Texture[17];
     public static final Texture[] w =new Texture[48];
     public static final Texture[] a=new Texture[48];
     public static final Texture[] gold=new Texture[3];
@@ -25,29 +26,37 @@ public class ImageLoader {
     public static final Texture[] en7=new Texture[4];
     public static final Texture[] en8=new Texture[4];
     public static final Texture[] en9=new Texture[4];
-    public static final Texture[] energy=new Texture[3];
 
+    public static final Texture[] potion = new Texture[3];
+    public static final Texture[] mana = new Texture[3];
+    public static final Texture[] energy = new Texture[3];
 
-
-    public static final Texture potion = new Texture("images\\icons\\items\\icHpSmall.png");
-    public static final Texture mana = new Texture("images\\icons\\items\\icMSmall.png");
     public static final Texture crate=new Texture("images\\icons\\items\\icCrate.png");
     public static final Texture warp=new Texture("images\\tiles\\icWarp.png");
     public static final Texture spellbook= new Texture("images\\icons\\items\\icSpellBook.png");
 
     public ImageLoader(){
-        for(int i=0;i<13;i++){
+        for(int i=0;i<17;i++){
             floors[i]=new Texture("images\\tiles\\floor\\f"+(i)+".png");
         }
         for(int i=0;i<48;i++){
                 a[i] = new Texture("images\\tiles\\walls\\a" + (i) + ".png");
         }
+        potion[0]=new Texture("images\\icons\\items\\icHpSmall.png");
+        potion[1]=new Texture("images\\icons\\items\\icHpMed.png");
+        potion[2]=new Texture("images\\icons\\items\\icHpLarge.png");
+
+        mana[0]=new Texture("images\\icons\\items\\icMSmall.png");
+        mana[1]=new Texture("images\\icons\\items\\icMMed.png");
+        mana[2]=new Texture("images\\icons\\items\\icMLarge.png");
+
+        energy[0]=new Texture("images\\icons\\items\\icESmall.png");
+        energy[1]=new Texture("images\\icons\\items\\icEMed.png");
+        energy[2]=new Texture("images\\icons\\items\\icELarge.png");
+
         gold[0]=new Texture("images\\icons\\items\\icCoinS.png");
         gold[1]=new Texture("images\\icons\\items\\icCoinM.png");
         gold[2]=new Texture("images\\icons\\items\\icCoinL.png");
-        energy[0]=new Texture("images\\icons\\items\\icESmall.png");
-//        energy[1]=new Texture("images\\icons\\items\\icEMid.png");
-//        energy[2]=new Texture("images\\icons\\items\\icELarge.png");
         for(int i=0;i<48;i++){
                 w[i] = new Texture("images\\tiles\\water\\w" +i + ".png");
         }
@@ -63,6 +72,7 @@ public class ImageLoader {
         abilities.add(new Texture("images\\icons\\abilities\\icQuick.png"));
         abilities.add(new Texture("images\\icons\\abilities\\icBrawler.png"));
 
+        abilities2.add(new Texture("images\\icons\\abilities\\icDigPlus.png"));
     }
     private void loadAttacks(){
         attacks.add(new Texture("images\\icons\\attacks\\icBlind.png"));

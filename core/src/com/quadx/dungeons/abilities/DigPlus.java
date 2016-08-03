@@ -37,6 +37,31 @@ public class DigPlus extends Ability {
         return 1;
     }
 
+    @Override
+    public void l1() {
+
+    }
+
+    @Override
+    public void l2() {
+
+    }
+
+    @Override
+    public void l3() {
+
+    }
+
+    @Override
+    public void l4() {
+
+    }
+
+    @Override
+    public void l5() {
+
+    }
+
     public ArrayList<String> details() {
         output.clear();
         output.add("- DIG+ -");

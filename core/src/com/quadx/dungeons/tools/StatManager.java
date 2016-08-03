@@ -2,7 +2,6 @@ package com.quadx.dungeons.tools;
 
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.monsters.Monster;
-import com.quadx.dungeons.states.mapstate.MapState;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -45,6 +44,7 @@ public class StatManager {
     public static int totalItems=0;
     public static int totalGold=0;
     public static Monster killer =null;
+    public static Timer gameTime=new Timer("Game Time");
 
     public StatManager(){
     }
@@ -59,10 +59,9 @@ public class StatManager {
     public static ArrayList<Double> getFinalStats(){
         NumberFormat formatter = new DecimalFormat("#0.00");
         stats.clear();
-        long millis = System.nanoTime();
-        double gameTime=(double) ( millis-MapState.millis)/ 1000000000.0;
-        int x= (int) gameTime;
-        double gameTimeMin=(gameTime/60);
+        gameTime.end();
+        double gameTimed=Double.valueOf(gameTime.getElapsed());
+        double gameTimeMin=(gameTimed/60);
         stats.add("Game Time (s): ");
         stats.add("Shots Fired: ");
         stats.add("Shots Missed: ");
@@ -73,7 +72,7 @@ public class StatManager {
         stats.add("Gold/Min: ");
 
         ArrayList<Double> list=new ArrayList<>();
-        list.add(Double.valueOf(formatter.format( gameTime)));
+        list.add(Double.valueOf(formatter.format( gameTimed)));
         list.add((double) shotsFired);
         list.add((double) shotsMissed);
         accurcy=((float)shotsFired-(float)shotsMissed)/(float)shotsFired;

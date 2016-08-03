@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.ArrayList;
 
@@ -18,7 +19,7 @@ public class Quick extends Ability {
    // protected ArrayList<String> output=new ArrayList<>();
 
     public Quick(){
-        icon= loadIcon("images/icons/abilities/icQuick.png");
+        icon= ImageLoader.abilities.get(3);
         details();
 
     }
@@ -29,7 +30,7 @@ public class Quick extends Ability {
     @Override
 
     public  void onActivate() {
-        player.setAbility(3);
+        player.setAbilityMod(3);
 
         Game.player.setMoveSpeed((float) (Game.player.getMoveSpeed()/1.5));
         Game.player.setSpeed(Game.player.getSpeed()*2);
@@ -54,6 +55,31 @@ public class Quick extends Ability {
     @Override
     public int getMod() {
         return 4;
+    }
+
+    @Override
+    public void l1() {
+
+    }
+
+    @Override
+    public void l2() {
+
+    }
+
+    @Override
+    public void l3() {
+
+    }
+
+    @Override
+    public void l4() {
+
+    }
+
+    @Override
+    public void l5() {
+
     }
 
     public  ArrayList<String> details() {

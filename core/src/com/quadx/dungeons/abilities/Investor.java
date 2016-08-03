@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.ArrayList;
 
@@ -19,7 +20,7 @@ public class Investor extends Ability {
     //protected static ArrayList<String> output=new ArrayList<>();
 
     public Investor(){
-        icon= loadIcon("images/icons/abilities/icInvestor.png");
+        icon=  ImageLoader.abilities.get(1);
         details();
     }
 
@@ -30,7 +31,7 @@ public class Investor extends Ability {
     @Override
 
     public void onActivate() {
-        player.setAbility(1);
+        player.setAbilityMod(1);
 
         Game.player.setHpRegen(Game.player.getHpRegen()*2);
       //  Game.player.setIntel(Game.player.getIntel()*2);
@@ -46,6 +47,31 @@ public class Investor extends Ability {
     @Override
     public int getMod() {
         return 5;
+    }
+
+    @Override
+    public void l1() {
+
+    }
+
+    @Override
+    public void l2() {
+
+    }
+
+    @Override
+    public void l3() {
+
+    }
+
+    @Override
+    public void l4() {
+
+    }
+
+    @Override
+    public void l5() {
+
     }
 
     public ArrayList<String> details() {

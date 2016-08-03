@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.ArrayList;
 
@@ -18,7 +19,7 @@ public class Mage extends Ability {
    // protected static ArrayList<String> output=new ArrayList<>();
 
     public Mage(){
-        icon= loadIcon("images/icons/abilities/icMage.png");
+        icon=  ImageLoader.abilities.get(3);
         details();
 
     }
@@ -29,7 +30,8 @@ public class Mage extends Ability {
     @Override
 
     public  void onActivate() {
-        player.setAbility(2);
+        player.setAbilityMod(2);
+        l1();
         Game.player.setMana(Game.player.getMana()*2);
         Game.player.setManaMax(Game.player.getManaMax()*2);
         Game.player.setManaRegen(Game.player.getManaRegenRate()*2);
@@ -49,6 +51,31 @@ public class Mage extends Ability {
     @Override
     public int getMod() {
         return 3;
+    }
+
+    @Override
+    public void l1() {
+
+    }
+
+    @Override
+    public void l2() {
+
+    }
+
+    @Override
+    public void l3() {
+
+    }
+
+    @Override
+    public void l4() {
+
+    }
+
+    @Override
+    public void l5() {
+
     }
 
     public ArrayList<String> details() {

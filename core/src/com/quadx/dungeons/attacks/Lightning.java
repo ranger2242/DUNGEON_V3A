@@ -10,7 +10,7 @@ import static com.quadx.dungeons.Game.player;
 public class Lightning extends Attack {
     public Lightning(){
         costGold=30000;
-        type=3;
+        type=2;
         int a=player.getManaMax();
         powerA = new int[]{80,90,110,130,150};
         costA =new int[]{a,a,a,a,a};

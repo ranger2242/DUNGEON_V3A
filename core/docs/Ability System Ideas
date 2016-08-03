@@ -1,0 +1,34 @@
+Tank
+L1
+standard
+
+L2
+1.2x DEF
+1.1x move
+Standard+ DEF Helmet
+cost 1
+
+L3
+1.3x DEF
+1.1x ATT
+1.2x move
+Standard+ DEF Ring
+cost 2
+
+L4
+1.4x DEF
+1.3x SPD
+1.1x INT
+1.5x HP Regen
+1.1x move
+Standard+ DEF Chest
+cost 3
+
+L5
+1.5x DEF
+1.2x INT
+1.2x SPD
+1.2x move
+Unlock Tank Special move
+Unlock Third secondary ability slot
+Legend DEF Legs

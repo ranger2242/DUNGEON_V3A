@@ -2,9 +2,8 @@ package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.quadx.dungeons.Game;
-import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.ArrayList;
 
@@ -16,7 +15,8 @@ import static com.quadx.dungeons.Game.player;
 @SuppressWarnings("DefaultFileTemplate")
 public class Tank extends Ability {
     public Tank() {
-        icon= loadIcon("images/icons/abilities/icTank.png");
+        name="Tank";
+        icon= ImageLoader.abilities.get(0);
         details();
     }
     @Override
@@ -26,19 +26,9 @@ public class Tank extends Ability {
     @Override
 
     public void onActivate() {
-        player.setAbility(1);
-
-        Game.player.setDefense(Game.player.getDefense()*2);
-        Game.player.setHp((int)(Game.player.getHp()*1.5));
-        Game.player.setHpMax((int)(Game.player.getHpMax()*1.5));        Game.player.setHpRegen(Game.player.getHpRegen()*2);
-        Game.player.setMoveSpeed((float) (Game.player.getMoveSpeed()*1.005));
-        MapState.out("----------------------------------");
-        MapState.out(Game.player.getName()+" activated the TANK ability!");
-        MapState.out("HP Max x1.5!");
-        MapState.out("HP Regen x2!");
-        MapState.out("DEF x2!");
-        MapState.out("Move Speed x.75!");
-        MapStateRender.setHoverText("Tank!!",1.5f, Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
+        player.setAbilityMod(0);
+        l1();
+        MapStateRender.setHoverText("Tank!!",1.5f, Color.WHITE, player.getPX(),player.getPY(),false);
 
     }
 
@@ -47,19 +37,64 @@ public class Tank extends Ability {
         return 6;
     }
 
+    @Override
+    public void l1() {
+        player.setxDefense(2);
+        player.setxHpMax(1.5);
+        player.setxHpRegen(2);
+        player.setxMoveSpeed(1.005);
+
+    }
+
+    @Override
+    public void l2() {
+        player.setxDefense(1.2);
+        player.setxMoveSpeed(.9);
+    }
+
+    @Override
+    public void l3() {
+
+    }
+
+    @Override
+    public void l4() {
+
+    }
+
+    @Override
+    public void l5() {
+
+    }
+
     public ArrayList<String> details() {
         output.clear();
-
-        output.add("-TANK-");
-        output.add("HP Max x1.5");
-        output.add("HP Regen x2");
-        output.add("DEF x2");
-        output.add("Move Speed x0.75                                                                                                                                                         ");
+        output.add("-"+name+"-");
+        switch (this.level){
+            case 1:{
+                output.add("HP Max x1.5");
+                output.add("HP Regen x2");
+                output.add("DEF x2");
+                output.add("Move Speed x0.75");
+                break;
+            }case 2:{
+                output.add("1.2x DEF");
+                output.add("1.1x Move Speed");
+                break;
+            }case 3:{
+                break;
+            }case 4:{
+                break;
+            }case 5:{
+                break;
+            }
+        }
+        output.add("Upgrade cost: "+upCost[level-1]+" AP");
         return output;
     }
 
     @Override
     public String getName() {
-        return "TANK";
+        return name;
     }
 }

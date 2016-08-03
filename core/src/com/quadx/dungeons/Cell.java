@@ -107,13 +107,10 @@ public class Cell {
         boosterItem=i;
         if(boosterItem==1){
             item=new Potion();
-            item.setIcon(ImageLoader.potion);
         }if(boosterItem==2){
             item=new ManaPlus();
-            item.setIcon(ImageLoader.mana);
         }if(boosterItem==0){
             item=new EnergyPlus();
-            item.setIcon(ImageLoader.energy[0]);
         }
     }
     public void setAttArea(boolean a){attArea=a;}
@@ -127,7 +124,7 @@ public class Cell {
             setTile(ImageLoader.floors[0]);
         }
         else{
-            setTile(ImageLoader.floors[rn.nextInt(13)]);
+            setTile(ImageLoader.floors[rn.nextInt(17)]);
 
         }
         isLive = true;

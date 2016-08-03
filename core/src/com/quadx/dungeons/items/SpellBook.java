@@ -53,7 +53,7 @@ public class SpellBook extends Item {
                 break;
             }
             case(7):{
-                attack=new Earthquake();
+                attack=new Quake();
                 break;
             }
             case(8):{

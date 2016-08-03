@@ -1,7 +1,7 @@
 package com.quadx.dungeons.states.mapstate;
 
 import com.quadx.dungeons.attacks.Attack;
-import com.quadx.dungeons.attacks.SpellMods;
+import com.quadx.dungeons.attacks.AttackMod;
 import com.quadx.dungeons.states.GameStateManager;
 
 import static com.quadx.dungeons.Game.player;
@@ -26,7 +26,8 @@ class MapStateExt extends MapState{
                     break;
                 }
                 case 2:
-                case 3: {
+                case 3:
+                case 4:{
                     condition = player.getMana() >= a.getCost();
                     break;
                 }
@@ -38,13 +39,14 @@ class MapStateExt extends MapState{
                         break;
                     }
                     case 2:
-                    case 3: {
+                    case 3:
+                    case 4:{
                         player.setMana(player.getMana() - a.getCost());
                         break;
                     }
                 }
                 MapState.attackCollisionHandler(i);
-                SpellMods.runMod(a);
+                AttackMod.runMod(a);
                 player.attackList.get(player.attackList.indexOf(a)).checkLvlUp();
 
             }

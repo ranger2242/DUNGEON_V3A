@@ -34,6 +34,31 @@ public class Warp extends Ability {
         return 7;
     }
 
+    @Override
+    public void l1() {
+
+    }
+
+    @Override
+    public void l2() {
+
+    }
+
+    @Override
+    public void l3() {
+
+    }
+
+    @Override
+    public void l4() {
+
+    }
+
+    @Override
+    public void l5() {
+
+    }
+
     public static void warpPlayer(){
         if(timeCounter>cooldown){
             //char front=MapState.lastPressed;

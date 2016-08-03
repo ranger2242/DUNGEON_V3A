@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.ArrayList;
 
@@ -17,7 +18,7 @@ public class Brawler extends Ability {
     //protected static ArrayList<String> output=new ArrayList<>();
 
     public Brawler(){
-        icon= loadIcon("images/icons/abilities/icBrawler.png");
+        icon= ImageLoader.abilities.get(4);
         details();
     }
     @Override
@@ -26,7 +27,7 @@ public class Brawler extends Ability {
     }
     @Override
     public  void onActivate() {
-        player.setAbility(4);
+        player.setAbilityMod(4);
         player.setEnergy(player.getEnergy()*2);
         player.setEnergyMax(player.getEnergyMax()*2);
         player.setEnergyRegen(player.getEnergyRegen()*2);
@@ -47,6 +48,31 @@ public class Brawler extends Ability {
     @Override
     public int getMod() {
         return 2;
+    }
+
+    @Override
+    public void l1() {
+
+    }
+
+    @Override
+    public void l2() {
+
+    }
+
+    @Override
+    public void l3() {
+
+    }
+
+    @Override
+    public void l4() {
+
+    }
+
+    @Override
+    public void l5() {
+
     }
 
     public ArrayList<String> details() {

@@ -16,6 +16,7 @@ import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.tools.HoverText;
 import com.quadx.dungeons.tools.ImageLoader;
+import com.quadx.dungeons.tools.Tests;
 
 import java.util.ArrayList;
 
@@ -30,11 +31,9 @@ import static com.quadx.dungeons.states.mapstate.MapStateUpdater.*;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class MapStateRender extends MapState {
-
-
     public static boolean showCircle=false;
     private static boolean blink=false;
-    static boolean showStats=false;
+    static boolean showStats=true;
     private static float dtBlink =0;
     static float dtLootPopup=0;
     private static float dtCircle=1f;
@@ -64,12 +63,13 @@ public class MapStateRender extends MapState {
         //HUD Layer
         srDrawHUD();
         sbDrawHUD(sb);
+        srDrawAttackSelectors();
         //Top Layer
         srDrawFPSMeter();
         sbdrawFPS(sb);
         srDrawMiniMap();
         if(showCircle) {
-            drawPlayerFinder();
+            //drawPlayerFinder();
         }
     }
     //SPRITEBATCH RENDERING-----------------------------------------------
@@ -101,7 +101,8 @@ public class MapStateRender extends MapState {
         }
     }
     private static void sbDrawAbilityIcon(SpriteBatch sb){
-        sb.draw(ImageLoader.abilities.get(player.getAbility()),viewX+((WIDTH/3)*2)+30,viewY+20);
+        Game.getFont().draw(sb,player.getAbility().getName(),viewX+((WIDTH/3)*2)+30,viewY+80);
+        sb.draw(ImageLoader.abilities.get(player.getAbilityMod()),viewX+((WIDTH/3)*2)+30,viewY+20);
     }
     private static void sbDrawHUD(SpriteBatch sb) {
         sb.begin();
@@ -193,7 +194,7 @@ public class MapStateRender extends MapState {
             int type = a.getType();
             int x=xoffset + (i * 52);
             try {
-                if (type == 3 || type == 2) {
+                if (type == 3 || type == 2 || type==4) {
                     if (player.getMana() >= a.getCost()) {
                         sb.draw(a.getIcon(), x, viewY + 48);
                         if (i <= 7) Game.getFont().draw(sb, (i + 1) + "", x, viewY + 58);
@@ -213,12 +214,6 @@ public class MapStateRender extends MapState {
                     Game.getFont().draw(sb, "E" + a.getCost(), x, viewY + 30);
                 }
                 Game.getFont().draw(sb, "Lv." + (a.getLevel() + 1), x, viewY + 48);
-                if (i == altNumPressed) {
-                    Game.getFont().draw(sb, "LT ALT",x, viewY + 105);
-                }
-                if (i == lastNumPressed) {
-                    Game.getFont().draw(sb, "RT SPACE",x, viewY + 118);
-                }
             } catch (NullPointerException ignored) {
             }
         }
@@ -256,7 +251,6 @@ public class MapStateRender extends MapState {
             }
         } catch (NullPointerException ignored) {}
     }
-    //SHAPE RENDERING---------0--------------------------------------------
     private static void sbdrawFPS(SpriteBatch sb) {
         sb.begin();
         int basex = (int) (viewX + Game.WIDTH - 150);
@@ -264,9 +258,33 @@ public class MapStateRender extends MapState {
         if(displayFPS){
             Game.setFontSize(1);
             Game.getFont().setColor(Color.WHITE);
-            Game.getFont().draw(sb, (int) fps + "", basex + 50, basey + 80);
+            Game.getFont().draw(sb, (int) fps + " FPS", basex+2, basey + 80);
+            double x=0;
+            try {
+                x= Tests.memUsageList.get(Tests.memUsageList.size() - 1);
+            }catch(Exception e){}
+            Game.getFont().draw(sb, (int) Tests.currentMemUsage + "MB "+Math.floor(x*100)+"%" , basex+2, basey + 95);
+
         }
         sb.end();
+    }
+    //SHAPE RENDERING------------------------------------------------------
+    private static void srDrawAttackSelectors(){
+        shapeR.begin(ShapeRenderer.ShapeType.Filled);
+        int xoffset = (int) (viewX + (WIDTH / 2) - (52 * 4));
+        for (int i = 0; i < player.attackList.size(); i++) {
+
+            int x = xoffset + (i * 52);
+            if (i == altNumPressed) {
+                shapeR.setColor(Color.BLUE);
+                shapeR.rect(x,viewY + 86,10,10);
+            }
+            if (i == lastNumPressed) {
+                shapeR.setColor(Color.RED);
+                shapeR.rect(x+38,viewY + 86,10,10);
+            }
+        }
+        shapeR.end();
     }
     private static void srDrawHUD(){
         Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -305,6 +323,12 @@ public class MapStateRender extends MapState {
             for (int i = 0; i < fpsList.size(); i++) {
                 shapeR.line(basex + (i * 2), basey + prev, basex + ((i + 1) * 2), basey + fpsList.get(i));
                 prev = fpsList.get(i);
+            }
+            double prev1=0;
+            for (int i = 0; i < Tests.memUsageList.size(); i++) {
+                shapeR.setColor(Color.PURPLE);
+                shapeR.line(basex + (i * 2), (float) (basey +100* prev1), basex + ((i + 1) * 2), (float) (basey + 100*Tests.memUsageList.get(i)));
+                prev1 = Tests.memUsageList.get(i);
             }
             shapeR.end();
         }
@@ -461,4 +485,5 @@ public class MapStateRender extends MapState {
         shapeR.end();
 
     }
+
 }

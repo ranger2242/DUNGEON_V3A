@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.states.mapstate.MapState;
+import com.quadx.dungeons.tools.Tests;
 
 import java.util.ArrayList;
 
@@ -92,11 +93,13 @@ public class MainMenuState extends State implements ControllerListener {
     private void selectOption(){
         switch (selector){
             case(0):{
-                if(MapState.inGame)
-                    gsm.pop();
-                else
-                    gsm.push(new AbilitySelectState(gsm));
-                dispose();
+                if (Tests.timeKill()) {
+                    if (MapState.inGame)
+                        gsm.pop();
+                    else
+                        gsm.push(new AbilitySelectState(gsm));
+                    dispose();
+                }
                 break;
             }
             case(1):{

@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.*;
 import com.quadx.dungeons.attacks.Attack;
+import com.quadx.dungeons.attacks.AttackMod;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.SpeedPlus;
@@ -21,6 +22,7 @@ import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.MainMenuState;
 import com.quadx.dungeons.states.State;
 import com.quadx.dungeons.tools.StatManager;
+import com.quadx.dungeons.tools.Tests;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -66,14 +68,14 @@ public class MapState extends State implements ControllerListener {
     static final float attackMintime = Game.frame*10;
     static int lastNumPressed=0;
     static int altNumPressed=1;
-    public static long  millis =0;
 
     public MapState(GameStateManager gsm) {
         super(gsm);
-        millis= System.nanoTime();
+        StatManager.gameTime.start();
         StatManager.reset();
         player.loadIcons();
         player.loadAttacks();
+        player.getAbility().onActivate();
         inGame=true;
         gm = new GridManager();
         shapeR = new ShapeRenderer();
@@ -87,19 +89,12 @@ public class MapState extends State implements ControllerListener {
         out("---Welcome to DUNGEON---");
         attack= player.attackList.get(0);
         attack2=player.attackList.get(0);
+        debug();
+    }
 
-        int x3=26;
-        for(int i=0; i<x3;i++){
-            for(int j=0;j<x3; j++){
-                System.out.print((i*j)% x3+"\t");
-            }
-            System.out.print("\n");
-        }
-
-       /* for(int i=0;i<20;i++){
-       //    openCrate();
-    //         player.addItemToInventory(new Arms());
-        }*/
+    public void debug() {
+        //Tests.testEquipmentRates();
+        Tests.giveItems(20);
     }
     public void handleInput() {
     }
@@ -107,7 +102,8 @@ public class MapState extends State implements ControllerListener {
         MapStateUpdater.updateVariables(dt);
         GridManager.loadDrawList();
         MapStateUpdater.compareItemToEquipment();
-        MapStateUpdater.spawnMonsters();
+        if(!Tests.nospawn)
+            MapStateUpdater.spawnMonsters();
         MapStateUpdater.buttonHandler();
         if(MapStateUpdater.dtCollision>Game.frame/2) {
             MapStateUpdater.collisionHandler();
@@ -132,7 +128,15 @@ public class MapState extends State implements ControllerListener {
             for(Cell c:drawList){
                 setHitList(c.getX(),c.getY());
             }
-        }else {
+        }else if(attack.getType()==4){
+            for (int i = player.getX()-attack.getSpread()/2; i < player.getX()+attack.getSpread()/2; i++) {
+                for (int j = player.getY()-attack.getSpread()/2; j < player.getY()+attack.getSpread()/2; j++) {
+                    if(i<res && i>=0 && j<res && j>=0)
+                        setHitList(i, j);
+                }
+            }
+        }
+        else {
             int xlim = 0, ylim = 0, x = 0, y = 0, a = 0, b = 0;
             int range = attack.getRange();
             int spread = attack.getSpread();
@@ -169,13 +173,15 @@ public class MapState extends State implements ControllerListener {
             }
             for (int i = x; i < xlim; i++) {
                 for (int j = y; j < ylim; j++) {
-                    setHitList(i + a, j + b);
+                    int n=i+a;
+                    int m=j+b;
+                    if(n<res && n>=0 && m<res && m>=0)
+                    setHitList(n, m);
                 }
             }
         }
         hitList.add(dispArray[player.getX()][player.getY()]);
     }
-
     static void attackCollisionHandler(int pos) {
         Attack attack = player.attackList.get(pos);
         StatManager.shotFired(attack);
@@ -184,28 +190,24 @@ public class MapState extends State implements ControllerListener {
         calculateHitBox(attack);
         boolean hit = false;
         for (Cell c : hitList) {
-            drawList.get(drawList.indexOf(c)).setAttArea(true);
+            c.setAttArea(true);
             if (c.getMonster() != null) {//monster was hit
                 hit = true;
                 Monster m = c.getMonster();
+                m.takeEffect(attack);
                 m.takeAttackDamage(Damage.calcPlayerDamage(attack, m));
                 m.checkIfDead();
             }
         }
+        if(AttackMod.sacrifice)
+            AttackMod.sacrifice=false;
         StatManager.shotMissed(hit);
-        for (Monster m : monsterList) {
-            m.setMonListIndex(monsterList.indexOf(m));
-        }
+        Monster.reindexMons=true;
         loadLiveCells();
     }
 
     private static void setHitList(int x, int y){
-        try {
             hitList.add(dispArray[x][y]);
-        }
-        catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
-            Game.printLOG(e);
-        }
     }
 
     public static void makeGold(int x) {
@@ -227,7 +229,7 @@ public class MapState extends State implements ControllerListener {
         out(player.getName() + " recieved " + gold + "G");
         MapStateRender.setHoverText(gold + "G", .5f, Color.GOLD, player.getPX(), player.getPY(), false);
     }
-    static void openCrate(int index) {
+    public static void openCrate(int index) {
         if (liveCellList.get(index) != null && liveCellList.get(index).getItem() != null)
             if (liveCellList.get(index).getItem().getClass() == Gold.class) {
                 lootPopup = new Texture(Gdx.files.internal("images/imCoin.png"));

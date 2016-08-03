@@ -26,6 +26,9 @@ public class Equipment extends Item {
    Equipment(){
     isEquip=true;
     }
+    Equipment(int gr,int bo, int ty ){
+
+    }
     public String getName(){
 
         return name;
@@ -33,6 +36,10 @@ public class Equipment extends Item {
     public String getType(){
         return type.toString();
     }
+    public String getGrade(){
+        return grade.toString();
+    }
+
     void setMods(){
         int buffCount=1;
         if(grade==Grade.Elite){
@@ -199,9 +206,9 @@ public class Equipment extends Item {
         if(x<=30)grade=Grade.Poor;
         if(x>30)grade=Grade.Low;
         if(x>50)grade=Grade.Standard;
-        if(x>60)grade=Grade.High;
-        if(x>80)grade=Grade.Elite;
-        if(x>90)grade=Grade.Legendary;
+        if(x>80)grade=Grade.High;
+        if(x>90)grade=Grade.Elite;
+        if(x>95)grade=Grade.Legendary;
     }
     private void setCost(){
         int x=0;

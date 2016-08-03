@@ -8,9 +8,9 @@ import static com.quadx.dungeons.Game.player;
  * Created by Tom on 11/21/2015.
  */
 @SuppressWarnings("DefaultFileTemplate")
-public class Earthquake extends Attack {
-    public Earthquake(){
-        costGold=35;
+public class Quake extends Attack {
+    public Quake(){
+        costGold=35000;
         type=1;
         int a=player.getEnergyMax();
         powerA = new int[]{80,90,110,130,150};

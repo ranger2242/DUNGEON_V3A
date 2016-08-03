@@ -8,9 +8,12 @@ import com.quadx.dungeons.Cell;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.State;
+import com.quadx.dungeons.tools.Timer;
 
 import java.util.ArrayList;
 import java.util.Random;
+
+import static com.quadx.dungeons.states.mapstate.MapState.out;
 
 /**
  * Created by Tom on 1/18/2016.
@@ -19,9 +22,11 @@ import java.util.Random;
 public class Map2State extends State {
     private static final ShapeRenderer shapeR= new ShapeRenderer();
     private static final Random rn= new Random();
-    public static final int res =200;
+    public static final int res =150;
     private static Cell[][] dispArray  = new Cell[res][res];
     private static final Cell[][] buffArray  = new Cell[res][res];
+    private static int endpointListSize=0;
+    static ArrayList<Cell> live=new ArrayList<>();
     private float dtChange=0;
 
     public Map2State(GameStateManager gsm) {
@@ -47,7 +52,7 @@ public class Map2State extends State {
         int secRunDepth = rn.nextInt(4) + 1;
         int triRunDepth = rn.nextInt(3) + 1;
 
-        while(firstRunDepth == secRunDepth || secRunDepth == triRunDepth || triRunDepth == firstRunDepth)
+        if(firstRunDepth == secRunDepth || secRunDepth == triRunDepth || triRunDepth == firstRunDepth)
         {
             firstRunDepth =rn.nextInt(6)+1;
             secRunDepth =rn.nextInt(4)+1;
@@ -81,6 +86,14 @@ public class Map2State extends State {
             }
         }
     }
+    public static void fillArray(){
+        for(int i=0;i<res;i++){
+            for(int j=0;j<res;j++){
+                Map2State.buffArray[i][j].setState();
+            }
+        }
+        dispArray=buffArray;
+    }
     private void drawGrid(){
         //int cellW=1;
 
@@ -97,95 +110,175 @@ public class Map2State extends State {
             }
         }
     }
-    public static Cell[][] generateMap2(){
 
-        ArrayList<Cell> endpointList = new ArrayList<>();
-        ArrayList<Cell> liveList=new ArrayList<>();
-        int runs = rn.nextInt(80)+30;
-        int initPoints =rn.nextInt(8)+1;
-
+    public static Cell[][] generateMap2() {
+        live.clear();
         initArray();//buffers the buffArray
-        plotInitPoints(endpointList,initPoints);
-        growPaths(endpointList);
-        //make sure there grid is more than 1 size
-        liveList=updateLiveList(liveList);
-        while(liveList.size()<4){
-            growPaths(endpointList);
-            liveList=updateLiveList(liveList);
+        ArrayList<Room> rooms = new ArrayList<>();
+        int runs = rn.nextInt(10) + 5;
+        for (int i = 0; i < runs; i++) {//initialize rooms
+            rooms.add(new Room());
         }
-        for(int i=0;i<runs;i++){
-            liveList= updateLiveList(liveList);
-            endpointList=updateEndpoints(liveList,endpointList);
-            growPaths(endpointList);
+
+        ArrayList<Cell> edges = new ArrayList<>();
+        for (Room r : rooms) {//builds rooms and shit
+            for (int i = (r.x - r.w / 2); i < r.x + r.w / 2; i++) {
+                for (int j = (r.y - r.h / 2); j < r.y + r.h / 2; j++) {
+                    try {
+                        buffArray[i][j].setState();
+                        if (i == (r.x - r.w / 2) || i == (r.x + r.w / 2) - 1 || j == (r.y - r.h / 2) || j == (r.y + r.h / 2) - 1)
+                            edges.add(buffArray[i][j]);
+                        live.add(buffArray[i][j]);
+                    } catch (Exception e) {
+                    }
+                }
+            }
         }
-        //search for single off bits
-        for(int i=0;i<rn.nextInt(3)+1;i++){
-            if(rn.nextBoolean())
-                liveList= fillBits(rn.nextInt(4)+1,liveList);
+        for (int i = 0; i < rooms.size(); i++) {//crash starts here
+            Room a = rooms.get(i);
+            Room b;
+            if (i == rooms.size() - 1) {
+                b = rooms.get(0);
+            } else {
+                try {
+                    b = rooms.get(i + 1);
+                } catch (Exception e) {
+                    out("Fuck");
+                    b = a;
+                }
+            }
+            if (a.equals(b)) b = rooms.get(rn.nextInt(rooms.size()));
+            int q = 0;
+            int w = 0;
+            int endpointX = 0;
+            if (a.dx < b.dx) {
+                q = a.dx;
+                endpointX = b.dx;
+            } else if (a.dx < b.dx) {
+                q = b.dx;
+                endpointX = a.dx;
+            }
+
+            int endpointY = 0;
+            if (a.dy < b.dy) {
+                w = a.dy;
+                endpointY = b.dy;
+            } else if (a.dy < b.dy) {
+                w = b.dy;
+                endpointY = a.dy;
+
+            }
+
+            for (int l = q; l < endpointX; l++) {
+                try {
+                    buffArray[l][w].setState();
+                } catch (Exception e) {
+                }
+            }
+            for (int z = w; z < endpointY; z++) {
+                try {
+                    buffArray[q][z].setState();
+                } catch (Exception e) {
+                }
+            }
         }
-        plotWater(liveList);
-        dispArray=buffArray;
+        fillBits(1, true);
+        plotWater();
+        dispArray = buffArray;
         return dispArray;
     }
-    private static void plotWater(ArrayList<Cell> liveList){
-        int cycles = rn.nextInt(20);
-        int grow=rn.nextInt(2)+1;
+    private static void plotWater(){
+        int cycles = rn.nextInt(7)+1;
+        int grow=2;
         for(int i=0;i<cycles;i++) {
-            int x=rn.nextInt(liveList.size());
-            int x1=liveList.get(x).getX();
-            int y1=liveList.get(x).getY();
-            liveList.get(x).setState();
-            liveList.get(x).setWater();
+            int x=rn.nextInt(live.size());
+            int x1=live.get(x).getX();
+            int y1=live.get(x).getY();
+            live.get(x).setState();
+            live.get(x).setWater();
             buffArray[x1][y1].setState();
             buffArray[x1][y1].setWater();
         }
         for(int i=0;i<grow;i++) {
-            liveList.stream().filter(c -> c.getWater()).forEach(c -> {
+            live.stream().filter(c -> c.getWater()).forEach(c -> {
                 int x = c.getX();
                 int y = c.getY();
                 try {
-                    if (rn.nextBoolean()) buffArray[x - 1][y - 1].setWater();
-                    if (rn.nextBoolean()) buffArray[x - 1][y].setWater();
-                    if (rn.nextBoolean()) buffArray[x - 1][y + 1].setWater();
-                    if (rn.nextBoolean()) buffArray[x][y + 1].setWater();
-                    if (rn.nextBoolean()) buffArray[x + 1][y + 1].setWater();
-                    if (rn.nextBoolean()) buffArray[x + 1][y].setWater();
-                    if (rn.nextBoolean()) buffArray[x + 1][y - 1].setWater();
-                    if (rn.nextBoolean()) buffArray[x][y - 1].setWater();
+                    if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y - 1].setWater();
+                    if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y].setWater();
+                    if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y + 1].setWater();
+                    if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x][y + 1].setWater();
+                    if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x + 1][y + 1].setWater();
+                    if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x + 1][y].setWater();
+                    if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x + 1][y - 1].setWater();
+                    if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x][y - 1].setWater();
                 } catch (ArrayIndexOutOfBoundsException ignored) {
                 }
 
             });
         }
     }
-    private static ArrayList<Cell> fillBits(int factor, ArrayList<Cell> liveList){
-        for(int i=0;i<res;i++){
-            for(int j=0;j<res;j++){
-                try{
-                    int count=0;
-                    if(buffArray[i-1][j].getState())count++;
-                    if(buffArray[i+1][j].getState())count++;
-                    if(buffArray[i][j-1].getState())count++;
-                    if(buffArray[i][j+1].getState())count++;
-                    if(count>=factor && rn.nextFloat()>.4){
-                        buffArray[i][j].setState();
-                        buffArray[i][j].setCords(i,j);
-                        liveList.add(buffArray[i][j]);
+    private static void fillBits(int factor, boolean b){
+        if(b) {
+            for (int i = 0; i < res; i++) {
+                for (int j = 0; j < res; j++) {
+                    try {
+                        int count = 0;
+                        if (buffArray[i - 1][j].getState()) count++;
+                        if (buffArray[i + 1][j].getState()) count++;
+                        if (buffArray[i][j - 1].getState()) count++;
+                        if (buffArray[i][j + 1].getState()) count++;
+                        if (count >= factor && rn.nextFloat() < .5 || (count==4 && rn.nextBoolean()) ) {
+                            buffArray[i][j].setState();
+                            buffArray[i][j].setCords(i, j);
+                            live.add(buffArray[i][j]);
+                        }
+
+                        int counta = 0;
+                        if (buffArray[res-1-i - 1][res-1-j].getState()) counta++;
+                        if (buffArray[res-1-i + 1][res-1-j].getState()) counta++;
+                        if (buffArray[res-1-i][res-1-j - 1].getState()) counta++;
+                        if (buffArray[res-1-i][res-1-j + 1].getState()) counta++;
+                        if (counta >= factor && rn.nextFloat() < .5|| (counta==4 && rn.nextBoolean()) ) {
+                            buffArray[res-1-i][res-1-j].setState();
+                            buffArray[res-1-i][res-1-j].setCords(res-1-i, res-1-j);
+                            live.add(buffArray[res-1-i][res-1-j]);
+                        }
+                    } catch (ArrayIndexOutOfBoundsException ignored) {
                     }
                 }
-                catch (ArrayIndexOutOfBoundsException ignored){}
             }
-        }
-        return liveList;
+        }/*
+        else{
+            for (int i = res-1; i >= 0; i--) {
+                for (int j = res-1; j >= 0; j--) {
+                    try {
+                        int count = 0;
+                        if (buffArray[i - 1][j].getState()) count++;
+                        if (buffArray[i + 1][j].getState()) count++;
+                        if (buffArray[i][j - 1].getState()) count++;
+                        if (buffArray[i][j + 1].getState()) count++;
+                        if (count >= factor && rn.nextFloat() > .4) {
+                            buffArray[i][j].setState();
+                            buffArray[i][j].setCords(i, j);
+                            live.add(buffArray[i][j]);
+                        }
+                    } catch (ArrayIndexOutOfBoundsException ignored) {
+                    }
+                }
+            }
+        }*/
     }
     private static void plotInitPoints(ArrayList<Cell> endpointList, int count){
         //create initial growth points
+        endpointListSize=count;
         for(int i=0; i<count;i++) {
             int xs = rn.nextInt(res);
             int ys = rn.nextInt(res);
             buffArray[xs][ys].setState();
             buffArray[xs][ys].setCords(xs, ys);
             endpointList.add(buffArray[xs][ys]);
+            live.add(buffArray[xs][ys]);
         }
     }
 
@@ -200,9 +293,9 @@ public class Map2State extends State {
         }
         return liveList;
     }
-    private static ArrayList<Cell> updateEndpoints(ArrayList<Cell> liveList, ArrayList<Cell> endpointList){
-        endpointList.clear();
-        for(Cell c: liveList){
+    private static ArrayList<Cell> updateEndpoints(){
+        ArrayList<Cell> ends=new ArrayList<>();
+        for(Cell c: live){
             int x=c.getX();
             int y=c.getY();
             int count =0;
@@ -222,68 +315,76 @@ public class Map2State extends State {
                 if(buffArray[x][y+1].getState())count++;
             }catch (ArrayIndexOutOfBoundsException ignored){}
             if(count==1){
-                endpointList.add(c);
+                ends.add(c);
             }
         }
-        return endpointList;
+        endpointListSize=ends.size();
+        out("Ends:"+endpointListSize);
+        return ends;
     }
     private static void growPaths(ArrayList<Cell> endpointList){
+        Timer as = new Timer("Grow Paths");
+        as.start();
         for(Cell c:endpointList){//check boundries
-            try {//left bound
-                //System.out.println("-----");
-                int a1=c.getX() - 1;
-                int b1=c.getX() - 2;
-                int a2=c.getY();
-                boolean a=!buffArray[a1][a2].getState() && !buffArray[b1][a2].getState();
-                addBranch(a,a1,a2,b1,a2);
-            }
-            catch (ArrayIndexOutOfBoundsException e){
-                //System.out.println("Err:0001");
-            }
-            try {//right bound
-                //System.out.println("-----");
-                int a1=c.getX() + 1;
-                int b1=c.getX() + 2;
-                int a2=c.getY();
-                boolean a=!buffArray[a1][a2].getState() && !buffArray[b1][a2].getState();
-                addBranch(a,a1,a2,b1,a2);
-            }
-            catch (ArrayIndexOutOfBoundsException e){
-              //  System.out.println("Err:0001");
-            }
-            try {//top bound
- //               System.out.println("-----");
-                int a1=c.getY() + 1;
-                int b1=c.getY() + 2;
-                int a2=c.getX();
-                boolean a=!buffArray[a1][a2].getState() && !buffArray[b1][a2].getState();
-                addBranch(a,a2,a1,a2,b1);
-            }
-            catch (ArrayIndexOutOfBoundsException e){
-            //    System.out.println("Err:0001");
-            }
-            try {//low bound
-   //             System.out.println("-----");
-                int a1=c.getY() - 1;
-                int b1=c.getY() - 2;
-                int a2=c.getX();
-                boolean a=!buffArray[a1][a2].getState() && !buffArray[b1][a2].getState();
-                addBranch(a,a2,a1,a2,b1);
-            }
-            catch (ArrayIndexOutOfBoundsException e){
-                //System.out.println("Err:0001");
-            }
+            addBranch(c.getX(),c.getY());
         }
+
+        as.end();
+        Game.console(as.runtime());
     }
-    private static void addBranch(boolean a, int a1, int a2, int b1, int b2){
-        if (a && rn.nextBoolean() && rn.nextFloat() <.6f) {
-            buffArray[a1][a2].setState();
-            buffArray[a1][a2].setCords(a1,a2);
-            buffArray[b1][b2].setState();
-            buffArray[b1][b2].setCords(b1,b2);
-        }
+    private static void addBranch(int x, int y){
+            for (int i = 0; i < endpointListSize; i++) {
+                int factor=30;
+                int a = rn.nextInt(factor)+10;
+                boolean z=rn.nextFloat()<=.1 && rn.nextBoolean(),s=rn.nextFloat()<=.1 && rn.nextBoolean(),c=rn.nextFloat()<=.1 && rn.nextBoolean(),v=rn.nextFloat()<=.1 && rn.nextBoolean();
+
+                for (int j = 0; j < a; j++) {
+                    try {
+                        if(z) {
+                            buffArray[x][y + j].setState();
+                            live.add(buffArray[x][y + j]);
+                        }if(s) {
+                            buffArray[x][y - j].setState();
+                            live.add(buffArray[x][y - j]);
+                        }if(c) {
+                            buffArray[x - j][y].setState();
+                            live.add(buffArray[x - j][y]);
+                        }if(v){
+                            buffArray[x+j][y].setState();}
+                            live.add(buffArray[x+j][y]);
+                    } catch (Exception e) {
+                    }
+                }
+            }
     }
     public void dispose() {
 
+    }
+    private static class Room{
+        protected int w;
+        protected int h;
+        protected int y;
+        protected int x;
+        protected int dx;
+        protected int dy;
+        public Room(){
+            w=rn.nextInt(40);
+            h=rn.nextInt(40);
+            y=rn.nextInt(res);
+            x=rn.nextInt(res);
+            if(w-x>0)
+                dx=x+rn.nextInt(w-x);
+            else
+                dx=x;
+            if(h-y>0)
+                 dx=y+rn.nextInt(h-y);
+            else
+                dy=y;
+
+        }
+
+        public int getX() {
+            return x;
+        }
     }
 }
