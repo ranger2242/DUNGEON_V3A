@@ -126,6 +126,11 @@ public class Tests {
                 player.maxStat();
                 outText="Stats Maxed.";
             }
+            if(comm.get(1).equals("ap")){
+                int a=Integer.parseInt(comm.get(2));
+                player.setAbilityPoints(a);
+                outText="Added Ability Points.";
+            }
             if (comm.get(1).equals("maxmove")) {
                 player.setMoveSpeed(.000000001f);
                 player.setEnergyRegen(100000);

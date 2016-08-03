@@ -43,7 +43,6 @@ public class Tank extends Ability {
         player.setxHpMax(1.5);
         player.setxHpRegen(2);
         player.setxMoveSpeed(1.005);
-
     }
 
     @Override
@@ -54,22 +53,30 @@ public class Tank extends Ability {
 
     @Override
     public void l3() {
-
+        player.setxDefense(1.3);
+        player.setxAttack(1.1);
+        player.setxMoveSpeed(.8);
     }
 
     @Override
     public void l4() {
-
+        player.setxDefense(1.3);
+        player.setxAttack(1.1);
+        player.setxMoveSpeed(.8);
     }
 
     @Override
     public void l5() {
-
+        player.setxDefense(1.4);
+        player.setxSpeed(1.3);
+        player.setxIntel(1.1);
+        player.setxHpRegen(1.5);
+        player.setxMoveSpeed(.9);
     }
 
     public ArrayList<String> details() {
         output.clear();
-        output.add("-"+name+"-");
+        output.add("-"+name+" "+level +"-");
         switch (this.level){
             case 1:{
                 output.add("HP Max x1.5");
@@ -80,15 +87,34 @@ public class Tank extends Ability {
             }case 2:{
                 output.add("1.2x DEF");
                 output.add("1.1x Move Speed");
+                output.add("Standard+ DEF Helmet");
                 break;
             }case 3:{
+                output.add("1.3x DEF");
+                output.add("1.1x ATT");
+                output.add("1.2x Move Speed");
+                output.add("Standard+ DEF Ring");
                 break;
             }case 4:{
+                output.add("1.4x DEF");
+                output.add("1.3x SPD");
+                output.add("1.1x INT");
+                output.add("1.5x HP Regen");
+                output.add(".9x Move Speed");
+                output.add("Standard+ DEF Chest");
                 break;
             }case 5:{
+                output.add("1.5x DEF");
+                output.add("1.2x INT");
+                output.add("1.2x SPD");
+                output.add("1.2x Move Speed");
+                output.add("Legendary DEF Legs");
+                output.add("Unlock Tank Special");
+                output.add("Unlock Extra Ability Slot");
                 break;
             }
         }
+        if(level-1<4)
         output.add("Upgrade cost: "+upCost[level-1]+" AP");
         return output;
     }

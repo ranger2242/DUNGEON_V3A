@@ -18,6 +18,7 @@ import com.quadx.dungeons.tools.MyTextInputListener;
 
 import java.util.ArrayList;
 
+import static com.quadx.dungeons.Game.HEIGHT;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.states.MainMenuState.controller;
 import static com.quadx.dungeons.states.mapstate.MapState.viewX;
@@ -161,6 +162,15 @@ public class AbilitySelectState extends State implements ControllerListener {
         else posx=ImageLoader.abilities.size()-1;
         sb.end();
         drawInfo(sb);
+        //draw player stats
+        sb.begin();
+        Game.setFontSize(1);
+        Game.font.setColor(Color.WHITE);
+        ArrayList<String> stats = player.getStatsList();
+        for(int i=0;i<stats.size();i++){
+            Game.font.draw(sb, stats.get(i),viewX+30,viewY+HEIGHT-30-(20*i));
+        }
+        sb.end();
     }
     private void drawInfo(SpriteBatch sb){
         ArrayList<Ability> temp=new ArrayList<>();
@@ -173,7 +183,7 @@ public class AbilitySelectState extends State implements ControllerListener {
         sb.begin();
         if(posy==0 &&posx<temp.size()) {
             for (int i = 0; i < temp.get(posx).details().size(); i++) {
-                Game.getFont().draw(sb, temp.get(posx).details().get(i), viewX + 30, viewY + Game.HEIGHT * 2 / 3 - (i * 20));
+                Game.getFont().draw(sb, temp.get(posx).details().get(i), viewX + 30, viewY -100+ Game.HEIGHT * 2 / 3 - (i * 20));
                 hovering = temp.get(posx);
             }
         }

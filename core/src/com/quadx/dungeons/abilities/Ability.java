@@ -42,26 +42,31 @@ public abstract class Ability {
     public abstract String getName();
 
     public void upgrade(){
-        level++;
-        if(player.getAbilityPoints()>=upCost[level-1]) {
-            player.setAbilityPoints(-upCost[level-1]);
-            switch (level) {
-                case 2: {
-                    l2();
-                    break;
+        if(level<6) {
+            level++;
+            try {
+                if (player.getAbilityPoints() >= upCost[level - 1]) {
+                    player.setAbilityPoints(-upCost[level - 1]);
+                    switch (level) {
+                        case 2: {
+                            l2();
+                            break;
+                        }
+                        case 3: {
+                            l3();
+                            break;
+                        }
+                        case 4: {
+                            l4();
+                            break;
+                        }
+                        case 5: {
+                            l5();
+                            break;
+                        }
+                    }
                 }
-                case 3: {
-                    l3();
-                    break;
-                }
-                case 4: {
-                    l4();
-                    break;
-                }
-                case 5: {
-                    l5();
-                    break;
-                }
+            } catch (Exception e) {
             }
         }
     }
