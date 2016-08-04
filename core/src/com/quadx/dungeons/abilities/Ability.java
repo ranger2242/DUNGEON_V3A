@@ -13,7 +13,6 @@ import static com.quadx.dungeons.Game.player;
 @SuppressWarnings("DefaultFileTemplate")
 public abstract class Ability {
     protected Texture icon;
-    ArrayList<String> s=new ArrayList<>();
     protected String name="default";
     final ArrayList<String> output=new ArrayList<>();
     int[] upCost={1,2,3,4};
