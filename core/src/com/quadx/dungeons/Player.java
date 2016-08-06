@@ -496,7 +496,7 @@ public class Player {
         {
             MapStateRender.setHoverText("--LVL UP--",.8f, Color.GREEN, Game.player.getPX(),Game.player.getPY()-20,true);
 
-            exp=exp-expLimit;
+            exp=0;
 
             level++;
             hpMax = hpMax +( 25 + rn.nextInt(20));
@@ -515,7 +515,7 @@ public class Player {
         if(item != null) {
             lastItem=item;
             boolean added = false;
-            if (!item.isEquip) {
+            if (item.getClass().equals(Equipment.class)) {
                 for (ArrayList<Item> al : invList) {
                     if (!al.isEmpty()) {
                         try {
@@ -620,6 +620,10 @@ public class Player {
 
     public void setAbilityPoints(int abilityPoints) {
         this.abilityPoints +=abilityPoints;
+    }
+
+    public void setxEnergyMax(double xEnergyMax) {
+        this.energyMax *= xEnergyMax;
     }
 }
 

@@ -39,6 +39,7 @@ public class Tank extends Ability {
 
     @Override
     public void l1() {
+        level=1;
         player.setxDefense(2);
         player.setxHpMax(1.5);
         player.setxHpRegen(2);
@@ -76,8 +77,8 @@ public class Tank extends Ability {
 
     public ArrayList<String> details() {
         output.clear();
-        output.add("-"+name+" "+level +"-");
-        switch (this.level){
+        output.add("-"+name+" "+(level+1) +"-");
+        switch (this.level+1){
             case 1:{
                 output.add("HP Max x1.5");
                 output.add("HP Regen x2");
@@ -114,8 +115,8 @@ public class Tank extends Ability {
                 break;
             }
         }
-        if(level-1<4)
-        output.add("Upgrade cost: "+upCost[level-1]+" AP");
+        if(level<5)
+        output.add("Upgrade cost: "+upCost[level]+" AP");
         return output;
     }
 

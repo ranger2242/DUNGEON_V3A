@@ -7,6 +7,7 @@ import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
@@ -19,9 +20,12 @@ import com.quadx.dungeons.tools.Tests;
 
 import java.util.ArrayList;
 
+import static com.quadx.dungeons.Game.HEIGHT;
+import static com.quadx.dungeons.Game.WIDTH;
 import static com.quadx.dungeons.Game.controllerMode;
 import static com.quadx.dungeons.states.mapstate.MapState.viewX;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
+import static com.quadx.dungeons.tools.Tests.centerString;
 
 /**
  * Created by Tom on 12/22/2015.
@@ -40,6 +44,7 @@ public class MainMenuState extends State implements ControllerListener {
     private float dtCursor = 0;
     public static Controller controller;
     private static String s="";
+    Texture tit= new Texture("images\\title.png");
 
     public MainMenuState(GameStateManager gsm)
     {
@@ -57,7 +62,7 @@ public class MainMenuState extends State implements ControllerListener {
         effect.load(Gdx.files.internal("particles\\pt" + s), Gdx.files.internal("particles"));
         emitter = effect.findEmitter("StartScreen");
         emitter.setContinuous(true);
-        CharSequence cs="DUNGEON";
+        CharSequence cs="-";
         gl.setText(Game.getFont(),cs);
         selector=0;
         if(!MapState.inGame)
@@ -140,6 +145,9 @@ public class MainMenuState extends State implements ControllerListener {
             shapeR.setProjectionMatrix(cam.combined);
             sb.setProjectionMatrix(cam.combined);
         }*/
+        sb.begin();
+        sb.draw(tit,viewX+(WIDTH/2)-(tit.getWidth()/2),viewY+HEIGHT-tit.getHeight()-30);
+        sb.end();
         drawTitle(sb);
         drawOptions(sb);
         sb.begin();
@@ -154,7 +162,8 @@ public class MainMenuState extends State implements ControllerListener {
         sb.begin();
         Game.setFontSize(5);
         Game.font.setColor(Color.WHITE);
-        Game.getFont().draw(sb,"DUNGEON", titlePosX,titlePosY);
+        String title="-DEMO-";
+        Game.getFont().draw(sb,title, centerString(title),titlePosY);
         effect.draw(sb);
         sb.end();
     }
@@ -167,7 +176,8 @@ public class MainMenuState extends State implements ControllerListener {
                 Game.getFont().setColor(Color.BLUE);
             else
                 Game.getFont().setColor(Color.WHITE);
-            Game.getFont().draw(sb,options.get(i),optionsPosX,optionsPosY-(i*20));
+
+            Game.getFont().draw(sb,options.get(i),centerString(options.get(i)),optionsPosY-(i*20));
         }
         sb.end();
     }

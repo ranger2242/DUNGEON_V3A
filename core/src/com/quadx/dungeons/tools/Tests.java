@@ -9,11 +9,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.quadx.dungeons.Game.console;
-import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.GridManager.monsterList;
+import static com.quadx.dungeons.states.MainMenuState.gl;
 import static com.quadx.dungeons.states.mapstate.MapState.gm;
 import static com.quadx.dungeons.states.mapstate.MapState.out;
+import static com.quadx.dungeons.states.mapstate.MapState.viewX;
 
 /**
  * Created by Chris Cavazos on 7/10/2016.
@@ -37,7 +38,14 @@ public class Tests {
             player.addItemToInventory(Item.generateNoGold());
         }
     }
-
+    public static float strWidth(String s){
+        CharSequence cs=s;
+        gl.setText(Game.getFont(),cs);
+        return gl.width;
+    }
+    public static float centerString(String s){
+        return (viewX+WIDTH/2)- (strWidth(s)/2);
+    }
     public static void loadEmptyMap() {
         Map2State.fillArray();
     }
@@ -126,6 +134,18 @@ public class Tests {
                 player.maxStat();
                 outText="Stats Maxed.";
             }
+            if(comm.get(1).equals("item")){
+                if(comm.get(2).equals("set")){
+                    int a=Integer.parseInt(comm.get(3));
+                    try {
+                        for(Equipment e:equipSets.ref[a])
+                        player.addItemToInventory(e);
+                        outText="Added set "+a;
+                    }catch (Exception e){
+                    }
+                }
+            }
+
             if(comm.get(1).equals("ap")){
                 int a=Integer.parseInt(comm.get(2));
                 player.setAbilityPoints(a);

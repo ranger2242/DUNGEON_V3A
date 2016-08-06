@@ -7,6 +7,8 @@ import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.tools.ImageLoader;
 
+import static com.quadx.dungeons.Game.equipSets;
+import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.rn;
 
 public class Item
@@ -24,10 +26,11 @@ public class Item
     protected int emod;
     public boolean isEquip=false;
     public boolean isSpell=false;
-    Texture icon= ImageLoader.crate;
+    Texture icon=null;
     int gold;
     Attack attack;
-    public Item() {}
+    public Item() {
+    }
     public int getDefensemod()
     {
         return defensemod;
@@ -74,7 +77,7 @@ public class Item
         return icon;
     }
 
-    public void setIcon(Texture icon) {
+    public void setIcon(Texture icon)  {
         this.icon = icon;
     }
 
@@ -92,8 +95,14 @@ public class Item
             else if (q == 9 || q == 10) {
                 if (rn.nextFloat() < .1) {
                     a = new SpellBook();
-                } else
+                } else {
+                    if(rn.nextBoolean())
                     a = Equipment.generateEquipment();
+                    else{
+                        int e=rn.nextInt(8);
+                        a=equipSets.ref[player.getAbilityMod()].get(e);
+                    }
+                }
             }
         return a;
     }

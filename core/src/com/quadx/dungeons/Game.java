@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector3;
+import com.quadx.dungeons.items.equipment.EquipSets;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.MainMenuState;
@@ -37,6 +38,7 @@ public class Game extends ApplicationAdapter implements ControllerListener{
     private static GameStateManager gameStateManager;
     public static boolean controllerMode =false;
     private static final BitmapFont[] fonts = new BitmapFont[6];
+    public static EquipSets equipSets= new EquipSets();
 
     @Override
     public void create () {

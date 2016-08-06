@@ -8,6 +8,7 @@ import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.ArrayList;
 
+import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
 
 
@@ -16,7 +17,6 @@ import static com.quadx.dungeons.Game.player;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class Investor extends Ability {
-    //protected static ArrayList<String> output=new ArrayList<>();
 
     public Investor(){
         icon=  ImageLoader.abilities.get(1);
@@ -42,6 +42,7 @@ public class Investor extends Ability {
 
     @Override
     public void l1() {
+        level=1;
         player.setxHpRegen(2);
     }
 
@@ -50,6 +51,8 @@ public class Investor extends Ability {
         player.setxManaRegen(1.2);
         player.setxMoveSpeed(.7);
         player.setxAttack(1.1);
+        player.addItemToInventory(equipSets.ref[1].get(7));
+
     }
 
     @Override
@@ -57,6 +60,8 @@ public class Investor extends Ability {
         player.setxMoveSpeed(.5);
         player.setxAttack(1.4);
         player.setxIntel(1.4);
+        player.addItemToInventory(equipSets.ref[1].get(0));
+
     }
 
     @Override
@@ -65,6 +70,7 @@ public class Investor extends Ability {
         player.setxIntel(1.4);
         player.setxAttack(1.5);
         player.setxSpeed(1.4);
+        player.addItemToInventory(equipSets.ref[1].get(2));
     }
 
     @Override
@@ -73,12 +79,13 @@ public class Investor extends Ability {
         player.setxManaRegen(1.4);
         player.setxSpeed(1.5);
         player.setxAttack(1.6);
+        player.addItemToInventory(equipSets.ref[1].get(3));
     }
 
     public ArrayList<String> details() {
         output.clear();
-        output.add("-"+name+" "+level +"-");
-        switch (this.level){
+        output.add("-"+name+" "+(level+1) +"-");
+        switch (this.level+1){
             case 1:{
                 output.add("x2 HP Regen");
                 output.add("Generate Money");
@@ -113,14 +120,14 @@ public class Investor extends Ability {
                 break;
             }
         }
-        if(level-1<4)
-            output.add("Upgrade cost: "+upCost[level-1]+" AP");
+        if(level<5)
+            output.add("Upgrade cost: "+upCost[level]+" AP");
         return output;
     }
 
     @Override
     public String getName() {
-        return "INVESTOR";
+        return this.name;
     }
 
     public static void generatePlayerGold(){

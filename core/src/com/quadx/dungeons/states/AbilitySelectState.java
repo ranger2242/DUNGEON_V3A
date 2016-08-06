@@ -19,6 +19,7 @@ import com.quadx.dungeons.tools.MyTextInputListener;
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.HEIGHT;
+import static com.quadx.dungeons.Game.WIDTH;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.states.MainMenuState.controller;
 import static com.quadx.dungeons.states.mapstate.MapState.viewX;
@@ -53,23 +54,23 @@ public class AbilitySelectState extends State implements ControllerListener {
         Game.setFontSize(5);
 
         Gdx.gl.glClearColor(0,0,0,1);
+        Game.setFontSize(4);
         CharSequence cs="Select Ability";
-        Game.setFontSize(1);
         gl.setText(Game.getFont(),cs);
 
         titlex=(int)((Game.WIDTH/2)-(gl.width/2));
-        titley=(Game.HEIGHT-100);
+        titley=(Game.HEIGHT-50);
         Tank tank = new Tank();
-        //Investor inv = new Investor();
-        //Mage mage = new Mage();
-        //Quick quick = new Quick();
+        Investor inv = new Investor();
+        Mage mage = new Mage();
+        Quick quick = new Quick();
         //Brawler brawler = new Brawler();
         //DigPlus dplus=new DigPlus();
         //Warp warp = new Warp();
         abilityList.add(tank);
-        //abilityList.add(inv);
-        //abilityList.add(mage);
-        //abilityList.add(quick);
+        abilityList.add(inv);
+        abilityList.add(mage);
+        abilityList.add(quick);
         //abilityList.add(brawler);
         //secondaryList.add(dplus);
     }
@@ -125,6 +126,7 @@ public class AbilitySelectState extends State implements ControllerListener {
     }
     private void exitScreen(){
         gsm.pop();
+        cam.setToOrtho(false);
     }
     @Override
     public void update(float dt) {
@@ -136,23 +138,29 @@ public class AbilitySelectState extends State implements ControllerListener {
     @Override
     public void render(SpriteBatch sb) {
         sb.begin();
-        Game.setFontSize(2);
+        Game.setFontSize(4);
         Game.font.setColor(Color.WHITE);
-        Game.getFont().draw(sb,"Select Ability",viewX+ titlex,viewY+titley);
-        Game.getFont().draw(sb,"-PRIMARY-",viewX+titlex+100,viewY+titley-20);
-        Game.getFont().draw(sb,"-SECONDARY-",viewX+titlex+100,viewY+titley-170);
-
-        if(MapState.inGame) {
+        if(!MapState.inGame) {
+            Game.getFont().draw(sb, "~~Select Ability~~", viewX + titlex, viewY + titley);
+            for(int i = 0; i<abilityList.size(); i++){
+                sb.draw(ImageLoader.abilities.get(i),viewX+ i*150+Game.WIDTH/2,viewY+ Game.HEIGHT*2/3);
+            }
+        }else{
+            Game.getFont().draw(sb, "~~Upgrade Ability~~", viewX + titlex, viewY + titley);
             sb.draw(player.getAbility().getIcon(), viewX + Game.WIDTH / 2, viewY + (Game.HEIGHT * 2 / 3));
-            for (int i = 0; i < ImageLoader.abilities2.size(); i++) {
+            for (int i = 0; i < secondaryList.size(); i++) {
                 sb.draw(ImageLoader.abilities2.get(i), viewX + i * 150 + Game.WIDTH / 2, viewY + (Game.HEIGHT * 2 / 3) - 100);
             }
         }
-        else{
-            for(int i = 0; i< ImageLoader.abilities.size(); i++){
-                sb.draw(ImageLoader.abilities.get(i),viewX+ i*150+Game.WIDTH/2,viewY+ Game.HEIGHT*2/3);
-            }
-        }
+        Game.setFontSize(2);
+
+        Game.getFont().draw(sb,"-PRIMARY-",viewX+titlex+100,viewY+HEIGHT-120);
+        Game.getFont().draw(sb,"-SECONDARY-",viewX+titlex+100,viewY+HEIGHT-270);
+        CharSequence cs="Enter:Select        Tab:Exit";
+        gl.setText(Game.getFont(),cs);
+
+        Game.getFont().draw(sb,"Enter:Select        Tab:Exit",viewX+(WIDTH/2)-(gl.width/2),viewY+30);
+
         if(posx<0)posx=0;
         if(posy<0)posy=0;
         if(posy>4)posy=4;

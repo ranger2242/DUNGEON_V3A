@@ -23,11 +23,22 @@ public class Equipment extends Item {
     enum Boost{
         Perception, Power, Health, Magic, Haste, Resistance
     }
-   Equipment(){
+    Equipment(){
     isEquip=true;
     }
-    Equipment(int gr,int bo, int ty ){
+    Equipment(Type t ,String name, int[] buffs){
 
+        isEquip=true;
+        type=t;
+        this.name=name;
+        //hp,m,e,att,def,int,spd
+        hpmod= buffs[0];
+        manamod=buffs[1];
+        emod=buffs[2];
+        attackmod=buffs[3];
+        defensemod=buffs[4];
+        intelmod=buffs[5];
+        speedmod=buffs[6];
     }
     public String getName(){
 

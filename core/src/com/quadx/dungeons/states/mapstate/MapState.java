@@ -94,7 +94,7 @@ public class MapState extends State implements ControllerListener {
 
     public void debug() {
         //Tests.testEquipmentRates();
-        Tests.giveItems(20);
+        //Tests.giveItems(20);
     }
     public void handleInput() {
     }

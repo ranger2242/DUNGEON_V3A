@@ -228,7 +228,6 @@ public class MapStateUpdater extends MapState{
     }
     static void moveMonsters() {
         if(!Tests.allstop) {
-
             for (Monster m : monsterList) {
                 m.updateVariables(Gdx.graphics.getDeltaTime());
                 if (m.getdtMove() > m.getMoveSpeed()) {
@@ -295,7 +294,7 @@ public class MapStateUpdater extends MapState{
         if (effectLoaded) effect.update(Gdx.graphics.getDeltaTime());
     }
     static void spawnMonsters(){
-        if(dtRespawn>10f) {
+        if(dtRespawn>11f) {
             for (int i = 0; i < spawnCount; i++) {
                 if(monsterList.size()<150) {
                     Monster m =Monster.getNew();
@@ -310,13 +309,13 @@ public class MapStateUpdater extends MapState{
                         c.setMonsterIndex(monsterList.indexOf(m));
                         liveCellList.set(index, c);
                         Game.console("MList:" + monsterList.indexOf(m));
-                        spawnCount++;
                         MapStateRender.setHoverText("!", .5f, Color.RED, player.getPX(), player.getPY(), true);
                     }
                 }
             }
             Monster.reindexMons=true;
             GridManager.loadLiveCells();
+            spawnCount++;
             dtRespawn=0;
         }
     }

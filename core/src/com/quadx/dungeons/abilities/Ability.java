@@ -15,11 +15,11 @@ public abstract class Ability {
     protected Texture icon;
     protected String name="default";
     final ArrayList<String> output=new ArrayList<>();
-    int[] upCost={1,2,3,4};
+    int[] upCost={0,1,2,3,4};
     static boolean enabled=false;
     static float cooldown=0;
     static float timeCounter=0;
-    int level=1;
+    int level=0;
 
     Ability(){
     }
@@ -42,10 +42,10 @@ public abstract class Ability {
 
     public void upgrade(){
         if(level<6) {
-            level++;
             try {
-                if (player.getAbilityPoints() >= upCost[level - 1]) {
-                    player.setAbilityPoints(-upCost[level - 1]);
+                if (player.getAbilityPoints() >= upCost[level]) {
+                    player.setAbilityPoints(-upCost[level]);
+                    level++;
                     switch (level) {
                         case 2: {
                             l2();
@@ -68,5 +68,9 @@ public abstract class Ability {
             } catch (Exception e) {
             }
         }
+    }
+
+    public int getLevel() {
+        return level;
     }
 }

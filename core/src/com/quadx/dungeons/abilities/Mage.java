@@ -3,12 +3,12 @@ package com.quadx.dungeons.abilities;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Game;
-import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
 import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.ArrayList;
 
+import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
 
 /**
@@ -19,6 +19,7 @@ public class Mage extends Ability {
    // protected static ArrayList<String> output=new ArrayList<>();
 
     public Mage(){
+        name="Mage";
         icon=  ImageLoader.abilities.get(3);
         details();
 
@@ -32,18 +33,6 @@ public class Mage extends Ability {
     public  void onActivate() {
         player.setAbilityMod(2);
         l1();
-        Game.player.setMana(Game.player.getMana()*2);
-        Game.player.setManaMax(Game.player.getManaMax()*2);
-        Game.player.setManaRegen(Game.player.getManaRegenRate()*2);
-        Game.player.setEnergy(Game.player.getEnergy()/2);
-        Game.player.setEnergyMax(Game.player.getEnergyMax()/2);
-        Game.player.setIntel(Game.player.getIntel()*2);
-        MapState.out("----------------------------------");
-        MapState.out(Game.player.getName()+" activated the MAGE ability!");
-        MapState.out("M Max x4!");
-        MapState.out("M Regen x3!");
-        MapState.out("E Max was halved!");
-        MapState.out("2x INT");
         MapStateRender.setHoverText("MAGE!",1.5f, Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
 
     }
@@ -55,37 +44,88 @@ public class Mage extends Ability {
 
     @Override
     public void l1() {
-
+        level=1;
+        Game.player.setxManaMax(2);
+        Game.player.setxManaRegen(2);
+        Game.player.setxEnergyMax(.5);
+        Game.player.setxIntel(2);
     }
 
     @Override
     public void l2() {
-
+        player.setxManaRegen(1.2);
+        player.setxDefense(1.1);
+        player.setxIntel(1.2);
+        player.addItemToInventory(equipSets.ref[2].get(1));
     }
 
     @Override
     public void l3() {
-
+        player.setxIntel(1.3);
+        player.setxHpRegen(1.1);
+        player.setxMoveSpeed(.3);
+        player.addItemToInventory(equipSets.ref[2].get(2));
     }
 
     @Override
     public void l4() {
-
+        player.setxDefense(1.3);
+        player.setxSpeed(1.3);
+        player.setxIntel(1.5);
+        player.setxHpRegen(1.3);
+        player.addItemToInventory(equipSets.ref[2].get(6));
     }
 
     @Override
     public void l5() {
-
+        player.setxManaRegen(1.5);
+        player.setxIntel(1.7);
+        player.setxSpeed(1.3);
+        player.setxDefense(1.1);
+        player.addItemToInventory(equipSets.ref[2].get(3));
     }
 
     public ArrayList<String> details() {
         output.clear();
+        output.add("-"+name+" "+(level+1) +"-");
+        switch (this.level+1){
+            case 1:{
+                output.add("2x M");
+                output.add("2x M Regen");
+                output.add("0.5x E");
+                output.add("2x INT");
+                break;
+            }case 2:{
+                output.add("1.2x M Regen");
+                output.add("1.1x DEF");
+                output.add("1.2x INT");
+                output.add(equipSets.ref[2].get(1).getName());
+                break;
+            }case 3:{
+                output.add("1.7x Move Speed");
+                output.add("1.1x HP Regen");
+                output.add("1.3x INT");
+                output.add(equipSets.ref[2].get(2).getName());
+                break;
+            }case 4:{
+                output.add("1.3x DEF");
+                output.add("1.3x SPD");
+                output.add("1.5x INT");
+                output.add("1.3x HP Regen");
+                output.add(equipSets.ref[2].get(6).getName());
 
-        output.add("-MAGE-");
-        output.add("M Max x2");
-        output.add("M Regen x2");
-        output.add("E Max x0.5");
-        output.add("M DMG x1.2");
+                break;
+            }case 5:{
+                output.add("1.5x M Regen");
+                output.add("1.7x INT");
+                output.add("1.1x DEF");
+                output.add("1.3x SPD");
+                output.add(equipSets.ref[2].get(3).getName());
+                break;
+            }
+        }
+        if(level<5)
+            output.add("Upgrade cost: "+upCost[level]+" AP");
         return output;
     }
 

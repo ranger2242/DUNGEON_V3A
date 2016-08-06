@@ -32,6 +32,7 @@ public class ImageLoader {
     public static final Texture[] energy = new Texture[3];
 
     public static final Texture crate=new Texture("images\\icons\\items\\icCrate.png");
+
     public static final Texture warp=new Texture("images\\tiles\\icWarp.png");
     public static final Texture spellbook= new Texture("images\\icons\\items\\icSpellBook.png");
 
