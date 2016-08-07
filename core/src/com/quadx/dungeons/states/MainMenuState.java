@@ -163,7 +163,7 @@ public class MainMenuState extends State implements ControllerListener {
         Game.setFontSize(5);
         Game.font.setColor(Color.WHITE);
         String title="-DEMO-";
-        Game.getFont().draw(sb,title, centerString(title),titlePosY);
+        Game.getFont().draw(sb,title, centerString(title),titlePosY-100);
         effect.draw(sb);
         sb.end();
     }

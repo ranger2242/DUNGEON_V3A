@@ -74,7 +74,7 @@ public class ImageLoader {
         abilities.add(new Texture("images\\icons\\abilities\\icQuick.png"));
         abilities.add(new Texture("images\\icons\\abilities\\icBrawler.png"));
 
-        abilities2.add(new Texture("images\\icons\\abilities\\icDigPlus.png"));
+        abilities2.add(new Texture("images\\icons\\abilities\\icWB.png"));
     }
     private void loadAttacks(){
         attacks.add(new Texture("images\\icons\\attacks\\icBlind.png"));

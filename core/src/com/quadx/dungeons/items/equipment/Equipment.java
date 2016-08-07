@@ -21,7 +21,7 @@ public class Equipment extends Item {
         Poor,Low,Standard,High,Elite,Legendary
     }
     enum Boost{
-        Perception, Power, Health, Magic, Haste, Resistance
+        Perception, Endurance, Power, Health, Magic, Haste, Resistance
     }
     Equipment(){
     isEquip=true;
@@ -39,6 +39,7 @@ public class Equipment extends Item {
         defensemod=buffs[4];
         intelmod=buffs[5];
         speedmod=buffs[6];
+        setCost(2);
     }
     public String getName(){
 
@@ -67,6 +68,10 @@ public class Equipment extends Item {
             }
             else setBoost();
             switch (boost) {
+                case Endurance:{
+                    emod+= calculateBuff();
+                    break;
+                }
                 case Perception: {
                     intelmod += calculateBuff();
                     break;
@@ -94,7 +99,7 @@ public class Equipment extends Item {
             }
             buffCount--;
         }
-        setCost();
+        setCost(1);
 
     }
     private int calculateBuff(){
@@ -201,6 +206,7 @@ public class Equipment extends Item {
         if(x==3)boost=Boost.Health;
         if(x==4)boost=Boost.Perception;
         if(x==5)boost=Boost.Power;
+        if(x==6)boost=Boost.Endurance;
 
     }
     private void setBoost(int x){
@@ -221,16 +227,17 @@ public class Equipment extends Item {
         if(x>90)grade=Grade.Elite;
         if(x>95)grade=Grade.Legendary;
     }
-    private void setCost(){
+    private void setCost(int a){
         int x=0;
         x+= hpmod;
         x+=manamod;
+        x+=emod;
         x+=attackmod;
         x+=defensemod;
         x+=intelmod;
         x+=speedmod;
         x=x*100;
-        cost=x;
+        cost=a*x;
     }
     public static Equipment generateEquipment(){
         Equipment item=new Equipment();

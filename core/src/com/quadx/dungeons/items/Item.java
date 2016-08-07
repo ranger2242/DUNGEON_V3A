@@ -8,7 +8,6 @@ import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.tools.ImageLoader;
 
 import static com.quadx.dungeons.Game.equipSets;
-import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.rn;
 
 public class Item
@@ -96,11 +95,10 @@ public class Item
                 if (rn.nextFloat() < .1) {
                     a = new SpellBook();
                 } else {
-                    if(rn.nextBoolean())
+                    if(rn.nextFloat()<.9)
                     a = Equipment.generateEquipment();
                     else{
-                        int e=rn.nextInt(8);
-                        a=equipSets.ref[player.getAbilityMod()].get(e);
+                        a=equipSets.ref[rn.nextInt(5)].get(rn.nextInt(8));
                     }
                 }
             }

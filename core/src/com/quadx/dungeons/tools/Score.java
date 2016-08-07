@@ -23,15 +23,15 @@ public class Score {
             s+=" ";
         }
         s+=score;
-        while (s.length()<30){
+        while (s.length()<35){
             s+=" ";
         }
         s+=gold+"G";
-        while (s.length()<45){
+        while (s.length()<55){
             s+=" ";
         }
         s+=ability;
-        while (s.length()<60){
+        while (s.length()<80){
             s+=" ";
         }
         s+=kills+" KILLS";

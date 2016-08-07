@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.abilities.Ability;
 import com.quadx.dungeons.abilities.DigPlus;
+import com.quadx.dungeons.abilities.WaterBreath;
 import com.quadx.dungeons.attacks.*;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
@@ -390,6 +391,14 @@ public class Player {
             if (c1.getState()&& !c1.hasWater){
                 setCordsPX(nx*cellW, ny*cellW);
                 dtMove = 0;
+            }
+            if(c1.getState() && c1.hasWater){
+                    for(Ability a: player.secondaryAbilityList){
+                        if(a.getClass().equals(WaterBreath.class)){
+                            setCordsPX(nx*cellW, ny*cellW);
+                            dtMove = 0;
+                        }
+                    }
             }
         }catch (IndexOutOfBoundsException e){}
          catch ( NullPointerException e){

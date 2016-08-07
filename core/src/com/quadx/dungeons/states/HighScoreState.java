@@ -14,6 +14,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static com.quadx.dungeons.Game.HEIGHT;
+import static com.quadx.dungeons.Game.WIDTH;
 import static com.quadx.dungeons.states.mapstate.MapState.viewX;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
 import static com.quadx.dungeons.tools.StatManager.stats;
@@ -85,33 +87,39 @@ public class HighScoreState extends State {
     public void render(SpriteBatch sb) {
         Gdx.gl.glClearColor(1,0,0,1);
 
+        float killerx=viewX+(WIDTH/4);
+        float killery=viewY+(HEIGHT/2);
         sb.begin();
         Game.setFontSize(2);
         Game.getFont().setColor(Color.WHITE);
-        Game.getFont().draw(sb,"HIGHSCORES",viewX+ Game.WIDTH/2,viewY+ Game.HEIGHT-30);
-        Game.getFont().draw(sb,"KILLED BY",viewX+Game.WIDTH - 200,viewY+ Game.HEIGHT-30);
-        Game.getFont().draw(sb,"ROUND STATS",viewX+30,viewY+ (Game.HEIGHT/2)-30);
+        Game.getFont().draw(sb,"HIGHSCORES",viewX+ WIDTH/2,viewY+ HEIGHT-30);
+        Game.getFont().draw(sb,"KILLED BY",killerx,killery);
+        Game.getFont().draw(sb,"ROUND STATS",viewX+30,viewY+ (HEIGHT/2));
 
         for(int i=9;i>=0;i--) {
             if(i+1!= 10) {
                 if (highscores[i] != null) {
-                    Game.getFont().draw(sb, (i + 1) + ":  " + highscores[i].toString(), viewX + 30, viewY + Game.HEIGHT - 60 - (i * 20));
+                    Game.getFont().draw(sb, (i + 1) + ":  " + highscores[i].toString(), viewX + 30, viewY + HEIGHT - 60 - (i * 20));
                 }
             }
             else
             if (highscores[i] != null) {
-                Game.getFont().draw(sb, (i + 1) + ": " + highscores[i].toString(), viewX + 30, viewY + Game.HEIGHT - 60 - (i *20));
+                Game.getFont().draw(sb, (i + 1) + ": " + highscores[i].toString(), viewX + 30, viewY + HEIGHT - 60 - (i *20));
             }
         }
         for(int i=0;i< stats.size();i++){
-            Game.getFont().draw(sb,stats.get(i)+list.get(i).toString(),viewX+30,viewY+(Game.HEIGHT/2)-60-(i*20));
+            Game.getFont().draw(sb,stats.get(i)+list.get(i).toString(),viewX+30,viewY+(HEIGHT/2)-((i+1)*20));
         }
-        ArrayList<String> list = StatManager.killer.sayStats();
-        StatManager.killer.setFront(2);
-        sb.draw(StatManager.killer.getIcon(),viewX+Game.WIDTH-200,viewY+(Game.HEIGHT-120));
+        try {
+
+            StatManager.killer.setFront(2);
+            ArrayList<String> list = StatManager.killer.sayStats();
+
+        sb.draw(StatManager.killer.getIcon(),killerx,killery);
         for(int i=0;i<list.size();i++){
-            Game.getFont().draw(sb,list.get(i),viewX+Game.WIDTH- 200,viewY+(Game.HEIGHT-150)-(i*20));
+            Game.getFont().draw(sb,list.get(i),killerx,killery-(i*20)-30);
         }
+        }catch (Exception e){}
         sb.end();
     }
     public static void addScore(Score s){

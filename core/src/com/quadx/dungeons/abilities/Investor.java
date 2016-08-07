@@ -44,12 +44,13 @@ public class Investor extends Ability {
     public void l1() {
         level=1;
         player.setxHpRegen(2);
+        player.setxEnergyRegen(2);
     }
 
     @Override
     public void l2() {
-        player.setxManaRegen(1.2);
-        player.setxMoveSpeed(.7);
+            player.setxManaRegen(1.1);
+        player.setxMoveSpeed(.85);
         player.setxAttack(1.1);
         player.addItemToInventory(equipSets.ref[1].get(7));
 
@@ -57,19 +58,20 @@ public class Investor extends Ability {
 
     @Override
     public void l3() {
-        player.setxMoveSpeed(.5);
-        player.setxAttack(1.4);
-        player.setxIntel(1.4);
+        player.setxMoveSpeed(.75);
+        player.setxEnergyRegen(2);
+        player.setxAttack(1.2);
+        player.setxIntel(1.2);
         player.addItemToInventory(equipSets.ref[1].get(0));
 
     }
 
     @Override
     public void l4() {
-        player.setxDefense(1.6);
-        player.setxIntel(1.4);
-        player.setxAttack(1.5);
-        player.setxSpeed(1.4);
+        player.setxDefense(1.3);
+        player.setxIntel(1.2);
+        player.setxAttack(1.25);
+        player.setxSpeed(1.2);
         player.addItemToInventory(equipSets.ref[1].get(2));
     }
 
@@ -89,33 +91,35 @@ public class Investor extends Ability {
         switch (this.level+1){
             case 1:{
                 output.add("x2 HP Regen");
+                output.add("x2 E Regen");
                 output.add("Generate Money");
                 break;
             }case 2:{
-                output.add("1.3x Move Speed");
-                output.add("1.2x Mana Regen");
+                output.add("1.1x Mana Regen");
+                output.add("1.15x Move Speed");
                 output.add("1.1x ATT");
-                output.add("Standard+ ATT Gloves");
+                output.add(equipSets.ref[1].get(0).getName());
                 break;
             }case 3:{
-                output.add("1.5x Move Speed");
-                output.add("1.4x ATT");
+                output.add("1.25x Move Speed");
+                output.add("2x E Regen  ");
+                output.add("1.2x ATT");
                 output.add("1.2x INT");
-                output.add("Standard+ INT Helmet");
+                output.add(equipSets.ref[1].get(2).getName());
                 break;
             }case 4:{
-                output.add("1.6x DEF");
-                output.add("1.4x INT");
-                output.add("1.5x ATT");
-                output.add("1.4x SPD");
-                output.add("Standard+ DEF Chest");
+                output.add("1.3x DEF");
+                output.add("1.2x INT");
+                output.add("1.25x ATT");
+                output.add("1.2x SPD");
+                output.add(equipSets.ref[1].get(2).getName());
                 break;
             }case 5:{
                 output.add("1.5x HP Regen");
                 output.add("1.4x M Regen");
                 output.add("1.5x SPD");
                 output.add("1.6x ATT");
-                output.add("Legendary ATT Arms");
+                output.add(equipSets.ref[1].get(3).getName());
                 output.add("Unlock Investor Special");
                 output.add("Unlock Extra Ability Slot");
                 break;

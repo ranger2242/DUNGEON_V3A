@@ -118,12 +118,12 @@ public class AbilitySelectState extends State implements ControllerListener {
         if(dtSel >.7f) {
             if(MapState.inGame){
                 boolean found=false;
-                if(player.getAbility().getClass().equals(hovering)){
+                if(player.getAbility().getClass().equals(hovering.getClass())){
                     player.getAbility().upgrade();
                     found=true;
                 }
                 for(Ability a:player.secondaryAbilityList) {
-                    if (a.getClass().equals(hovering)) {
+                    if (a.getClass().equals(hovering.getClass())) {
                         a.upgrade();
                         found=true;
                     }
