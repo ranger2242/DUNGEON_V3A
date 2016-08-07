@@ -73,6 +73,7 @@ public class Tank extends Ability {
         player.setxIntel(1.1);
         player.setxHpRegen(1.5);
         player.setxMoveSpeed(.9);
+        player.maxSec=3;
     }
 
     public ArrayList<String> details() {

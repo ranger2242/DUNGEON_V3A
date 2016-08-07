@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.*;
 import com.quadx.dungeons.abilities.Investor;
 import com.quadx.dungeons.abilities.Warp;
+import com.quadx.dungeons.abilities.WaterBreath;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.AttackMod;
 import com.quadx.dungeons.items.EnergyPlus;
@@ -503,6 +504,9 @@ public class MapStateUpdater extends MapState{
         int index=liveCellList.indexOf(c);
         if(c .getState())
         if (x == c.getX() && y == c.getY()) {
+            if(c.getWater() && player.getAbility().getClass().equals(WaterBreath.class)){
+
+            }
             if (c.hasLoot()) {
                 MapStateRender.dtLootPopup = 0;
                 liveCellList.get(index ).setHasLoot(false);

@@ -62,6 +62,7 @@ public class Player {
     private int def =15;
     private int intel=15;
     private int mana = 100;
+    public int maxSec=2;
    // private int eMod=0;
     private int abilityMod =0;
     private int att =15;

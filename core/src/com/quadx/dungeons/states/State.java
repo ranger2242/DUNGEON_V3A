@@ -13,8 +13,6 @@ public abstract class State {
     protected static OrthographicCamera cam;
     private Vector3 mouse;
     protected static GameStateManager gsm;
-   // public static BitmapFont font = Game.font;
-    static BitmapFont font = new BitmapFont();
 
     protected State(GameStateManager gsm){
         State.gsm = gsm;

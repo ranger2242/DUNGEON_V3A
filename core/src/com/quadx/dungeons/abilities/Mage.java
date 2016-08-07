@@ -83,6 +83,8 @@ public class Mage extends Ability {
         player.setxSpeed(1.3);
         player.setxDefense(1.1);
         player.addItemToInventory(equipSets.ref[2].get(3));
+        player.maxSec=3;
+
     }
 
     public ArrayList<String> details() {

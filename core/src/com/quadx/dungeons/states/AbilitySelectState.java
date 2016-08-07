@@ -67,12 +67,13 @@ public class AbilitySelectState extends State implements ControllerListener {
         //Brawler brawler = new Brawler();
         //DigPlus dplus=new DigPlus();
         //Warp warp = new Warp();
+        WaterBreath wb= new WaterBreath();
         abilityList.add(tank);
         abilityList.add(inv);
         abilityList.add(mage);
         abilityList.add(quick);
         //abilityList.add(brawler);
-        //secondaryList.add(dplus);
+        secondaryList.add(wb);
     }
 
     @Override
@@ -116,7 +117,22 @@ public class AbilitySelectState extends State implements ControllerListener {
     private void selectAbiltiy(){
         if(dtSel >.7f) {
             if(MapState.inGame){
-                player.getAbility().upgrade();
+                boolean found=false;
+                if(player.getAbility().getClass().equals(hovering)){
+                    player.getAbility().upgrade();
+                    found=true;
+                }
+                for(Ability a:player.secondaryAbilityList) {
+                    if (a.getClass().equals(hovering)) {
+                        a.upgrade();
+                        found=true;
+                    }
+                }
+                if(!found){
+                    if(player.secondaryAbilityList.size()<player.maxSec){
+                        player.secondaryAbilityList.add(hovering);
+                    }
+                }
             }else {
                 pressed = true;
                 player.setAbility(hovering);
@@ -188,8 +204,11 @@ public class AbilitySelectState extends State implements ControllerListener {
             }else{
                 temp=abilityList;}
         }
+        if(posy==1){
+            temp=secondaryList;
+        }
         sb.begin();
-        if(posy==0 &&posx<temp.size()) {
+        if(posx<temp.size()) {
             for (int i = 0; i < temp.get(posx).details().size(); i++) {
                 Game.getFont().draw(sb, temp.get(posx).details().get(i), viewX + 30, viewY -100+ Game.HEIGHT * 2 / 3 - (i * 20));
                 hovering = temp.get(posx);

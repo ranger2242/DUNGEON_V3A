@@ -84,6 +84,7 @@ public class Quick extends Ability {
         player.setxManaRegen(1.4);
         player.setxEnergyRegen(1.4);
         player.addItemToInventory(equipSets.ref[3].get(1));
+        player.maxSec=3;
     }
 
     public  ArrayList<String> details() {

@@ -34,9 +34,10 @@ public class ImageLoader {
     public static final Texture crate=new Texture("images\\icons\\items\\icCrate.png");
 
     public static final Texture warp=new Texture("images\\tiles\\icWarp.png");
-    public static final Texture spellbook= new Texture("images\\icons\\items\\icSpellBook.png");
+    public static Texture spellbook=null;
 
     public ImageLoader(){
+       // spellbook= new Texture("images\\icons\\items\\icSpellBook.png");
         for(int i=0;i<17;i++){
             floors[i]=new Texture("images\\tiles\\floor\\f"+(i)+".png");
         }

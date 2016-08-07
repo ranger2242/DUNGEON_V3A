@@ -2,6 +2,7 @@ package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g3d.particles.ResourceData;
 
 import java.util.ArrayList;
 
@@ -34,7 +35,6 @@ public abstract class Ability {
     public abstract void l4();
     public abstract void l5();
 
-    public ArrayList<String> details(){return  output;}
     public static void updateTimeCounter(){timeCounter+= Gdx.graphics.getDeltaTime();}
 
     public static boolean isEnabled(){return enabled;}
@@ -73,4 +73,5 @@ public abstract class Ability {
     public int getLevel() {
         return level;
     }
+    public abstract ArrayList<String> details();
 }

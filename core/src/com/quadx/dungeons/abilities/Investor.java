@@ -80,6 +80,7 @@ public class Investor extends Ability {
         player.setxSpeed(1.5);
         player.setxAttack(1.6);
         player.addItemToInventory(equipSets.ref[1].get(3));
+        player.maxSec=3;
     }
 
     public ArrayList<String> details() {
