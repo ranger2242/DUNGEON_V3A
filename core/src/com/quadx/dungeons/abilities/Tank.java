@@ -7,6 +7,7 @@ import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.ArrayList;
 
+import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
 
 /**
@@ -50,6 +51,7 @@ public class Tank extends Ability {
     public void l2() {
         player.setxDefense(1.2);
         player.setxMoveSpeed(.9);
+        player.addItemToInventory(equipSets.ref[0].get(0));
     }
 
     @Override
@@ -57,6 +59,7 @@ public class Tank extends Ability {
         player.setxDefense(1.3);
         player.setxAttack(1.1);
         player.setxMoveSpeed(.8);
+        player.addItemToInventory(equipSets.ref[0].get(6));
     }
 
     @Override
@@ -64,6 +67,8 @@ public class Tank extends Ability {
         player.setxDefense(1.3);
         player.setxAttack(1.1);
         player.setxMoveSpeed(.8);
+        player.addItemToInventory(equipSets.ref[0].get(2));
+
     }
 
     @Override
@@ -74,6 +79,8 @@ public class Tank extends Ability {
         player.setxHpRegen(1.5);
         player.setxMoveSpeed(.9);
         player.maxSec=3;
+        player.addItemToInventory(equipSets.ref[0].get(3));
+
     }
 
     public ArrayList<String> details() {
@@ -89,13 +96,13 @@ public class Tank extends Ability {
             }case 2:{
                 output.add("1.2x DEF");
                 output.add("1.1x Move Speed");
-                output.add("Standard+ DEF Helmet");
+                output.add(equipSets.ref[0].get(0).getName());
                 break;
             }case 3:{
                 output.add("1.3x DEF");
                 output.add("1.1x ATT");
                 output.add("1.2x Move Speed");
-                output.add("Standard+ DEF Ring");
+                output.add(equipSets.ref[0].get(6).getName());
                 break;
             }case 4:{
                 output.add("1.4x DEF");
@@ -103,15 +110,15 @@ public class Tank extends Ability {
                 output.add("1.1x INT");
                 output.add("1.5x HP Regen");
                 output.add(".9x Move Speed");
-                output.add("Standard+ DEF Chest");
+                output.add(equipSets.ref[0].get(2).getName());
                 break;
             }case 5:{
                 output.add("1.5x DEF");
                 output.add("1.2x INT");
                 output.add("1.2x SPD");
                 output.add("1.2x Move Speed");
-                output.add("Legendary DEF Legs");
-                output.add("Unlock Tank Special");
+                output.add(equipSets.ref[0].get(3).getName());
+               // output.add("Unlock Tank Special");
                 output.add("Unlock Extra Ability Slot");
                 break;
             }

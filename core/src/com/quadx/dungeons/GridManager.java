@@ -248,8 +248,8 @@ public class GridManager {
                 monsterList.add(c.getMonster());
                 c.setMonsterIndex(listSize + 1);
                 liveCellList.set(point, c);
+                temp--;
             }
-            temp--;
 
         }
         Monster.reindexMons=true;

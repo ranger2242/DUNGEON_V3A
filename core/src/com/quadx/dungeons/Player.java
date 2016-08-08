@@ -525,7 +525,7 @@ public class Player {
         if(item != null) {
             lastItem=item;
             boolean added = false;
-            if (item.getClass().equals(Equipment.class)) {
+            //if (item.getClass().equals(Equipment.class)) {
                 for (ArrayList<Item> al : invList) {
                     if (!al.isEmpty()) {
                         try {
@@ -536,7 +536,7 @@ public class Player {
                         } catch (NullPointerException e) {}
                     }
                 }
-            }
+
             if (!added) {
                 ArrayList<Item> al = new ArrayList<>();
                 al.add(item);

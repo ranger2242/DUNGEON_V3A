@@ -5,9 +5,11 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.quadx.dungeons.Game;
+import com.quadx.dungeons.Player;
 import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.tools.Score;
 import com.quadx.dungeons.tools.StatManager;
+import com.quadx.dungeons.tools.Tests;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -24,9 +26,12 @@ import static com.quadx.dungeons.tools.StatManager.stats;
  * Created by Chris Cavazos on 5/29/2016.
  */
 public class HighScoreState extends State {
+    public static Player pfinal= new Player();
     public static final ArrayList<Score> scores= new ArrayList<>();
     private final Score[] highscores=new Score[10];
     ArrayList<Double> list;
+    boolean blink=true;
+    float dtBlink=0;
     public HighScoreState(GameStateManager gsm) {
         super(gsm);
          list= StatManager.getFinalStats();
@@ -81,6 +86,11 @@ public class HighScoreState extends State {
     @Override
     public void update(float dt) {
         handleInput();
+        dtBlink+=dt;
+        if(dtBlink>.5){
+            blink=!blink;
+            dtBlink=0;
+        }
     }
 
     @Override
@@ -93,33 +103,57 @@ public class HighScoreState extends State {
         Game.setFontSize(2);
         Game.getFont().setColor(Color.WHITE);
         Game.getFont().draw(sb,"HIGHSCORES",viewX+ WIDTH/2,viewY+ HEIGHT-30);
-        Game.getFont().draw(sb,"KILLED BY",killerx,killery);
         Game.getFont().draw(sb,"ROUND STATS",viewX+30,viewY+ (HEIGHT/2));
 
         for(int i=9;i>=0;i--) {
             if(i+1!= 10) {
                 if (highscores[i] != null) {
-                    Game.getFont().draw(sb, (i + 1) + ":  " + highscores[i].toString(), viewX + 30, viewY + HEIGHT - 60 - (i * 20));
+                    Game.getFont().draw(sb, (i + 1) + ":  " + highscores[i].toString(), viewX + 30, viewY + HEIGHT - 80 - (i * 24));
                 }
             }
             else
             if (highscores[i] != null) {
-                Game.getFont().draw(sb, (i + 1) + ": " + highscores[i].toString(), viewX + 30, viewY + HEIGHT - 60 - (i *20));
+                Game.getFont().draw(sb, (i + 1) + ": " + highscores[i].toString(), viewX + 30, viewY + HEIGHT - 80 - (i *24));
             }
         }
         for(int i=0;i< stats.size();i++){
-            Game.getFont().draw(sb,stats.get(i)+list.get(i).toString(),viewX+30,viewY+(HEIGHT/2)-((i+1)*20));
+            Game.getFont().draw(sb,stats.get(i)+list.get(i).toString(),viewX+30,viewY+(HEIGHT/2)-30-((i+1)*24));
         }
         try {
 
             StatManager.killer.setFront(2);
             ArrayList<String> list = StatManager.killer.sayStats();
+            Game.getFont().draw(sb,"KILLED BY",killerx,killery);
 
-        sb.draw(StatManager.killer.getIcon(),killerx,killery);
+
+            sb.draw(StatManager.killer.getIcon(),killerx,viewY+100);
         for(int i=0;i<list.size();i++){
-            Game.getFont().draw(sb,list.get(i),killerx,killery-(i*20)-30);
+            Game.getFont().draw(sb,list.get(i),killerx,killery-30-((i+1)*20));
         }
+
+            Game.getFont().draw(sb,"PLAYER STATS",viewX+(WIDTH/2)-100,viewY+(HEIGHT/2));
+
+            for(int i=0;i<pfinal.getStatsList().size();i++){
+                try{
+                Game.getFont().draw(sb,pfinal.getStatsList().get(i),viewX+(WIDTH/2)-100,viewY+(HEIGHT/2)-20-((i+1)*20));
+                }catch (Exception e){}
+
+            }
+            Game.getFont().draw(sb,"EQUIPMENT",viewX+((WIDTH/3)*2),viewY+(HEIGHT/2));
+
+            for(int i=0;i<pfinal.equipedList.size();i++){
+                try{
+                    Game.getFont().draw(sb,pfinal.equipedList.get(i).getName(),viewX+((WIDTH/3)*2)+50,viewY+(HEIGHT/2)-35-((i+1)*30));
+                    sb.draw(pfinal.equipedList.get(i).getIcon(),viewX+((WIDTH/3)*2),viewY+(HEIGHT/2)-55-((i+1)*30));
+                }catch (Exception e){}
+
+            }
         }catch (Exception e){}
+        if(blink) {
+            Game.getFont().setColor(Color.RED);
+            Game.getFont().draw(sb, "TAB : EXIT", Tests.centerString("TAB : EXIT"), viewY + 30);
+
+        }
         sb.end();
     }
     public static void addScore(Score s){

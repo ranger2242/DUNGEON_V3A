@@ -263,7 +263,7 @@ public class Monster {
     private void genHp() {
         double a = hpBase + rn.nextInt(31);
         double b = Math.sqrt(rn.nextInt(65535)) / 4;
-        hp = (((a * 2 + b) * level) / 100) + level + 10;
+        hp = ((((a * 2 + b) * level) / 100) + level + 10)*2;
         hpMax = hp;
         hpsoft = hp;
     }

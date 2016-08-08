@@ -30,6 +30,7 @@ public class ImageLoader {
     public static final Texture[] potion = new Texture[3];
     public static final Texture[] mana = new Texture[3];
     public static final Texture[] energy = new Texture[3];
+    public static final Texture[] equipBasic= new Texture[8];
 
     public static final Texture crate=new Texture("images\\icons\\items\\icCrate.png");
 
@@ -66,6 +67,18 @@ public class ImageLoader {
         loadAttacks();
         loadMonsters();
         loadAbilities();
+        loadEquip();
+    }
+    private void loadEquip(){
+        equipBasic[0]=new Texture("images\\icons\\items\\icArms.png");
+        equipBasic[1]=new Texture("images\\icons\\items\\icBoots.png");
+        equipBasic[2]=new Texture("images\\icons\\items\\icCape.png");
+        equipBasic[3]=new Texture("images\\icons\\items\\icChest.png");
+        equipBasic[4]=new Texture("images\\icons\\items\\icGloves.png");
+        equipBasic[5]=new Texture("images\\icons\\items\\icHelmet.png");
+        equipBasic[6]=new Texture("images\\icons\\items\\icLegs.png");
+        equipBasic[7]=new Texture("images\\icons\\items\\icRing.png");
+
     }
     private void loadAbilities(){
         abilities.add(new Texture("images\\icons\\abilities\\icTank.png"));

@@ -155,7 +155,7 @@ public class AbilitySelectState extends State implements ControllerListener {
     public void render(SpriteBatch sb) {
         sb.begin();
         Game.setFontSize(4);
-        Game.font.setColor(Color.WHITE);
+        Game.getFont().setColor(Color.WHITE);
         if(!MapState.inGame) {
             Game.getFont().draw(sb, "~~Select Ability~~", viewX + titlex, viewY + titley);
             for(int i = 0; i<abilityList.size(); i++){
@@ -169,6 +169,7 @@ public class AbilitySelectState extends State implements ControllerListener {
             }
         }
         Game.setFontSize(2);
+        Game.getFont().setColor(Color.WHITE);
 
         Game.getFont().draw(sb,"-PRIMARY-",viewX+titlex+100,viewY+HEIGHT-120);
         Game.getFont().draw(sb,"-SECONDARY-",viewX+titlex+100,viewY+HEIGHT-270);
@@ -189,7 +190,7 @@ public class AbilitySelectState extends State implements ControllerListener {
         //draw player stats
         sb.begin();
         Game.setFontSize(1);
-        Game.font.setColor(Color.WHITE);
+        Game.getFont().setColor(Color.WHITE);
         ArrayList<String> stats = player.getStatsList();
         for(int i=0;i<stats.size();i++){
             Game.font.draw(sb, stats.get(i),viewX+30,viewY+HEIGHT-30-(20*i));

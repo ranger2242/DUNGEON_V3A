@@ -5,10 +5,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.*;
-import com.quadx.dungeons.abilities.Ability;
 import com.quadx.dungeons.abilities.Investor;
 import com.quadx.dungeons.abilities.Warp;
-import com.quadx.dungeons.abilities.WaterBreath;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.AttackMod;
 import com.quadx.dungeons.items.EnergyPlus;
@@ -25,6 +23,7 @@ import com.quadx.dungeons.tools.DebugTextInputListener;
 import com.quadx.dungeons.tools.Tests;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
 import static com.quadx.dungeons.Game.controllerMode;
 import static com.quadx.dungeons.Game.player;
@@ -230,12 +229,14 @@ public class MapStateUpdater extends MapState{
     }
     static void moveMonsters() {
         if(!Tests.allstop) {
-            for (Monster m : monsterList) {
-                m.updateVariables(Gdx.graphics.getDeltaTime());
-                if (m.getdtMove() > m.getMoveSpeed()) {
-                    m.move();
+            try {
+                for (Monster m : monsterList) {
+                    m.updateVariables(Gdx.graphics.getDeltaTime());
+                    if (m.getdtMove() > m.getMoveSpeed()) {
+                        m.move();
+                    }
                 }
-            }
+            }catch (ConcurrentModificationException e){}
         }
     }
     static void updateVariables(float dt) {
@@ -348,6 +349,7 @@ public class MapStateUpdater extends MapState{
     }
     static void checkPlayerIsAlive() {
         if (player.checkIfDead()) {
+            HighScoreState.pfinal=player;
             HighScoreState.addScore(player.getScore());
             player = null;
             player = new Player();

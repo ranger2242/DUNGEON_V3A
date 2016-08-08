@@ -19,6 +19,7 @@ import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.Tests;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
 import static com.badlogic.gdx.graphics.GL20.GL_BLEND;
 import static com.quadx.dungeons.Game.*;
@@ -53,13 +54,15 @@ public class MapStateRender extends MapState {
         sbDrawPlayer(sb);
         sbDrawHovText(sb);
         //For all mosters on screen do these actions
-        for(Monster m: GridManager.monsterList) {
-            srDrawMonsterHealthBar(m);
-            sb.begin();
-            sbDrawMosters(sb,m);
-            sbDrawMonsterInfo(sb,m);
-            sb.end();
-        }
+        try {
+            for (Monster m : GridManager.monsterList) {
+                srDrawMonsterHealthBar(m);
+                sb.begin();
+                sbDrawMosters(sb, m);
+                sbDrawMonsterInfo(sb, m);
+                sb.end();
+            }
+        }catch (ConcurrentModificationException e){}
         //HUD Layer
         srDrawHUD();
         sbDrawHUD(sb);
@@ -133,7 +136,12 @@ public class MapStateRender extends MapState {
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 4; j++) {
                 if(count<player.equipedList.size()) {
-                    sb.draw(ImageLoader.crate, x + (j * 36), y + (i * 36) - 20);
+                    try {
+                        sb.draw(player.equipedList.get(count).getIcon(), x + (j * 36), y + (i * 36) - 20);
+                    }catch (Exception e){
+                        sb.draw(ImageLoader.crate, x + (j * 36), y + (i * 36) - 20);
+
+                    }
                     count++;
                 }
             }
@@ -147,12 +155,17 @@ public class MapStateRender extends MapState {
             Game.font.setColor(Color.WHITE);
             ArrayList<String> a = player.getStatsList();
             for (int i = 0; i < a.size(); i++) {
-                if (statCompare != null && i - 2 < statCompare.length && i - 2 >= 0) {
-                 /*   switch (statCompare[i - 2]) {
+                if (statCompare != null && i-3 < statCompare.length && i-3 >= 0) {
+                      switch (statCompare[i-3]) {
                         case 1: {Game.font.setColor(Color.BLUE);break;}
                         case 2: {Game.font.setColor(Color.RED);break;}
                         case 0: {Game.font.setColor(Color.WHITE);break;}
-                    }*/
+                        default: {Game.font.setColor(Color.WHITE);break;}
+
+                      }
+                }
+                else{
+                    Game.font.setColor(Color.WHITE);
                 }
                 Game.getFont().draw(sb, a.get(i), x + 30, y + HEIGHT - 30 - (i * 20));
             }
@@ -230,6 +243,7 @@ public class MapStateRender extends MapState {
                 ArrayList<String> outList=new ArrayList<>();
                 if(item.getHpmod()!=0){outList.add("HP "+ item.getHpmod());}
                 if(item.getManamod()!=0){outList.add("M :"+ item.getManamod());}//Mana
+                if(item.getEmod()!=0){outList.add("E :"+ item.getEmod());}//Mana
                 if(item.getAttackmod()!=0){outList.add("ATT :"+ item.getAttackmod());}  //attack
                 if(item.getDefensemod()!=0){outList.add("DEF :"+ item.getDefensemod());} //defense
                 if(item.getIntelmod()!=0){outList.add("INT :"+ item.getIntelmod());}//intel
@@ -240,7 +254,12 @@ public class MapStateRender extends MapState {
                     Game.getFont().draw(sb,outList.get(i),viewX + WIDTH - 290, viewY + 150 -((i+1)*20) - 20);
                 }
                 Game.getFont().draw(sb, "x" + player.invList.get(inventoryPos).size(), x, y);
-                sb.draw(ImageLoader.crate, x, y);
+                try {
+                    sb.draw(player.invList.get(inventoryPos).get(0).getIcon(), x, y);
+                }catch (Exception e){
+                    sb.draw(ImageLoader.crate, x, y);
+
+                }
             }catch (IndexOutOfBoundsException  ignored){}
         }
     }

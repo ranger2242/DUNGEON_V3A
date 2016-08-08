@@ -51,7 +51,6 @@ public class Equipment extends Item {
     public String getGrade(){
         return grade.toString();
     }
-
     void setMods(){
         int buffCount=1;
         if(grade==Grade.Elite){
@@ -143,33 +142,40 @@ public class Equipment extends Item {
             }else{
                 x[1]=0;
             }
-            if(this.attackmod>eq2.attackmod){
+            if(this.emod>eq2.emod){
                 x[2]=1;
-            }else if(this.attackmod<eq2.attackmod){
+            }else if(this.emod<eq2.emod){
                 x[2]=2;
             }else{
                 x[2]=0;
             }
-            if(this.defensemod>eq2.defensemod){
+            if(this.attackmod>eq2.attackmod){
                 x[3]=1;
-            }else if(this.defensemod<eq2.defensemod){
+            }else if(this.attackmod<eq2.attackmod){
                 x[3]=2;
             }else{
                 x[3]=0;
             }
-            if(this.intelmod>eq2.intelmod){
+            if(this.defensemod>eq2.defensemod){
                 x[4]=1;
-            }else if(this.intelmod<eq2.intelmod){
+            }else if(this.defensemod<eq2.defensemod){
                 x[4]=2;
             }else{
                 x[4]=0;
             }
-            if(this.speedmod>eq2.speedmod){
+            if(this.intelmod>eq2.intelmod){
                 x[5]=1;
-            }else if(this.speedmod<eq2.speedmod){
+            }else if(this.intelmod<eq2.intelmod){
                 x[5]=2;
             }else{
                 x[5]=0;
+            }
+            if(this.speedmod>eq2.speedmod){
+                x[6]=1;
+            }else if(this.speedmod<eq2.speedmod){
+                x[6]=2;
+            }else{
+                x[6]=0;
             }
         }
 
@@ -184,17 +190,20 @@ public class Equipment extends Item {
         {
             x[1] = 1;
         }
+        if(this.emod>0){
+            x[2]=1;
+        }
         if(this.attackmod>0){
-            x[2]=1;}
+            x[3]=1;}
 
         if(this.defensemod>0){
-            x[3]=1;
-        }
-        if(this.intelmod>0){
             x[4]=1;
         }
-        if(this.speedmod>0){
+        if(this.intelmod>0){
             x[5]=1;
+        }
+        if(this.speedmod>0){
+            x[6]=1;
         }
         return x;
     }
@@ -239,7 +248,7 @@ public class Equipment extends Item {
         x=x*100;
         cost=a*x;
     }
-    public static Equipment generateEquipment(){
+    public static Equipment generateEquipment() {
         Equipment item=new Equipment();
         int x=rn.nextInt(8)+1;
         switch (x){

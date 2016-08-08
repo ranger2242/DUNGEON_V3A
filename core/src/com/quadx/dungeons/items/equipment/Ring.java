@@ -1,5 +1,7 @@
 package com.quadx.dungeons.items.equipment;
 
+import static com.quadx.dungeons.tools.ImageLoader.equipBasic;
+
 /**
  * Created by Tom on 12/29/2015.
  */
@@ -7,6 +9,7 @@ package com.quadx.dungeons.items.equipment;
 class Ring extends Equipment {
     public Ring(){
         type=Type.Ring;
+        setIcon(equipBasic[7]);
 
         setGrade();
         setBoost();

@@ -307,6 +307,7 @@ public class MapState extends State implements ControllerListener {
 
     @Override
     public boolean axisMoved(Controller controller, int axisCode, float value) {
+        Xbox360Pad.updateSticks(axisCode,value);
         if(axisCode==Xbox360Pad.AXIS_RIGHT_TRIGGER) {
             if (value > -.5f) {
                 if (dtAttack > attackMintime) {
