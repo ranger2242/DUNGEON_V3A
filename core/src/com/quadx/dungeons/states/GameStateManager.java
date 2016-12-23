@@ -1,5 +1,7 @@
 package com.quadx.dungeons.states;
+
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.quadx.dungeons.commands.Command;
 
 import java.util.Stack;
 
@@ -16,15 +18,20 @@ public class GameStateManager {
     }
 
     public void push(State state){
-        states.push(state);
+        Command.cls=state.getClass();
+                states.push(state);
     }
-
+    public void clear(){
+        states.clear();
+    }
     public void pop(){
         states.pop().dispose();
+        Command.cls=states.peek().getClass();
     }
 
     public void set(State state){
         states.pop().dispose();
+        Command.cls=state.getClass();
         states.push(state);
     }
 

@@ -1,11 +1,11 @@
 package com.quadx.dungeons.states;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.quadx.dungeons.Game;
 
 import java.util.ArrayList;
+
+import static com.quadx.dungeons.Game.commandList;
 
 /**
  * Created by Tom on 12/30/2015.
@@ -17,6 +17,7 @@ public class ControlState extends State {
     public ControlState(GameStateManager gsm){
         super(gsm);
         //controlList.add("");
+        controlList.add("");
         controlList.add("W A S D        : Move");
         controlList.add("I J K L        : Aim");
         controlList.add("Shift          : Dig");
@@ -35,10 +36,10 @@ public class ControlState extends State {
         controlList.add("ESC            : Load Shop ");
     }
 
-    protected void handleInput() {
-        if(Gdx.input.isKeyPressed(Input.Keys.TAB)){
-            gsm.pop();
-        }
+
+    public static void exit(){
+        gsm.pop();
+
     }
     public void update(float dt) {
         handleInput();
@@ -46,8 +47,10 @@ public class ControlState extends State {
     public void render(SpriteBatch sb) {
         sb.begin();
         Game.setFontSize(3);
-        for(int i=0;i<controlList.size();i++)
-        Game.getFont().draw(sb,controlList.get(i),30,Game.HEIGHT-(30*(i+1)));
+        for(int i=0;i<commandList.size();i++) {
+            commandList.get(i).init();
+            Game.getFont().draw(sb, commandList.get(i).print(), 30, Game.HEIGHT - (30 * (i + 1)));
+        }
         sb.end();
     }
     public void dispose() {

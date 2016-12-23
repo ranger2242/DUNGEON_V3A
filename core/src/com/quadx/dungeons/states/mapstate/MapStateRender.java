@@ -82,23 +82,29 @@ public class MapStateRender extends MapState {
     }
     private static void sbDrawPlayer(SpriteBatch sb){
         sb.begin();
-        Texture t=Game.player.getIcon();
-        sb.draw(t,player.getPX()-t.getWidth()/4, player.getPY()-t.getHeight()/4);
+        try {
+            Texture t = Game.player.getIcon();
+            sb.draw(t, player.getPX() - t.getWidth() / 4, player.getPY() - t.getHeight() / 4);
+        }catch (NullPointerException e){}
         sb.end();
     }
     private static void sbDrawHovText(SpriteBatch sb){
-        for(HoverText h:HoverText.texts){
-            h.draw(sb);
-        }
+        try {
+            for (HoverText h : HoverText.texts) {
+                h.draw(sb);
+            }
+        }catch (ConcurrentModificationException e){}
         //delete inactive hoverText
         boolean[] index;
         if(!HoverText.texts.isEmpty()){
             index= new boolean[HoverText.texts.size()];
             HoverText.texts.stream().filter(h -> !h.isActive()).forEach(h -> index[HoverText.texts.indexOf(h)] = true);
             for(int i=HoverText.texts.size()-1;i>=0;i--){
-                if(index[i]) {
-                    HoverText.texts.remove(i);
-                }
+                try {
+                    if (index[i]) {
+                        HoverText.texts.remove(i);
+                    }
+                }catch (ArrayIndexOutOfBoundsException e){}
             }
             while (HoverText.texts.size()>10)HoverText.texts.remove(0);
         }
@@ -446,7 +452,9 @@ public class MapStateRender extends MapState {
         }
     }
     private static void updateHoverTextTime(){
-        HoverText.texts.forEach(HoverText::updateDT);
+        try {
+            HoverText.texts.forEach(HoverText::updateDT);
+        }catch (ConcurrentModificationException e){}
     }
     public MapStateRender(GameStateManager gsm) {
         super(gsm);

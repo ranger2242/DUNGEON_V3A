@@ -31,7 +31,7 @@ import static com.quadx.dungeons.Game.controllerMode;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.*;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.renderLayers;
-import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtAttack;
+import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtRespawn;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtScrollAtt;
 
 
@@ -102,14 +102,17 @@ public class MapState extends State implements ControllerListener {
         MapStateUpdater.updateVariables(dt);
         GridManager.loadDrawList();
         MapStateUpdater.compareItemToEquipment();
-        if(!Tests.nospawn)
-            MapStateUpdater.spawnMonsters();
+        if(!Tests.nospawn) {
+            if(dtRespawn>10f){
+                MapStateUpdater.spawnMonsters(MapStateUpdater.spawnCount);
+            }
+        }
         MapStateUpdater.buttonHandler();
         if(MapStateUpdater.dtCollision>Game.frame/2) {
             MapStateUpdater.collisionHandler();
         }
         MapStateUpdater.moveMonsters();
-        MapStateUpdater.checkPlayerIsAlive();
+        player.checkIfDead(gsm);
     }
     public void render(SpriteBatch sb) {
         renderLayers(sb);
@@ -220,8 +223,7 @@ public class MapState extends State implements ControllerListener {
         if (gold > 1000) {
             int exp = gold - 1000;
             gold = 1000;
-            player.setExp(player.getExp() + exp);
-            MapStateRender.setHoverText(exp + "EXP", .5f, Color.GREEN, player.getPX(), player.getPY() - 20, false);
+            //MapStateRender.setHoverText(exp + "EXP", .5f, Color.GREEN, player.getPX(), player.getPY() - 20, false);
 
         }
         player.setGold(player.getGold() + gold);
@@ -244,7 +246,8 @@ public class MapState extends State implements ControllerListener {
                     if (item.isEquip) {
                         item.loadIcon(item.getType());
                     } else
-                        item.loadIcon(item.getName());
+                        if(item.getIcon() == null)
+                            item.loadIcon(item.getName());
                     try {
                         lootPopup = item.getIcon();
                         MapStateRender.dtLootPopup = 0;
@@ -279,102 +282,54 @@ public class MapState extends State implements ControllerListener {
             }
         StatManager.totalItems++;
     }
-
     private void bufferOutput(){
         for(int i=0;i<10;i++)
             out("");
     }
-
-    @Override
+    public static void scrollAttacks(boolean right){
+        if (dtScrollAtt > .3) {
+            if (right) {
+                if (MapStateRender.inventoryPos < player.invList.size() - 1)
+                    MapStateRender.inventoryPos++;
+                else MapStateRender.inventoryPos = 0;
+                MapStateUpdater.dtInvSwitch = 0;
+            } else {
+                if (MapStateRender.inventoryPos > 0)
+                    MapStateRender.inventoryPos--;
+                else MapStateRender.inventoryPos = player.invList.size() - 1;
+                MapStateUpdater.dtInvSwitch = 0;
+            }
+        }
+    }
+    //-----------------------------------------------------------------------------------------
+    //Controller Interface
     public void connected(Controller controller) {
 
     }
-
-    @Override
     public void disconnected(Controller controller) {
 
     }
-
-    @Override
     public boolean buttonDown(Controller controller, int buttonCode) {
         return false;
     }
-
-    @Override
     public boolean buttonUp(Controller controller, int buttonCode) {
         return false;
     }
-
-    @Override
     public boolean axisMoved(Controller controller, int axisCode, float value) {
         Xbox360Pad.updateSticks(axisCode,value);
-        if(axisCode==Xbox360Pad.AXIS_RIGHT_TRIGGER) {
-            if (value > -.5f) {
-                if (dtAttack > attackMintime) {
-                    MapStateExt.battleFunctions(lastNumPressed);
-                    dtAttack = 0;
-                }
-            }
-        }
-        if(axisCode==Xbox360Pad.AXIS_LEFT_TRIGGER) {
-            if (value < .5f) {
-                if (dtAttack > attackMintime) {
-                    MapStateExt.battleFunctions(altNumPressed);
-                    dtAttack = 0;
-                }
-            }
-        }
         return false;
 
    }
-
-    @Override
     public boolean povMoved(Controller controller, int povCode, PovDirection value) {
-
-        if(dtScrollAtt>.3) {
-            if (value == Xbox360Pad.BUTTON_DPAD_LEFT) {
-                if(MapStateRender.inventoryPos>0)
-                MapStateRender.inventoryPos--;
-                else MapStateRender.inventoryPos=player.invList.size()-1;
-                MapStateUpdater.dtInvSwitch = 0;
-            }
-            if (value == Xbox360Pad.BUTTON_DPAD_RIGHT) {
-                if(MapStateRender.inventoryPos<player.invList.size()-1)
-                MapStateRender.inventoryPos++;
-                else MapStateRender.inventoryPos=0;
-                MapStateUpdater.dtInvSwitch = 0;
-            }
-            if (value == Xbox360Pad.BUTTON_DPAD_UP) {
-                if (altNumPressed < player.attackList.size()-1)
-                    altNumPressed++;
-                else altNumPressed = 0;
-                attack2=player.attackList.get(altNumPressed);
-            }
-            if (value == Xbox360Pad.BUTTON_DPAD_DOWN) {
-                if (lastNumPressed < player.attackList.size()-1)
-                    lastNumPressed++;
-                else lastNumPressed = 0;
-                attack=player.attackList.get(lastNumPressed);
-            }
-        }
+        Xbox360Pad.updatePOV(value);
         return false;
-
-
-
-
     }
-
-    @Override
     public boolean xSliderMoved(Controller controller, int sliderCode, boolean value) {
         return false;
     }
-
-    @Override
     public boolean ySliderMoved(Controller controller, int sliderCode, boolean value) {
         return false;
     }
-
-    @Override
     public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
         return false;
     }

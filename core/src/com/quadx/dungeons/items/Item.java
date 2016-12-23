@@ -12,7 +12,7 @@ import static com.quadx.dungeons.GridManager.rn;
 
 public class Item
 {
-    protected String name;
+    protected String name="ITEM";
     protected int value=0;
 
     protected int cost;
@@ -83,25 +83,29 @@ public class Item
     public int getValue() {
         return value;
     }
+
     public static Item generateNoGold() {
         Item a;
         int q = rn.nextInt(10) + 1;
-            a = new Item();
-            if (q == 1 || q == 2) a = new AttackPlus();
-            else if (q == 3 || q == 4) a = new DefPlus();
-            else if (q == 5 || q == 6) a = new IntPlus();
-            else if (q == 7 || q == 8) a = new SpeedPlus();
-            else if (q == 9 || q == 10) {
-                if (rn.nextFloat() < .1) {
-                    a = new SpellBook();
-                } else {
-                    if(rn.nextFloat()<.9)
-                    a = Equipment.generateEquipment();
-                    else{
-                        a=equipSets.ref[rn.nextInt(5)].get(rn.nextInt(8));
-                    }
-                }
+        a = new Item();
+        if (q == 1 || q == 2) a = new AttackPlus();
+        else if (q == 3 || q == 4) a = new DefPlus();
+        else if (q == 5 || q == 6) a = new IntPlus();
+        else if (q == 7 || q == 8) a = new SpeedPlus();
+        else if (q == 9 && rn.nextFloat()<.7) {
+            if (rn.nextFloat() < .1) {
+                a = new SpellBook();
             }
+        } else if (q == 10 && rn.nextFloat()<.7) {
+            if (rn.nextFloat() < .9)
+                a = Equipment.generateEquipment();
+            else {
+                a = equipSets.ref[rn.nextInt(5)].get(rn.nextInt(8));
+            }
+        }
+        if(a.getClass().equals(Item.class)){
+            a=new Gold();
+        }
         return a;
     }
     public static Item generate() {

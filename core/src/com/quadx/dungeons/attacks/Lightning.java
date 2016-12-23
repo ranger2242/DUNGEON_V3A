@@ -11,14 +11,14 @@ public class Lightning extends Attack {
     public Lightning(){
         costGold=30000;
         type=2;
-        int a=player.getManaMax();
+        int a=player.getManaMax()/2;
         powerA = new int[]{80,90,110,130,150};
         costA =new int[]{a,a,a,a,a};
         name="Lightning";
         power=80;
         cost=a;
         mod=10;
-        description="Summons lighning.";
+        description="Summons lightning.";
         spread=0;
         range=0;
         setIcon(ImageLoader.attacks.get(12));

@@ -1,7 +1,5 @@
 package com.quadx.dungeons.states;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
@@ -11,13 +9,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class ExtraState extends State {
     public ExtraState(GameStateManager gsm) {
         super(gsm);
+
     }
 
-    protected void handleInput() {
-        if(Gdx.input.isKeyPressed(Input.Keys.TAB)){
-            gsm.pop();
-        }
-    }
     public void update(float dt) {
         handleInput();
     }

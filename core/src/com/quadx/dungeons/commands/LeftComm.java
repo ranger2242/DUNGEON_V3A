@@ -3,7 +3,6 @@ package com.quadx.dungeons.commands;
 import com.badlogic.gdx.Input;
 import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.states.AbilitySelectState;
-import com.quadx.dungeons.states.MainMenuState;
 import com.quadx.dungeons.states.mapstate.MapState;
 
 import static com.quadx.dungeons.Game.player;
@@ -11,28 +10,24 @@ import static com.quadx.dungeons.Game.player;
 /**
  * Created by Chris Cavazos on 8/8/2016.
  */
-public class DownComm extends Command {
-    public DownComm(){
-        name="Down";
-        keyboard= Input.Keys.S;
-        contD = Xbox360Pad.BUTTON_DPAD_DOWN;
-
+public class LeftComm extends Command {
+    public LeftComm(){
+        name="Left";
+        keyboard= Input.Keys.A;
+        contD = Xbox360Pad.BUTTON_DPAD_LEFT;
 
     }
     @Override
     public void execute() {
         if(pressed()){
-            if (cls.equals(MainMenuState.class)) {
-                MainMenuState.decrementSelector();
-            }
             if (cls.equals(MapState.class)) {
                 if (player.canMove) {
-                    player.move(0, -1);
+                    player.move(-1, 0);
                     player.dtMove = 0;
                 }
             }
             if(cls.equals(AbilitySelectState.class)){
-                AbilitySelectState.movePointer(0,1);
+                AbilitySelectState.movePointer(-1,0);
             }
         }
     }

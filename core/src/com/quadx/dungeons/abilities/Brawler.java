@@ -30,7 +30,7 @@ public class Brawler extends Ability {
         player.setAbilityMod(4);
         player.setEnergy(player.getEnergy()*2);
         player.setEnergyMax(player.getEnergyMax()*2);
-        player.setEnergyRegen(player.getEnergyRegen()*2);
+        player.setxEnergyRegen(2);
         player.setMana(player.getMana()/2);
         player.setManaMax(player.getManaMax()/2);
         player.setAttack(player.getAttack()*2);

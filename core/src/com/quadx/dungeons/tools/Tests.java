@@ -4,6 +4,7 @@ import com.quadx.dungeons.Game;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.states.mapstate.Map2State;
+import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -153,13 +154,13 @@ public class Tests {
             }
             if (comm.get(1).equals("maxmove")) {
                 player.setMoveSpeed(.000000001f);
-                player.setEnergyRegen(100000);
+                player.seteRegen(100000);
                 outText="Move speed Maxed.";
             }
             if(comm.get(1).equals("lvlup")){
-                player.setExp(player.getExpLimit());
+                player.setExp(player.getExpLimit(),1);
                 player.checkLvlUp();
-                player.setExp(0);
+               // player.setExp(0,1);
                 outText="Level up";
             }
             if(comm.get(1).equals("hp")){
@@ -246,6 +247,8 @@ public class Tests {
         }
         if (comm.get(0).equals("spawn")) {
             nospawn = false;
+            int a=Integer.parseInt(comm.get(1));
+            MapStateUpdater.spawnMonsters(a);
             outText = "Monster Spawn Enabled!";
         }
         out(outText);

@@ -124,7 +124,8 @@ public class Cell {
             setTile(ImageLoader.floors[0]);
         }
         else{
-            setTile(ImageLoader.floors[rn.nextInt(17)]);
+            //setTile(ImageLoader.floors[rn.nextInt(17)]);
+            setTile(ImageLoader.floors[0]);
 
         }
         isLive = true;

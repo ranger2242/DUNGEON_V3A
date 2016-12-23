@@ -4,11 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
-import com.quadx.dungeons.*;
-import com.quadx.dungeons.abilities.Investor;
+import com.quadx.dungeons.Cell;
+import com.quadx.dungeons.Game;
+import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.abilities.Warp;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.AttackMod;
+import com.quadx.dungeons.commands.*;
 import com.quadx.dungeons.items.EnergyPlus;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.ManaPlus;
@@ -17,7 +19,6 @@ import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
-import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.ShopState;
 import com.quadx.dungeons.tools.DebugTextInputListener;
 import com.quadx.dungeons.tools.Tests;
@@ -25,11 +26,10 @@ import com.quadx.dungeons.tools.Tests;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 
-import static com.quadx.dungeons.Game.controllerMode;
+import static com.quadx.dungeons.Game.commandList;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.liveCellList;
 import static com.quadx.dungeons.GridManager.monsterList;
-import static com.quadx.dungeons.states.MainMenuState.controller;
 
 
 /**
@@ -38,39 +38,30 @@ import static com.quadx.dungeons.states.MainMenuState.controller;
 @SuppressWarnings("DefaultFileTemplate")
 public class MapStateUpdater extends MapState{
     static ArrayList<Integer> fpsList= new ArrayList<>();
-    public static boolean displayFPS=true;
-
-
+    static boolean displayFPS=true;
     private static float dtDig = 0;
-    private static float dtRegen = 0;
-    private static float dtEnergyRe = 0;
+
     private static float dtInfo = 0;
     private static float dtItem = 0;
     private static float dtMap = 0;
     private static float dtShowStats =0;
-    public static float dtCollision = 0;
-    public static float dtScrollAtt=0;
-    public static float dtAttack = 0;
+    static float dtCollision = 0;
+    static float dtScrollAtt=0;
+    static float dtAttack = 0;
     public static float dtRespawn=0;
-    public static float dtFPS=0;
-    public static float fps=0;
-    public static float dtClearHits =0;
-    public static float dtInvSwitch = 0;
+    static float dtFPS=0;
+    static float fps=0;
+    static float dtClearHits =0;
+    static float dtInvSwitch = 0;
     public static int spawnCount=1;
+
     public MapStateUpdater(GameStateManager gsm) {
         super(gsm);
     }
 
-    private static int checkMove(boolean b2, boolean b3){
-        int x;
-        if(b2){x=-1;}
-        else if(b3){x=1;}
-        else{x=0;}
-        return x;
-    }
     private static void updateCamPosition() {
         Vector3 position = cam.position;
-        float lerp = 0.1f;
+        float lerp = 0.2f;
         position.x += (player.getCordsPX().x - position.x) * lerp;
         position.y += (player.getCordsPX().y - position.y) * lerp;
         cam.position.set(position);
@@ -78,60 +69,6 @@ public class MapStateUpdater extends MapState{
         viewX = cam.position.x - cam.viewportWidth / 2;
         viewY = cam.position.y - cam.viewportHeight / 2;
 
-    }
-    private static void regenPlayer(float dt) {
-        if(!player.infiniteRegen) {
-            dtRegen += dt; //move all this shit to PLAYER
-            if (player.safe) player.dtSafe += dt;
-            if (dtEnergyRe > .2 && player.getEnergy() < player.getEnergyMax()) {
-                player.setEnergy(player.getEnergy() + player.getEnergyRegen());
-                if (player.getEnergy() > player.getEnergyMax()) player.setEnergy(player.getEnergyMax());
-                dtEnergyRe = 0;
-            }
-            if (dtRegen > .3) {
-                if (player.getAbility().getClass().equals(Investor.class))
-                    Investor.generatePlayerGold();
-                if (player.getMana() < player.getManaMax())
-                    player.setMana(player.getMana() + player.getManaRegenRate());
-                if (player.getHp() < player.getHpMax())
-                    player.setHp(player.getHp() + player.getHpRegen());
-                dtRegen = 0;
-            }
-            player.attackList.stream().filter(a -> a.getMod() == 6 && (player.dtSafe > a.getLevel())).forEach(a -> {
-                player.safe = false;
-                player.dtSafe = 0;
-            });
-        }else{
-            player.setHp(player.getHpMax());
-            player.setMana(player.getManaMax());
-            player.setEnergy(player.getEnergyMax());
-        }
-    }
-    private static void getMovementInput(){
-        int x=0,y=0;
-        boolean up;
-        boolean down;
-        boolean right;
-        boolean left;
-        if(controllerMode) {
-            up = controller.getAxis(Xbox360Pad.AXIS_LEFT_Y) < -.2;
-            down = controller.getAxis(Xbox360Pad.AXIS_LEFT_Y) > .2;
-            right = controller.getAxis(Xbox360Pad.AXIS_LEFT_X) > .2;
-            left = controller.getAxis(Xbox360Pad.AXIS_LEFT_X) < -.2;
-        }else {
-            up=Gdx.input.isKeyPressed(Input.Keys.W);
-            down=Gdx.input.isKeyPressed(Input.Keys.S);
-            right=Gdx.input.isKeyPressed(Input.Keys.D);
-            left=Gdx.input.isKeyPressed(Input.Keys.A);
-        }
-        if (player.canMove) {
-            if (up) {y=1;x=checkMove(left,right);}
-            if (down){y=-1;x=checkMove(left,right);}
-            if (left){x=-1;y=checkMove(down,up);}
-            if (right){x=1;y=checkMove(down,up);}
-            player.move(x,y);
-            player.dtMove = 0;
-        }
     }
     private static void keyboardAttackSelector(){
         if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
@@ -159,7 +96,7 @@ public class MapStateUpdater extends MapState{
             setAttackButton(7);
         }
     }
-    private static void activateDig(){
+    public static void activateDig(){
         if (dtDig > player.getMoveSpeed()) {
             if (player.getEnergy() > 2) {
                 int x = player.getX();
@@ -188,7 +125,7 @@ public class MapStateUpdater extends MapState{
         else if(!Gdx.input.isKeyPressed(Input.Keys.X) && !Gdx.input.isKeyPressed(Input.Keys.MINUS))
             numberButtonHandler(x);
     }
-    private static void selectItemFromInventory() {
+    public static void selectItemFromInventory() {
         if (dtItem > itemMinTime && player.invList.size() > 0) {            //check if cooldown is over
             player.useItem(MapStateRender.inventoryPos);                    //actually use the item
             dtItem = 0;                                                     //reset cooldown
@@ -250,7 +187,6 @@ public class MapStateUpdater extends MapState{
             Tests.memUsageList.remove(0);
 
         updateCamPosition();
-        regenPlayer(dt);
         AttackMod.updaterVariables(dt);
         player.updateVariables(dt);
         MapStateRender.updateVariables(dt);
@@ -279,8 +215,6 @@ public class MapStateUpdater extends MapState{
             dtStatPopup += dt;
         if (dtMap <= .6)
             dtMap += dt;
-        if (dtEnergyRe <= .2)
-            dtEnergyRe += dt;
         if (dtCollision <= Game.frame / 2)
             dtCollision += dt;
         if (dtScrollAtt <= .3)
@@ -296,16 +230,13 @@ public class MapStateUpdater extends MapState{
         }
         if (effectLoaded) effect.update(Gdx.graphics.getDeltaTime());
     }
-    static void spawnMonsters(){
-        if(dtRespawn>11f) {
-            for (int i = 0; i < spawnCount; i++) {
-                if(monsterList.size()<150) {
+    public static void spawnMonsters(int x){
+            for (int i = 0; i < x; i++) {
+                if(monsterList.size()<200) {
                     Monster m =Monster.getNew();
                     int index = rn.nextInt(liveCellList.size());
                     if (!liveCellList.get(index).getWater() && liveCellList.get(index).getState()) {
-
                         Cell c = liveCellList.get(index);
-                        if (rn.nextBoolean()) m.setHit();
                         m.setCords(c.getX(), c.getY());
                         monsterList.add(m);
                         c.setMon(true);
@@ -320,7 +251,6 @@ public class MapStateUpdater extends MapState{
             GridManager.loadLiveCells();
             spawnCount++;
             dtRespawn=0;
-        }
     }
     static void compareItemToEquipment(){
         try {
@@ -347,68 +277,56 @@ public class MapStateUpdater extends MapState{
             Game.getFont().setColor(Color.WHITE);
         }
     }
-    static void checkPlayerIsAlive() {
-        if (player.checkIfDead()) {
-            HighScoreState.pfinal=player;
-            HighScoreState.addScore(player.getScore());
-            player = null;
-            player = new Player();
-            AbilitySelectState.pressed = false;
-            inGame = false;
-            AttackMod.resetAttacks();
-            gsm.push(new HighScoreState(gsm));
-
+    public static void scrollItems(boolean right){
+        if((dtInvSwitch > .3)) {
+            if (right) {
+                if (MapStateRender.inventoryPos < player.invList.size() - 1)
+                    MapStateRender.inventoryPos++;
+                else {
+                    MapStateRender.inventoryPos = 0;
+                }
+                dtInvSwitch = 0;
+            } else {
+                if (MapStateRender.inventoryPos > 0)
+                    MapStateRender.inventoryPos--;
+                else {
+                    MapStateRender.inventoryPos = player.invList.size() - 1;
+                }
+                dtInvSwitch = 0;
+            }
+        }
+    }
+    public static void useMainAtt(){
+        if (dtAttack > attackMintime) {
+            MapStateExt.battleFunctions(lastNumPressed);
+            dtAttack = 0;
+        }
+    }
+    public static void useAltAtt(){
+        if(dtAttack>attackMintime){
+            MapStateExt.battleFunctions(altNumPressed);
+            dtAttack = 0;
+        }
+    }
+    public static void discardItem(){
+        if(dtItem>itemMinTime){
+            try {
+                player.invList.get(MapStateRender.inventoryPos).remove(0);
+                if (player.invList.get(MapStateRender.inventoryPos).isEmpty()) {
+                    player.invList.remove(MapStateRender.inventoryPos);
+                    if (MapStateRender.inventoryPos >= player.invList.size())
+                        MapStateRender.inventoryPos = player.invList.size();
+                }
+                dtItem=0;
+            }catch (IndexOutOfBoundsException e){}
         }
     }
     static void buttonHandler() {
-        getMovementInput();
-        setAim();
-        //controller functions------------------------------------------------------
-        if(controllerMode){
-            if(controller.getButton(Xbox360Pad.BUTTON_Y)){//use item
-                selectItemFromInventory();
-            }
-            if(controller.getButton(Xbox360Pad.BUTTON_X)){//dig
-                activateDig();
-            }
-        }
         //keyboard functions--------------------------------------------------------
+        for(Command c: commandList){
+            c.execute();
+        }
         keyboardAttackSelector();
-        if (dtInvSwitch > .3) {
-            if (Gdx.input.isKeyPressed(Input.Keys.Q)) {//scroll items left
-                if(MapStateRender.inventoryPos>0)
-                MapStateRender.inventoryPos--;
-                else{
-                    MapStateRender.inventoryPos=player.invList.size()-1;
-                }
-                dtInvSwitch = 0;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.E)) {//scroll items right
-                if(MapStateRender.inventoryPos<player.invList.size()-1)
-                    MapStateRender.inventoryPos++;
-                else{
-                    MapStateRender.inventoryPos=0;
-                }
-                dtInvSwitch = 0;
-            }
-        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.Z)) {//use item
-            selectItemFromInventory();
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {//use primary attack
-            if (dtAttack > attackMintime) {
-                MapStateExt.battleFunctions(lastNumPressed);
-                dtAttack = 0;
-            }
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT) ||
-                Gdx.input.isKeyPressed(Input.Keys.ALT_RIGHT)) {//use secondary attack
-            if(dtAttack>attackMintime){
-                MapStateExt.battleFunctions(altNumPressed);
-                dtAttack = 0;
-            }
-        }
         if (Gdx.input.isKeyPressed(Input.Keys.F1) && debug) {//reload map
             if (dtMap > .6) {
                 gm.initializeGrid();
@@ -425,66 +343,7 @@ public class MapStateUpdater extends MapState{
             Tests.calcAvgMapLoadTime();
             Tests.loadEmptyMap();
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.F6)) {
-            player.setHpMax(500);
-            player.setManaMax(500);
-            player.setEnergyMax(500);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.F7) && debug) {//infinite regen
-            if(Gdx.input.isKeyPressed(Input.Keys.MINUS)){
-                player.infiniteRegen=false;
-            }else
-                player.infiniteRegen=true;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.F8) && debug) {//add gold
-            if(Gdx.input.isKeyPressed(Input.Keys.MINUS)&& player.getGold()>1){
-                player.setGold(player.getGold()-1000);
-            }else
-                player.setGold(player.getGold()+1000);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.F9) && debug) {//add att
-            if(Gdx.input.isKeyPressed(Input.Keys.MINUS)&& player.getAttack()>1){
-                player.setAttack(player.getAttack()-1);
-            }else
-            player.setAttack(player.getAttack()+1);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.F10) && debug) {//add def
-            if(Gdx.input.isKeyPressed(Input.Keys.MINUS )&& player.getDefense()>1) {
-                player.setDefense(player.getDefense() - 1);
-            }else
-                player.setDefense(player.getDefense() + 1);
-
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.F11) && debug) {//add int
-            if(Gdx.input.isKeyPressed(Input.Keys.MINUS)&& player.getIntel()>1) {
-                player.setIntel(player.getIntel() - 1);
-            }else
-                player.setIntel(player.getIntel() + 1);
-
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.F12) && debug) {//add spd
-            if(Gdx.input.isKeyPressed(Input.Keys.MINUS)&& player.getSpeed()>1) {
-                player.setSpeed(player.getSpeed() - 1);
-            }else
-                player.setSpeed(player.getSpeed() + 1);
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.X)){
-            if(dtItem>itemMinTime){
-                try {
-                    player.invList.get(MapStateRender.inventoryPos).remove(0);
-                    if (player.invList.get(MapStateRender.inventoryPos).isEmpty()) {
-                        player.invList.remove(MapStateRender.inventoryPos);
-                        if (MapStateRender.inventoryPos >= player.invList.size())
-                            MapStateRender.inventoryPos = player.invList.size();
-                    }
-                }catch (IndexOutOfBoundsException e){}
-            }
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.M) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)
-                || Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {//dig
-            activateDig();
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.C)){//show stats
+        if(Gdx.input.isKeyPressed(Input.Keys.Z)){//show stats
             if(dtShowStats>.2) {
                 MapStateRender.showStats = !MapStateRender.showStats;
                 dtShowStats=0;
@@ -494,11 +353,11 @@ public class MapStateUpdater extends MapState{
             DebugTextInputListener listener = new DebugTextInputListener();
             Gdx.input.getTextInput(listener, "Command", "","");
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {//test shopstate
-            pause=true;
-            cam.position.set(0, 0, 0);
-            gsm.push(new ShopState(gsm));
-        }
+    }
+    public static void pause(){
+        pause=true;
+        cam.position.set(0, 0, 0);
+        gsm.push(new ShopState(gsm));
     }
     static void collisionHandler() {
         int x=player.getX();
@@ -544,35 +403,7 @@ public class MapStateUpdater extends MapState{
             }
         }
     }
-    public static void setAim(){
-        boolean up;
-        boolean down;
-        boolean right;
-        boolean left;
-        if(controllerMode){
-            up=controller.getAxis(Xbox360Pad.AXIS_RIGHT_Y)<-.2;
-            down=controller.getAxis(Xbox360Pad.AXIS_RIGHT_Y)>.2;
-            right=controller.getAxis(Xbox360Pad.AXIS_RIGHT_X)>.2;
-            left=controller.getAxis(Xbox360Pad.AXIS_RIGHT_X)<-.2;
-        }
-        else {
-            up = Gdx.input.isKeyPressed(Input.Keys.I)||Gdx.input.isKeyPressed(Input.Keys.UP);
-            down = Gdx.input.isKeyPressed(Input.Keys.K)||Gdx.input.isKeyPressed(Input.Keys.DOWN);
-            right = Gdx.input.isKeyPressed(Input.Keys.L)||Gdx.input.isKeyPressed(Input.Keys.RIGHT);
-            left = Gdx.input.isKeyPressed(Input.Keys.J)||Gdx.input.isKeyPressed(Input.Keys.LEFT);
-            if(!up && !down && !left && !right) {
-                up=Gdx.input.isKeyPressed(Input.Keys.W);
-                down=Gdx.input.isKeyPressed(Input.Keys.S);
-                right=Gdx.input.isKeyPressed(Input.Keys.D);
-                left=Gdx.input.isKeyPressed(Input.Keys.A);
-            }
-        }
-        char c=lastPressed;
-        if (up) c='w';
-        if (right) c='d';
-        if (down) c='s';
-        if (left) c='a';
-        lastPressed =c;
+    public static void setAim(char c){
+        lastPressed=c;
     }
-
 }

@@ -12,7 +12,7 @@ public class Quake extends Attack {
     public Quake(){
         costGold=35000;
         type=1;
-        int a=player.getEnergyMax();
+        int a=player.getEnergyMax()/2;
         powerA = new int[]{80,90,110,130,150};
         costA =new int[]{a,a,a,a,a};
         name="Quake";

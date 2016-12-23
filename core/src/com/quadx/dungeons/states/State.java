@@ -1,9 +1,11 @@
 package com.quadx.dungeons.states;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.quadx.dungeons.commands.Command;
+
+import static com.quadx.dungeons.Game.commandList;
 
 /**
  * Created by Brent on 6/26/2015.
@@ -20,8 +22,11 @@ public abstract class State {
         cam.setToOrtho(true);
         mouse = new Vector3();
     }
-
-    protected abstract void handleInput();
+    void handleInput(){
+        for(Command c: commandList){
+            c.execute();
+        }
+    }
     public abstract void update(float dt);
     public abstract void render(SpriteBatch sb);
     public abstract void dispose();

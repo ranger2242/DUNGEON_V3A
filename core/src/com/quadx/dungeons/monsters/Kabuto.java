@@ -8,17 +8,17 @@ import com.quadx.dungeons.tools.ImageLoader;
 @SuppressWarnings("DefaultFileTemplate")
 class Kabuto extends Monster {
     public Kabuto(){
-        power=20;
+        power=40;
         hpBase =60;
         attBase =40;
-        defBase =40;
-        intBase =40;
+        defBase =20;
+        intBase =70;
         spdBase =40;
         sight=3;
         moveSpeedMin=.15f;
         moveSpeed=.12f;
         moveSpeedMax =.11f;
-        name= "Kabuto";
+        name= "Eura";
         icons= ImageLoader.en0;
         icon=icons[0];
         iconSet=0;

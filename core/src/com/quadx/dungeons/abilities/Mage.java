@@ -16,8 +16,6 @@ import static com.quadx.dungeons.Game.player;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class Mage extends Ability {
-   // protected static ArrayList<String> output=new ArrayList<>();
-
     public Mage(){
         name="Mage";
         icon=  ImageLoader.abilities.get(3);
@@ -63,7 +61,7 @@ public class Mage extends Ability {
     public void l3() {
         player.setxIntel(1.3);
         player.setxHpRegen(1.1);
-        player.setxMoveSpeed(.3);
+        player.setxMoveSpeed(.7);
         player.addItemToInventory(equipSets.ref[2].get(2));
     }
 
@@ -104,7 +102,7 @@ public class Mage extends Ability {
                 output.add(equipSets.ref[2].get(1).getName());
                 break;
             }case 3:{
-                output.add("1.7x Move Speed");
+                output.add("1.3x Move Speed");
                 output.add("1.1x HP Regen");
                 output.add("1.3x INT");
                 output.add(equipSets.ref[2].get(2).getName());

@@ -24,7 +24,7 @@ public class Damage {
         if(att.getClass().equals(Sacrifice.class)){
             return (int) m.getHpMax();
         }else {
-            double a = ((2 * (double) player.getLevel() + 10) / 250);
+            double a = ((2 * (double) player.getLevel() + 10) / 300);
             double b;
             double c = att.getPower();
             if (att.getType() == 1) {
@@ -44,24 +44,20 @@ public class Damage {
     }
     public static int monsterPhysicalDamage(Player p, Monster m, int power){
         int baseDamage=(int)((m.getAttack()*3)+(power))-((p.getDefense()));
-        crit=(baseDamage/100)*15;
-        if(crit<1)crit=1;
-        damage= baseDamage+rn.nextInt(crit);
+        damage= baseDamage;
         if (damage < 0) //checks for negative damage
             damage = defaultDamage;
         if(player.safe)
             damage=0;
-        return damage;
+        return (int) (damage*.7);
     }
     public static int monsterMagicDamage(Player p, Monster m, int power){
         int baseDamage=(int)((m.getIntel()*3)+(power))-((p.getIntel()));
-        crit=(baseDamage/100)*15;
-        if(crit<1)crit=1;
-        damage= baseDamage+rn.nextInt(crit);
+        damage= baseDamage;
         if (damage < 0) //checks for negative damage
             damage = defaultDamage;
         if(player.safe)
             damage=0;
-        return damage;
+        return (int) (damage*.7) ;
     }
 }

@@ -1,7 +1,6 @@
 package com.quadx.dungeons.states;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
@@ -18,9 +17,7 @@ import com.quadx.dungeons.tools.MyTextInputListener;
 
 import java.util.ArrayList;
 
-import static com.quadx.dungeons.Game.HEIGHT;
-import static com.quadx.dungeons.Game.WIDTH;
-import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.states.MainMenuState.controller;
 import static com.quadx.dungeons.states.mapstate.MapState.viewX;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
@@ -31,15 +28,15 @@ import static com.quadx.dungeons.states.mapstate.MapState.viewY;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class AbilitySelectState extends State implements ControllerListener {
-    private int posx=0;
-    private int posy=0;
-    private float dtSel=0;
+    private static int posx=0;
+    private static int posy=0;
+    private static float dtSel=0;
     private static final GlyphLayout gl=new GlyphLayout();
     private final ArrayList<Ability> abilityList= new ArrayList<>();
     private final ArrayList<Ability> secondaryList= new ArrayList<>();
     private final int titlex;
     private final int titley;
-    private Ability hovering=null;
+    private static Ability hovering=null;
     public static boolean pressed=false;
     private static float dtMove=0;
 
@@ -76,45 +73,14 @@ public class AbilitySelectState extends State implements ControllerListener {
         secondaryList.add(wb);
     }
 
-    @Override
-    protected void handleInput() {
-        //controller functions
-        if(Game.controllerMode){
-            if(controller.getButton(Xbox360Pad.BUTTON_START)){
-                selectAbiltiy();
-            }
-            if(controller.getButton(Xbox360Pad.BUTTON_B)){
-                exitScreen();
-            }
-        }
-        //keyboard functions
+    public static void movePointer(int x, int y){
         if(dtMove>.1) {
-            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                posy--;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-                posx--;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-
-                posy++;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-                posx++;
-            }
+            posx+=x;
+            posy+=y;
             dtMove=0;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
-            selectAbiltiy();
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.TAB)){
-            exitScreen();
-        }
-        if(pressed){
-            pressed=false;
-            gsm.push(new MapState(gsm));}
     }
-    private void selectAbiltiy(){
+    public static void selectAbiltiy(){
         if(dtSel >.7f) {
             if(MapState.inGame){
                 boolean found=false;
@@ -138,9 +104,10 @@ public class AbilitySelectState extends State implements ControllerListener {
                 player.setAbility(hovering);
             }
             dtSel = 0;
+            exit();
         }
     }
-    private void exitScreen(){
+    public static void exit(){
         gsm.pop();
         cam.setToOrtho(false);
     }
@@ -149,6 +116,9 @@ public class AbilitySelectState extends State implements ControllerListener {
         handleInput();
         dtMove+=dt;
         dtSel+=dt;
+        if(pressed){
+            pressed=false;
+            gsm.push(new MapState(gsm));}
     }
 
     @Override
@@ -163,7 +133,7 @@ public class AbilitySelectState extends State implements ControllerListener {
             }
         }else{
             Game.getFont().draw(sb, "~~Upgrade Ability~~", viewX + titlex, viewY + titley);
-            sb.draw(player.getAbility().getIcon(), viewX + Game.WIDTH / 2, viewY + (Game.HEIGHT * 2 / 3));
+            sb.draw(ImageLoader.abilities.get(player.getAbilityMod()), viewX + Game.WIDTH / 2, viewY + (Game.HEIGHT * 2 / 3));
             for (int i = 0; i < secondaryList.size(); i++) {
                 sb.draw(ImageLoader.abilities2.get(i), viewX + i * 150 + Game.WIDTH / 2, viewY + (Game.HEIGHT * 2 / 3) - 100);
             }
@@ -244,24 +214,13 @@ public class AbilitySelectState extends State implements ControllerListener {
 
     @Override
     public boolean axisMoved(Controller controller, int axisCode, float value) {
+        Xbox360Pad.updateSticks(axisCode,value);
         return false;
     }
 
     @Override
     public boolean povMoved(Controller controller, int povCode, PovDirection value) {
-        if (value == Xbox360Pad.BUTTON_DPAD_UP) {
-            if(posy>=0)
-            posy--;
-        }if (value == Xbox360Pad.BUTTON_DPAD_DOWN) {
-            if(posy<2)
-            posy++;
-        }if (value == Xbox360Pad.BUTTON_DPAD_LEFT) {
-            if(posx>=0)
-                posx--;
-        }if (value == Xbox360Pad.BUTTON_DPAD_RIGHT) {
-            if(posy<5)
-                posx++;
-        }
+        Xbox360Pad.updatePOV(value);
         return false;
     }
 

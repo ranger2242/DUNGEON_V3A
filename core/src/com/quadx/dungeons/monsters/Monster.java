@@ -2,9 +2,9 @@ package com.quadx.dungeons.monsters;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.quadx.dungeons.Cell;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.quadx.dungeons.Damage;
-import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
@@ -30,6 +30,8 @@ public class Monster {
     protected Damage d = new Damage();
     protected String name = "monster";
     protected String status = "0";
+    protected TextureAtlas textureAtlas=null;
+    protected Animation anim = null;
     protected boolean caller = true;
     protected boolean clockwise = rn.nextBoolean();
     protected boolean willCircle = rn.nextBoolean();
@@ -63,16 +65,21 @@ public class Monster {
     protected int x;
     protected int px;
     protected int y;
+    protected int agroTime=rn.nextInt(200)+15;
     protected int py;
-    protected int circleAgro=rn.nextInt(12);
+    protected int circleAgro=rn.nextInt(6);
     protected int circleCount=0;
     protected int iconSet=0;
+    protected float dtAnim=0;
     protected float moveSpeedMin = .12f;
     protected float moveSpeedMax = .09f;
     protected float dtMove = 0;
     protected float moveSpeed = .15f;
+    protected float dtAgro=0;
     protected float callRadius= 0;
     protected int circleAngle=0;
+    protected int[] maxes= new int[4];
+    protected float expFactor=1;
 
     public Monster() {
     }
@@ -105,7 +112,9 @@ public class Monster {
         }
         else{
             if(rn.nextBoolean())
-                m = new Kabuto();
+                m= new Anortih();
+
+//                m = new Kabuto();
             else
                 m= new Anortih();
         }
@@ -116,6 +125,13 @@ public class Monster {
     }
     public float getdtMove() {
         return dtMove;
+    }
+    public float getExpFactor(){
+        float a=1;
+        float m=maxes[0]+maxes[1]+maxes[2]+maxes[3];
+        float tot= (float) (attack+defense+intel+speed);
+        a=m/tot;
+        return a;
     }
     public float getMoveSpeed() {
         return moveSpeed;
@@ -218,6 +234,12 @@ public class Monster {
         dtMove += dt;
         aa = rn.nextBoolean();
         bb = rn.nextBoolean();
+        if(agroTime<dtAgro){
+            setHit();
+        }else{
+            dtAgro+=dt;
+
+        }
     }
     public void stattest() {
         for (int i = 0; i < 100; i++) {
@@ -240,30 +262,33 @@ public class Monster {
         double a = attBase + rn.nextInt(31);
         double b = Math.sqrt(rn.nextInt(65535)) / 4;
         attack = (((a * 2 + b) * level) / 100) + 5;
+        maxes[0]= (int) (((((attBase+31) * 2 + (Math.sqrt(65535)/4)) * level) / 100) + 5);
         //System.out.println("Attack :"+attack);
     }
     private void genDefense() {
         double a = defBase + rn.nextInt(31);
         double b = Math.sqrt(rn.nextInt(65535)) / 4;
         defense = (((a * 2 + b) * level) / 100) + 5;
+        maxes[1]= (int) (((((defBase+31) * 2 + (Math.sqrt(65535)/4)) * level) / 100) + 5);
+
         //System.out.println("Defense :"+defense);
     }
     private void genSpeed() {
         double a = spdBase + rn.nextInt(31);
         double b = Math.sqrt(rn.nextInt(65535)) / 4;
         speed = (((a * 2 + b) * level) / 100) + 5;
-        //System.out.println("Speed :"+speed);
+        maxes[0]= (int) (((((spdBase+31) * 2 + (Math.sqrt(65535)/4)) * level) / 100) + 5);
     }
     private void genIntel() {
         double a = intBase + rn.nextInt(31);
         double b = Math.sqrt(rn.nextInt(65535)) / 4;
         intel = (((a * 2 + b) * level) / 100) + 5;
-        //System.out.println("Intel :"+intel);
+        maxes[0]= (int) (((((intBase+31) * 2 + (Math.sqrt(65535)/4)) * level) / 100) + 5);
     }
     private void genHp() {
         double a = hpBase + rn.nextInt(31);
         double b = Math.sqrt(rn.nextInt(65535)) / 4;
-        hp = ((((a * 2 + b) * level) / 100) + level + 10)*2;
+        hp = ((((a * 2 + b) * level) / 100) + level + 10)*1.5;
         hpMax = hp;
         hpsoft = hp;
     }
@@ -339,32 +364,30 @@ public class Monster {
         boolean placed = false;
         boolean cont = false;
         //checks if there is monster already on chosen cell
-        for (Monster c : monsterList) {
-            if (c.getX() == pos[0] && c.getY() == pos[1]) {
-                cont = true;
-            }
-        }
-        if (!cont) {    //if there is no monster
-            for (Cell c1 : GridManager.liveCellList) {
-                //search list for cell
-                //if cell position matches monster
-                if (c1.getMonster() != null) {
-                    if (c1.getMonster().equals(this))
-                        c1.clearMonster(); //remove
+        try {
+            Monster m = dispArray[pos[0]][pos[1]].getMonster();
+            if (m != null) {
+                if (m.getX() == pos[0] && m.getY() == pos[1]) {
+                    cont = true;
                 }
-                if (c1.getX() == pos[0] && c1.getY() == pos[1] && c1.getState()) {
-                    c1.setMonster(this);
+            }
+        }catch (ArrayIndexOutOfBoundsException r){}
+        if (!cont) {    //if there is no monster
+            dispArray[x][y].clearMonster();
+            try {
+                if (dispArray[pos[0]][pos[1]].getState()) {
+                    dispArray[pos[0]][pos[1]].setMonster(this);
                     placed = true;
                     moved = true;
                 }
-            }
-            if (!placed) {//if it didnt move because wall use dig
+            }catch (ArrayIndexOutOfBoundsException e){}
+            if (!placed) {//if it didnt move because wall use di32g
                 setCords(x, y);
-                for (Cell c : GridManager.liveCellList) {
+               /* for (Cell c : GridManager.liveCellList) {
                     if (c.getX() == x && c.getY() == y) {
                         c.setMon(true);
                     }
-                }
+                }*/
                 if (rn.nextBoolean() || rn.nextBoolean()) MapState.gm.clearArea(x, y, false);
             }
         }
@@ -408,7 +431,7 @@ public class Monster {
             out(DIVIDER);
             out(name + " Level " + level + " was killed.");
             player.addKills();
-            player.setExp((int) level);
+            player.setExp(level,getExpFactor());
             player.checkLvlUp();
             MapState.makeGold(level);
             try {

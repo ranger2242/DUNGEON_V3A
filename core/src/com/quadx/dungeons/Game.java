@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector3;
+import com.quadx.dungeons.commands.*;
 import com.quadx.dungeons.items.equipment.EquipSets;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
@@ -21,6 +22,7 @@ import com.quadx.dungeons.tools.WallPattern;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,11 +41,35 @@ public class Game extends ApplicationAdapter implements ControllerListener{
     public static boolean controllerMode =false;
     private static final BitmapFont[] fonts = new BitmapFont[6];
     public static EquipSets equipSets= new EquipSets();
+    public static ArrayList<Command> commandList=new ArrayList<>();
 
+    static void addCommand(){
+        commandList.clear();
+        commandList.add(new UpComm());
+        commandList.add(new DownComm());
+        commandList.add(new LeftComm());
+        commandList.add(new RightComm());
+        commandList.add(new AimUpComm());
+        commandList.add(new AimDownComm());
+        commandList.add(new AimLeftComm());
+        commandList.add(new AimRightComm());
+        commandList.add(new AltAttackComm());
+        commandList.add(new ConfirmComm());
+        commandList.add(new BackComm());
+        commandList.add(new DigComm());
+        commandList.add(new DropComm());
+        commandList.add(new MainAttackComm());
+        commandList.add(new PauseComm());
+        commandList.add(new ScrollLeftComm());
+        commandList.add(new ScrollRightComm());
+        commandList.add(new UseComm());
+    }
     @Override
     public void create () {
         ImageLoader il=new ImageLoader();
         WallPattern wp=new WallPattern();
+        addCommand();
+        Xbox360Pad.addNames();
         fonts[0]=createFont(8);
         fonts[1]=createFont(10);
         fonts[2]=createFont(12);

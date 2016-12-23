@@ -73,7 +73,7 @@ public class WaterBreath extends Ability {
                 break;
             }
         }
-        if(level<3)
-            output.add("Upgrade cost: "+upCost[level]+" AP");
+        if(level<2)
+            output.add("Upgrade cost: "+upCost[level+1]+" AP");
         return output;    }
 }

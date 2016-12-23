@@ -5,11 +5,11 @@ package com.quadx.dungeons.tools;
  * Created by Chris Cavazos on 5/29/2016.
  */
 public class Score {
-    private final String score;
-    private final String name;
-    private final String ability;
-    private final String gold;
-    private final String kills;
+    private String score = null;
+    private String name= null;
+    private String ability= null;
+    private String gold= null;
+    private String kills= null;
     public Score(String n, String s, String g, String a,String as){
         score=""+s;
         name=n;
@@ -17,6 +17,11 @@ public class Score {
         ability=a;
         kills=as;
     }
+
+    public Score() {
+
+    }
+
     public String toString(){
         String s=name;
         while (s.length()<20){

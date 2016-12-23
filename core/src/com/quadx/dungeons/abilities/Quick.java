@@ -18,7 +18,7 @@ import static com.quadx.dungeons.Game.player;
 public class Quick extends Ability {
     public Quick(){
         name="Quick";
-        icon= ImageLoader.abilities.get(3);
+        icon= ImageLoader.abilities.get(4);
         details();
 
     }

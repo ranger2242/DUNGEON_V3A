@@ -45,6 +45,7 @@ public class StatManager {
     public static int totalGold=0;
     public static Monster killer =null;
     public static Timer gameTime=new Timer("Game Time");
+    public static Score pScore=null;
 
     public StatManager(){
     }
@@ -81,7 +82,6 @@ public class StatManager {
         list.add((double) totalGold);
         list.add(Double.valueOf(formatter.format(player.getKillCount()/gameTimeMin)));
         list.add(Double.valueOf(formatter.format(totalGold/gameTimeMin)));
-
 
         return list;
     }

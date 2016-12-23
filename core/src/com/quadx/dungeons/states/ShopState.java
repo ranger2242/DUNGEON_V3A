@@ -6,13 +6,14 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.quadx.dungeons.Game;
-import com.quadx.dungeons.Xbox360Pad;
+import com.quadx.dungeons.commands.Command;
 import com.quadx.dungeons.items.*;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.states.mapstate.MapState;
 
 import java.util.ArrayList;
 
+import static com.quadx.dungeons.Game.commandList;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.states.mapstate.MapState.viewX;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
@@ -42,13 +43,15 @@ public class ShopState extends State {
         genShopInv();
         Gdx.gl.glClearColor(0,0,0,1);
     }
+
+    public static void exit(){
+        MapState.pause=false;
+        gsm.pop();
+    }
     @Override
     protected void handleInput() {
-        //controller functions------------------------------------------------------
-        if(Game.controllerMode){
-            if(MainMenuState.controller.getButton(Xbox360Pad.BUTTON_B)){
-                gsm.pop();
-            }
+        for(Command c: commandList){
+            c.execute();
         }
         //keyboard functions--------------------------------------------------------
 
@@ -61,12 +64,6 @@ public class ShopState extends State {
         if (Gdx.input.isKeyPressed(Input.Keys.NUM_7)) numberButtonHandler(6);
         if (Gdx.input.isKeyPressed(Input.Keys.NUM_8)) numberButtonHandler(7);
         if (Gdx.input.isKeyPressed(Input.Keys.NUM_9)) numberButtonHandler(8);
-
-        if(Gdx.input.isKeyPressed(Input.Keys.TAB)){
-            MapState.pause=false;
-            gsm.pop();
-        }
-
     }
     private void numberButtonHandler(int i){
         if(!MapState.pause && Gdx.input.isKeyPressed(Input.Keys.MINUS) && dtBuy>.3){

@@ -34,6 +34,7 @@ public class Map2State extends State {
         initBools();
         generateMap2();
     }
+
     protected void handleInput() {
 
     }

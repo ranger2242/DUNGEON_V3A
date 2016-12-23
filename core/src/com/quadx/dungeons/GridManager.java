@@ -234,14 +234,14 @@ public class GridManager {
     public static void plotMonsters() {
         if (player.getFloor() == 1)
             splitMapDataToList();
-        int temp = (int) (liveCount * .01);//calculate number of monsters
+        int temp = rn.nextInt(50)+20;//calculate number of monsters
         while (temp > 0) {
             int listSize = monsterList.size();
             int point = rn.nextInt(liveCellList.size());
             Cell c = liveCellList.get(point);
             if(c.getState()) {
                 Monster m = Monster.getNew();
-                if(rn.nextFloat()<.05)m.setHit();
+                //if(rn.nextFloat()<.05)m.setHit();
                 c.setState();
                 m.setLiveCellIndex(point);
                 c.setMonster(m);

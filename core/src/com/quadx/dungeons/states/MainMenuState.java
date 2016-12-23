@@ -14,10 +14,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Xbox360Pad;
-import com.quadx.dungeons.commands.Command;
-import com.quadx.dungeons.commands.ConfirmComm;
-import com.quadx.dungeons.commands.DownComm;
-import com.quadx.dungeons.commands.UpComm;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.Tests;
 
@@ -42,15 +38,12 @@ public class MainMenuState extends State implements ControllerListener {
     private int optionsPosY =0;
     private float dtCursor = 0;
     private Texture title = new Texture("images\\title.png");
-    private ArrayList<Command> commandList=new ArrayList<>();
-
     public MainMenuState(GameStateManager gsm) {
         super(gsm);
         Gdx.gl.glClearColor(0,0,0,1);
         initController();
         loadParticles();
         addOptionsToList();
-        addCommands();
         titlePosY=(int)(viewY+ (Game.HEIGHT/3)*2);
         optionsPosY =(int)(viewY+ (Game.HEIGHT/3));
     }
@@ -80,18 +73,7 @@ public class MainMenuState extends State implements ControllerListener {
         options.add("Extra");
         options.add("Exit");
     }
-    void addCommands(){
-        commandList.add(new ConfirmComm(MainMenuState.class));
-        commandList.add(new UpComm(MainMenuState.class));
-        commandList.add(new DownComm(MainMenuState.class));
 
-    }
-    @Override
-    protected void handleInput() {
-        for(Command c: commandList){
-            c.execute();
-        }
-    }
     public static void incrementSelector(){
         selector--;
         if(selector<0)selector=4;
