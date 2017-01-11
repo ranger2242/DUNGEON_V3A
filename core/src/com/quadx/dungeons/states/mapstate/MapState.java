@@ -107,7 +107,7 @@ public class MapState extends State implements ControllerListener {
 
     public void debug() {
         //Tests.testEquipmentRates();
-        Tests.giveItems(20);
+        //Tests.giveItems(20);
     }
     public void handleInput() {
     }
@@ -300,6 +300,7 @@ public class MapState extends State implements ControllerListener {
             int spread = attack.getSpread();
             int px = player.getX();
             int py = player.getY();
+
             if (lastPressed == 'w') {
                 xlim = (px) + spread;
                 ylim = py + range;
@@ -307,6 +308,7 @@ public class MapState extends State implements ControllerListener {
                 y = py;
                 a = (int) -Math.ceil(spread / 2);
                 b = 0;
+
             } else if (lastPressed == 's') {
                 xlim = (px) + spread;
                 ylim = py;
@@ -331,12 +333,20 @@ public class MapState extends State implements ControllerListener {
             }
             for (int i = x; i < xlim; i++) {
                 for (int j = y; j < ylim; j++) {
+
                     int n=i+a;
                     int m=j+b;
-                    if(n<res && n>=0 && m<res && m>=0)
-                    setHitList(n, m);
+                    if(n<res && n>=0 && m<res && m>=0) {
+                        setHitList(n, m);
+                    }
                 }
             }
+            float dx=(xlim-x)*cellW;
+            float dy=(ylim-y)*cellW;
+            float rx= player.getAbsPos().x-(dx/2);
+            float ry= player.getAbsPos().y-(dy/2);
+            player.setAttackBox(new Rectangle(rx,ry,dx,dy));
+
         }
         hitList.add(dispArray[player.getX()][player.getY()]);
     }

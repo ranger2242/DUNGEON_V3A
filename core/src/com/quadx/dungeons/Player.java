@@ -3,6 +3,7 @@ package com.quadx.dungeons;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.abilities.Ability;
 import com.quadx.dungeons.abilities.DigPlus;
@@ -40,7 +41,7 @@ public class Player {
     public ArrayList<Ability> secondaryAbilityList=new ArrayList<>();
     public final ArrayList<Equipment> equipedList = new ArrayList<>();
     private final ArrayList<String> statsList= new ArrayList<>();
-    private final Vector2 pospx=new Vector2(0,0);
+    private final Vector2 absPos =new Vector2(0,0);
     private Ability ability = null;
     public Item lastItem = null;
     private int x;
@@ -89,7 +90,7 @@ public class Player {
     private float defBuff=1;
     private float intBuff=1;
     private float spdBuff=1;
-
+    private float velocity=10;
     float hpRegenMod=1;
     private float dtRegen = 0;
     private float dtEnergyRe = 0;
@@ -105,7 +106,7 @@ public class Player {
     private double moveMod=1;
     Vector2 texturePos=new Vector2();
     Vector2[] statsPos;
-
+    Rectangle attackBox= new Rectangle();
     public Player() {
         //AbilityMod.resetAbilities();
         level=1;
@@ -114,6 +115,9 @@ public class Player {
         setStatsPos();
     }
     //SETTERS------------------------------------------------------------------
+    public void setAttackBox(Rectangle r){
+        attackBox=r;
+    }
     public void setEnergy(int e){
         energy=e;
     }
@@ -142,7 +146,7 @@ public class Player {
         out(name+" gained "+ gain +" EXP");
     }
     public void setCordsPX(int i, int i1) {
-        pospx.set(i,i1);
+        absPos.set(i,i1);
         px=i;
         py=i1;
         x=px/ cellW;
@@ -233,8 +237,13 @@ public class Player {
         }
     }
     //GETTERS------------------------------------------------------------------
-    public Vector2 getCordsPX(){
-        return pospx;
+
+    public Rectangle getAttackBox() {
+        return attackBox;
+    }
+
+    public Vector2 getAbsPos(){
+        return absPos;
     }
     public Vector2 getTexturePos(){
         return texturePos;
@@ -421,6 +430,11 @@ public class Player {
         intel=a;
         spd=a;
     }
+    public void move2(Vector2 vel){
+        Vector2 end=new Vector2(absPos.x+vel.x, absPos.y+vel.y);
+        Vector2 comp= Physics.getVxyComp(velocity, absPos,end);
+        absPos.add(comp);
+    }
     public void move(int xmod, int ymod) {
         int nx = x + xmod;
         int ny = y + ymod;
@@ -556,7 +570,7 @@ public class Player {
         if(moveSpeed<.03)moveSpeed=.03;
         regenPlayer(dt);
         //set texture cords
-        texturePos.set(pospx.x - getIcon().getWidth() / 4,pospx.y - getIcon().getHeight() / 4);
+        texturePos.set(absPos.x - getIcon().getWidth() / 4, absPos.y - getIcon().getHeight() / 4);
         setStatsPos();
     }
     public void checkLvlUp() {

@@ -58,7 +58,9 @@ public class MapStateRender extends MapState {
         sbDrawTiles(sb);
         //Under HUD
         sb.begin();
+        //draw anims
         for(Anim a: anims){
+            if(a.getTexture() != null)
             sb.draw(a.getTexture(),a.getPos().x,a.getPos().y);
         }
         sb.end();
@@ -66,7 +68,6 @@ public class MapStateRender extends MapState {
         sbDrawPlayer(sb);
 
 
-        //draw anims
 
         sbDrawHovText(sb);
         //For all mosters on screen do these actions
@@ -364,6 +365,10 @@ public class MapStateRender extends MapState {
             shapeR.rect(v.x,v.y,v.z,v.z);
         }
         drawList.stream().filter(Cell::getAttArea).forEach(c -> shapeR.rect(c.getAbsPos().x, c.getAbsPos().y, cellW, cellW));
+        Rectangle r=player.getAttackBox();
+        shapeR.setColor(1,0,0,.5f);
+        if(r !=null)
+        shapeR.rect(r.x,r.y,r.getWidth(),r.getHeight());
         shapeR.end();
 
         Gdx.gl.glDisable(GL_BLEND);

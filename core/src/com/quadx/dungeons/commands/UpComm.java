@@ -1,6 +1,7 @@
 package com.quadx.dungeons.commands;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.MainMenuState;
@@ -28,7 +29,7 @@ public class UpComm extends Command {
             }
             if (cls.equals(MapState.class)) {
                 if (player.canMove) {
-                    player.move(0, 1);
+                    player.move2(new Vector2(0, 1));
                     player.dtMove = 0;
                 }
             }

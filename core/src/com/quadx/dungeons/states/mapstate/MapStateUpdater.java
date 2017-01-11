@@ -67,8 +67,8 @@ public class MapStateUpdater extends MapState{
     private static void updateCamPosition() {
         Vector3 position = cam.position;
         float lerp = 0.2f;
-        position.x += (player.getCordsPX().x - position.x) * lerp;
-        position.y += (player.getCordsPX().y - position.y) * lerp;
+        position.x += (player.getAbsPos().x - position.x) * lerp;
+        position.y += (player.getAbsPos().y - position.y) * lerp;
         cam.position.set(position);
         cam.update();
         viewX = cam.position.x - cam.viewportWidth / 2;
@@ -349,7 +349,7 @@ public class MapStateUpdater extends MapState{
                 int nx=(int) (player.getX()+(rn.nextGaussian()*2));
                 int ny=(int) (player.getY()+(rn.nextGaussian()*2));
                 Cell test= dispArray[nx][ny];
-                while(test.hasCrate() || test.hasLoot() ||test.hasWarp() || test.getWater()
+                while(test.hasCrate() || !test.getState() || test.hasLoot() ||test.hasWarp() || test.getWater()
                         ||( nx == player.getX() && ny == player.getY())){
                     nx=(int) (player.getX()+(rn.nextGaussian()*2));
                     ny=(int) (player.getY()+(rn.nextGaussian()*2));
@@ -360,12 +360,8 @@ public class MapStateUpdater extends MapState{
                 int index= liveCellList.indexOf(c);
                 c.addCommand(new AddItemComm(item,index));
                 pending.add(c);
-                //c.setItem(item);
-                //c.setCrate(true);
-                //liveCellList.get(index).setItem(item);
-                //liveCellList.get(index).setCrate(true);
-                int x= (int) player.getCordsPX().x;
-                int y= (int) player.getCordsPX().y;
+                int x= (int) player.getAbsPos().x;
+                int y= (int) player.getAbsPos().y;
                 Vector2 v2= new Vector2(x,y);
                 anims.add(new Anim(item.getIcon(),v2,10,liveCellList.get(index).getAbsPos(),0));
                 player.invList.get(MapStateRender.inventoryPos).remove(0);

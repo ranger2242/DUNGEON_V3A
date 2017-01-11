@@ -31,8 +31,7 @@ public class Anim {
     public void update(){
         float dx= EMath.dx(pos,dest);
         float dy= EMath.dy(pos,dest);
-        double theta=Math.atan2(dy,dx);
-        Vector2 velcomp= new Vector2((float)(vel* Math.cos(theta)),(float)(vel*Math.sin(theta)));
+        Vector2 velcomp=Physics.getVxyComp(vel,pos,dest);
         if(Math.abs(dx)<vel)
             pos.x=dest.x;
         else
