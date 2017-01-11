@@ -3,12 +3,14 @@ package com.quadx.dungeons;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.items.*;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.Random;
 
+import static com.quadx.dungeons.states.mapstate.MapState.cellW;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.dtWaterEffect;
 
 /**
@@ -34,6 +36,9 @@ public class Cell {
     private Color color = null;
     private Texture tile;
     private Monster monster=null;
+    Vector2 pos = new Vector2();    //<- position relative to grid
+    Vector2 absPos = new Vector2(); //<- for use with cellw shift
+    private boolean hasItem = false;
 
     public Cell() {
         setTile(ImageLoader.a[0]);
@@ -71,6 +76,9 @@ public class Cell {
         return item;
     }
     public Monster getMonster(){return monster;}
+    public Vector2 getPos(){return pos;}
+    public Vector2 getAbsPos(){return absPos;}
+
     public boolean getAttArea(){return  attArea;}
     public boolean getWater(){return hasWater;}
     public boolean getShop(){return hasShop;}
@@ -82,6 +90,9 @@ public class Cell {
     public boolean hasMon(){return hasMon;}
     public boolean hasLoot() {return hasLoot;}
     public boolean hasCrate() {return hasCrate;}
+    public boolean hasItem(){
+        return hasItem;
+    }
     public int getBoosterItem(){
         return boosterItem;
     }
@@ -114,7 +125,13 @@ public class Cell {
         }
     }
     public void setAttArea(boolean a){attArea=a;}
-    public void setCords(int a, int b){x=a;y=b;}
+
+    public void setCords(int a, int b) {
+        x = a;
+        y = b;
+        pos=new Vector2(a,b);
+        absPos=new Vector2(a*cellW,b*cellW);
+    }
     public void setShop(boolean set){hasShop=set;}
     public void setMon(boolean set){hasMon=set;}
     public void setWarp(){isWarp= true;}
@@ -150,6 +167,10 @@ public class Cell {
     public void setMonsterIndex(int set){monsterIndex=set;}
     public void setItem(Item item) {
         this.item = item;
+        if(this.item!= null)
+            hasItem=true;
+        else hasItem=false;
+
     }
 
 //OTHER----------------------------------------------------------------------------------

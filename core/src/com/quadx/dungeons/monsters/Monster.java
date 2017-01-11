@@ -4,16 +4,22 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Damage;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.tools.HealthBar;
 import com.quadx.dungeons.tools.StatManager;
+import com.quadx.dungeons.tools.gui.InfoOverlay;
+import com.quadx.dungeons.tools.gui.Text;
 
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.*;
+import static com.quadx.dungeons.states.mapstate.MapState.cellW;
 import static com.quadx.dungeons.states.mapstate.MapState.out;
 import static javax.swing.JSplitPane.DIVIDER;
 
@@ -32,6 +38,13 @@ public class Monster {
     protected String status = "0";
     protected TextureAtlas textureAtlas=null;
     protected Animation anim = null;
+    HealthBar hbar = new HealthBar();
+    HealthBar hbar2 = new HealthBar();
+
+    Vector2 pos = new Vector2();
+    Vector2 absPos = new Vector2();
+    InfoOverlay overlay= new InfoOverlay();
+
     protected boolean caller = true;
     protected boolean clockwise = rn.nextBoolean();
     protected boolean willCircle = rn.nextBoolean();
@@ -41,6 +54,7 @@ public class Monster {
     protected boolean moved = false;
     protected boolean aa = false;
     protected boolean bb = false;
+    boolean lowhp=false;
     protected int level = 1;
     protected double attack;
     protected double intel;
@@ -80,6 +94,7 @@ public class Monster {
     protected int circleAngle=0;
     protected int[] maxes= new int[4];
     protected float expFactor=1;
+    Vector3 sights = new Vector3();
 
     public Monster() {
     }
@@ -123,6 +138,14 @@ public class Monster {
     public String getName() {
         return name;
     }
+    public Vector2 getPos(){return pos;}
+    public Vector2 getAbsPos(){return absPos;}
+    Vector2 texturePos=new Vector2();
+
+    public Vector3 getSights(){return sights;}
+    public HealthBar getHbar(){return hbar;}
+    public HealthBar getHbar2(){return hbar2;}
+
     public float getdtMove() {
         return dtMove;
     }
@@ -196,12 +219,14 @@ public class Monster {
     public void setCords(int a, int b) {
         x = a;
         y = b;
-        px = a * MapState.cellW;
-        py = b * MapState.cellW;
+        px = a * cellW;
+        py = b * cellW;
+        pos=new Vector2(a,b);
+        absPos=new Vector2(a*cellW,b*cellW);
     }
     public void setCordsPX(int a, int b) {
-        x = a / MapState.cellW;
-        y = b / MapState.cellW;
+        x = a / cellW;
+        y = b / cellW;
         px = a;
         py = b;
     }
@@ -240,6 +265,20 @@ public class Monster {
             dtAgro+=dt;
 
         }
+        //calculate sights
+        int side=sight*2*cellW;
+        sights=new Vector3(px-(side/2)+(cellW/2),py-(side/2)+(cellW/2),side);
+        //update healthbar pos
+        hbar.update(absPos.x-22,absPos.y-31,84,6);
+        hbar2.update(absPos.x-20,absPos.y-30, (float) (80*getPercentHP()),4);
+        texturePos.set(pos.x* cellW -icon.getWidth()/4,pos.y * cellW -icon.getHeight()/4);
+        if(!(hp<=hpMax/3)) lowhp=true;
+        else lowhp=false;
+        overlay.texts.clear();
+        overlay.texts.add(new Text("LVL "+level,new Vector2(absPos.x-22,absPos.y-10),Color.GRAY,1));
+        if(isHit())
+        overlay.texts.add(new Text("!",new Vector2(absPos.x-22, (float) ((pos.y+1.5)*cellW-10)),Color.GRAY,1));
+
     }
     public void stattest() {
         for (int i = 0; i < 100; i++) {
@@ -426,6 +465,7 @@ public class Monster {
     public boolean isMoved() {
     return moved;
 }
+    public boolean isLowHP(){return  lowhp;}
     public boolean checkIfDead(){
         if (hp < 1) {
             out(DIVIDER);
@@ -458,5 +498,13 @@ public class Monster {
             hit = false;
             sight=0;
         }
+    }
+
+    public Vector2 getTexturePos() {
+        return texturePos;
+    }
+
+    public InfoOverlay getInfoOverlay() {
+        return overlay;
     }
 }

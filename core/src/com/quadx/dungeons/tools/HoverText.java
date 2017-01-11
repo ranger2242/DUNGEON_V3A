@@ -39,9 +39,24 @@ public class HoverText {
         }
         texts.add(this);
     }
-    public void updateDT(){
-        dtHov+= Gdx.graphics.getDeltaTime();
-        if(flash)dtFlash+=Gdx.graphics.getDeltaTime();
+    public void updateDT() {
+        dtHov += Gdx.graphics.getDeltaTime();
+        if (flash) dtFlash += Gdx.graphics.getDeltaTime();
+        //delete inactive hoverText
+        boolean[] index;
+        if (!texts.isEmpty()) {
+            index = new boolean[texts.size()];
+            texts.stream().filter(h -> !h.isActive()).forEach(h -> index[texts.indexOf(h)] = true);
+            for (int i = texts.size() - 1; i >= 0; i--) {
+                try {
+                    if (index[i]) {
+                        texts.remove(i);
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                }
+            }
+            while (HoverText.texts.size() > 10) HoverText.texts.remove(0);
+        }
     }
     public void draw(SpriteBatch sb) {
         if (active) {

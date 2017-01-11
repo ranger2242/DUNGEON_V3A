@@ -24,6 +24,7 @@ import com.quadx.dungeons.tools.Tests;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.quadx.dungeons.Game.HEIGHT;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.liveCellList;
 import static com.quadx.dungeons.states.mapstate.MapState.*;
@@ -102,10 +103,15 @@ public class Player {
     private double mRegenMod=1;
     private double eRegenMod=1;
     private double moveMod=1;
+    Vector2 texturePos=new Vector2();
+    Vector2[] statsPos;
 
     public Player() {
         //AbilityMod.resetAbilities();
         level=1;
+        getStatsList();
+        statsPos= new Vector2[statsList.size()];
+        setStatsPos();
     }
     //SETTERS------------------------------------------------------------------
     public void setEnergy(int e){
@@ -221,10 +227,22 @@ public class Player {
     public void setxEnergyMax(double xEnergyMax) {
         this.energyMax *= xEnergyMax;
     }
+    void setStatsPos(){
+        for(int i=0;i<statsList.size();i++){
+            statsPos[i]=new Vector2(viewX+30,viewY+HEIGHT - 30 - (i * 20));
+        }
+    }
     //GETTERS------------------------------------------------------------------
     public Vector2 getCordsPX(){
         return pospx;
     }
+    public Vector2 getTexturePos(){
+        return texturePos;
+    }
+    public Vector2[] getStatPos(){
+        return statsPos;
+    }
+
     public int getLevel()
     {
         return level;
@@ -537,6 +555,9 @@ public class Player {
         moveSpeed=1/(8.27*Math.pow(1.004,(getSpdComp()))*moveMod);
         if(moveSpeed<.03)moveSpeed=.03;
         regenPlayer(dt);
+        //set texture cords
+        texturePos.set(pospx.x - getIcon().getWidth() / 4,pospx.y - getIcon().getHeight() / 4);
+        setStatsPos();
     }
     public void checkLvlUp() {
         if (exp>=expLimit)

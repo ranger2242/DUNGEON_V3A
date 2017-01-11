@@ -6,6 +6,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.quadx.dungeons.Anim;
 import com.quadx.dungeons.Cell;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.GridManager;
@@ -14,9 +18,12 @@ import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
+import com.quadx.dungeons.tools.HealthBar;
 import com.quadx.dungeons.tools.HoverText;
 import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.Tests;
+import com.quadx.dungeons.tools.gui.InfoOverlay;
+import com.quadx.dungeons.tools.gui.Text;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -27,6 +34,7 @@ import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.GridManager.drawList;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.*;
 
+
 /**
  * Created by Tom on 12/28/2015.
  */
@@ -34,7 +42,6 @@ import static com.quadx.dungeons.states.mapstate.MapStateUpdater.*;
 public class MapStateRender extends MapState {
     public static boolean showCircle=false;
     private static boolean blink=false;
-    static boolean showStats=true;
     private static float dtBlink =0;
     static float dtLootPopup=0;
     private static float dtCircle=1f;
@@ -50,8 +57,17 @@ public class MapStateRender extends MapState {
         //Lowest Layer
         sbDrawTiles(sb);
         //Under HUD
+        sb.begin();
+        for(Anim a: anims){
+            sb.draw(a.getTexture(),a.getPos().x,a.getPos().y);
+        }
+        sb.end();
         srDrawTransparentThings();
         sbDrawPlayer(sb);
+
+
+        //draw anims
+
         sbDrawHovText(sb);
         //For all mosters on screen do these actions
         try {
@@ -64,8 +80,7 @@ public class MapStateRender extends MapState {
             }
         }catch (ConcurrentModificationException e){}
         //HUD Layer
-        srDrawHUD();
-        sbDrawHUD(sb);
+
         srDrawAttackSelectors();
         //Top Layer
         srDrawFPSMeter();
@@ -74,18 +89,18 @@ public class MapStateRender extends MapState {
         if(showCircle) {
             //drawPlayerFinder();
         }
+        srDrawHUD();
+        sbDrawHUD(sb);
     }
     //SPRITEBATCH RENDERING-----------------------------------------------
     private static void sbDrawMosters(SpriteBatch sb, Monster m){
-        Texture t=m.getIcon();
-        sb.draw(t, m.getX() * cellW -t.getWidth()/4, m.getY() * cellW -t.getHeight()/4);
+        Vector2 v =m.getTexturePos();
+        sb.draw(m.getIcon(), v.x,v.y);
     }
     private static void sbDrawPlayer(SpriteBatch sb){
         sb.begin();
-        try {
-            Texture t = Game.player.getIcon();
-            sb.draw(t, player.getPX() - t.getWidth() / 4, player.getPY() - t.getHeight() / 4);
-        }catch (NullPointerException e){}
+        Vector2 v=player.getTexturePos();
+        sb.draw(player.getIcon(), v.x, v.y);
         sb.end();
     }
     private static void sbDrawHovText(SpriteBatch sb){
@@ -94,33 +109,15 @@ public class MapStateRender extends MapState {
                 h.draw(sb);
             }
         }catch (ConcurrentModificationException e){}
-        //delete inactive hoverText
-        boolean[] index;
-        if(!HoverText.texts.isEmpty()){
-            index= new boolean[HoverText.texts.size()];
-            HoverText.texts.stream().filter(h -> !h.isActive()).forEach(h -> index[HoverText.texts.indexOf(h)] = true);
-            for(int i=HoverText.texts.size()-1;i>=0;i--){
-                try {
-                    if (index[i]) {
-                        HoverText.texts.remove(i);
-                    }
-                }catch (ArrayIndexOutOfBoundsException e){}
-            }
-            while (HoverText.texts.size()>10)HoverText.texts.remove(0);
+
         }
-    }
-    private static void sbDrawAbilityIcon(SpriteBatch sb){
-        Game.getFont().draw(sb,player.getAbility().getName() +" "+player.getAbility().getLevel(),viewX+((WIDTH/3)*2)+30,viewY+80);
-        sb.draw(ImageLoader.abilities.get(player.getAbilityMod()),viewX+((WIDTH/3)*2)+30,viewY+20);
-    }
+
     private static void sbDrawHUD(SpriteBatch sb) {
         sb.begin();
         Game.setFontSize(1);
         sbDrawPlayerStats(sb);
         sbDrawAttackMenu(sb);
         sbDrawInventory(sb);
-        sbDrawEquipmentIcons(sb);
-        sbDrawAbilityIcon(sb);
         sbDrawMessageOutput(sb);
         sbDrawLootPopup(sb);
         sb.end();
@@ -135,139 +132,68 @@ public class MapStateRender extends MapState {
             catch(IndexOutOfBoundsException ignored){}
         }
     }
-    private static void sbDrawEquipmentIcons(SpriteBatch sb) {
-        int count = 0;
-        int x = (int) (viewX + ((WIDTH / 3) * 2) + 15);
-        int y = (int) (viewY + 130);
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 4; j++) {
-                if(count<player.equipedList.size()) {
-                    try {
-                        sb.draw(player.equipedList.get(count).getIcon(), x + (j * 36), y + (i * 36) - 20);
-                    }catch (Exception e){
-                        sb.draw(ImageLoader.crate, x + (j * 36), y + (i * 36) - 20);
-
-                    }
-                    count++;
-                }
-            }
-        }
-    }
     private static void sbDrawPlayerStats(SpriteBatch sb) {
-        int x= (int) viewX;
-        int y= (int) viewY;
+
         if(showStats) {//Draw STATS
             Game.setFontSize(1);
             Game.font.setColor(Color.WHITE);
             ArrayList<String> a = player.getStatsList();
+            Vector2[] v=player.getStatPos();
             for (int i = 0; i < a.size(); i++) {
                 if (statCompare != null && i-3 < statCompare.length && i-3 >= 0) {
                       switch (statCompare[i-3]) {
                         case 1: {Game.font.setColor(Color.BLUE);break;}
                         case 2: {Game.font.setColor(Color.RED);break;}
-                        case 0: {Game.font.setColor(Color.WHITE);break;}
                         default: {Game.font.setColor(Color.WHITE);break;}
-
                       }
                 }
                 else{
                     Game.font.setColor(Color.WHITE);
                 }
-                Game.getFont().draw(sb, a.get(i), x + 30, y + HEIGHT - 30 - (i * 20));
+                Game.getFont().draw(sb, a.get(i), v[i].x, v[i].y);
             }
         }
         //Draw score
         Game.getFont().setColor(Color.WHITE);
-        Game.getFont().draw(sb, "SCORE: "+player.getPoints()+"",(viewX+Game.WIDTH/3)+4,(viewY+200));
-        try {
-            Game.getFont().draw(sb, "HIGH SCORE: " + HighScoreState.scores.get(0).getScore(), (viewX+(Game.WIDTH/3)*2)-(Game.WIDTH/3/2),(viewY+200));
-        }catch (NullPointerException | IndexOutOfBoundsException ignored){}
+        for(Text t: MapState.getInfoOverlay().texts){
+            Game.getFont().draw(sb,t.text,t.pos.x,t.pos.y);
+        }
+
     }
     private static void sbDrawTiles(SpriteBatch sb) {
         sb.begin();
         for (Cell c : drawList) {
-            sb.draw(c.getTile(), (cellW * c.getX()), cellW * c.getY());
+            Vector2 v= c.getAbsPos();
+            sb.draw(c.getTile(), v.x, v.y);
             if (c.getItem() != null && c.getState()) {
                 if (c.getItem().getIcon()==null) {
                     Texture t=ImageLoader.crate;
-                    sb.draw(t, (cellW * c.getX()), cellW * c.getY());
+                    sb.draw(t, v.x, v.y);
                 } else {
-                    sb.draw(c.getItem().getIcon(), (cellW * c.getX()), cellW * c.getY());
+                    sb.draw(c.getItem().getIcon(), v.x, v.y);
                 }
             }
             if (c.hasWarp()) {
-                sb.draw(ImageLoader.warp, (cellW * c.getX()), cellW * c.getY());
+                sb.draw(ImageLoader.warp, v.x, v.y);
             }
         }
         sb.end();
     }
     private static void sbDrawMonsterInfo(SpriteBatch sb, Monster m){
-        Game.setFontSize(1);
-        Game.getFont().draw(sb,"LVL "+m.getLevel(),m.getX()*cellW-22,m.getY()*cellW-10);
-        if(m.isHit())
-            Game.getFont().draw(sb,"!" , m.getX()*cellW, (float) ((m.getY()+1.5)*cellW));
-
+        for(Text t: m.getInfoOverlay().texts) {
+            Game.setFontSize(t.size);
+            Game.getFont().draw(sb,t.text,t.pos.x,t.pos.y);
+        }
     }
     private static void sbDrawAttackMenu(SpriteBatch sb) {
-        int xoffset = (int) (viewX + (WIDTH / 2) - (52 * 4));
-        for (int i = 0; i < player.attackList.size(); i++) {
-            Attack a = player.attackList.get(i);
-            int type = a.getType();
-            int x=xoffset + (i * 52);
-            try {
-                if (type == 3 || type == 2 || type==4) {
-                    if (player.getMana() >= a.getCost()) {
-                        sb.draw(a.getIcon(), x, viewY + 48);
-                        if (i <= 7) Game.getFont().draw(sb, (i + 1) + "", x, viewY + 58);
-                    } else {
-                        int rem = a.getCost() - player.getMana();
-                        Game.getFont().draw(sb, rem + "",x + 52 / 2, viewY + 70);
-                    }
-                    Game.getFont().draw(sb, "M" + a.getCost(),x, viewY + 30);
-                } else if (type == 1) {
-                    if (player.getEnergy() >= a.getCost()) {
-                        sb.draw(a.getIcon(), x, viewY + 48);
-                        if (i <= 7) Game.getFont().draw(sb, (i + 1) + "",x, viewY + 58);
-                    } else {
-                        int rem = a.getCost() - player.getEnergy();
-                        Game.getFont().draw(sb, rem + "",x + 52 / 2, viewY + 70);
-                    }
-                    Game.getFont().draw(sb, "E" + a.getCost(), x, viewY + 30);
-                }
-                Game.getFont().draw(sb, "Lv." + (a.getLevel() + 1), x, viewY + 48);
-            } catch (NullPointerException ignored) {
-            }
+        ArrayList<InfoOverlay> list = MapState.getAttackBarOverlay();
+        for(InfoOverlay io :list){
+            io.draw(sb,shapeR);
         }
     }
     private static void sbDrawInventory(SpriteBatch sb) {
-        if(!player.invList.isEmpty() && inventoryPos >-1) {
-            try {
-                Item item=player.invList.get(inventoryPos).get(0);
-                String name = (inventoryPos) + ":" + item.getName();
-                int y = (int) viewY + 130;
-                int x = (int) (viewX + WIDTH - 290);
-                ArrayList<String> outList=new ArrayList<>();
-                if(item.getHpmod()!=0){outList.add("HP "+ item.getHpmod());}
-                if(item.getManamod()!=0){outList.add("M :"+ item.getManamod());}//Mana
-                if(item.getEmod()!=0){outList.add("E :"+ item.getEmod());}//Mana
-                if(item.getAttackmod()!=0){outList.add("ATT :"+ item.getAttackmod());}  //attack
-                if(item.getDefensemod()!=0){outList.add("DEF :"+ item.getDefensemod());} //defense
-                if(item.getIntelmod()!=0){outList.add("INT :"+ item.getIntelmod());}//intel
-                if(item.getSpeedmod()!=0){outList.add("SPD :"+ item.getSpeedmod());}//speed
-
-                Game.getFont().draw(sb, name, viewX + WIDTH - 290, viewY + 200 - 20);
-                for(int i=0;i<outList.size();i++){
-                    Game.getFont().draw(sb,outList.get(i),viewX + WIDTH - 290, viewY + 150 -((i+1)*20) - 20);
-                }
-                Game.getFont().draw(sb, "x" + player.invList.get(inventoryPos).size(), x, y);
-                try {
-                    sb.draw(player.invList.get(inventoryPos).get(0).getIcon(), x, y);
-                }catch (Exception e){
-                    sb.draw(ImageLoader.crate, x, y);
-
-                }
-            }catch (IndexOutOfBoundsException  ignored){}
-        }
+        InfoOverlay io= getInvOverlay();
+        io.draw(sb,shapeR);
     }
     private static void sbDrawLootPopup(SpriteBatch sb) {
         try {
@@ -316,15 +242,12 @@ public class MapStateRender extends MapState {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        shapeR.setColor(Color.WHITE);
-        shapeR.rect(viewX+WIDTH/3,viewY,2,205);
-        shapeR.rect(viewX+(WIDTH/3)*2,viewY,2,205);
-        shapeR.rect(viewX,viewY+205,WIDTH,2);
-
-        shapeR.setColor(.1f, .1f, .1f, .7f);
-        if(showStats)
-            shapeR.rect(viewX,viewY+HEIGHT-300, 300, 300);
-        shapeR.rect(viewX,viewY, WIDTH,207);
+        InfoOverlay io = MapState.getInfoOverlay();
+        for(Rectangle r:io.rects){
+            if(io.rects.indexOf(r)<3) shapeR.setColor(Color.WHITE);
+            else shapeR.setColor(.1f, .1f, .1f, .7f);
+            shapeR.rect(r.x,r.y,r.width,r.height);
+        }
         shapeR.end();
         Gdx.gl.glDisable(GL_BLEND);
         srDrawPlayerStatBars();
@@ -381,12 +304,15 @@ public class MapStateRender extends MapState {
     private static void srDrawMonsterHealthBar(Monster m){
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         shapeR.setColor(Color.DARK_GRAY);
-        shapeR.rect(m.getX()*cellW-22,m.getY()*cellW-31, (float) (84),6);
-        if(m.getHp()>m.getHpMax()/3)
+        HealthBar h=m.getHbar();
+        shapeR.rect(h.x,h.y,h.w,h.h);
+        if(m.isLowHP())
             shapeR.setColor(Color.GREEN);
         else
             shapeR.setColor(Color.RED);
-        shapeR.rect(m.getX()*cellW-20,m.getY()*cellW-30, (float) (80*m.getPercentHP()),4);
+        HealthBar h1=m.getHbar2();
+
+        shapeR.rect(h1.x,h1.y,h1.w,h1.h);
         shapeR.end();
     }
     private static void srDrawEquipmentSlots(){
@@ -420,13 +346,11 @@ public class MapStateRender extends MapState {
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         for(int i = 0; i< GridManager.monsterList.size(); i++){
             Monster m= GridManager.monsterList.get(i);
-            int side=m.getSight()*2*cellW;
-            double x1=m.getPX()-(side/2)+(cellW/2);
-            double y1=m.getPY()-(side/2)+(cellW/2);
+            Vector3 v=m.getSights();
             shapeR.setColor(1,0,0,.2f);
-            shapeR.rect((int)x1,(int)y1,side,side);
+            shapeR.rect(v.x,v.y,v.z,v.z);
         }
-        drawList.stream().filter(Cell::getAttArea).forEach(c -> shapeR.rect(c.getX() * cellW, c.getY() * cellW, cellW, cellW));
+        drawList.stream().filter(Cell::getAttArea).forEach(c -> shapeR.rect(c.getAbsPos().x, c.getAbsPos().y, cellW, cellW));
         shapeR.end();
 
         Gdx.gl.glDisable(GL_BLEND);

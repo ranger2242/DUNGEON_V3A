@@ -3,7 +3,9 @@ package com.quadx.dungeons.states.mapstate;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.quadx.dungeons.Anim;
 import com.quadx.dungeons.Cell;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.GridManager;
@@ -21,6 +23,7 @@ import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.ShopState;
 import com.quadx.dungeons.tools.DebugTextInputListener;
+import com.quadx.dungeons.tools.HoverText;
 import com.quadx.dungeons.tools.Tests;
 
 import java.util.ArrayList;
@@ -28,8 +31,7 @@ import java.util.ConcurrentModificationException;
 
 import static com.quadx.dungeons.Game.commandList;
 import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.GridManager.liveCellList;
-import static com.quadx.dungeons.GridManager.monsterList;
+import static com.quadx.dungeons.GridManager.*;
 
 
 /**
@@ -38,6 +40,7 @@ import static com.quadx.dungeons.GridManager.monsterList;
 @SuppressWarnings("DefaultFileTemplate")
 public class MapStateUpdater extends MapState{
     static ArrayList<Integer> fpsList= new ArrayList<>();
+     static ArrayList<Anim> anims= new ArrayList<>();
     static boolean displayFPS=true;
     private static float dtDig = 0;
 
@@ -54,6 +57,7 @@ public class MapStateUpdater extends MapState{
     static float dtClearHits =0;
     static float dtInvSwitch = 0;
     public static int spawnCount=1;
+
 
     public MapStateUpdater(GameStateManager gsm) {
         super(gsm);
@@ -185,10 +189,19 @@ public class MapStateUpdater extends MapState{
         Tests.memUsageList.add((double) (allocatedMemory/maxMemory));
         if(Tests.memUsageList.size()>Tests.meterListMax)
             Tests.memUsageList.remove(0);
-
+        for(Anim a: anims){
+            a.update();
+        }
+        if(!anims.isEmpty())
+            for(int i=anims.size()-1; i>=0; i--){
+                if(anims.get(i).isEnd()){
+                    anims.remove(i);
+                }
+            }
         updateCamPosition();
         AttackMod.updaterVariables(dt);
         player.updateVariables(dt);
+
         MapStateRender.updateVariables(dt);
         //Tests.reloadMap(dt);
         if (dtFPS > .05) {
@@ -311,6 +324,14 @@ public class MapStateUpdater extends MapState{
     public static void discardItem(){
         if(dtItem>itemMinTime){
             try {
+                Item item= player.invList.get(MapStateRender.inventoryPos).get(0);
+                Vector2 v = new Vector2((int) (player.getX()+(rn.nextGaussian()*4)),(int) (player.getY()+(rn.nextGaussian()*4)));
+                Cell c= dispArray[(int) v.x][(int) v.y];
+                int index= liveCellList.indexOf(c);
+                liveCellList.get(index).setItem(item);
+                liveCellList.get(index).setCrate(true);
+                Vector2 v2=  player.getCordsPX();
+                anims.add(new Anim(item.getIcon(),v2,4,liveCellList.get(index).getAbsPos()));
                 player.invList.get(MapStateRender.inventoryPos).remove(0);
                 if (player.invList.get(MapStateRender.inventoryPos).isEmpty()) {
                     player.invList.remove(MapStateRender.inventoryPos);
@@ -390,6 +411,7 @@ public class MapStateUpdater extends MapState{
                 liveCellList.get(index).setCrate(false);
                 liveCellList.get(index).setItem(null);
             }
+
             if (c.hasWarp()) {
                 if(player.getAbilityPoints() !=0){
                     gsm.push(new AbilitySelectState(gsm));

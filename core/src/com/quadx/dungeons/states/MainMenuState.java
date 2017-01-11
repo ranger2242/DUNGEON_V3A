@@ -85,12 +85,12 @@ public class MainMenuState extends State implements ControllerListener {
     public static void selectOption(){
         switch (selector){
             case(0):{
-                if (Tests.timeKill()) {
+                //if (Tests.timeKill()) {
                     if (MapState.inGame)
                         gsm.pop();
                     else
                         gsm.push(new AbilitySelectState(gsm));
-                }
+                //}
                 break;
             }
             case(1):{
