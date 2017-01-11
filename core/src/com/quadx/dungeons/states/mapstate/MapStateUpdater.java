@@ -12,7 +12,8 @@ import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.abilities.Warp;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.AttackMod;
-import com.quadx.dungeons.commands.*;
+import com.quadx.dungeons.commands.Command;
+import com.quadx.dungeons.commands.cellcommands.AddItemComm;
 import com.quadx.dungeons.items.EnergyPlus;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.ManaPlus;
@@ -23,7 +24,6 @@ import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.ShopState;
 import com.quadx.dungeons.tools.DebugTextInputListener;
-import com.quadx.dungeons.tools.HoverText;
 import com.quadx.dungeons.tools.Tests;
 
 import java.util.ArrayList;
@@ -41,6 +41,7 @@ import static com.quadx.dungeons.GridManager.*;
 public class MapStateUpdater extends MapState{
     static ArrayList<Integer> fpsList= new ArrayList<>();
      static ArrayList<Anim> anims= new ArrayList<>();
+     static ArrayList<Cell> pending= new ArrayList<>();
     static boolean displayFPS=true;
     private static float dtDig = 0;
 
@@ -195,6 +196,26 @@ public class MapStateUpdater extends MapState{
         if(!anims.isEmpty())
             for(int i=anims.size()-1; i>=0; i--){
                 if(anims.get(i).isEnd()){
+                    ArrayList<Integer> remCell= new ArrayList<>();
+                    for(Cell c: pending) {
+                        if (anims.get(i).getFlag() == 0) {
+                            int remComm=-1;
+                            for(Command comm: c.commandQueue){
+                                if(comm.getClass().equals(AddItemComm.class)){
+                                    remComm=c.commandQueue.indexOf(comm);
+                                    comm.execute();
+                                }
+                            }
+                            if(remComm>=0 &&remComm<c.commandQueue.size())
+                            c.commandQueue.remove(remComm);
+                        }
+                        if(c.commandQueue.isEmpty()){
+                            remCell.add(pending.indexOf(c));
+                        }
+                    }
+                    for(int j=remCell.size()-1;j>=0;j--){
+                        pending.remove(remCell.get(i));
+                    }
                     anims.remove(i);
                 }
             }
@@ -325,13 +346,28 @@ public class MapStateUpdater extends MapState{
         if(dtItem>itemMinTime){
             try {
                 Item item= player.invList.get(MapStateRender.inventoryPos).get(0);
-                Vector2 v = new Vector2((int) (player.getX()+(rn.nextGaussian()*4)),(int) (player.getY()+(rn.nextGaussian()*4)));
+                int nx=(int) (player.getX()+(rn.nextGaussian()*2));
+                int ny=(int) (player.getY()+(rn.nextGaussian()*2));
+                Cell test= dispArray[nx][ny];
+                while(test.hasCrate() || test.hasLoot() ||test.hasWarp() || test.getWater()
+                        ||( nx == player.getX() && ny == player.getY())){
+                    nx=(int) (player.getX()+(rn.nextGaussian()*2));
+                    ny=(int) (player.getY()+(rn.nextGaussian()*2));
+                    test= dispArray[nx][ny];
+                }
+                Vector2 v = new Vector2(nx,ny);
                 Cell c= dispArray[(int) v.x][(int) v.y];
                 int index= liveCellList.indexOf(c);
-                liveCellList.get(index).setItem(item);
-                liveCellList.get(index).setCrate(true);
-                Vector2 v2=  player.getCordsPX();
-                anims.add(new Anim(item.getIcon(),v2,4,liveCellList.get(index).getAbsPos()));
+                c.addCommand(new AddItemComm(item,index));
+                pending.add(c);
+                //c.setItem(item);
+                //c.setCrate(true);
+                //liveCellList.get(index).setItem(item);
+                //liveCellList.get(index).setCrate(true);
+                int x= (int) player.getCordsPX().x;
+                int y= (int) player.getCordsPX().y;
+                Vector2 v2= new Vector2(x,y);
+                anims.add(new Anim(item.getIcon(),v2,10,liveCellList.get(index).getAbsPos(),0));
                 player.invList.get(MapStateRender.inventoryPos).remove(0);
                 if (player.invList.get(MapStateRender.inventoryPos).isEmpty()) {
                     player.invList.remove(MapStateRender.inventoryPos);

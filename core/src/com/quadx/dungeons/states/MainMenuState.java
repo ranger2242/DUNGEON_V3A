@@ -15,7 +15,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.tools.Tests;
 
 import java.util.ArrayList;
 

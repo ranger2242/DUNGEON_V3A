@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.*;
 import com.quadx.dungeons.attacks.Attack;
@@ -31,7 +30,6 @@ import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.gui.InfoOverlay;
 import com.quadx.dungeons.tools.gui.Text;
 
-import javax.sound.midi.MidiDevice;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -109,7 +107,7 @@ public class MapState extends State implements ControllerListener {
 
     public void debug() {
         //Tests.testEquipmentRates();
-        //Tests.giveItems(20);
+        Tests.giveItems(20);
     }
     public void handleInput() {
     }

@@ -4,10 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.items.*;
+import com.quadx.dungeons.commands.Command;
+import com.quadx.dungeons.items.EnergyPlus;
+import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.items.ManaPlus;
+import com.quadx.dungeons.items.Potion;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.tools.ImageLoader;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import static com.quadx.dungeons.states.mapstate.MapState.cellW;
@@ -39,6 +44,7 @@ public class Cell {
     Vector2 pos = new Vector2();    //<- position relative to grid
     Vector2 absPos = new Vector2(); //<- for use with cellw shift
     private boolean hasItem = false;
+    public ArrayList<Command> commandQueue= new ArrayList<>();
 
     public Cell() {
         setTile(ImageLoader.a[0]);
@@ -174,6 +180,9 @@ public class Cell {
     }
 
 //OTHER----------------------------------------------------------------------------------
+    public void addCommand(Command c){
+        commandQueue.add(c);
+    }
     public void clearMonster(){
         monster=null;
         hasMon=false;

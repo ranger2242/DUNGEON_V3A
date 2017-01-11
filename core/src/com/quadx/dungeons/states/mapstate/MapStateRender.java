@@ -13,11 +13,8 @@ import com.quadx.dungeons.Anim;
 import com.quadx.dungeons.Cell;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.GridManager;
-import com.quadx.dungeons.attacks.Attack;
-import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
-import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.tools.HealthBar;
 import com.quadx.dungeons.tools.HoverText;
 import com.quadx.dungeons.tools.ImageLoader;
@@ -50,10 +47,13 @@ public class MapStateRender extends MapState {
     public static int inventoryPos=0;
      static int[] statCompare=null;
 
-    static void renderLayers(SpriteBatch sb){
-        Gdx.gl.glClearColor(0,0,0,1);
-            shapeR.setProjectionMatrix(cam.combined);
-            sb.setProjectionMatrix(cam.combined);
+    static void renderLayers(SpriteBatch sb) {
+
+        shapeR.setProjectionMatrix(cam.combined);
+        sb.setProjectionMatrix(cam.combined);
+        if(disableGfx){
+
+        }
         //Lowest Layer
         sbDrawTiles(sb);
         //Under HUD
@@ -78,7 +78,8 @@ public class MapStateRender extends MapState {
                 sbDrawMonsterInfo(sb, m);
                 sb.end();
             }
-        }catch (ConcurrentModificationException e){}
+        } catch (ConcurrentModificationException e) {
+        }
         //HUD Layer
 
         srDrawAttackSelectors();
@@ -86,7 +87,7 @@ public class MapStateRender extends MapState {
         srDrawFPSMeter();
         sbdrawFPS(sb);
         srDrawMiniMap();
-        if(showCircle) {
+        if (showCircle) {
             //drawPlayerFinder();
         }
         srDrawHUD();
@@ -94,6 +95,18 @@ public class MapStateRender extends MapState {
     }
     //SPRITEBATCH RENDERING-----------------------------------------------
     private static void sbDrawMosters(SpriteBatch sb, Monster m){
+        if(!disableGfx) {
+            Texture t = m.getIcon();
+            sb.draw(t, m.getX() * cellW - t.getWidth() / 4, m.getY() * cellW - t.getHeight() / 4);
+        }
+        else{
+            sb.end();
+            shapeR.begin(ShapeRenderer.ShapeType.Filled);
+            shapeR.setColor(Color.RED);
+            shapeR.rect(m.getX()*cellW,m.getY()*cellW,cellW,cellW);
+            shapeR.end();
+            sb.begin();
+        }
         Vector2 v =m.getTexturePos();
         sb.draw(m.getIcon(), v.x,v.y);
     }

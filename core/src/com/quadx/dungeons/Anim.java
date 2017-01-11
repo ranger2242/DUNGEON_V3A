@@ -13,29 +13,41 @@ public class Anim {
     float vel= 0;
     Vector2 dest=null;
     boolean end= false;
+    int flag = -1;
+    //flags
+    //0-drop
+
 
     public Anim(){
 
     }
-    public Anim(Texture t, Vector2 p, float v, Vector2 d){
+    public Anim(Texture t, Vector2 p, float v, Vector2 d, int f){
         texture=t;
         pos=p;
         vel=v;
         dest=d;
+        flag=f;
     }
     public void update(){
         float dx= EMath.dx(pos,dest);
         float dy= EMath.dy(pos,dest);
         double theta=Math.atan2(dy,dx);
-        Vector2 velcomp= new Vector2((float) Math.cos(theta),(float)Math.sin(theta));
-        pos.x+=velcomp.x;
-        pos.y+=velcomp.y;
+        Vector2 velcomp= new Vector2((float)(vel* Math.cos(theta)),(float)(vel*Math.sin(theta)));
+        if(Math.abs(dx)<vel)
+            pos.x=dest.x;
+        else
+            pos.x+=velcomp.x;
+        if(Math.abs(dy)<vel)
+            pos.y=dest.y;
+        else
+            pos.y+=velcomp.y;
         if((int) dest.x ==(int) pos.x &&(int) dest.y==(int) pos.y )end=true;
     }
 
     public Vector2 getPos() {
         return pos;
     }
+    public int getFlag(){return flag;}
     public boolean isEnd(){
         return end;
     }

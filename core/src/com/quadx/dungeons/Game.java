@@ -31,17 +31,18 @@ import java.util.List;
 @SuppressWarnings("UnusedParameters")
 public class Game extends ApplicationAdapter implements ControllerListener{
 
+    public static boolean disableGfx=true;
     public static BitmapFont font;
-    private SpriteBatch spriteBatch;
+    public static Player player= new Player();
+    public static EquipSets equipSets= new EquipSets();
+    public static ArrayList<Command> commandList=new ArrayList<>();
+    public static boolean controllerMode =false;
     public static final int WIDTH = 1366;
     public static final int HEIGHT = 724;
     public static final float frame = .01666f;
-    public static Player player= new Player();
+    private SpriteBatch spriteBatch;
     private static GameStateManager gameStateManager;
-    public static boolean controllerMode =false;
     private static final BitmapFont[] fonts = new BitmapFont[6];
-    public static EquipSets equipSets= new EquipSets();
-    public static ArrayList<Command> commandList=new ArrayList<>();
 
     static void addCommand(){
         commandList.clear();
@@ -83,9 +84,29 @@ public class Game extends ApplicationAdapter implements ControllerListener{
         spriteBatch = new SpriteBatch();
         gameStateManager.push(new MainMenuState(gameStateManager));
     }
+    @Override
+    public void render () {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        gameStateManager.update(Gdx.graphics.getDeltaTime());
+        gameStateManager.render(spriteBatch);
+    }
     public static BitmapFont getFont(){
 
         return font;
+    }
+    public static void console(String s){
+        System.out.println(s);
+    }
+    public static void printLOG(Exception e) {
+		/*
+		sw=new StringWriter();
+		pw2=new PrintWriter(sw);
+		e.printStackTrace(pw2);
+		pw.append(sw.toString()+"\n");*/
+    }
+    public static void setFontSize(int x){
+        font=fonts[x];
     }
     private void initFile(){
 
@@ -103,9 +124,6 @@ public class Game extends ApplicationAdapter implements ControllerListener{
         }
 
     }
-    public static void console(String s){
-        System.out.println(s);
-    }
     private static BitmapFont createFont(int x){
         BitmapFont temp=new BitmapFont();
 
@@ -121,26 +139,6 @@ public class Game extends ApplicationAdapter implements ControllerListener{
         }
         return temp;
     }
-    public static void setFontSize(int x){
-        font=fonts[x];
-    }
-    @SuppressWarnings("EmptyMethod")
-    public static void printLOG(Exception e) {
-		/*
-		sw=new StringWriter();
-		pw2=new PrintWriter(sw);
-		e.printStackTrace(pw2);
-		pw.append(sw.toString()+"\n");*/
-    }
-    @Override
-    public void render () {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        gameStateManager.update(Gdx.graphics.getDeltaTime());
-        gameStateManager.render(spriteBatch);
-    }
-
-
     @Override
     public void connected(Controller controller) {
 
