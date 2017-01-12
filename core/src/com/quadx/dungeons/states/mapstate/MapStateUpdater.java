@@ -13,6 +13,7 @@ import com.quadx.dungeons.abilities.Warp;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.AttackMod;
 import com.quadx.dungeons.commands.Command;
+import com.quadx.dungeons.commands.DigComm;
 import com.quadx.dungeons.commands.cellcommands.AddItemComm;
 import com.quadx.dungeons.items.EnergyPlus;
 import com.quadx.dungeons.items.Item;
@@ -102,15 +103,14 @@ public class MapStateUpdater extends MapState{
         }
     }
     public static void activateDig(){
-        if (dtDig > player.getMoveSpeed()) {
-            if (player.getEnergy() > 2) {
+        //if (dtDig > player.getMoveSpeed()) {
+           // if (player.getEnergy() > 2) {
                 int x = player.getX();
                 int y = player.getY();
                 gm.clearArea(x, y, true);
-                player.setEnergy(player.getEnergy() - 2);
-            }
-            dtDig = 0;
-        }
+              //  player.setEnergy(player.getEnergy() - 2);
+            //}
+            //dtDig = 0;
     }
     private static void setAttackButton(int x){
         if(Gdx.input.isKeyPressed(Input.Keys.MINUS)){
@@ -415,46 +415,51 @@ public class MapStateUpdater extends MapState{
     static void collisionHandler() {
         int x=player.getX();
         int y=player.getY();
+
         Cell c = GridManager.dispArray[x][y];
         int index=liveCellList.indexOf(c);
-        if(c .getState())
-        if (x == c.getX() && y == c.getY()) {
+        if(c .getState()) {
+            if (x == c.getX() && y == c.getY()) {
 
-            if (c.hasLoot()) {
-                MapStateRender.dtLootPopup = 0;
-                liveCellList.get(index ).setHasLoot(false);
-                player.lastItem=liveCellList.get(index).getItem();
-                player.useItem(player.lastItem);
-                liveCellList.get(index).setItem(null);
-            }
-            if (c.hasCrate()) {
-                int x1=liveCellList.get(index).getBoosterItem();
-                if(x1==0){
-                    player.useItem(new EnergyPlus());}
-                else if(x1==1){
-                    player.useItem(new Potion());
-                }else if(x1==2){
-                    player.useItem(new ManaPlus());
-                }else{
-
-                    openCrate(index);
+                if (c.hasLoot()) {
+                    MapStateRender.dtLootPopup = 0;
+                    liveCellList.get(index).setHasLoot(false);
+                    player.lastItem = liveCellList.get(index).getItem();
+                    player.useItem(player.lastItem);
+                    liveCellList.get(index).setItem(null);
                 }
-                liveCellList.get(index).setBoosterItem(-1);
-                liveCellList.get(index).setCrate(false);
-                liveCellList.get(index).setItem(null);
-            }
+                if (c.hasCrate()) {
+                    int x1 = liveCellList.get(index).getBoosterItem();
+                    if (x1 == 0) {
+                        player.useItem(new EnergyPlus());
+                    } else if (x1 == 1) {
+                        player.useItem(new Potion());
+                    } else if (x1 == 2) {
+                        player.useItem(new ManaPlus());
+                    } else {
 
-            if (c.hasWarp()) {
-                if(player.getAbilityPoints() !=0){
-                    gsm.push(new AbilitySelectState(gsm));
+                        openCrate(index);
+                    }
+                    liveCellList.get(index).setBoosterItem(-1);
+                    liveCellList.get(index).setCrate(false);
+                    liveCellList.get(index).setItem(null);
                 }
-                player.floor++;
-                gm.initializeGrid();
+
+                if (c.hasWarp()) {
+                    if (player.getAbilityPoints() != 0) {
+                        gsm.push(new AbilitySelectState(gsm));
+                    }
+                    player.floor++;
+                    gm.initializeGrid();
+                }
+                if (c.getShop()) {
+                    liveCellList.get(index).setShop(false);
+                    gsm.push(new ShopState(gsm));
+                }
             }
-            if (c.getShop()) {
-                liveCellList.get(index).setShop(false);
-                gsm.push(new ShopState(gsm));
-            }
+        }else{
+            DigComm d=new DigComm();
+            d.execute();
         }
     }
     public static void setAim(char c){

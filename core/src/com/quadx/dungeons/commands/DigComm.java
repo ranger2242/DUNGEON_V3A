@@ -20,10 +20,10 @@ public class DigComm extends Command{
     }
     @Override
     public void execute() {
-        if(pressed()){
+        //if(pressed()){
             if(cls.equals(MapState.class)){
                 MapStateUpdater.activateDig();
             }
-        }
+        //}
     }
 }

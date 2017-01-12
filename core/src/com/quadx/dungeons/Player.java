@@ -18,6 +18,7 @@ import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.tools.EMath;
 import com.quadx.dungeons.tools.Score;
 import com.quadx.dungeons.tools.StatManager;
 import com.quadx.dungeons.tools.Tests;
@@ -27,7 +28,8 @@ import java.util.Random;
 
 import static com.quadx.dungeons.Game.HEIGHT;
 import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.GridManager.liveCellList;
+import static com.quadx.dungeons.GridManager.dispArray;
+import static com.quadx.dungeons.GridManager.res;
 import static com.quadx.dungeons.states.mapstate.MapState.*;
 
 /**
@@ -41,7 +43,7 @@ public class Player {
     public ArrayList<Ability> secondaryAbilityList=new ArrayList<>();
     public final ArrayList<Equipment> equipedList = new ArrayList<>();
     private final ArrayList<String> statsList= new ArrayList<>();
-    private final Vector2 absPos =new Vector2(0,0);
+    private Vector2 absPos =new Vector2(0,0);
     private Ability ability = null;
     public Item lastItem = null;
     private int x;
@@ -90,7 +92,6 @@ public class Player {
     private float defBuff=1;
     private float intBuff=1;
     private float spdBuff=1;
-    private float velocity=10;
     float hpRegenMod=1;
     private float dtRegen = 0;
     private float dtEnergyRe = 0;
@@ -107,6 +108,11 @@ public class Player {
     Vector2 texturePos=new Vector2();
     Vector2[] statsPos;
     Rectangle attackBox= new Rectangle();
+
+    private float velocity=10;
+
+
+
     public Player() {
         //AbilityMod.resetAbilities();
         level=1;
@@ -149,8 +155,6 @@ public class Player {
         absPos.set(i,i1);
         px=i;
         py=i1;
-        x=px/ cellW;
-        y=py/ cellW;
     }
     public void setMoveSpeed(float moveSpeed) {
         this.moveMod = moveSpeed;
@@ -236,6 +240,13 @@ public class Player {
             statsPos[i]=new Vector2(viewX+30,viewY+HEIGHT - 30 - (i * 20));
         }
     }
+    public void setAbsPos(Vector2 a){
+        absPos=a;
+    }
+    public void setPos(Vector2 v){
+        x= (int) v.x;
+        y=(int) v.y;
+    }
     //GETTERS------------------------------------------------------------------
 
     public Rectangle getAttackBox() {
@@ -251,7 +262,7 @@ public class Player {
     public Vector2[] getStatPos(){
         return statsPos;
     }
-
+    public Vector2 getPos(){return new Vector2(x,y);}
     public int getLevel()
     {
         return level;
@@ -430,51 +441,38 @@ public class Player {
         intel=a;
         spd=a;
     }
-    public void move2(Vector2 vel){
-        Vector2 end=new Vector2(absPos.x+vel.x, absPos.y+vel.y);
-        Vector2 comp= Physics.getVxyComp(velocity, absPos,end);
-        absPos.add(comp);
-    }
-    public void move(int xmod, int ymod) {
-        int nx = x + xmod;
-        int ny = y + ymod;
-        Cell c1;
+    public void move(Vector2 vel){
         try {
-            int index1 = -1;
-            int index2 = -1;
-            for (Cell cell : liveCellList) {
-                if (cell.getX() == x && cell.getY() == y) {
-                    index1 = liveCellList.indexOf(cell);
-                }
-                if (cell.getX() == nx && cell.getY() == ny) {
-                    index2 = liveCellList.indexOf(cell);
-                }
-            }
-            if (index1 != -1 && index2 != -1 && liveCellList.get(index2).getState() && !liveCellList.get(index2).getWater()) {
-                setCordsPX(nx * cellW, ny * cellW);
-            }
+            Vector2 end=new Vector2(absPos.x+vel.x, absPos.y+vel.y);
+            int gw= cellW*(res+1);
+            if(end.x<0)
+                end.x=getIcon().getWidth();
+            else if(end.x+getIcon().getWidth()>gw)
+                end.x=(gw)-getIcon().getWidth();
+            if(end.y<0)
+                end.y=getIcon().getHeight();
+            else if(end.y+getIcon().getHeight()>gw)
+                end.y=(gw)-getIcon().getHeight();
+            Vector2 comp= Physics.getVxyComp(velocity, absPos,end);
+            int x=(int)(EMath.round(absPos.x/cellW));
+            int y=(int)(EMath.round(absPos.y/cellW));
 
-            c1 = GridManager.dispArray[nx][ny];
-            if (c1.getState() && !c1.hasWater) {
-                setCordsPX(nx * cellW, ny * cellW);
-                dtMove = 0;
+            Cell c = dispArray[x][y];
+            if (c.getState() && !c.hasWater) {
+                player.setPos(new Vector2(x, y));
+                player.setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
             }
-            if (c1.getState() && c1.hasWater) {
+            if (c.getState() && c.hasWater) {
                 for (Ability a : player.secondaryAbilityList) {
                     if (a.getClass().equals(WaterBreath.class)) {
-                        setCordsPX(nx * cellW, ny * cellW);
-                        dtMove = 0;
+                        player.setPos(new Vector2(x, y));
+                        player.setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
                     }
                 }
             }
-        } catch (IndexOutOfBoundsException e) {
-        } catch (NullPointerException e) {
-            MapStateRender.setHoverText("NONONO", .5f, Color.RED, player.getPX(), player.getPY(), false);
+        }catch (ArrayIndexOutOfBoundsException e){
+
         }
-      //  if (ymod == 1) {MapStateUpdater.setAim('w');}
-      //  if (ymod == -1) {MapStateUpdater.setAim('s');}
-      //  if (xmod == 1) {MapStateUpdater.setAim('d');}
-      //  if (xmod == -1) {MapStateUpdater.setAim('a');}
     }
     public void useItem(int i){
         if(i>=0 && i<invList.size()) {
@@ -563,11 +561,15 @@ public class Player {
     public void updateVariables(float dt){
         dtEnergyRe+=dt;
         dtMove+=dt;
-        canMove = dtMove > moveSpeed;
+        canMove = true;
         calculateArmorBuff();
         expLimit=(int)((((Math.pow(1.2,level))*1000)/2)-300);
-        moveSpeed=1/(8.27*Math.pow(1.004,(getSpdComp()))*moveMod);
-        if(moveSpeed<.03)moveSpeed=.03;
+        velocity= (float) (6+.0136*getSpdComp()+.000005* Math.pow(getSpdComp(),2));
+        if(velocity<5)velocity=5;
+        if(velocity>18)velocity=18;
+        //velocity= (float) (.5*Math.pow(1.00005,(getSpdComp()))*getSpdComp());
+        //if(moveSpeed<1.03)moveSpeed=1.03;
+        //velocity=5;
         regenPlayer(dt);
         //set texture cords
         texturePos.set(absPos.x - getIcon().getWidth() / 4, absPos.y - getIcon().getHeight() / 4);

@@ -3,6 +3,7 @@ package com.quadx.dungeons;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.commands.Command;
 import com.quadx.dungeons.items.EnergyPlus;
@@ -41,6 +42,7 @@ public class Cell {
     private Color color = null;
     private Texture tile;
     private Monster monster=null;
+    Rectangle bounds=null;
     Vector2 pos = new Vector2();    //<- position relative to grid
     Vector2 absPos = new Vector2(); //<- for use with cellw shift
     private boolean hasItem = false;
@@ -92,6 +94,7 @@ public class Cell {
     {
         return isLive;
     }
+    public Rectangle getBounds(){return bounds;}
     public boolean hasWarp(){return isWarp;}
     public boolean hasMon(){return hasMon;}
     public boolean hasLoot() {return hasLoot;}
@@ -137,6 +140,7 @@ public class Cell {
         y = b;
         pos=new Vector2(a,b);
         absPos=new Vector2(a*cellW,b*cellW);
+        bounds = new Rectangle(absPos.x,absPos.y,cellW,cellW);
     }
     public void setShop(boolean set){hasShop=set;}
     public void setMon(boolean set){hasMon=set;}

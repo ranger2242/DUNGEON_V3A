@@ -204,7 +204,13 @@ public class MapState extends State implements ControllerListener {
 
     void generateInventoryUI() {
         //add ability icon
-        String sss=player.getAbility().getName() +" "+player.getAbility().getLevel();
+        invOverlay=new InfoOverlay();
+        String sss;
+        try {
+            sss=player.getAbility().getName() +" "+player.getAbility().getLevel();
+        }catch (NullPointerException e){
+            sss="Error #0092";
+        }
         invOverlay.texts.add(new Text(sss,new Vector2(viewX+((WIDTH/3)*2)+30,viewY+80),Color.GRAY, 1));
         invOverlay.textures.add(ImageLoader.abilities.get(player.getAbilityMod()));
         invOverlay.texturePos.add(new Vector2(viewX+((WIDTH/3)*2)+30,viewY+20));
@@ -213,7 +219,7 @@ public class MapState extends State implements ControllerListener {
             try {
                 Item item = player.invList.get(inventoryPos).get(0);
                 invOverlay = new InfoOverlay();
-                if (prevItem != item) {
+                //if (prevItem != item) {
                     String name = (inventoryPos) + ":" + item.getName();
                     int y = (int) viewY + 130;
                     int x = (int) (viewX + WIDTH - 290);
@@ -252,7 +258,7 @@ public class MapState extends State implements ControllerListener {
                         invOverlay.textures.add(ImageLoader.crate);
                         invOverlay.texturePos.add(new Vector2(x, y));
                     }
-                }
+                //}
             } catch (IndexOutOfBoundsException ignored) {
             }
         }
@@ -341,11 +347,6 @@ public class MapState extends State implements ControllerListener {
                     }
                 }
             }
-            float dx=(xlim-x)*cellW;
-            float dy=(ylim-y)*cellW;
-            float rx= player.getAbsPos().x-(dx/2);
-            float ry= player.getAbsPos().y-(dy/2);
-            player.setAttackBox(new Rectangle(rx,ry,dx,dy));
 
         }
         hitList.add(dispArray[player.getX()][player.getY()]);

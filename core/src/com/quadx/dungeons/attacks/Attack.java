@@ -22,6 +22,7 @@ public class Attack {
     int range=0;
     int spread=0;
     int costGold=0;
+    float weight;
     private final int[] usesCheck={80,300,650,1000,1500};
     private Texture icon;
 
