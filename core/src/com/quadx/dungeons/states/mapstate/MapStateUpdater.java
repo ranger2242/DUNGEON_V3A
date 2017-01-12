@@ -13,6 +13,7 @@ import com.quadx.dungeons.abilities.Warp;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.AttackMod;
 import com.quadx.dungeons.commands.Command;
+import com.quadx.dungeons.commands.DigComm;
 import com.quadx.dungeons.commands.cellcommands.AddItemComm;
 import com.quadx.dungeons.items.EnergyPlus;
 import com.quadx.dungeons.items.Item;
@@ -457,6 +458,9 @@ public class MapStateUpdater extends MapState{
                     gsm.push(new ShopState(gsm));
                 }
             }
+        }else{
+            DigComm d=new DigComm();
+            d.execute();
         }
     }
     public static void setAim(char c){

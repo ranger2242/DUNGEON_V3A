@@ -91,7 +91,6 @@ public class Player {
     private float defBuff=1;
     private float intBuff=1;
     private float spdBuff=1;
-    private float velocity=10;
     float hpRegenMod=1;
     private float dtRegen = 0;
     private float dtEnergyRe = 0;
@@ -108,6 +107,11 @@ public class Player {
     Vector2 texturePos=new Vector2();
     Vector2[] statsPos;
     Rectangle attackBox= new Rectangle();
+
+    private float velocity=10;
+
+
+
     public Player() {
         //AbilityMod.resetAbilities();
         level=1;
@@ -542,11 +546,15 @@ public class Player {
     public void updateVariables(float dt){
         dtEnergyRe+=dt;
         dtMove+=dt;
-        canMove = dtMove > moveSpeed;
+        canMove = true;
         calculateArmorBuff();
         expLimit=(int)((((Math.pow(1.2,level))*1000)/2)-300);
-        moveSpeed=1/(8.27*Math.pow(1.004,(getSpdComp()))*moveMod);
-        if(moveSpeed<.03)moveSpeed=.03;
+        velocity= (float) (6+.0136*getSpdComp()+.000005* Math.pow(getSpdComp(),2));
+        if(velocity<5)velocity=5;
+        if(velocity>18)velocity=18;
+        //velocity= (float) (.5*Math.pow(1.00005,(getSpdComp()))*getSpdComp());
+        //if(moveSpeed<1.03)moveSpeed=1.03;
+        //velocity=5;
         regenPlayer(dt);
         //set texture cords
         texturePos.set(absPos.x - getIcon().getWidth() / 4, absPos.y - getIcon().getHeight() / 4);
