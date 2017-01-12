@@ -43,6 +43,14 @@ public class EMath {
     public static float dx(Vector2 a, Vector2 b){
         return b.x-a.x;
     }
+    public static double round(double d){
+        double rem=d-Math.floor(d);
+        if(rem<.5f){
+            return Math.floor(d);
+        }else{
+            return Math.ceil(d);
+        }
+    }
     public static float dy(Vector2 a, Vector2 b){
         return b.y-a.y;
     }

@@ -18,6 +18,7 @@ import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.tools.EMath;
 import com.quadx.dungeons.tools.Score;
 import com.quadx.dungeons.tools.StatManager;
 import com.quadx.dungeons.tools.Tests;
@@ -27,7 +28,7 @@ import java.util.Random;
 
 import static com.quadx.dungeons.Game.HEIGHT;
 import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.GridManager.liveCellList;
+import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.states.mapstate.MapState.*;
 
 /**
@@ -41,7 +42,7 @@ public class Player {
     public ArrayList<Ability> secondaryAbilityList=new ArrayList<>();
     public final ArrayList<Equipment> equipedList = new ArrayList<>();
     private final ArrayList<String> statsList= new ArrayList<>();
-    private final Vector2 absPos =new Vector2(0,0);
+    private Vector2 absPos =new Vector2(0,0);
     private Ability ability = null;
     public Item lastItem = null;
     private int x;
@@ -149,8 +150,6 @@ public class Player {
         absPos.set(i,i1);
         px=i;
         py=i1;
-        x=px/ cellW;
-        y=py/ cellW;
     }
     public void setMoveSpeed(float moveSpeed) {
         this.moveMod = moveSpeed;
@@ -236,6 +235,13 @@ public class Player {
             statsPos[i]=new Vector2(viewX+30,viewY+HEIGHT - 30 - (i * 20));
         }
     }
+    public void setAbsPos(Vector2 a){
+        absPos=a;
+    }
+    public void setPos(Vector2 v){
+        x= (int) v.x;
+        y=(int) v.y;
+    }
     //GETTERS------------------------------------------------------------------
 
     public Rectangle getAttackBox() {
@@ -251,7 +257,7 @@ public class Player {
     public Vector2[] getStatPos(){
         return statsPos;
     }
-
+    public Vector2 getPos(){return new Vector2(x,y);}
     public int getLevel()
     {
         return level;
@@ -430,51 +436,24 @@ public class Player {
         intel=a;
         spd=a;
     }
-    public void move2(Vector2 vel){
+    public void move(Vector2 vel){
         Vector2 end=new Vector2(absPos.x+vel.x, absPos.y+vel.y);
         Vector2 comp= Physics.getVxyComp(velocity, absPos,end);
-        absPos.add(comp);
-    }
-    public void move(int xmod, int ymod) {
-        int nx = x + xmod;
-        int ny = y + ymod;
-        Cell c1;
-        try {
-            int index1 = -1;
-            int index2 = -1;
-            for (Cell cell : liveCellList) {
-                if (cell.getX() == x && cell.getY() == y) {
-                    index1 = liveCellList.indexOf(cell);
-                }
-                if (cell.getX() == nx && cell.getY() == ny) {
-                    index2 = liveCellList.indexOf(cell);
-                }
-            }
-            if (index1 != -1 && index2 != -1 && liveCellList.get(index2).getState() && !liveCellList.get(index2).getWater()) {
-                setCordsPX(nx * cellW, ny * cellW);
-            }
-
-            c1 = GridManager.dispArray[nx][ny];
-            if (c1.getState() && !c1.hasWater) {
-                setCordsPX(nx * cellW, ny * cellW);
-                dtMove = 0;
-            }
-            if (c1.getState() && c1.hasWater) {
-                for (Ability a : player.secondaryAbilityList) {
-                    if (a.getClass().equals(WaterBreath.class)) {
-                        setCordsPX(nx * cellW, ny * cellW);
-                        dtMove = 0;
-                    }
-                }
-            }
-        } catch (IndexOutOfBoundsException e) {
-        } catch (NullPointerException e) {
-            MapStateRender.setHoverText("NONONO", .5f, Color.RED, player.getPX(), player.getPY(), false);
+        int x=(int)(EMath.round(absPos.x/cellW));
+        int y=(int)(EMath.round(absPos.y/cellW));
+        Cell c= dispArray[x][y];
+        if (c.getState() && !c.hasWater) {
+            player.setPos(new Vector2(x,y));
+            player.setAbsPos(new Vector2(absPos.x+comp.x,absPos.y+comp.y));
         }
-      //  if (ymod == 1) {MapStateUpdater.setAim('w');}
-      //  if (ymod == -1) {MapStateUpdater.setAim('s');}
-      //  if (xmod == 1) {MapStateUpdater.setAim('d');}
-      //  if (xmod == -1) {MapStateUpdater.setAim('a');}
+        if (c.getState() && c.hasWater) {
+            for (Ability a : player.secondaryAbilityList) {
+                if (a.getClass().equals(WaterBreath.class)) {
+                    player.setPos(new Vector2(x,y));
+                    player.setAbsPos(new Vector2(absPos.x+comp.x,absPos.y+comp.y));
+                }
+            }
+        }
     }
     public void useItem(int i){
         if(i>=0 && i<invList.size()) {

@@ -23,7 +23,7 @@ public class LeftComm extends Command {
         if(pressed()){
             if (cls.equals(MapState.class)) {
                 if (player.canMove) {
-                    player.move2(new Vector2(-1, 0));
+                    player.move(new Vector2(-1, 0));
                     player.dtMove = 0;
                 }
             }

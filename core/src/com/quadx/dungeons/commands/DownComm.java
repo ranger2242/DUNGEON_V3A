@@ -28,7 +28,7 @@ public class DownComm extends Command {
             }
             if (cls.equals(MapState.class)) {
                 if (player.canMove) {
-                    player.move2(new Vector2(0, -1));
+                    player.move(new Vector2(0, -1));
                     player.dtMove = 0;
                 }
             }

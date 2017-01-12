@@ -116,6 +116,13 @@ public class MapStateRender extends MapState {
         Vector2 v=player.getTexturePos();
         sb.draw(player.getIcon(), v.x, v.y);
         sb.end();
+        /*
+        shapeR.begin(ShapeRenderer.ShapeType.Filled);
+        Vector2 v2=player.getPos();
+        shapeR.setColor(Color.BLUE);
+        shapeR.rect(v2.x*cellW,v2.y*cellW,cellW,cellW);
+        shapeR.end();
+        */
     }
     private static void sbDrawHovText(SpriteBatch sb){
         try {
@@ -365,12 +372,8 @@ public class MapStateRender extends MapState {
             shapeR.rect(v.x,v.y,v.z,v.z);
         }
         drawList.stream().filter(Cell::getAttArea).forEach(c -> shapeR.rect(c.getAbsPos().x, c.getAbsPos().y, cellW, cellW));
-        Rectangle r=player.getAttackBox();
-        shapeR.setColor(1,0,0,.5f);
-        if(r !=null)
-        shapeR.rect(r.x,r.y,r.getWidth(),r.getHeight());
-        shapeR.end();
 
+        shapeR.end();
         Gdx.gl.glDisable(GL_BLEND);
         if(dtClearHits>.1) {
             for (Cell c : hitList) {

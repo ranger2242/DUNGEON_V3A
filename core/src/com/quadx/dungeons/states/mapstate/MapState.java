@@ -107,7 +107,7 @@ public class MapState extends State implements ControllerListener {
 
     public void debug() {
         //Tests.testEquipmentRates();
-        //Tests.giveItems(20);
+        Tests.giveItems(20);
     }
     public void handleInput() {
     }
@@ -204,7 +204,12 @@ public class MapState extends State implements ControllerListener {
 
     void generateInventoryUI() {
         //add ability icon
-        String sss=player.getAbility().getName() +" "+player.getAbility().getLevel();
+        String sss;
+        try {
+            sss=player.getAbility().getName() +" "+player.getAbility().getLevel();
+        }catch (NullPointerException e){
+            sss="Error #0092";
+        }
         invOverlay.texts.add(new Text(sss,new Vector2(viewX+((WIDTH/3)*2)+30,viewY+80),Color.GRAY, 1));
         invOverlay.textures.add(ImageLoader.abilities.get(player.getAbilityMod()));
         invOverlay.texturePos.add(new Vector2(viewX+((WIDTH/3)*2)+30,viewY+20));
@@ -341,11 +346,6 @@ public class MapState extends State implements ControllerListener {
                     }
                 }
             }
-            float dx=(xlim-x)*cellW;
-            float dy=(ylim-y)*cellW;
-            float rx= player.getAbsPos().x-(dx/2);
-            float ry= player.getAbsPos().y-(dy/2);
-            player.setAttackBox(new Rectangle(rx,ry,dx,dy));
 
         }
         hitList.add(dispArray[player.getX()][player.getY()]);
