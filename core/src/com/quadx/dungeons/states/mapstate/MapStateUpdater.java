@@ -103,15 +103,14 @@ public class MapStateUpdater extends MapState{
         }
     }
     public static void activateDig(){
-        if (dtDig > player.getMoveSpeed()) {
-            if (player.getEnergy() > 2) {
+        //if (dtDig > player.getMoveSpeed()) {
+           // if (player.getEnergy() > 2) {
                 int x = player.getX();
                 int y = player.getY();
                 gm.clearArea(x, y, true);
-                player.setEnergy(player.getEnergy() - 2);
-            }
-            dtDig = 0;
-        }
+              //  player.setEnergy(player.getEnergy() - 2);
+            //}
+            //dtDig = 0;
     }
     private static void setAttackButton(int x){
         if(Gdx.input.isKeyPressed(Input.Keys.MINUS)){

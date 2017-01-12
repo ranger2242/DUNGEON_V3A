@@ -29,6 +29,7 @@ import java.util.Random;
 import static com.quadx.dungeons.Game.HEIGHT;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.dispArray;
+import static com.quadx.dungeons.GridManager.res;
 import static com.quadx.dungeons.states.mapstate.MapState.*;
 
 /**
@@ -441,22 +442,36 @@ public class Player {
         spd=a;
     }
     public void move(Vector2 vel){
-        Vector2 end=new Vector2(absPos.x+vel.x, absPos.y+vel.y);
-        Vector2 comp= Physics.getVxyComp(velocity, absPos,end);
-        int x=(int)(EMath.round(absPos.x/cellW));
-        int y=(int)(EMath.round(absPos.y/cellW));
-        Cell c= dispArray[x][y];
-        if (c.getState() && !c.hasWater) {
-            player.setPos(new Vector2(x,y));
-            player.setAbsPos(new Vector2(absPos.x+comp.x,absPos.y+comp.y));
-        }
-        if (c.getState() && c.hasWater) {
-            for (Ability a : player.secondaryAbilityList) {
-                if (a.getClass().equals(WaterBreath.class)) {
-                    player.setPos(new Vector2(x,y));
-                    player.setAbsPos(new Vector2(absPos.x+comp.x,absPos.y+comp.y));
+        try {
+            Vector2 end=new Vector2(absPos.x+vel.x, absPos.y+vel.y);
+            int gw= cellW*(res+1);
+            if(end.x<0)
+                end.x=getIcon().getWidth();
+            else if(end.x+getIcon().getWidth()>gw)
+                end.x=(gw)-getIcon().getWidth();
+            if(end.y<0)
+                end.y=getIcon().getHeight();
+            else if(end.y+getIcon().getHeight()>gw)
+                end.y=(gw)-getIcon().getHeight();
+            Vector2 comp= Physics.getVxyComp(velocity, absPos,end);
+            int x=(int)(EMath.round(absPos.x/cellW));
+            int y=(int)(EMath.round(absPos.y/cellW));
+
+            Cell c = dispArray[x][y];
+            if (c.getState() && !c.hasWater) {
+                player.setPos(new Vector2(x, y));
+                player.setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
+            }
+            if (c.getState() && c.hasWater) {
+                for (Ability a : player.secondaryAbilityList) {
+                    if (a.getClass().equals(WaterBreath.class)) {
+                        player.setPos(new Vector2(x, y));
+                        player.setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
+                    }
                 }
             }
+        }catch (ArrayIndexOutOfBoundsException e){
+
         }
     }
     public void useItem(int i){

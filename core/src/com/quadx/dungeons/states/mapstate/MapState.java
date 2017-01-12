@@ -204,6 +204,7 @@ public class MapState extends State implements ControllerListener {
 
     void generateInventoryUI() {
         //add ability icon
+        invOverlay=new InfoOverlay();
         String sss;
         try {
             sss=player.getAbility().getName() +" "+player.getAbility().getLevel();
@@ -218,7 +219,7 @@ public class MapState extends State implements ControllerListener {
             try {
                 Item item = player.invList.get(inventoryPos).get(0);
                 invOverlay = new InfoOverlay();
-                if (prevItem != item) {
+                //if (prevItem != item) {
                     String name = (inventoryPos) + ":" + item.getName();
                     int y = (int) viewY + 130;
                     int x = (int) (viewX + WIDTH - 290);
@@ -257,7 +258,7 @@ public class MapState extends State implements ControllerListener {
                         invOverlay.textures.add(ImageLoader.crate);
                         invOverlay.texturePos.add(new Vector2(x, y));
                     }
-                }
+                //}
             } catch (IndexOutOfBoundsException ignored) {
             }
         }
