@@ -24,7 +24,7 @@ public class RightComm extends Command {
         if (pressed()) {
             if (cls.equals(MapState.class)) {
                 if (player.canMove) {
-                    MapStateUpdater.setAim('d');
+                    //MapStateUpdater.setAim('d');
                     player.move(new Vector2(1, 0));
                     player.dtMove = 0;
                 }

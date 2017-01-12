@@ -24,6 +24,7 @@ import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.MainMenuState;
 import com.quadx.dungeons.states.State;
+import com.quadx.dungeons.tools.Direction;
 import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.StatManager;
 import com.quadx.dungeons.tools.Tests;
@@ -81,6 +82,8 @@ public class MapState extends State implements ControllerListener {
 
     static ArrayList<InfoOverlay> attackBarHud = new ArrayList<>();
     Item prevItem= null;
+
+
 
     public MapState(GameStateManager gsm) {
         super(gsm);
@@ -307,7 +310,7 @@ public class MapState extends State implements ControllerListener {
             int px = player.getX();
             int py = player.getY();
 
-            if (lastPressed == 'w') {
+            if (player.facing.equals(Direction.Facing.North) ||player.facing.equals(Direction.Facing.Northeast) ||player.facing.equals(Direction.Facing.Northwest)) {
                 xlim = (px) + spread;
                 ylim = py + range;
                 x = px;
@@ -315,21 +318,21 @@ public class MapState extends State implements ControllerListener {
                 a = (int) -Math.ceil(spread / 2);
                 b = 0;
 
-            } else if (lastPressed == 's') {
+            } else if (player.facing.equals(Direction.Facing.South) ||player.facing.equals(Direction.Facing.Southeast)||player.facing.equals(Direction.Facing.Southwest)) {
                 xlim = (px) + spread;
                 ylim = py;
                 x = px;
                 y = py - range;
                 a = (int) -Math.ceil(spread / 2);
                 b = 0;
-            } else if (lastPressed == 'd') {
+            } else if (player.facing.equals(Direction.Facing.East)) {
                 xlim = (px) + range;
                 ylim = py + spread;
                 x = px;
                 y = py;
                 a = 0;
                 b = (int) -Math.ceil(spread / 2);
-            } else if (lastPressed == 'a') {
+            } else if (player.facing.equals(Direction.Facing.West)) {
                 xlim = px;
                 ylim = py + spread;
                 x = (px) - range;

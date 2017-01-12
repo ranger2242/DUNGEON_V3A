@@ -25,6 +25,7 @@ import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.ShopState;
 import com.quadx.dungeons.tools.DebugTextInputListener;
+import com.quadx.dungeons.tools.Direction;
 import com.quadx.dungeons.tools.Tests;
 
 import java.util.ArrayList;
@@ -464,5 +465,10 @@ public class MapStateUpdater extends MapState{
     }
     public static void setAim(char c){
         lastPressed=c;
+        MapState.out(lastPressed+"");
+    }
+    public static void setAim(Direction.Facing f){
+        player.facing=f;
+        MapState.out(player.facing.name()+"");
     }
 }

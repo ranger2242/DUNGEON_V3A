@@ -9,6 +9,7 @@ import com.quadx.dungeons.states.mapstate.Map2State;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
 import com.quadx.dungeons.states.mapstate.MapStateUpdater;
+import com.quadx.dungeons.tools.Direction;
 import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.Timer;
 import com.quadx.dungeons.tools.WallPattern;
@@ -79,18 +80,46 @@ public class GridManager {
         if(a && d)  list.add(dispArray[x + 1][y - 1]);
         return list;
     }
-    private void clearDigPlusCells(int ii, int jj, int x, int y){
+
+    private void clearDigPlusCells(int ii, int jj, int x, int y) {
         for (int i = 0; i < ii; i++) {
             for (int j = 0; j < jj; j++) {
-                int nx=0;
-                int ny=0;
+                int nx = 0;
+                int ny = 0;
+                switch (player.facing) {
+                    case North:
+                    case Northwest:
+                    case Northeast: {
+                        nx = x - 1 + i;
+                        ny = y + j;
+                        break;
+                    }
+                    case West: {
+                        nx = x - i;
+                        ny = y - 1 + j;
+                        break;
+                    }
+                    case Southwest:
+                    case South:
+                    case Southeast: {
+                        nx = x - 1 + i;
+                        ny = y - j;
+                        break;
+                    }
+                    case East: {
+                        nx = x + i;
+                        ny = y - 1 + j;
+                        break;
+                    }
+                }
+                /*
                 switch (MapState.lastPressed){
                     case 'w':{nx=x - 1 + i; ny=y + j;       break;}
                     case 'd':{nx=x + i;     ny=y - 1 + j;   break;}
                     case 's':{nx=x - 1 + i; ny=y - j;       break;}
                     case 'a':{nx=x - i;     ny=y - 1 + j;   break;}
-                }
-                if(nx >=0 && nx <res && ny >=0 && ny <res) {
+                }*/
+                if (nx >= 0 && nx < res && ny >= 0 && ny < res) {
                     if (!dispArray[nx][ny].getState()) {
                         dispArray[nx][ny].setState();
                     }
@@ -102,10 +131,17 @@ public class GridManager {
         ArrayList<Cell> temp= getSurroundingCells(x,y);
         temp.stream().filter(c -> !c.getState()).forEach(Cell::setState);
         temp.clear();
+
+
         if (isPlayer && player.hasDigPlus()) {//checks if players dig ability is active
-            if (MapState.lastPressed == 'd' ||MapState.lastPressed == 'a')
+            if(player.facing.equals(Direction.Facing.East) || player.facing.equals(Direction.Facing.West))
+            //if (MapState.lastPressed == 'd' ||MapState.lastPressed == 'a')
                 clearDigPlusCells(9,3,x,y);
-            if (MapState.lastPressed == 's' ||MapState.lastPressed == 'w')
+            if(player.facing.equals(Direction.Facing.North) || player.facing.equals(Direction.Facing.South)
+                    || player.facing.equals(Direction.Facing.Northeast) || player.facing.equals(Direction.Facing.Southeast)
+                    ||player.facing.equals(Direction.Facing.Northwest) || player.facing.equals(Direction.Facing.Southwest)){
+
+            }
                 clearDigPlusCells(3,9,x,y);
         }
             splitMapDataToList();

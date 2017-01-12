@@ -29,7 +29,7 @@ public class DownComm extends Command {
             }
             if (cls.equals(MapState.class)) {
                 if (player.canMove) {
-                    MapStateUpdater.setAim('s');
+                    //MapStateUpdater.setAim('s');
                     player.move(new Vector2(0, -1));
                     player.dtMove = 0;
                 }

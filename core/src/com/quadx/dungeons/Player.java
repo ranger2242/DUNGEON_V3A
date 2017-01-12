@@ -18,10 +18,7 @@ import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
-import com.quadx.dungeons.tools.EMath;
-import com.quadx.dungeons.tools.Score;
-import com.quadx.dungeons.tools.StatManager;
-import com.quadx.dungeons.tools.Tests;
+import com.quadx.dungeons.tools.*;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -110,7 +107,7 @@ public class Player {
     Rectangle attackBox= new Rectangle();
 
     private float velocity=10;
-
+    public Direction.Facing facing = Direction.Facing.North;
 
 
     public Player() {
@@ -384,8 +381,41 @@ public class Player {
         statsList.add("D:        " + floor);
         return  statsList;
     }
-    public Texture getIcon(){
-        int u=0;
+    public Texture getIcon() {
+        int u;
+
+        switch (facing) {
+            case North:
+                u = 0;
+                break;
+            case Northwest:
+                u = 0;
+                break;
+            case West:
+                u = 3;
+                break;
+            case Southwest:
+                u = 2;
+                break;
+            case South:
+                u = 2;
+                break;
+            case Southeast:
+                u = 2;
+                break;
+            case East:
+                u = 1;
+                break;
+            case Northeast:
+                u = 0;
+                break;
+            default:
+                u = 0;
+                break;
+        }
+
+        /*
+
         switch (lastPressed){
             case 'w':{
                 u=0;
@@ -407,6 +437,7 @@ public class Player {
             }
         }
 
+        */
         return icons[u];
     }
     public Score getScore(){
