@@ -30,11 +30,20 @@ import java.util.List;
 
 @SuppressWarnings("UnusedParameters")
 public class Game extends ApplicationAdapter implements ControllerListener{
+/*
+screen shake
+shaders
+particle effect for dig
+hidden enemie comes out of ground
+particle effect on warp
+release velocity falloff
+enemy and player knock back
 
+ */
     public static boolean disableGfx=true;
     public static BitmapFont font;
     public static Player player= new Player();
-    public static EquipSets equipSets= new EquipSets();
+    public static EquipSets equipSets;
     public static ArrayList<Command> commandList=new ArrayList<>();
     public static boolean controllerMode =false;
     public static final int WIDTH = 1366;
@@ -43,6 +52,7 @@ public class Game extends ApplicationAdapter implements ControllerListener{
     private SpriteBatch spriteBatch;
     private static GameStateManager gameStateManager;
     private static final BitmapFont[] fonts = new BitmapFont[6];
+    public static boolean shakeCam=false;
 
     static void addCommand(){
         commandList.clear();
@@ -68,6 +78,7 @@ public class Game extends ApplicationAdapter implements ControllerListener{
     @Override
     public void create () {
         ImageLoader il=new ImageLoader();
+        equipSets= new EquipSets();
         WallPattern wp=new WallPattern();
         addCommand();
         Xbox360Pad.addNames();

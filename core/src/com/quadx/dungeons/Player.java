@@ -18,6 +18,7 @@ import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 import com.quadx.dungeons.tools.*;
 
 import java.util.ArrayList;
@@ -104,11 +105,12 @@ public class Player {
     private double moveMod=1;
     Vector2 texturePos=new Vector2();
     Vector2[] statsPos;
+    Vector2 dest=new Vector2();
     Rectangle attackBox= new Rectangle();
 
     private float velocity=10;
     public Direction.Facing facing = Direction.Facing.North;
-
+    boolean overrideControls=false;
 
     public Player() {
         //AbilityMod.resetAbilities();
@@ -118,6 +120,19 @@ public class Player {
         setStatsPos();
     }
     //SETTERS------------------------------------------------------------------
+    public void setDest(Vector2 v){
+        Vector2 comp=Physics.getVxyComp(1,absPos,v);
+        Vector2 neg=new Vector2(-comp.x,-comp.y);
+        float kick=cellW*4;
+        dest.set(absPos.x+ neg.x*kick,absPos.y+neg.y*kick);
+        Anim a=new Anim(getIcon(),absPos,kick,dest,2,.3f);
+        MapStateUpdater.anims.add(a);
+
+        overrideControls=true;
+    }
+    public void forceMove(Vector2 dest){
+
+    }
     public void setAttackBox(Rectangle r){
         attackBox=r;
     }
@@ -476,36 +491,38 @@ public class Player {
         spd=a;
     }
     public void move(Vector2 vel){
-        try {
-            Vector2 end=new Vector2(absPos.x+vel.x, absPos.y+vel.y);
-            int gw= cellW*(res+1);
-            if(end.x<0)
-                end.x=getIcon().getWidth();
-            else if(end.x+getIcon().getWidth()>gw)
-                end.x=(gw)-getIcon().getWidth();
-            if(end.y<0)
-                end.y=getIcon().getHeight();
-            else if(end.y+getIcon().getHeight()>gw)
-                end.y=(gw)-getIcon().getHeight();
-            Vector2 comp= Physics.getVxyComp(velocity, absPos,end);
-            int x=(int)(EMath.round(absPos.x/cellW));
-            int y=(int)(EMath.round(absPos.y/cellW));
+        if(!overrideControls) {
+            try {
+                Vector2 end = new Vector2(absPos.x + vel.x, absPos.y + vel.y);
+                int gw = cellW * (res + 1);
+                if (end.x < 0)
+                    end.x = getIcon().getWidth();
+                else if (end.x + getIcon().getWidth() > gw)
+                    end.x = (gw) - getIcon().getWidth();
+                if (end.y < 0)
+                    end.y = getIcon().getHeight();
+                else if (end.y + getIcon().getHeight() > gw)
+                    end.y = (gw) - getIcon().getHeight();
+                Vector2 comp = Physics.getVxyComp(velocity, absPos, end);
+                int x = (int) (EMath.round(absPos.x / cellW));
+                int y = (int) (EMath.round(absPos.y / cellW));
 
-            Cell c = dispArray[x][y];
-            if (c.getState() && !c.hasWater) {
-                player.setPos(new Vector2(x, y));
-                player.setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
-            }
-            if (c.getState() && c.hasWater) {
-                for (Ability a : player.secondaryAbilityList) {
-                    if (a.getClass().equals(WaterBreath.class)) {
-                        player.setPos(new Vector2(x, y));
-                        player.setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
+                Cell c = dispArray[x][y];
+                if (c.getState() && !c.hasWater) {
+                    player.setPos(new Vector2(x, y));
+                    player.setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
+                }
+                if (c.getState() && c.hasWater) {
+                    for (Ability a : player.secondaryAbilityList) {
+                        if (a.getClass().equals(WaterBreath.class)) {
+                            player.setPos(new Vector2(x, y));
+                            player.setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
+                        }
                     }
                 }
-            }
-        }catch (ArrayIndexOutOfBoundsException e){
+            } catch (ArrayIndexOutOfBoundsException e) {
 
+            }
         }
     }
     public void useItem(int i){

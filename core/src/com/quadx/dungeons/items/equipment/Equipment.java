@@ -1,5 +1,6 @@
 package com.quadx.dungeons.items.equipment;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.items.Item;
 
 import java.util.Random;
@@ -23,10 +24,10 @@ public class Equipment extends Item {
     enum Boost{
         Perception, Endurance, Power, Health, Magic, Haste, Resistance
     }
-    Equipment(){
+    public Equipment(){
     isEquip=true;
     }
-    Equipment(Type t ,String name, int[] buffs){
+    public Equipment(Type t ,String name, int[] buffs){
 
         isEquip=true;
         type=t;
@@ -41,7 +42,22 @@ public class Equipment extends Item {
         speedmod=buffs[6];
         setCost(2);
     }
-    public String getName(){
+    public Equipment( Texture ic, Type t , String name, int[] buffs) {
+        isEquip=true;
+        type=t;
+        this.name=name;
+        //hp,m,e,att,def,int,spd
+        hpmod= buffs[0];
+        manamod=buffs[1];
+        emod=buffs[2];
+        attackmod=buffs[3];
+        defensemod=buffs[4];
+        intelmod=buffs[5];
+        speedmod=buffs[6];
+        setCost(2);
+        setIcon(ic);
+    }
+        public String getName(){
 
         return name;
     }

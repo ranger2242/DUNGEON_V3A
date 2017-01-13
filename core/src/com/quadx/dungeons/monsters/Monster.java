@@ -10,6 +10,7 @@ import com.quadx.dungeons.Damage;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 import com.quadx.dungeons.tools.HealthBar;
 import com.quadx.dungeons.tools.StatManager;
 import com.quadx.dungeons.tools.gui.InfoOverlay;
@@ -327,7 +328,8 @@ public class Monster {
     private void genHp() {
         double a = hpBase + rn.nextInt(31);
         double b = Math.sqrt(rn.nextInt(65535)) / 4;
-        hp = ((((a * 2 + b) * level) / 100) + level + 10)*1.5;
+        //hp = ((((a * 2 + b) * level) / 100) + level + 10)*1.5;
+        hp=15+Math.exp(Math.sqrt(Math.pow(level,1.5))/2)*1.5;
         hpMax = hp;
         hpsoft = hp;
     }
@@ -452,7 +454,9 @@ public class Monster {
                 else
                     d= Damage.monsterPhysicalDamage(player, this, (int) power);
             }
-            player.setHp(player.getHp() - d);                                     //apply damage
+            player.setHp(player.getHp() - d);//apply damage
+            MapStateUpdater.shakeScreen(.5f);
+            player.setDest(absPos);
             MapStateRender.setHoverText("-" + d, 1, Color.RED, player.getPX(), player.getPY(), true);
             hit = true;
             StatManager.killer=this;

@@ -59,6 +59,7 @@ public class Cell {
             if(hasCrate() && boosterItem ==0)color=new Color(.627f, .322f, .176f, 1);
             if(getShop()) color=new Color(1f, 0f, 1f, 1);
             if(hasWarp()) color=new Color(0f, 1f, 0f, 1);
+            if(hasMon()) color=new Color(1f, .2f, .2f, 1);
             if(getAttArea())color=new Color(.7f,0,0f,1);
         }
         else color=new Color(0f, 0f, 0f, 1);

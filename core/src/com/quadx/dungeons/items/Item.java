@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.equipment.Equipment;
+import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.ImageLoader;
 
 import static com.quadx.dungeons.Game.equipSets;
@@ -64,6 +65,10 @@ public class Item
         try {
             icon = new Texture(Gdx.files.internal("images\\icons\\items\\ic" + s + ".png"));
         }catch (GdxRuntimeException e){
+            if(this.isEquip){
+                MapState.out(this.getClass().getName());
+
+            }
             icon= ImageLoader.crate;
         }
     }

@@ -33,6 +33,7 @@ import java.util.ConcurrentModificationException;
 
 import static com.quadx.dungeons.Game.commandList;
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.Game.shakeCam;
 import static com.quadx.dungeons.GridManager.*;
 
 
@@ -42,7 +43,7 @@ import static com.quadx.dungeons.GridManager.*;
 @SuppressWarnings("DefaultFileTemplate")
 public class MapStateUpdater extends MapState{
     static ArrayList<Integer> fpsList= new ArrayList<>();
-     static ArrayList<Anim> anims= new ArrayList<>();
+    public static ArrayList<Anim> anims= new ArrayList<>();
      static ArrayList<Cell> pending= new ArrayList<>();
     static boolean displayFPS=true;
     private static float dtDig = 0;
@@ -59,6 +60,9 @@ public class MapStateUpdater extends MapState{
     static float fps=0;
     static float dtClearHits =0;
     static float dtInvSwitch = 0;
+    static float dtShake=0;
+    public static float endShake=0;
+
     public static int spawnCount=1;
 
 
@@ -69,8 +73,14 @@ public class MapStateUpdater extends MapState{
     private static void updateCamPosition() {
         Vector3 position = cam.position;
         float lerp = 0.2f;
-        position.x += (player.getAbsPos().x - position.x) * lerp;
-        position.y += (player.getAbsPos().y - position.y) * lerp;
+        float mag= 5;
+        if(shakeCam) {
+            position.x += ((player.getAbsPos().x - position.x) * lerp) + (mag * rn.nextGaussian());
+            position.y += ((player.getAbsPos().y - position.y) * lerp) + (mag * rn.nextGaussian());
+        }else{
+            position.x += ((player.getAbsPos().x - position.x) * lerp);
+            position.y += ((player.getAbsPos().y - position.y) * lerp);
+        }
         cam.position.set(position);
         cam.update();
         viewX = cam.position.x - cam.viewportWidth / 2;
@@ -260,9 +270,14 @@ public class MapStateUpdater extends MapState{
             dtInvSwitch += dt;
         if (dtShowStats <= .2)
             dtShowStats += dt;
+            dtShake+=dt;
+        if(dtShake>endShake){
+            shakeCam=false;
+        }
         if (Warp.isEnabled()) {
             Warp.updateTimeCounter();
         }
+
         if (effectLoaded) effect.update(Gdx.graphics.getDeltaTime());
     }
     public static void spawnMonsters(int x){
@@ -412,6 +427,11 @@ public class MapStateUpdater extends MapState{
         pause=true;
         cam.position.set(0, 0, 0);
         gsm.push(new ShopState(gsm));
+    }
+    public static void shakeScreen(float time){
+        endShake=time;
+        shakeCam=true;
+        dtShake=0;
     }
     static void collisionHandler() {
         int x=player.getX();

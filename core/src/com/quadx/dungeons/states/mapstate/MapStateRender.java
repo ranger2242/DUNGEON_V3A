@@ -426,10 +426,10 @@ public class MapStateRender extends MapState {
     }
     private static void drawGrid(float r, float off) {
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        int tx= (int) (viewX + WIDTH - (r + off))+warpX;
-        int ty=(int) (viewY + HEIGHT - (r + off))+warpY;
-        int px= (int) (viewX + WIDTH - (r + off))+ player.getX();
-        int py=(int) (viewY + HEIGHT - (r + off))+ player.getY();
+        int tx= (int) (viewX + WIDTH - (r + off))+warpX*2;
+        int ty=(int) (viewY + HEIGHT - (r + off))+warpY*2;
+        int px= (int) (viewX + WIDTH - (r + off))+ player.getX()*2;
+        int py=(int) (viewY + HEIGHT - (r + off))+ player.getY()*2;
         for(Cell c: GridManager.liveCellList){
             int x=c.getX();
             int y=c.getY();
@@ -449,7 +449,7 @@ public class MapStateRender extends MapState {
         shapeR.end();
         shapeR.begin(ShapeRenderer.ShapeType.Line);
         shapeR.setColor(Color.GREEN);
-        shapeR.circle(tx,ty,5);
+        shapeR.circle(tx+1,ty+1,9);
 
         if(blink){shapeR.setColor(Color.BLUE);}
         else if(!blink){shapeR.setColor(Color.WHITE);}
@@ -458,8 +458,8 @@ public class MapStateRender extends MapState {
             blradius++;
             dtBlink=0;
         }
-        shapeR.circle(px,py,blradius);
-        if(blradius>5)blradius=0;
+        shapeR.circle(px+1,py+1,blradius);
+        if(blradius>9)blradius=0;
         shapeR.end();
 
     }
