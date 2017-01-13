@@ -128,23 +128,29 @@ public class GridManager {
         }
     }
     public void clearArea(int x, int y, boolean isPlayer) {
-        ArrayList<Cell> temp= getSurroundingCells(x,y);
-        temp.stream().filter(c -> !c.getState()).forEach(Cell::setState);
-        temp.clear();
+        try {
+            ArrayList<Cell> temp = getSurroundingCells(x, y);
+            temp.stream().filter(c -> !c.getState()).forEach(Cell::setState);
+            temp.clear();
 
 
-        if (isPlayer && player.hasDigPlus()) {//checks if players dig ability is active
-            if(player.facing.equals(Direction.Facing.East) || player.facing.equals(Direction.Facing.West))
-            //if (MapState.lastPressed == 'd' ||MapState.lastPressed == 'a')
-                clearDigPlusCells(9,3,x,y);
-            if(player.facing.equals(Direction.Facing.North) || player.facing.equals(Direction.Facing.South)
-                    || player.facing.equals(Direction.Facing.Northeast) || player.facing.equals(Direction.Facing.Southeast)
-                    ||player.facing.equals(Direction.Facing.Northwest) || player.facing.equals(Direction.Facing.Southwest)){
+            if (isPlayer && player.hasDigPlus()) {//checks if players dig ability is active
+                if (player.facing.equals(Direction.Facing.East) || player.facing.equals(Direction.Facing.West))
+                    //if (MapState.lastPressed == 'd' ||MapState.lastPressed == 'a')
+                    clearDigPlusCells(9, 3, x, y);
+                if (player.facing.equals(Direction.Facing.North) || player.facing.equals(Direction.Facing.South)
+                        || player.facing.equals(Direction.Facing.Northeast) || player.facing.equals(Direction.Facing.Southeast)
+                        || player.facing.equals(Direction.Facing.Northwest) || player.facing.equals(Direction.Facing.Southwest)) {
 
+                }
+                clearDigPlusCells(3, 9, x, y);
             }
-                clearDigPlusCells(3,9,x,y);
-        }
             splitMapDataToList();
+        }catch (ArrayIndexOutOfBoundsException e){
+            MapState.out("ArrayIndexOutOfBoundsException");
+            MapState.out("clearArea()");
+
+        }
         }
     static Cell loadTiles(Cell c){
         int x1 = c.getX();

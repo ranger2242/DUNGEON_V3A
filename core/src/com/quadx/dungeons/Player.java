@@ -253,12 +253,34 @@ public class Player {
         }
     }
     public void setAbsPos(Vector2 a){
-        absPos=a;
-        setPos(new Vector2((int) (EMath.round(absPos.x / cellW)),(int) (EMath.round(absPos.y / cellW))));
+        absPos = a;
+        absPos = a;
+        absPos.x = a.x;
+        absPos.y = a.y;
+        px = (int) EMath.round(a.x);
+        py = (int) EMath.round(a.y);
+        setPos(new Vector2((int) (EMath.round(absPos.x / cellW)), (int) (EMath.round(absPos.y / cellW))));
     }
     public void setPos(Vector2 v){
         x= (int) v.x;
         y=(int) v.y;
+    }
+    public void fixPosition(){
+        int x= (int) absPos.x;
+        int y= (int) absPos.y;
+        if(absPos.x<2){
+            x=2;
+        }
+        else if(absPos.x+getIcon().getWidth()>(res*cellW)-2){
+            x=(res*cellW)-(getIcon().getWidth()-2);
+        }
+        if(absPos.y<2){
+            y=2;
+        }
+        else if(absPos.y+getIcon().getHeight()>(res*cellW)-2){
+            y=(res*cellW)-(getIcon().getHeight()-2);
+        }
+        setAbsPos(new Vector2(x,y));
     }
     //GETTERS------------------------------------------------------------------
 
@@ -623,6 +645,7 @@ public class Player {
         //set texture cords
         texturePos.set(absPos.x - getIcon().getWidth() / 4, absPos.y - getIcon().getHeight() / 4);
         setStatsPos();
+        fixPosition();
     }
     public void checkLvlUp() {
         if (exp>=expLimit)

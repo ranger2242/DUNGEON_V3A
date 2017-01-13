@@ -436,8 +436,12 @@ public class MapStateUpdater extends MapState{
     static void collisionHandler() {
         int x=player.getX();
         int y=player.getY();
-
-        Cell c = GridManager.dispArray[x][y];
+        Cell c;
+        try {
+            c = GridManager.dispArray[x][y];
+        }catch (ArrayIndexOutOfBoundsException e){
+            c=GridManager.dispArray[0][0];
+        }
         int index=liveCellList.indexOf(c);
         if(c .getState()) {
             if (x == c.getX() && y == c.getY()) {
