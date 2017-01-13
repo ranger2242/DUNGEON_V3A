@@ -1,0 +1,10 @@
+java.lang.IndexOutOfBoundsException: Index: 1, Size: 1
+	at java.util.ArrayList.rangeCheck(ArrayList.java:653)
+	at java.util.ArrayList.get(ArrayList.java:429)
+	at sbDrawInventory(MapStateRender.java:348)
+	at sbDrawHUD(MapStateRender.java:189)
+	at com.quadx.dungeons.states.mapstate.MapState.render(MapState.java:121)
+	at com.quadx.dungeons.states.GameStateManager.render(GameStateManager.java:36)
+	at com.quadx.dungeons.Game.render(Game.java:101)
+	at com.badlogic.gdx.backends.lwjgl.LwjglApplication.mainLoop(LwjglApplication.java:223)
+	at com.badlogic.gdx.backends.lwjgl.LwjglApplication$1.run(LwjglApplication.java:124)
