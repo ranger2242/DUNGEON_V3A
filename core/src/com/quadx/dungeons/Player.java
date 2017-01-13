@@ -447,15 +447,15 @@ public class Player {
     public Ability getAbility(){return ability;}
     //MISC Functions------------------------------------------------------------------
     public void regenModifiers(){
-        hpRegen=(8.27*Math.pow(1.004,(getSpdComp()+getDefComp())/2)*hpRegenMod);
+        hpRegen=(2*Math.pow(1.004,(getSpdComp()+getDefComp())/2)*hpRegenMod);
         hp+=hpRegen;
         if(hp>hpMax)hp=hpMax;
 
-        mRegen=(8.27*Math.pow(1.004,(getSpdComp()+getIntComp())/2)*mRegenMod);
+        mRegen=(5*Math.pow(1.004,(getSpdComp()+getIntComp())/2)*mRegenMod);
         mana+=mRegen;
         if(mana>manaMax)mana=manaMax;
 
-        eRegen=(8.27*Math.pow(1.004,(getSpdComp()+getAttComp())/2)*eRegenMod);
+        eRegen=(5*Math.pow(1.004,(getSpdComp()+getAttComp())/2)*eRegenMod);
         energy+=eRegen;
         if(energy>energyMax)energy=energyMax;
     }

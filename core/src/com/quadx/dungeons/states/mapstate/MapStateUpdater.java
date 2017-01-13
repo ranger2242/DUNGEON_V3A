@@ -463,12 +463,7 @@ public class MapStateUpdater extends MapState{
             d.execute();
         }
     }
-    public static void setAim(char c){
-        lastPressed=c;
-        MapState.out(lastPressed+"");
-    }
     public static void setAim(Direction.Facing f){
         player.facing=f;
-        MapState.out(player.facing.name()+"");
     }
 }

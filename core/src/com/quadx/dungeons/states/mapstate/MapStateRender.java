@@ -29,6 +29,7 @@ import static com.badlogic.gdx.graphics.GL20.GL_BLEND;
 import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.GridManager.drawList;
+import static com.quadx.dungeons.states.mapstate.Map2State.res;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.*;
 
 
@@ -226,8 +227,9 @@ public class MapStateRender extends MapState {
     }
     private static void sbdrawFPS(SpriteBatch sb) {
         sb.begin();
+        int yoff=-70;
         int basex = (int) (viewX + Game.WIDTH - 150);
-        int basey = (int) (viewY + Game.HEIGHT / 2);
+        int basey = (int) (viewY + Game.HEIGHT / 2)+ yoff;
         if(displayFPS){
             Game.setFontSize(1);
             Game.getFont().setColor(Color.WHITE);
@@ -275,9 +277,10 @@ public class MapStateRender extends MapState {
         srDrawEquipmentSlots();
     }
     private static void srDrawFPSMeter(){
+        int yoff=-70;
         if(displayFPS) {
             int basex = (int) (viewX + Game.WIDTH - 150);
-            int basey = (int) (viewY + Game.HEIGHT / 2);
+            int basey = (int) (viewY + Game.HEIGHT / 2)+ yoff;
             //DRAW FPS COUNTER
             shapeR.begin(ShapeRenderer.ShapeType.Filled);
             shapeR.setColor(Color.BLACK);
@@ -349,16 +352,18 @@ public class MapStateRender extends MapState {
         shapeR.end();
     }
     private static void srDrawMiniMap(){
+        float r=res*2;
+        float off=20;
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         shapeR.setColor(Color.BLACK);
-        shapeR.rect(viewX+ WIDTH-(Map2State.res+50),viewY+ HEIGHT-(Map2State.res+50),Map2State.res,Map2State.res);
+        shapeR.rect(viewX+ WIDTH-(r+off),viewY+ HEIGHT-(r+off), r, r);
         shapeR.end();
 
-        drawGrid();
+        drawGrid(r, off);
 
         shapeR.begin(ShapeRenderer.ShapeType.Line);
         shapeR.setColor(Color.WHITE);
-        shapeR.rect(viewX+ WIDTH-(Map2State.res+50),viewY+ HEIGHT-(Map2State.res+50),Map2State.res,Map2State.res);
+        shapeR.rect(viewX+ WIDTH-(r+off),viewY+ HEIGHT-(r+off), r, r);
         shapeR.end();
     }
     private static void srDrawTransparentThings(){
@@ -419,12 +424,12 @@ public class MapStateRender extends MapState {
         shapeR.circle(x, y,r);
         shapeR.end();
     }
-    private static void drawGrid() {
+    private static void drawGrid(float r, float off) {
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        int tx= (int) (viewX + WIDTH - (Map2State.res + 50))+warpX;
-        int ty=(int) (viewY + HEIGHT - (Map2State.res + 50))+warpY;
-        int px= (int) (viewX + WIDTH - (Map2State.res + 50))+ player.getX();
-        int py=(int) (viewY + HEIGHT - (Map2State.res + 50))+ player.getY();
+        int tx= (int) (viewX + WIDTH - (r + off))+warpX;
+        int ty=(int) (viewY + HEIGHT - (r + off))+warpY;
+        int px= (int) (viewX + WIDTH - (r + off))+ player.getX();
+        int py=(int) (viewY + HEIGHT - (r + off))+ player.getY();
         for(Cell c: GridManager.liveCellList){
             int x=c.getX();
             int y=c.getY();
@@ -435,9 +440,9 @@ public class MapStateRender extends MapState {
                 else
                     shapeR.setColor(1,1,1,1);
             }
-            int xa= (int) (viewX + WIDTH - (Map2State.res + 50))+x;
-            int ya= (int) (viewY + HEIGHT - (Map2State.res + 50))+y;
-            shapeR.rect(xa,ya, 1, 1);
+            int xa= (int) (viewX + WIDTH - (r + off))+x*2;
+            int ya= (int) (viewY + HEIGHT - (r + off))+y*2;
+            shapeR.rect(xa,ya, 2, 2);
 
         }
 
