@@ -463,7 +463,7 @@ public class MapStateUpdater extends MapState{
             d.execute();
         }
     }
-    public static void setAim(Direction.Facing f){
+    public static void setAim(Direction.Facing f){//why wont this shit update
         player.facing=f;
     }
 }
