@@ -329,7 +329,7 @@ public class Monster {
         double a = hpBase + rn.nextInt(31);
         double b = Math.sqrt(rn.nextInt(65535)) / 4;
         //hp = ((((a * 2 + b) * level) / 100) + level + 10)*1.5;
-        hp=15+Math.exp(Math.sqrt(Math.pow(level,1.5))/2)*1.5;
+        hp=15+Math.exp(Math.sqrt(Math.pow(level,1.5))/2)*2;
         hpMax = hp;
         hpsoft = hp;
     }

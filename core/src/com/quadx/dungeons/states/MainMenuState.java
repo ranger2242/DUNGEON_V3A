@@ -41,7 +41,7 @@ public class MainMenuState extends State implements ControllerListener {
         super(gsm);
         Gdx.gl.glClearColor(0,0,0,1);
         //initController();
-        loadParticles();
+        //loadParticles();
         addOptionsToList();
         titlePosY=(int)(viewY+ (Game.HEIGHT/3)*2);
         optionsPosY =(int)(viewY+ (Game.HEIGHT/3));
@@ -49,9 +49,9 @@ public class MainMenuState extends State implements ControllerListener {
     void loadParticles(){
         effect = new ParticleEffect();
         ParticleEmitter emitter;
-        String s = "StartScreen";
+        String s = "fla";
         effect.load(Gdx.files.internal("particles\\pt" + s), Gdx.files.internal("particles"));
-        emitter = effect.findEmitter(s);
+        emitter = effect.findEmitter("fire");
         emitter.setContinuous(true);
         effect.setPosition(viewX+ Game.WIDTH/2,viewY+ 0);
     }
@@ -114,12 +114,12 @@ public class MainMenuState extends State implements ControllerListener {
             dtCursor = 0;
             handleInput();
         }
-        effect.update(dt);
+//        effect.update(dt);
     }
     @Override
     public void dispose() {
         //  shapeR.dispose();
-        effect.dispose();
+    //    effect.dispose();
     }
     /////////////////////////////////////////////////////////////////////////////////////////
     //DRAWING FUNCTIONS
@@ -137,7 +137,7 @@ public class MainMenuState extends State implements ControllerListener {
         Game.font.setColor(Color.WHITE);
         String title="-DEMO-";
         Game.getFont().draw(sb,title, centerString(title),titlePosY-100);
-        effect.draw(sb);
+      //  effect.draw(sb);
         sb.end();
     }
     private void drawOptions(SpriteBatch sb){

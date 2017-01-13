@@ -1,8 +1,14 @@
 package com.quadx.dungeons.states.mapstate;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
+import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.AttackMod;
 import com.quadx.dungeons.states.GameStateManager;
+
+import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.player;
 
@@ -11,6 +17,69 @@ import static com.quadx.dungeons.Game.player;
  */
 @SuppressWarnings("DefaultFileTemplate")
 class MapStateExt extends MapState{
+    static ArrayList<ParticleEffect> effects = new ArrayList<>();
+    public static void loadParticles(String fname, float x, float y){
+        ParticleEffect effect;
+        effect = new ParticleEffect();
+        ParticleEmitter emitter;
+       // String s = "fla";
+        effect.load(Gdx.files.internal("particles\\"+fname), Gdx.files.internal("particles"));
+        effect.getEmitters().get(0).setPosition(x,y);
+        effect.setPosition(x,y);
+        emitter=effect.getEmitters().first();
+        ParticleEmitter.ScaledNumericValue spawnHeight = emitter.getSpawnHeight();
+        ParticleEmitter.ScaledNumericValue spawnWidth = emitter.getSpawnWidth();
+
+        ParticleEmitter.ScaledNumericValue angle = emitter.getAngle();
+        int ang=0;
+        int sw=0;
+        int sh = 0;
+        Attack a= player.attackList.get(MapState.lastNumPressed);
+        Vector2 v=a.getSpawnBox();
+        switch (player.facing){
+
+            case North:
+                ang=90;
+                sw= (int) v.x;
+                sh=(int) v.y;
+                break;
+            case Northwest:
+                ang=135;
+                break;
+            case West:
+                ang=180;
+                sw=(int)v.y;
+                sh=(int)v.x;
+                break;
+            case Southwest:
+                ang=225;
+                break;
+            case South:
+                ang=270;
+                sw=(int)v.x;
+                sh=(int)v.y;
+                break;
+            case Southeast:
+                ang=315;
+                break;
+            case East:
+                ang=0;
+                sw=(int)v.y;
+                sh=(int)v.x;
+                break;
+            case Northeast:
+                ang=45;
+                break;
+        }
+        spawnHeight.setHigh(sh);
+        spawnHeight.setLow(sh);
+        spawnWidth.setHigh(sw);
+        spawnWidth.setLow(sw);
+        angle.setHigh(ang);
+        angle.setLow(ang);
+        effect.start();
+        effects.add(effect);
+    }
     public MapStateExt(GameStateManager gsm) {
         super(gsm);
     }
@@ -45,6 +114,7 @@ class MapStateExt extends MapState{
                         break;
                     }
                 }
+                loadParticles("ptfla",player.getAbsPos().x,player.getAbsPos().y);
                 MapState.attackCollisionHandler(i);
                 AttackMod.runMod(a);
                 player.attackList.get(player.attackList.indexOf(a)).checkLvlUp();

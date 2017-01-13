@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
@@ -23,6 +24,7 @@ import com.quadx.dungeons.tools.gui.InfoOverlay;
 import com.quadx.dungeons.tools.gui.Text;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 
 import static com.badlogic.gdx.graphics.GL20.GL_BLEND;
@@ -82,15 +84,14 @@ public class MapStateRender extends MapState {
             }
         } catch (ConcurrentModificationException e) {
         }
+        sbDrawParticleEffects(sb);
         //HUD Layer
-
         srDrawAttackSelectors();
-        //Top Layer
         srDrawFPSMeter();
         sbdrawFPS(sb);
         srDrawMiniMap();
         if (showCircle) {
-            //drawPlayerFinder();
+            drawPlayerFinder();
         }
         srDrawHUD();
         sbDrawHUD(sb);
@@ -242,6 +243,26 @@ public class MapStateRender extends MapState {
 
         }
         sb.end();
+    }
+    static void sbDrawParticleEffects(SpriteBatch sb){
+        ArrayList<Integer> rem= new ArrayList<>();
+        sb.begin();
+        for(ParticleEffect p: MapStateExt.effects){
+            p.draw(sb);
+            if(p.isComplete()){
+                rem.add(MapStateExt.effects.indexOf(p));
+            }
+        }
+        sb.end();
+        Collections.sort(rem);
+       // Collections.reverse(rem);
+        for(int i=MapStateExt.effects.size()-1;i>=0;i--){
+            for(Integer r:rem){
+                if(r==i){
+                 //   MapStateExt.effects.remove(i);
+                }
+            }
+        }
     }
     //SHAPE RENDERING------------------------------------------------------
     private static void srDrawAttackSelectors(){

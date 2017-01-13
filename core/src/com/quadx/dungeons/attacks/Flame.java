@@ -8,6 +8,8 @@ import com.quadx.dungeons.tools.ImageLoader;
 @SuppressWarnings("DefaultFileTemplate")
 public class Flame extends Attack {
     public Flame()  {
+        ptSpawnH=0;
+        ptSpawnW=50;
         costGold=100;
         type=2;
         powerA = new int[]{40,70,85,100,120};

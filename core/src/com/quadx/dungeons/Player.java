@@ -280,7 +280,7 @@ public class Player {
         else if(absPos.y+getIcon().getHeight()>(res*cellW)-2){
             y=(res*cellW)-(getIcon().getHeight()-2);
         }
-        setAbsPos(new Vector2(x,y));
+        setAbsPos(new Vector2(x,y));//terminal test
     }
     //GETTERS------------------------------------------------------------------
 

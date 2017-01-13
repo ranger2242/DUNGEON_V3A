@@ -3,6 +3,7 @@ package com.quadx.dungeons.states.mapstate;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Anim;
@@ -203,6 +204,9 @@ public class MapStateUpdater extends MapState{
             Tests.memUsageList.remove(0);
         for(Anim a: anims){
             a.update();
+        }
+        for(ParticleEffect e:MapStateExt.effects){
+            e.update(dt);
         }
         if(!anims.isEmpty())
             for(int i=anims.size()-1; i>=0; i--){
