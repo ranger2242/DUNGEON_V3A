@@ -24,7 +24,7 @@ public class Damage {
         if(att.getClass().equals(Sacrifice.class)){
             return (int) m.getHpMax();
         }else {
-            double a = ((2 * (double) player.getLevel() + 10) / 300);
+            double a = ((2 * (double) player.getLevel() + 10) / 100);
             double b;
             double c = att.getPower();
             if (att.getType() == 1) {
