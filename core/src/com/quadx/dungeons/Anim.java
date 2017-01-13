@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.tools.EMath;
 
+import static com.quadx.dungeons.Game.player;
+
 /**
  * Created by range_000 on 1/10/2017.
  */
@@ -16,6 +18,7 @@ public class Anim {
     int flag = -1;
     //flags
     //0-drop
+    //2-moveplayer
 
 
     public Anim(){
@@ -41,6 +44,13 @@ public class Anim {
         else
             pos.y+=velcomp.y;
         if((int) dest.x ==(int) pos.x &&(int) dest.y==(int) pos.y )end=true;
+        switch (flag){
+            case 2:{
+                player.setAbsPos(pos);
+            }
+        }
+        if(end)
+            player.overrideControls=false;
     }
 
     public Vector2 getPos() {
