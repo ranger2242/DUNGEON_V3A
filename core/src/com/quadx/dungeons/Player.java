@@ -238,7 +238,10 @@ public class Player {
         }
     }
     public void setAbsPos(Vector2 a){
-        absPos=a;
+        absPos.x = a.x;
+        absPos.y = a.y;
+        px = (int) EMath.round(a.x);
+        py = (int) EMath.round(a.y);
     }
     public void setPos(Vector2 v){
         x= (int) v.x;

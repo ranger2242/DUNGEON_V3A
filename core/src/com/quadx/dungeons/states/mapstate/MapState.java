@@ -406,7 +406,7 @@ public class MapState extends State implements ControllerListener {
                 Gold g = (Gold) liveCellList.get(index).getItem();
                 out(g.getValue() + " added to stash");
                 StatManager.totalGold+=g.getValue();
-                MapStateRender.setHoverText(g.getValue() + "G", 1, Color.GOLD, player.getPX(), player.getPY(), false);
+                MapStateRender.setHoverText(g.getValue() + "G", 1, Color.GOLD, (int) player.getAbsPos().x, (int) player.getAbsPos().y, false);
             } else {
                 Item item = liveCellList.get(index).getItem();
                 if (item != null) {
