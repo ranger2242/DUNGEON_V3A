@@ -20,7 +20,7 @@ public class AimLeftComm extends Command {
     public void execute() {
         if(pressed()){
             if(cls.equals(MapState.class)){
-                MapStateUpdater.setAim(Direction.Facing.West);
+                MapStateUpdater.setAim(Direction.Facing.West);//fuck
             }
         }
     }
