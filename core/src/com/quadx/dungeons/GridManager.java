@@ -69,7 +69,7 @@ public class GridManager {
         boolean b=x-1>=0;
         boolean c=y+1<res;
         boolean d=y-1>=0;
-
+        list.add(dispArray[x][y]);
         if(b && c)  list.add(dispArray[x - 1][y + 1]);
         if(c)       list.add(dispArray[x][y + 1]);
         if(a && c)  list.add(dispArray[x + 1][y + 1]);

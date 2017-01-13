@@ -123,9 +123,9 @@ public class Player {
     public void setDest(Vector2 v){
         Vector2 comp=Physics.getVxyComp(1,absPos,v);
         Vector2 neg=new Vector2(-comp.x,-comp.y);
-        float kick=cellW*2;
+        float kick=cellW*4;
         dest.set(absPos.x+ neg.x*kick,absPos.y+neg.y*kick);
-        Anim a=new Anim(getIcon(),absPos,kick,dest,2);
+        Anim a=new Anim(getIcon(),absPos,kick,dest,2,.3f);
         MapStateUpdater.anims.add(a);
 
         overrideControls=true;
