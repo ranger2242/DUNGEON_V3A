@@ -1,5 +1,6 @@
 package com.quadx.dungeons.items;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 
 /**
@@ -9,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 public class IntPlus extends Item {
     public IntPlus(){
         name="Intel+";
+        ptColor= Color.PURPLE;
         intelmod+=1;
         cost=1000;
         setIcon(new Texture("images\\icons\\items\\icInt+.png"));

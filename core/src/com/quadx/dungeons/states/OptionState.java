@@ -1,8 +1,10 @@
 package com.quadx.dungeons.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.states.mapstate.MapState;
 
@@ -20,9 +22,13 @@ public class OptionState extends State{
     public static boolean lockAim=false;
     ShapeRenderer sr = new ShapeRenderer();
     ArrayList<String> options = new ArrayList<>();
+    ArrayList<Vector2> resolutions= new ArrayList<>();
+    int respos=0;
 
     public OptionState(GameStateManager gsm) {
         super(gsm);
+        resolutions.add(new Vector2(800,600));
+        resolutions.add(new Vector2(1366,760));
         cam.position.set(0,0,0);
         viewX=cam.position.x;
         MapState.viewY=cam.position.y;
@@ -30,12 +36,21 @@ public class OptionState extends State{
         addOptions();
     }
     void addOptions(){
-        options.add("Lock Aim");
+        options.add("RESOLUTION");
         options.add("Exit");
     }
 
     public void update(float dt) {
         handleInput();
+        if(Gdx.input.isButtonPressed(Input.Keys.NUM_1)){
+            if( respos<resolutions.size()-1){
+                respos++;
+            }else{
+                respos=0;
+            }
+            Gdx.graphics.setWindowedMode((int)resolutions.get(respos).x,(int)resolutions.get(respos).y);
+
+        }
     }
     public void render(SpriteBatch sb) {
 

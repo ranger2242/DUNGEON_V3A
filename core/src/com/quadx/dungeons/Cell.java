@@ -3,6 +3,7 @@ package com.quadx.dungeons;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.commands.Command;
@@ -11,12 +12,14 @@ import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.ManaPlus;
 import com.quadx.dungeons.items.Potion;
 import com.quadx.dungeons.monsters.Monster;
+import com.quadx.dungeons.states.mapstate.MapStateExt;
 import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 import static com.quadx.dungeons.states.mapstate.MapState.cellW;
+import static com.quadx.dungeons.states.mapstate.MapStateExt.effects;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.dtWaterEffect;
 
 /**
@@ -47,6 +50,8 @@ public class Cell {
     Vector2 absPos = new Vector2(); //<- for use with cellw shift
     private boolean hasItem = false;
     public ArrayList<Command> commandQueue= new ArrayList<>();
+    boolean effectLoaded=false;
+    ParticleEffect effect=null;
 
     public Cell() {
         setTile(ImageLoader.a[0]);
@@ -121,7 +126,7 @@ public class Cell {
 //SETTERS---------------------------------------------------------------------------------
     public void setMonster(Monster m){
         monster=m;
-        monster.setCords(x,y);
+//        monster.setCords(x,y);
         setMon(true);
     }
     public void setBoosterItem(int i){
@@ -178,15 +183,35 @@ public class Cell {
     public void setMonsterIndex(int set){monsterIndex=set;}
     public void setItem(Item item) {
         this.item = item;
-        if(this.item!= null)
-            hasItem=true;
-        else hasItem=false;
-
     }
 
 //OTHER----------------------------------------------------------------------------------
     public void addCommand(Command c){
         commandQueue.add(c);
+    }
+    public void updateParticles(){
+        if(this.item!= null) {
+            hasItem = true;
+            if(!effectLoaded && getState() && GridManager.liveCellList.contains(this)){
+                if(item.hasEffect()) {
+                    effect = MapStateExt.loadParticles("ptItem", getAbsPos().x + (item.getIcon().getWidth() / 2), getAbsPos().y + (item.getIcon().getHeight() / 2),item.getPtColor(), 2);
+                    effectLoaded = true;
+                    MapStateExt.addEffect(effect);
+                }
+            }
+        }
+        else{
+            hasItem=false;
+            if(effectLoaded){
+                try {
+                    effects.remove(effect);
+                    effect.dispose();
+                    effect=null;
+                }catch (Exception e){
+
+                }
+            }
+        }
     }
     public void clearMonster(){
         monster=null;

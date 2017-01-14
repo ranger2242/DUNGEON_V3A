@@ -107,7 +107,6 @@ public class Player {
     Vector2[] statsPos;
     Vector2 dest=new Vector2();
     Rectangle attackBox= new Rectangle();
-
     private float velocity=10;
     public Direction.Facing facing = Direction.Facing.North;
     boolean overrideControls=false;
@@ -253,10 +252,7 @@ public class Player {
         }
     }
     public void setAbsPos(Vector2 a){
-        absPos = a;
-        absPos = a;
-        absPos.x = a.x;
-        absPos.y = a.y;
+        absPos.set(a);
         px = (int) EMath.round(a.x);
         py = (int) EMath.round(a.y);
         setPos(new Vector2((int) (EMath.round(absPos.x / cellW)), (int) (EMath.round(absPos.y / cellW))));
@@ -286,6 +282,9 @@ public class Player {
 
     public Rectangle getAttackBox() {
         return attackBox;
+    }
+    public Rectangle getHitBox() {
+        return new Rectangle(absPos.x,absPos.y,getIcon().getWidth(),getIcon().getHeight());
     }
 
     public Vector2 getAbsPos(){
@@ -630,6 +629,7 @@ public class Player {
     public void addKills(){
         killCount++;}
     public void updateVariables(float dt){
+
         dtEnergyRe+=dt;
         dtMove+=dt;
         canMove = true;

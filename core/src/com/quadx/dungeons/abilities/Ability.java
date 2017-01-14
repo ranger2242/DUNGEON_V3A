@@ -2,7 +2,6 @@ package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g3d.particles.ResourceData;
 
 import java.util.ArrayList;
 
@@ -16,7 +15,7 @@ public abstract class Ability {
     protected Texture icon;
     protected String name="default";
     final ArrayList<String> output=new ArrayList<>();
-    int[] upCost={0,1,2,3,4};
+    int[] upCost={0,4,8,16,16};
     static boolean enabled=false;
     static float cooldown=0;
     static float timeCounter=0;

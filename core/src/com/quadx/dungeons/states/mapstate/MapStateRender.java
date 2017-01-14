@@ -1,6 +1,7 @@
 package com.quadx.dungeons.states.mapstate;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -9,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Anim;
 import com.quadx.dungeons.Cell;
 import com.quadx.dungeons.Game;
@@ -76,11 +76,13 @@ public class MapStateRender extends MapState {
         //For all mosters on screen do these actions
         try {
             for (Monster m : GridManager.monsterList) {
-                srDrawMonsterHealthBar(m);
-                sb.begin();
-                sbDrawMosters(sb, m);
-                sbDrawMonsterInfo(sb, m);
-                sb.end();
+                if(m !=null) {
+                    srDrawMonsterHealthBar(m);
+                    sb.begin();
+                    sbDrawMosters(sb, m);
+                    sbDrawMonsterInfo(sb, m);
+                    sb.end();
+                }
             }
         } catch (ConcurrentModificationException e) {
         }
@@ -98,20 +100,20 @@ public class MapStateRender extends MapState {
     }
     //SPRITEBATCH RENDERING-----------------------------------------------
     private static void sbDrawMosters(SpriteBatch sb, Monster m){
+        Texture t = m.getIcon();
         if(!disableGfx) {
-            Texture t = m.getIcon();
-            sb.draw(t, m.getX() * cellW - t.getWidth() / 4, m.getY() * cellW - t.getHeight() / 4);
+            sb.draw(t, m.getAbsPos().x- t.getWidth() / 4, m.getAbsPos().y - t.getHeight() / 4);
         }
         else{
             sb.end();
             shapeR.begin(ShapeRenderer.ShapeType.Filled);
             shapeR.setColor(Color.RED);
-            shapeR.rect(m.getX()*cellW,m.getY()*cellW,cellW,cellW);
+            shapeR.rect(m.getAbsPos().x,m.getAbsPos().y,cellW,cellW);
             shapeR.end();
             sb.begin();
         }
         Vector2 v =m.getTexturePos();
-        sb.draw(m.getIcon(), v.x,v.y);
+        sb.draw(m.getIcon(), m.getAbsPos().x- t.getWidth() / 4,m.getAbsPos().y - t.getHeight() / 4);
     }
     private static void sbDrawPlayer(SpriteBatch sb){
         sb.begin();
@@ -392,13 +394,17 @@ public class MapStateRender extends MapState {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         for(int i = 0; i< GridManager.monsterList.size(); i++){
-            Monster m= GridManager.monsterList.get(i);
-            Vector3 v=m.getSights();
-            shapeR.setColor(1,0,0,.2f);
-            shapeR.rect(v.x,v.y,v.z,v.z);
+            try {
+                Monster m = GridManager.monsterList.get(i);
+                Rectangle v = m.getAgroBox();
+                shapeR.setColor(1, 0, 0, .2f);
+                shapeR.rect(v.x, v.y, v.width, v.height);
+            }catch (NullPointerException e){}
         }
         drawList.stream().filter(Cell::getAttArea).forEach(c -> shapeR.rect(c.getAbsPos().x, c.getAbsPos().y, cellW, cellW));
-
+        Rectangle r=player.getAttackBox();
+        if(Gdx.input.isButtonPressed(Input.Keys.SPACE))
+            shapeR.rect(r.x,r.y,r.width,r.height);
         shapeR.end();
         Gdx.gl.glDisable(GL_BLEND);
         if(dtClearHits>.1) {

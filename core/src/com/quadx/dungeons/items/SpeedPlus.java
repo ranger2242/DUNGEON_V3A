@@ -1,5 +1,6 @@
 package com.quadx.dungeons.items;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 
 /**
@@ -9,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 public class SpeedPlus extends Item {
     public SpeedPlus(){
         name="Speed+";
+        ptColor= Color.GREEN;
         speedmod+=1;
         cost=1000 ;
         setIcon(new Texture("images\\icons\\items\\icSpd+.png"));

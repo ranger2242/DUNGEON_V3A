@@ -2,13 +2,11 @@ package com.quadx.dungeons;
 
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.monsters.Monster;
-import com.quadx.dungeons.states.mapstate.Map2State;
-import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.states.mapstate.MapStateRender;
-import com.quadx.dungeons.states.mapstate.MapStateUpdater;
+import com.quadx.dungeons.states.mapstate.*;
 import com.quadx.dungeons.tools.Direction;
 import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.Timer;
@@ -200,7 +198,9 @@ public class GridManager {
             for (int j = y - 1; j < endy + 1; j++) {
                 Cell c;
                 try {
+                    //load particle effects
                     c = dispArray[i][j];
+                    c.updateParticles();
                     if (!c.getState() || c.getWater()) {
                         c=loadTiles(c);
 
@@ -218,6 +218,10 @@ public class GridManager {
     }
 
     private void createMap() {
+        for(ParticleEffect e :MapStateExt.effects){
+            e.dispose();
+        }
+        MapStateExt.effects.clear();
         Map2State.updateVars();
         dispArray = Map2State.generateMap2();
         //splitMapDataToList();
@@ -283,11 +287,12 @@ public class GridManager {
             Cell c = liveCellList.get(point);
             if(c.getState()) {
                 Monster m = Monster.getNew();
+                m.setAbsPos(c.getAbsPos());
                 //if(rn.nextFloat()<.05)m.setHit();
-                c.setState();
+               // c.setState();
                 m.setLiveCellIndex(point);
-                c.setMonster(m);
-                monsterList.add(c.getMonster());
+                //c.setMonster(m);
+                monsterList.add(m);
                 c.setMonsterIndex(listSize + 1);
                 liveCellList.set(point, c);
                 temp--;

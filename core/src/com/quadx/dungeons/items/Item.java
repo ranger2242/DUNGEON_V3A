@@ -1,6 +1,7 @@
 package com.quadx.dungeons.items;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.attacks.Attack;
@@ -24,6 +25,7 @@ public class Item
     protected int intelmod;
     protected int speedmod;
     protected int emod;
+    protected Color ptColor=Color.WHITE;
     public boolean isEquip=false;
     public boolean isSpell=false;
     Texture icon=null;
@@ -55,7 +57,7 @@ public class Item
     {
         return emod;
     }
-
+    public Color getPtColor(){return ptColor;}
     public int getCost() {return cost;}
     public String getName(){return name;}
     public String getType(){
@@ -122,5 +124,12 @@ public class Item
             a =Item.generateNoGold();
         }
         return a;
+    }
+
+    public boolean hasEffect() {
+        if(!this.getClass().equals(Gold.class) &&!this.getClass().equals(EnergyPlus.class)&&
+                !this.getClass().equals(Potion.class))
+        return true;
+        else return false;
     }
 }

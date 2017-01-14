@@ -9,9 +9,9 @@ class Anortih extends Monster {
     public Anortih(){
         power=40;
         hpBase =50;
-        attBase =60;
+        attBase =20;
         defBase =20;
-        intBase =80;
+        intBase =20;
         spdBase =40;
         sight=6;
         moveSpeedMin=.18f;

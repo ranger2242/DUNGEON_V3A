@@ -32,6 +32,7 @@ import com.quadx.dungeons.tools.gui.InfoOverlay;
 import com.quadx.dungeons.tools.gui.Text;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Random;
 
 import static com.quadx.dungeons.Game.*;
@@ -110,7 +111,7 @@ public class MapState extends State implements ControllerListener {
 
     public void debug() {
         //Tests.testEquipmentRates();
-        //Tests.giveItems(20);
+        Tests.giveItems(20);
     }
     public void handleInput() {
     }
@@ -350,10 +351,37 @@ public class MapState extends State implements ControllerListener {
                     }
                 }
             }
+            player.setAttackBox(new Rectangle(x*cellW,y*cellW,(xlim-x)*cellW,(ylim-y)*cellW));
 
         }
         hitList.add(dispArray[player.getX()][player.getY()]);
     }
+
+    static void attackCollisionHandler2(int pos) {
+        Attack attack = player.attackList.get(pos);
+        StatManager.shotFired(attack);
+        player.attackList.get(pos).setUses();
+        calculateHitBox(attack);
+        boolean hit = false;
+        try {
+
+        for (Monster m : monsterList) {
+                if (player.getAttackBox().overlaps(m.getHitBox())) {
+                    hit = true;
+                    m.takeEffect(attack);
+                    m.takeAttackDamage(Damage.calcPlayerDamage(attack, m));
+                    m.checkIfDead();
+                }
+        }
+        }catch (ConcurrentModificationException e){}
+
+        if (AttackMod.sacrifice)
+            AttackMod.sacrifice = false;
+        StatManager.shotMissed(hit);
+        Monster.reindexMons = true;
+        loadLiveCells();
+    }
+
     static void attackCollisionHandler(int pos) {
         Attack attack = player.attackList.get(pos);
         StatManager.shotFired(attack);

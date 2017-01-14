@@ -27,10 +27,10 @@ import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.ShopState;
 import com.quadx.dungeons.tools.DebugTextInputListener;
 import com.quadx.dungeons.tools.Direction;
+import com.quadx.dungeons.tools.EMath;
 import com.quadx.dungeons.tools.Tests;
 
-import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
+import java.util.*;
 
 import static com.quadx.dungeons.Game.commandList;
 import static com.quadx.dungeons.Game.player;
@@ -185,12 +185,26 @@ public class MapStateUpdater extends MapState{
         if(!Tests.allstop) {
             try {
                 for (Monster m : monsterList) {
-                    m.updateVariables(Gdx.graphics.getDeltaTime());
-                    if (m.getdtMove() > m.getMoveSpeed()) {
+                    if(m !=null) {
+                        m.updateVariables(Gdx.graphics.getDeltaTime());
                         m.move();
                     }
                 }
+
             }catch (ConcurrentModificationException e){}
+            for(Monster m: monsterList){
+                for(Monster m1:monsterList){
+                    if(m !=null) {
+                        if (!m.equals(m1))
+                            if (m.getHitBox().overlaps(m1.getHitBox())) {
+                                float ang = (float) Math.toRadians(EMath.angle(m.getAbsPos(), m1.getAbsPos()));
+
+                                m.setAbsPos(m.getAbsPos().add((float) (10 * Math.cos(ang)), (float) (10 * Math.sin(ang))));
+                                m1.setAbsPos(m1.getAbsPos().add((float) (10 * Math.cos(ang + Math.toRadians(180))), (float) (10 * Math.sin(ang + Math.toRadians(180)))));
+                            }
+                    }
+                }
+            }
         }
     }
     static void updateVariables(float dt) {

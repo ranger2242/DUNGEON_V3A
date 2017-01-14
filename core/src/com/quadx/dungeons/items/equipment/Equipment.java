@@ -1,5 +1,6 @@
 package com.quadx.dungeons.items.equipment;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.items.Item;
 
@@ -251,6 +252,7 @@ public class Equipment extends Item {
         if(x>80)grade=Grade.High;
         if(x>90)grade=Grade.Elite;
         if(x>95)grade=Grade.Legendary;
+        generatePtColor();
     }
     private void setCost(int a){
         int x=0;
@@ -263,6 +265,28 @@ public class Equipment extends Item {
         x+=speedmod;
         x=x*100;
         cost=a*x;
+    }
+    void generatePtColor(){
+        switch (grade) {
+            case Poor:
+                ptColor= Color.BROWN;
+                break;
+            case Low:
+                ptColor=Color.GRAY;
+                break;
+            case Standard:
+                ptColor=Color.CYAN;
+                break;
+            case High:
+                ptColor=Color.GREEN;
+                break;
+            case Elite:
+                ptColor=Color.BLUE;
+                break;
+            case Legendary:
+                ptColor=Color.GOLD;
+                break;
+        }
     }
     public static Equipment generateEquipment() {
         Equipment item=new Equipment();

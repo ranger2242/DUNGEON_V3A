@@ -3,6 +3,7 @@ package com.quadx.dungeons.tools;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
+import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.Map2State;
 import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 
@@ -130,6 +131,12 @@ public class Tests {
         String s = text.toLowerCase();
         List<String> comm = new ArrayList<>(Arrays.asList(s.split(" ")));
         String outText = "-Invalid Command-";
+        if(comm.get(0).equals("allhit")){
+            for(Monster m:monsterList){
+                m.setHit();
+            }
+        }
+
         if(comm.get(0).equals("p")){
             if (comm.get(1).equals("maxstat")) {
                 player.maxStat();

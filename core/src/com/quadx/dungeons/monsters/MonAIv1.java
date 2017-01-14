@@ -26,6 +26,7 @@ public class MonAIv1 {
     }
     public int[] agro(Monster m,int x,int y){
         //If the monster was hit
+        /*
         int[] pos={x,y};
         if (!m.checkForDamageToPlayer(player.getX(), player.getY())) {//if player was not found
             if (m.willCircle) {                                                         //If mon will circle player
@@ -43,8 +44,8 @@ public class MonAIv1 {
                     m.healCount++;
                 }
             }
-        }
-        return  pos;
+        }*/
+        return  new int[2];
     }
     public int[] flee(Monster m, int tx, int ty) {
         m.moveSpeed = m.moveSpeedMax;                                           //set new coordinates based on
