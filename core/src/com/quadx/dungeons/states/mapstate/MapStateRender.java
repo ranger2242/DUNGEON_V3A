@@ -73,7 +73,6 @@ public class MapStateRender extends MapState {
 
 
 
-        sbDrawHovText(sb);
         //For all mosters on screen do these actions
         try {
             for (Monster m : GridManager.monsterList) {
@@ -89,6 +88,8 @@ public class MapStateRender extends MapState {
         }
         sbDrawParticleEffects(sb);
         //HUD Layer
+        sbDrawHovText(sb);
+
         srDrawAttackSelectors();
         srDrawFPSMeter();
         sbdrawFPS(sb);
@@ -133,9 +134,13 @@ public class MapStateRender extends MapState {
     }
     private static void sbDrawHovText(SpriteBatch sb){
         try {
+
             for (HoverText h : HoverText.texts) {
                 h.draw(sb);
             }
+           // Game.getFont().setColor(Color.WHITE);
+            Game.getFont().getColor().a=1;
+
         }catch (ConcurrentModificationException e){}
 
         }

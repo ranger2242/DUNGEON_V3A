@@ -220,7 +220,7 @@ public class Monster {
             player.setHp(player.getHp() - d);//apply damage
             MapStateUpdater.shakeScreen(.5f);
             player.setDest(absPos);
-            MapStateRender.setHoverText("-" + d, 1, Color.RED, player.getPX(), player.getPY(), true);
+            MapStateRender.setHoverText("-" + d, 1, Color.WHITE, player.getPX(), player.getPY(), true);
             hit = true;
             StatManager.killer = this;
         }
@@ -503,7 +503,7 @@ public class Monster {
             hp = 0;
         }
         setHit();
-        MapStateRender.setHoverText("-" + (int) i, .8f, Color.RED, px, py, true);
+        MapStateRender.setHoverText("-" + (int) i, .8f, Color.WHITE, px, py, true);
         out("Hit " + name + " for " + (int) i + " damage.");
     }
     public void move(Vector2 vel) {

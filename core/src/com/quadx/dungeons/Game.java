@@ -43,6 +43,8 @@ enemy and player knock back
  */
     public static boolean disableGfx=true;
     public static BitmapFont font;
+    public static BitmapFont fontA;
+
     public static Player player= new Player();
     public static EquipSets equipSets;
     public static ArrayList<Command> commandList=new ArrayList<>();
@@ -53,6 +55,8 @@ enemy and player knock back
     private SpriteBatch spriteBatch;
     private static GameStateManager gameStateManager;
     private static final BitmapFont[] fonts = new BitmapFont[6];
+    private static BitmapFont[] fontsA = new BitmapFont[6];
+
     public static boolean shakeCam=false;
 
     static void addCommand(){
@@ -91,6 +95,7 @@ enemy and player knock back
         fonts[3]=createFont(14);
         fonts[4]=createFont(16);
         fonts[5]=createFont(20);
+        fontsA=fonts;
         initFile();
         gameStateManager=new GameStateManager();
         Gdx.graphics.setWindowedMode(WIDTH,HEIGHT);
@@ -109,6 +114,10 @@ enemy and player knock back
 
         return font;
     }
+    public static BitmapFont getFontA(){
+
+        return fontA;
+    }
     public static void console(String s){
         System.out.println(s);
     }
@@ -121,6 +130,8 @@ enemy and player knock back
     }
     public static void setFontSize(int x){
         font=fonts[x];
+        fontA=fontsA[x];
+
     }
     private void initFile(){
 
