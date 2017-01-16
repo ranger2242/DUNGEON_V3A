@@ -202,7 +202,8 @@ public class Monster {
     }
     public boolean checkForDamageToPlayer() {
         boolean hit = false;
-        if(getHitBox().overlaps(player.getHitBox())){
+        if(getHitBox().overlaps(player.getHitBox()) && !player.wasHit){
+            player.wasHit=true;
             //    if ((x == px && y == py) || (x + 1 == px && y == py) || (x - 1 == px && y == py)    //check surrounding tiles for player
             //             || (x == px && y + 1 == py) || (x == px && y - 1 == py)) {                  //hurt if found
             int d;

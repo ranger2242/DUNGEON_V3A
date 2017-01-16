@@ -50,6 +50,7 @@ public class MapStateRender extends MapState {
     public static int inventoryPos=0;
      static int[] statCompare=null;
 
+
     static void renderLayers(SpriteBatch sb) {
 
         shapeR.setProjectionMatrix(cam.combined);
@@ -117,8 +118,10 @@ public class MapStateRender extends MapState {
     }
     private static void sbDrawPlayer(SpriteBatch sb){
         sb.begin();
-        Vector2 v=player.getTexturePos();
-        sb.draw(player.getIcon(), v.x, v.y);
+        if(blink || !player.wasHit) {
+            Vector2 v = player.getTexturePos();
+            sb.draw(player.getIcon(), v.x, v.y);
+        }
         sb.end();
         /*
         shapeR.begin(ShapeRenderer.ShapeType.Filled);

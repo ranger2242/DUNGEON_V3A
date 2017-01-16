@@ -82,6 +82,7 @@ public class Player {
 
     public boolean infiniteRegen=false;
     public boolean canMove=false;
+    public boolean wasHit=false;
     public boolean safe=false;
     private float hpBuff=1;
     private float mBuff=1;
@@ -94,6 +95,7 @@ public class Player {
     private float dtRegen = 0;
     private float dtEnergyRe = 0;
     public float dtSafe=0;
+    public float dtHitInvincibility=0;
     public float dtMove=0;
     private double moveSpeed=.1f;
     private float gold=0;
@@ -632,6 +634,12 @@ public class Player {
 
         dtEnergyRe+=dt;
         dtMove+=dt;
+        if (wasHit && dtHitInvincibility<=1f)
+        dtHitInvincibility+=dt;
+        else {
+            dtHitInvincibility = 0;
+            wasHit = false;
+        }
         canMove = true;
         calculateArmorBuff();
         expLimit=(int)((((Math.pow(1.2,level))*1000)/2)-300);
