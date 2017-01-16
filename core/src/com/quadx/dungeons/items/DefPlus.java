@@ -2,6 +2,7 @@ package com.quadx.dungeons.items;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.quadx.dungeons.tools.FilePaths;
 
 /**
  * Created by Tom on 11/21/2015.
@@ -13,6 +14,6 @@ public class DefPlus extends  Item {
         ptColor= Color.BLUE;
         defensemod+=1;
         cost=1000;
-        setIcon(new Texture("images\\icons\\items\\icDef+.png"));
+        setIcon(new Texture(FilePaths.getPath("images\\icons\\items\\icDef+.png")));
     }
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Anim;
@@ -25,16 +26,11 @@ import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.ShopState;
-import com.quadx.dungeons.tools.DebugTextInputListener;
-import com.quadx.dungeons.tools.Direction;
-import com.quadx.dungeons.tools.EMath;
-import com.quadx.dungeons.tools.Tests;
+import com.quadx.dungeons.tools.*;
 
 import java.util.*;
 
-import static com.quadx.dungeons.Game.commandList;
-import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.Game.shakeCam;
+import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.GridManager.*;
 
 
@@ -182,18 +178,25 @@ public class MapStateUpdater extends MapState{
         }
     }
     static void moveMonsters() {
+        ArrayList<Monster> drawableMonsterList= new ArrayList();
+
         if(!Tests.allstop) {
             try {
                 for (Monster m : monsterList) {
                     if(m !=null) {
                         m.updateVariables(Gdx.graphics.getDeltaTime());
                         m.move();
+                        Rectangle screen= new Rectangle(viewX,viewY,viewX+WIDTH,viewY+HEIGHT);
+                        if(m.getHitBox().overlaps(screen))
+                            drawableMonsterList.add(m);
                     }
                 }
 
-            }catch (ConcurrentModificationException e){}
-            for(Monster m: monsterList){
-                for(Monster m1:monsterList){
+            }
+            catch (ConcurrentModificationException e){}
+
+            for(Monster m: drawableMonsterList){
+                for(Monster m1:drawableMonsterList){
                     if(m !=null) {
                         if (!m.equals(m1))
                             if (m.getHitBox().overlaps(m1.getHitBox())) {
@@ -436,7 +439,7 @@ public class MapStateUpdater extends MapState{
                 dtShowStats=0;
             }
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.T)){//open debug prompt
+        if(Gdx.input.isKeyPressed(Input.Keys.T) && FilePaths.checkOS()==0){//open debug prompt
             DebugTextInputListener listener = new DebugTextInputListener();
             Gdx.input.getTextInput(listener, "Command", "","");
         }

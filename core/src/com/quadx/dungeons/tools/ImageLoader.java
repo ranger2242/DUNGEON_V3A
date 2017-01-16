@@ -32,36 +32,36 @@ public class ImageLoader {
     public static final Texture[] energy = new Texture[3];
     public static final Texture[] equipBasic= new Texture[8];
 
-    public static final Texture crate=new Texture("images\\icons\\items\\icCrate.png");
+    public static final Texture crate=new Texture(FilePaths.getPath("images\\icons\\items\\icCrate.png"));
 
-    public static final Texture warp=new Texture("images\\tiles\\icWarp.png");
-    public static Texture spellbook= new Texture("images\\icons\\items\\icSpellBook.png");
+    public static final Texture warp=new Texture(FilePaths.getPath("images\\tiles\\icWarp.png"));
+    public static Texture spellbook= new Texture(FilePaths.getPath("images\\icons\\items\\icSpellBook.png"));
 
 
     public ImageLoader(){
         for(int i=0;i<17;i++){
-            floors[i]=new Texture("images\\tiles\\floor\\f"+(i)+".png");
+            floors[i]=new Texture(FilePaths.getPath("images\\tiles\\floor\\f"+(i)+".png"));
         }
         for(int i=0;i<48;i++){
-                a[i] = new Texture("images\\tiles\\walls\\a" + (i) + ".png");
+                a[i] = new Texture(FilePaths.getPath("images\\tiles\\walls\\a" + (i) + ".png"));
         }
-        potion[0]=new Texture("images\\icons\\items\\icHpSmall.png");
-        potion[1]=new Texture("images\\icons\\items\\icHpMed.png");
-        potion[2]=new Texture("images\\icons\\items\\icHpLarge.png");
+        potion[0]=new Texture(FilePaths.getPath("images\\icons\\items\\icHpSmall.png"));
+        potion[1]=new Texture(FilePaths.getPath("images\\icons\\items\\icHpMed.png"));
+        potion[2]=new Texture(FilePaths.getPath("images\\icons\\items\\icHpLarge.png"));
 
-        mana[0]=new Texture("images\\icons\\items\\icMSmall.png");
-        mana[1]=new Texture("images\\icons\\items\\icMMed.png");
-        mana[2]=new Texture("images\\icons\\items\\icMLarge.png");
+        mana[0]=new Texture(FilePaths.getPath("images\\icons\\items\\icMSmall.png"));
+        mana[1]=new Texture(FilePaths.getPath("images\\icons\\items\\icMMed.png"));
+        mana[2]=new Texture(FilePaths.getPath("images\\icons\\items\\icMLarge.png"));
 
-        energy[0]=new Texture("images\\icons\\items\\icESmall.png");
-        energy[1]=new Texture("images\\icons\\items\\icEMed.png");
-        energy[2]=new Texture("images\\icons\\items\\icELarge.png");
+        energy[0]=new Texture(FilePaths.getPath("images\\icons\\items\\icESmall.png"));
+        energy[1]=new Texture(FilePaths.getPath("images\\icons\\items\\icEMed.png"));
+        energy[2]=new Texture(FilePaths.getPath("images\\icons\\items\\icELarge.png"));
 
-        gold[0]=new Texture("images\\icons\\items\\icCoinS.png");
-        gold[1]=new Texture("images\\icons\\items\\icCoinM.png");
-        gold[2]=new Texture("images\\icons\\items\\icCoinL.png");
+        gold[0]=new Texture(FilePaths.getPath("images\\icons\\items\\icCoinS.png"));
+        gold[1]=new Texture(FilePaths.getPath("images\\icons\\items\\icCoinM.png"));
+        gold[2]=new Texture(FilePaths.getPath("images\\icons\\items\\icCoinL.png"));
         for(int i=0;i<48;i++){
-                w[i] = new Texture("images\\tiles\\water\\w" +i + ".png");
+                w[i] = new Texture(FilePaths.getPath("images\\tiles\\water\\w" +i + ".png"));
         }
 
         loadAttacks();
@@ -70,72 +70,72 @@ public class ImageLoader {
         loadEquip();
     }
     private void loadEquip(){
-        equipBasic[0]=new Texture("images\\icons\\items\\icArms.png");
-        equipBasic[1]=new Texture("images\\icons\\items\\icBoots.png");
-        equipBasic[2]=new Texture("images\\icons\\items\\icCape.png");
-        equipBasic[3]=new Texture("images\\icons\\items\\icChest.png");
-        equipBasic[4]=new Texture("images\\icons\\items\\icGloves.png");
-        equipBasic[5]=new Texture("images\\icons\\items\\icHelmet.png");
-        equipBasic[6]=new Texture("images\\icons\\items\\icLegs.png");
-        equipBasic[7]=new Texture("images\\icons\\items\\icRing.png");
+        equipBasic[0]=new Texture(FilePaths.getPath("images\\icons\\items\\icArms.png"));
+        equipBasic[1]=new Texture(FilePaths.getPath("images\\icons\\items\\icBoots.png"));
+        equipBasic[2]=new Texture(FilePaths.getPath("images\\icons\\items\\icCape.png"));
+        equipBasic[3]=new Texture(FilePaths.getPath("images\\icons\\items\\icChest.png"));
+        equipBasic[4]=new Texture(FilePaths.getPath("images\\icons\\items\\icGloves.png"));
+        equipBasic[5]=new Texture(FilePaths.getPath("images\\icons\\items\\icHelmet.png"));
+        equipBasic[6]=new Texture(FilePaths.getPath("images\\icons\\items\\icLegs.png"));
+        equipBasic[7]=new Texture(FilePaths.getPath("images\\icons\\items\\icRing.png"));
 
     }
     private void loadAbilities(){
-        abilities.add(new Texture("images\\icons\\abilities\\icTank.png"));
-        abilities.add(new Texture("images\\icons\\abilities\\icInvestor.png"));
-        abilities.add(new Texture("images\\icons\\abilities\\icMage.png"));
-        abilities.add(new Texture("images\\icons\\abilities\\icQuick.png"));
-        abilities.add(new Texture("images\\icons\\abilities\\icBrawler.png"));
+        abilities.add(new Texture(FilePaths.getPath("images\\icons\\abilities\\icTank.png")));
+        abilities.add(new Texture(FilePaths.getPath("images\\icons\\abilities\\icInvestor.png")));
+        abilities.add(new Texture(FilePaths.getPath("images\\icons\\abilities\\icMage.png")));
+        abilities.add(new Texture(FilePaths.getPath("images\\icons\\abilities\\icQuick.png")));
+        abilities.add(new Texture(FilePaths.getPath("images\\icons\\abilities\\icBrawler.png")));
 
-        abilities2.add(new Texture("images\\icons\\abilities\\icWB.png"));
+        abilities2.add(new Texture(FilePaths.getPath("images\\icons\\abilities\\icWB.png")));
     }
     private void loadAttacks(){
-        attacks.add(new Texture("images\\icons\\attacks\\icBlind.png"));
-        attacks.add(new Texture("images\\icons\\attacks\\icDrain.png"));
-        attacks.add(new Texture("images\\icons\\attacks\\icFlame.png"));
-        attacks.add(new Texture("images\\icons\\attacks\\icFocus.png"));
-        attacks.add(new Texture("images\\icons\\attacks\\icHeal.png"));
-        attacks.add(new Texture("images\\icons\\attacks\\icIllusion.png"));//5
-        attacks.add(new Texture("images\\icons\\attacks\\icProtect.png"));
-        attacks.add(new Texture("images\\icons\\attacks\\icRest.png"));
-        attacks.add(new Texture("images\\icons\\attacks\\icSacrifice.png"));
-        attacks.add(new Texture("images\\icons\\attacks\\icQuake.png"));
-        attacks.add(new Texture("images\\icons\\attacks\\icStab.png"));//10
-        attacks.add(new Texture("images\\icons\\attacks\\icTorment.png"));
-        attacks.add(new Texture("images\\icons\\attacks\\icLightning.png"));
+        attacks.add(new Texture(FilePaths.getPath("images\\icons\\attacks\\icBlind.png")));
+        attacks.add(new Texture(FilePaths.getPath("images\\icons\\attacks\\icDrain.png")));
+        attacks.add(new Texture(FilePaths.getPath("images\\icons\\attacks\\icFlame.png")));
+        attacks.add(new Texture(FilePaths.getPath("images\\icons\\attacks\\icFocus.png")));
+        attacks.add(new Texture(FilePaths.getPath("images\\icons\\attacks\\icHeal.png")));
+        attacks.add(new Texture(FilePaths.getPath("images\\icons\\attacks\\icIllusion.png")));//5
+        attacks.add(new Texture(FilePaths.getPath("images\\icons\\attacks\\icProtect.png")));
+        attacks.add(new Texture(FilePaths.getPath("images\\icons\\attacks\\icRest.png")));
+        attacks.add(new Texture(FilePaths.getPath("images\\icons\\attacks\\icSacrifice.png")));
+        attacks.add(new Texture(FilePaths.getPath("images\\icons\\attacks\\icQuake.png")));
+        attacks.add(new Texture(FilePaths.getPath("images\\icons\\attacks\\icStab.png")));//10
+        attacks.add(new Texture(FilePaths.getPath("images\\icons\\attacks\\icTorment.png")));
+        attacks.add(new Texture(FilePaths.getPath("images\\icons\\attacks\\icLightning.png")));
 
     }
     private void loadMonsters(){
         for(int i=0;i<4;i++){
-            en0[i]=  new Texture(Gdx.files.internal("images\\icons\\monsters\\en0\\en0"+i+".png"));
+            en0[i]=  new Texture(Gdx.files.internal(FilePaths.getPath("images\\icons\\monsters\\en0\\en0"+i+".png")));
 
         }
         for(int i=0;i<4;i++){
-            en1[i]=  new Texture(Gdx.files.internal("images\\icons\\monsters\\en1\\en1"+i+".png"));
+            en1[i]=  new Texture(Gdx.files.internal(FilePaths.getPath("images\\icons\\monsters\\en1\\en1"+i+".png")));
 
         }
         for(int i=0;i<4;i++){
-            en3[i]=  new Texture(Gdx.files.internal("images\\icons\\monsters\\en3\\en3"+i+".png"));
+            en3[i]=  new Texture(Gdx.files.internal(FilePaths.getPath("images\\icons\\monsters\\en3\\en3"+i+".png")));
 
         }
         for(int i=0;i<4;i++){
-            en4[i]=  new Texture(Gdx.files.internal("images\\icons\\monsters\\en4\\en4"+i+".png"));
+            en4[i]=  new Texture(Gdx.files.internal(FilePaths.getPath("images\\icons\\monsters\\en4\\en4"+i+".png")));
 
         }
         for(int i=0;i<4;i++){
-            en5[i]=  new Texture(Gdx.files.internal("images\\icons\\monsters\\en5\\en5"+i+".png"));
+            en5[i]=  new Texture(Gdx.files.internal(FilePaths.getPath("images\\icons\\monsters\\en5\\en5"+i+".png")));
         }
         for(int i=0;i<4;i++){
-            en9[i]=  new Texture(Gdx.files.internal("images\\icons\\monsters\\en9\\en9"+i+".png"));
+            en9[i]=  new Texture(Gdx.files.internal(FilePaths.getPath("images\\icons\\monsters\\en9\\en9"+i+".png")));
         }
         for(int i=0;i<4;i++){
-            en6[i]=  new Texture(Gdx.files.internal("images\\icons\\monsters\\en6\\en6"+i+".png"));
+            en6[i]=  new Texture(Gdx.files.internal(FilePaths.getPath("images\\icons\\monsters\\en6\\en6"+i+".png")));
         }
         for(int i=0;i<4;i++){
-            en7[i]=  new Texture(Gdx.files.internal("images\\icons\\monsters\\en7\\en7"+i+".png"));
+            en7[i]=  new Texture(Gdx.files.internal(FilePaths.getPath("images\\icons\\monsters\\en7\\en7"+i+".png")));
         }
         for(int i=0;i<4;i++){
-            en8[i]=  new Texture(Gdx.files.internal("images\\icons\\monsters\\en8\\en8"+i+".png"));
+            en8[i]=  new Texture(Gdx.files.internal(FilePaths.getPath("images\\icons\\monsters\\en8\\en8"+i+".png")));
         }
     }
 }

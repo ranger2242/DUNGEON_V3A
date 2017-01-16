@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.AttackMod;
 import com.quadx.dungeons.states.GameStateManager;
+import com.quadx.dungeons.tools.FilePaths;
 
 import java.util.ArrayList;
 
@@ -33,7 +34,7 @@ public class MapStateExt extends MapState{
         effect = new ParticleEffect();
         ParticleEmitter emitter;
        // String s = "fla";
-        effect.load(Gdx.files.internal("particles\\"+fname), Gdx.files.internal("particles"));
+        effect.load(Gdx.files.internal(FilePaths.getPath("particles\\"+fname)), Gdx.files.internal("particles"));
         effect.getEmitters().get(0).setPosition(x,y);
         effect.setPosition(x,y);
         emitter=effect.getEmitters().first();

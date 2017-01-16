@@ -15,6 +15,7 @@ import com.quadx.dungeons.items.equipment.EquipSets;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.MainMenuState;
+import com.quadx.dungeons.tools.FilePaths;
 import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.Score;
 import com.quadx.dungeons.tools.WallPattern;
@@ -77,6 +78,8 @@ enemy and player knock back
     }
     @Override
     public void create () {
+        FilePaths.checkOS();
+
         ImageLoader il=new ImageLoader();
         equipSets= new EquipSets();
         WallPattern wp=new WallPattern();
@@ -139,7 +142,7 @@ enemy and player knock back
         BitmapFont temp=new BitmapFont();
 
         try {
-            FreeTypeFontGenerator generator= new FreeTypeFontGenerator(Gdx.files.internal("fonts\\prstart.ttf"));
+            FreeTypeFontGenerator generator= new FreeTypeFontGenerator(Gdx.files.internal(FilePaths.getPath("fonts\\prstart.ttf")));
             FreeTypeFontGenerator.FreeTypeFontParameter parameter= new FreeTypeFontGenerator.FreeTypeFontParameter();
             parameter.size = x;
             temp = generator.generateFont(parameter);

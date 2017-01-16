@@ -280,7 +280,7 @@ public class GridManager {
     public static void plotMonsters() {
         if (player.getFloor() == 1)
             splitMapDataToList();
-        int temp = rn.nextInt(50)+20;//calculate number of monsters
+        int temp = rn.nextInt(15)+20;//calculate number of monsters
         while (temp > 0) {
             int listSize = monsterList.size();
             int point = rn.nextInt(liveCellList.size());

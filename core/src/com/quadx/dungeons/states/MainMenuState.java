@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.states.mapstate.MapState;
+import com.quadx.dungeons.tools.FilePaths;
 
 import java.util.ArrayList;
 
@@ -36,7 +37,7 @@ public class MainMenuState extends State implements ControllerListener {
     private int titlePosY=0;
     private int optionsPosY =0;
     private float dtCursor = 0;
-    private Texture title = new Texture("images\\title.png");
+    private Texture title = new Texture(FilePaths.getPath("images\\title.png"));
     public MainMenuState(GameStateManager gsm) {
         super(gsm);
         Gdx.gl.glClearColor(0,0,0,1);
@@ -50,7 +51,7 @@ public class MainMenuState extends State implements ControllerListener {
         effect = new ParticleEffect();
         ParticleEmitter emitter;
         String s = "fla";
-        effect.load(Gdx.files.internal("particles\\pt" + s), Gdx.files.internal("particles"));
+        effect.load(Gdx.files.internal(FilePaths.getPath("particles\\pt" + s)), Gdx.files.internal("particles"));
         emitter = effect.findEmitter("fire");
         emitter.setContinuous(true);
         effect.setPosition(viewX+ Game.WIDTH/2,viewY+ 0);

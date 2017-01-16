@@ -12,6 +12,7 @@ import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.abilities.*;
 import com.quadx.dungeons.states.mapstate.MapState;
+import com.quadx.dungeons.tools.FilePaths;
 import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.MyTextInputListener;
 
@@ -44,7 +45,7 @@ public class AbilitySelectState extends State implements ControllerListener {
         super(gsm);
         if(Game.controllerMode)
         controller.addListener(this);
-        if(!MapState.inGame) {
+        if(!MapState.inGame && FilePaths.checkOS()==0) {
             MyTextInputListener listener = new MyTextInputListener();
             Gdx.input.getTextInput(listener, "Name", "", "");
         }
