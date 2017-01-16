@@ -1,5 +1,6 @@
 package com.quadx.dungeons.monsters;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -63,6 +64,7 @@ public class Monster {
     protected boolean moved = false;
     protected boolean aa = false;
     protected boolean bb = false;
+    protected boolean isOnscreen;
     boolean lowhp = false;
 
     protected double attack;
@@ -223,6 +225,7 @@ public class Monster {
         }
         return hit;
     }
+    public boolean getOnScreen(){return isOnscreen;}
     public boolean checkIfDead() {
         if (hp < 1) {
             out(DIVIDER);
@@ -357,6 +360,9 @@ public class Monster {
         py = (int) EMath.round(a.y);
         setPos(new Vector2((int) (EMath.round(absPos.x / cellW)), (int) (EMath.round(absPos.y / cellW))));
     }
+    public void setOnscreen(boolean s) {
+        isOnscreen=s;
+    }
 
     //OTHER----------------------------------------------------------------------------------
     public static void reindexMonsterList() {
@@ -436,18 +442,21 @@ public class Monster {
         hpMax = hp;
         hpsoft = hp;
     }
+    public void checkAgro(){
+        if (agroTime < dtAgro) {
+            setHit();
+        } else {
+            dtAgro += Gdx.graphics.getDeltaTime();
+        }
+    }
+
     public void updateVariables(float dt) {
         dtMove += dt;
         dtChangeDirection+=dt;
         velocity= (float) (6+.0136*getSpeed()+.000005* Math.pow(getSpeed(),2))*( 3f/4f);
         aa = rn.nextBoolean();
         bb = rn.nextBoolean();
-        if (agroTime < dtAgro) {
-            setHit();
-        } else {
-            dtAgro += dt;
 
-        }
         //calculate sights
         int side = sight * 2 * cellW;
         sights = new Vector3(px - (side / 2) + (cellW / 2), py - (side / 2) + (cellW / 2), side);
@@ -528,6 +537,7 @@ public class Monster {
         if(getAgroBox().overlaps(player.getHitBox())){
             agro=true;
         }
+
         if(!hit && !agro){
             if(dtChangeDirection>.5) {
                 facing = Direction.Facing.getRandom();

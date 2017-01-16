@@ -183,12 +183,20 @@ public class MapStateUpdater extends MapState{
         if(!Tests.allstop) {
             try {
                 for (Monster m : monsterList) {
-                    if(m !=null) {
-                        m.updateVariables(Gdx.graphics.getDeltaTime());
-                        m.move();
+                    if(m !=null ) {
+                        m.checkAgro();
                         Rectangle screen= new Rectangle(viewX,viewY,viewX+WIDTH,viewY+HEIGHT);
-                        if(m.getHitBox().overlaps(screen))
+                        if(m.getHitBox().overlaps(screen)) {
                             drawableMonsterList.add(m);
+                            m.setOnscreen(true);
+                        } else {
+                            m.setOnscreen(false);
+                        }
+                        if(m.getOnScreen() ||m.isHit()) {
+                            m.updateVariables(Gdx.graphics.getDeltaTime());
+                            m.move();
+                        }
+
                     }
                 }
 

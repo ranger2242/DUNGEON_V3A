@@ -76,7 +76,7 @@ public class MapStateRender extends MapState {
         //For all mosters on screen do these actions
         try {
             for (Monster m : GridManager.monsterList) {
-                if(m !=null) {
+                if(m !=null && m.getOnScreen()) {
                     srDrawMonsterHealthBar(m);
                     sb.begin();
                     sbDrawMosters(sb, m);
