@@ -29,15 +29,15 @@ public class HoverText {
     private float time;
     BitmapFont font;
 
-    public HoverText(String s, Color c, int x1, int y1, float t, boolean flash){
+    public HoverText(String s, Color c, float x1, float y1, float t, boolean flash){
         Game.setFontSize(2);
         font= Game.getFont();
         active=true;
         time=t;
         text=s;
         color=c;
-        x=x1;
-        y=y1;
+        x= Math.round(x1);
+        y=Math.round(y1);
         this.flash=flash;
         if(flash){
             dtFlash=0;

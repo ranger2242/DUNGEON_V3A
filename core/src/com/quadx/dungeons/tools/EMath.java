@@ -43,6 +43,10 @@ public class EMath {
     public static float dx(Vector2 a, Vector2 b){
         return b.x-a.x;
     }
+    public static float dx(float a, float b){
+        return b-a;
+    }
+
     public static double round(double d){
         double rem=d-Math.floor(d);
         if(rem<.5f){
@@ -51,11 +55,37 @@ public class EMath {
             return Math.ceil(d);
         }
     }
+    public static int round(double d, int pow){
+        double a=d/Math.pow(10,pow);
+        a=Math.round(a);
+        a*=Mathq.percent(10,pow);
+        return (int) Math.round(a);
+    }
+    public static int roundToNearest45(int ang){
+        int[] arr= new int[]{0,45,90,135,180,225,270,315,360};
+        int index=0;
+        int min=10000;
+        for(int i=0;i<arr.length;i++){
+            double d=dx(ang,arr[i]);
+            if(d<=min){
+                min= (int) d;
+                index=i;
+            }
+        }
+        return arr[index];
+    }
     public static float dy(Vector2 a, Vector2 b){
         return b.y-a.y;
     }
     public static float arcL(float theta ,float r,float dl){
         float arc= (float) (((2*Math.PI*r)/360)*dl);
         return 0;
+    }
+    public static float average(float[] f){
+        float sum=0;
+        for(int i=0;i<f.length;i++){
+            sum+= f[i];
+        }
+        return sum/f.length;
     }
 }

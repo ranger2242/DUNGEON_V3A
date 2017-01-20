@@ -12,7 +12,7 @@ import static com.quadx.dungeons.Game.commandList;
  */
 @SuppressWarnings("ALL")
 public abstract class State {
-    protected static OrthographicCamera cam;
+    public static OrthographicCamera cam;
     private Vector3 mouse;
     protected static GameStateManager gsm;
 

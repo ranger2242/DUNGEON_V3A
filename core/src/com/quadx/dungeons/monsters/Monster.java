@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Cell;
 import com.quadx.dungeons.Damage;
+import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.Physics;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.states.mapstate.MapState;
@@ -176,6 +177,8 @@ public class Monster {
         return absPos;
     }
     public Vector2 getTexturePos() {
+        texturePos.set(getAbsPos().x-(getIcon().getWidth())/2, GridManager.getAdjustedHeight(getAbsPos())-(getIcon().getHeight())/2 );
+
         return texturePos;
     }
     public Vector3 getSights() {
@@ -220,7 +223,7 @@ public class Monster {
             player.setHp(player.getHp() - d);//apply damage
             MapStateUpdater.shakeScreen(.5f);
             player.setDest(absPos);
-            MapStateRender.setHoverText("-" + d, 1, Color.WHITE, player.getPX(), player.getPY(), true);
+            MapStateRender.setHoverText("-" + d, 1, Color.WHITE, player.getAbsPos().x, player.getAbsPos().y, true);
             hit = true;
             StatManager.killer = this;
         }
@@ -468,9 +471,11 @@ public class Monster {
         if (!(hp <= hpMax / 3)) lowhp = true;
         else lowhp = false;
         overlay.texts.clear();
-        overlay.texts.add(new Text("LVL " + level, new Vector2(absPos.x - 22, absPos.y - 10), Color.GRAY, 1));
+        Vector2 ne=new Vector2(absPos.x,absPos.y);
+        ne.add(0,-20);
+        overlay.texts.add(new Text("LVL " + level, new Vector2(absPos.x - 22, GridManager.getAdjustedHeight(ne)), Color.GRAY, 1));
         if (isHit())
-            overlay.texts.add(new Text("!", new Vector2(absPos.x - 22, (float) ((pos.y + 1.5) * cellW - 10)), Color.GRAY, 1));
+            overlay.texts.add(new Text("!", new Vector2(absPos.x - 22, GridManager.getAdjustedHeight(ne)), Color.GRAY, 1));
         checkForDamageToPlayer();
         loadIcon();
         fixPosition();

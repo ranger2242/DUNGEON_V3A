@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.commands.Command;
@@ -52,6 +53,11 @@ public class Cell {
     public ArrayList<Command> commandQueue= new ArrayList<>();
     boolean effectLoaded=false;
     ParticleEffect effect=null;
+    int height=0;
+    Polygon corners=new Polygon();
+
+
+
 
     public Cell() {
         setTile(ImageLoader.a[0]);
@@ -67,7 +73,7 @@ public class Cell {
             if(hasMon()) color=new Color(1f, .2f, .2f, 1);
             if(getAttArea())color=new Color(.7f,0,0f,1);
         }
-        else color=new Color(0f, 0f, 0f, 1);
+       // else color=new Color(0f, 0f, 0f, 1);
         if(getWater()){
             color=new Color(.07f, .07f, .8f, 1f);
         }
@@ -123,6 +129,15 @@ public class Cell {
     public int getGold() {
         return gold;
     }
+    public void setCorners(Polygon c){
+        corners=c;
+    }
+
+    public Polygon getCorners() {
+        return corners;
+    }
+    public void setHeight(int h){height=h;}
+    public int getHeight(){return height;}
 //SETTERS---------------------------------------------------------------------------------
     public void setMonster(Monster m){
         monster=m;
@@ -194,7 +209,7 @@ public class Cell {
             hasItem = true;
             if(!effectLoaded && getState() && GridManager.liveCellList.contains(this)){
                 if(item.hasEffect()) {
-                    effect = MapStateExt.loadParticles("ptItem", getAbsPos().x + (item.getIcon().getWidth() / 2), getAbsPos().y + (item.getIcon().getHeight() / 2),item.getPtColor(), 2);
+                    effect = MapStateExt.loadParticles("ptItem", getAbsPos().x +(item.getIcon().getWidth()/2), getAbsPos().y ,item.getPtColor(), 2);
                     effectLoaded = true;
                     MapStateExt.addEffect(effect);
                 }

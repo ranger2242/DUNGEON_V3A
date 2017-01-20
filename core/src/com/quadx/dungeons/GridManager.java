@@ -3,14 +3,13 @@ package com.quadx.dungeons;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.*;
-import com.quadx.dungeons.tools.Direction;
-import com.quadx.dungeons.tools.Tests;
-import com.quadx.dungeons.tools.Timer;
-import com.quadx.dungeons.tools.WallPattern;
+import com.quadx.dungeons.tools.*;
+import com.quadx.dungeons.tools.heightmap.HeightMap;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -25,42 +24,13 @@ public class GridManager {
     public static final ArrayList<Cell> drawList = new ArrayList<>();
     public static final ArrayList<Monster> monsterList = new ArrayList<>();
     public static ArrayList<Monster> monsOnScreen = new ArrayList<>();
+    public static HeightMap hm;
 
     private static int liveCount=0;
     public static Cell[][] dispArray;
     public static final int res = Map2State.res;
     public static Timer mapLoadTime;
 
-    public void initializeGrid() {
-        mapLoadTime=new Timer("MapLoadTime");
-        mapLoadTime.start();
-        MapStateUpdater.spawnCount=1;
-        MapStateUpdater.dtRespawn=0;
-        player.setMana(player.manaMax);
-        player.setEnergy(player.getEnergyMax());
-        Timer t=new Timer();
-        t.start();
-        clearMonsterList();
-        createMap();
-        plotLoot();
-        plotCrates();
-        plotShop();
-        plotWarps();
-        if(!Tests.nospawn)
-            plotMonsters();
-        t.end();
-        out("4:"+t.runtime());
-       // Game.console("7:"+t.runtime());
-        t.start();
-        plotPlayer();
-        t.end();
-      //  Game.console("8:"+t.runtime());
-        MapStateRender.showCircle = true;
-        mapLoadTime.end();
-        Tests.mapLoadTimes.add(mapLoadTime.getElapsedD());
-        out(GridManager.mapLoadTime.runtime());
-
-    }
     private static ArrayList<Cell> getSurroundingCells(int x, int y){
         ArrayList<Cell> list=new ArrayList<>();
         boolean a =x+1<res;
@@ -78,115 +48,35 @@ public class GridManager {
         if(a && d)  list.add(dispArray[x + 1][y - 1]);
         return list;
     }
-
-    private void clearDigPlusCells(int ii, int jj, int x, int y) {
-        for (int i = 0; i < ii; i++) {
-            for (int j = 0; j < jj; j++) {
-                int nx = 0;
-                int ny = 0;
-                switch (player.facing) {
-                    case North:
-                    case Northwest:
-                    case Northeast: {
-                        nx = x - 1 + i;
-                        ny = y + j;
-                        break;
-                    }
-                    case West: {
-                        nx = x - i;
-                        ny = y - 1 + j;
-                        break;
-                    }
-                    case Southwest:
-                    case South:
-                    case Southeast: {
-                        nx = x - 1 + i;
-                        ny = y - j;
-                        break;
-                    }
-                    case East: {
-                        nx = x + i;
-                        ny = y - 1 + j;
-                        break;
-                    }
+    private static ArrayList<Vector2> getSurroundingCellsPos(float x, float y){
+        ArrayList<Vector2> list=new ArrayList<>();
+        boolean a =x+1<res;
+        boolean b=x-1>=0;
+        boolean c=y+1<res;
+        boolean d=y-1>=0;
+      //  list.add(new Vector2(x,y));
+        if(b && c)  list.add(new Vector2(x - 1,y + 1));
+        if(c)       list.add(new Vector2(x,y+1));//dispArray[x][y + 1]);
+        if(a && c)  list.add(new Vector2(x+1,y+1));//dispArray[x + 1][y + 1]);
+        if(a &&b && d)list.add(new Vector2(x+1,y));//dispArray[x + 1][y]);
+        if(a && d)  list.add(new Vector2(x+1,y-1));//dispArray[x + 1][y - 1]);
+        if(d)       list.add(new Vector2(x,y-1));//dispArray[x][y - 1]);
+        if(b && d)  list.add(new Vector2(x-1,y-1));//dispArray[x - 1][y - 1]);
+        if(b)       list.add(new Vector2(x-1,y));//dispArray[x - 1][y]);
+        return list;
+    }
+    private static void splitMapDataToList() {
+        liveCellList.clear();
+        liveCount=0;
+        for (int i = 0; i < res; i++) {
+            for (int j = 0; j < res; j++) {
+                if (dispArray[i][j].getState()) {
+                    liveCount++;
                 }
-                /*
-                switch (MapState.lastPressed){
-                    case 'w':{nx=x - 1 + i; ny=y + j;       break;}
-                    case 'd':{nx=x + i;     ny=y - 1 + j;   break;}
-                    case 's':{nx=x - 1 + i; ny=y - j;       break;}
-                    case 'a':{nx=x - i;     ny=y - 1 + j;   break;}
-                }*/
-                if (nx >= 0 && nx < res && ny >= 0 && ny < res) {
-                    if (!dispArray[nx][ny].getState()) {
-                        dispArray[nx][ny].setState();
-                    }
-                }
+                liveCellList.add(dispArray[i][j]);
             }
         }
     }
-    public void clearArea(int x, int y, boolean isPlayer) {
-        try {
-            ArrayList<Cell> temp = getSurroundingCells(x, y);
-            temp.stream().filter(c -> !c.getState()).forEach(Cell::setState);
-            temp.clear();
-
-
-            if (isPlayer && player.hasDigPlus()) {//checks if players dig ability is active
-                if (player.facing.equals(Direction.Facing.East) || player.facing.equals(Direction.Facing.West))
-                    //if (MapState.lastPressed == 'd' ||MapState.lastPressed == 'a')
-                    clearDigPlusCells(9, 3, x, y);
-                if (player.facing.equals(Direction.Facing.North) || player.facing.equals(Direction.Facing.South)
-                        || player.facing.equals(Direction.Facing.Northeast) || player.facing.equals(Direction.Facing.Southeast)
-                        || player.facing.equals(Direction.Facing.Northwest) || player.facing.equals(Direction.Facing.Southwest)) {
-
-                }
-                clearDigPlusCells(3, 9, x, y);
-            }
-            splitMapDataToList();
-        }catch (ArrayIndexOutOfBoundsException e){
-            MapState.out("ArrayIndexOutOfBoundsException");
-            MapState.out("clearArea()");
-
-        }
-        }
-    static Cell loadTiles(Cell c){
-        int x1 = c.getX();
-        int y1 = c.getY();
-        ArrayList<Cell> temp = getSurroundingCells(x1, y1);
-        int count = 0;
-        Texture t = c.getTile();
-        if (temp.size() == 8) {
-            for (int ii = 0; ii < 3; ii++) {
-                for (int jj = 0; jj < 3; jj++) {
-                    if (count < temp.size()) {
-                        if (ii == 1 && jj == 1) {
-                            WallPattern.p[ii][jj] = false;
-                        } else {
-
-                            if (c.getWater()) {
-                                WallPattern.p[ii][jj] = !temp.get(count).getWater();
-                            } else {
-                                WallPattern.p[ii][jj] = temp.get(count).getState();
-                            }
-                            count++;
-                        }
-                    }
-                }
-            }
-            int a = 0;
-            if (c.getWater()) a = 1;
-            Texture t1 = WallPattern.getTile(a);
-            if (t1 != null && t != t1) {
-                c.setTile(t1);
-            }
-        } else {
-            if (!c.getTile().equals(a[0]))
-                c.setTile(a[0]);
-        }
-        return c;
-    }
-
     public static void loadDrawList() {
         drawList.clear();
         monsOnScreen.clear();
@@ -216,7 +106,53 @@ public class GridManager {
             }
         }
     }
+    public static void loadLiveCells(){
+        liveCellList.clear();
+        for(int i=0;i<res;i++){
+            for(int j=0;j<res;j++){
+                dispArray[i][j].setCords(i,j);
+                liveCellList.add(dispArray[i][j]);
+            }
+        }
+    }
+    public static void plotMonsters() {
+        if (player.getFloor() == 1)
+            splitMapDataToList();
+        int temp = rn.nextInt(15)+20;//calculate number of monsters
+        while (temp > 0) {
+            int listSize = monsterList.size();
+            int point = rn.nextInt(liveCellList.size());
+            Cell c = liveCellList.get(point);
+            if(c.getState()) {
+                Monster m = Monster.getNew();
+                m.setAbsPos(c.getAbsPos());
+                //if(rn.nextFloat()<.05)m.setHit();
+                // c.setState();
+                m.setLiveCellIndex(point);
+                //c.setMonster(m);
+                monsterList.add(m);
+                c.setMonsterIndex(listSize + 1);
+                liveCellList.set(point, c);
+                temp--;
+            }
 
+        }
+        Monster.reindexMons=true;
+    }
+    public static float getAdjustedHeight(Vector2 v){
+        int gx=Math.round(v.x/cellW);
+        int gy=Math.round(v.y/cellW);
+        float pery=(v.y-(gy*cellW))/cellW;
+        float r=cellW*(2f/3f);
+        try {
+            return (r * dispArray[gx][gy].getHeight()) + (pery * r) + (gy * r);
+        }catch (NullPointerException| ArrayIndexOutOfBoundsException e) {
+            return v.y;
+        }
+    }
+    private void clearMonsterList() {
+        monsterList.clear();
+    }
     private void createMap() {
         for(ParticleEffect e :MapStateExt.effects){
             e.dispose();
@@ -226,30 +162,6 @@ public class GridManager {
         dispArray = Map2State.generateMap2();
         //splitMapDataToList();
         loadLiveCells();
-    }
-    public static void loadLiveCells(){
-        liveCellList.clear();
-        for(int i=0;i<res;i++){
-            for(int j=0;j<res;j++){
-                        dispArray[i][j].setCords(i,j);
-                        liveCellList.add(dispArray[i][j]);
-            }
-        }
-    }
-    private static void splitMapDataToList() {
-        liveCellList.clear();
-        liveCount=0;
-        for (int i = 0; i < res; i++) {
-            for (int j = 0; j < res; j++) {
-                if (dispArray[i][j].getState()) {
-                    liveCount++;
-                }
-                liveCellList.add(dispArray[i][j]);
-            }
-        }
-    }
-    private void clearMonsterList() {
-        monsterList.clear();
     }
     private void plotWarps() {
         boolean placed = false;
@@ -277,36 +189,11 @@ public class GridManager {
         }
         liveCellList.get(index).setWarp();
     }
-    public static void plotMonsters() {
-        if (player.getFloor() == 1)
-            splitMapDataToList();
-        int temp = rn.nextInt(15)+20;//calculate number of monsters
-        while (temp > 0) {
-            int listSize = monsterList.size();
-            int point = rn.nextInt(liveCellList.size());
-            Cell c = liveCellList.get(point);
-            if(c.getState()) {
-                Monster m = Monster.getNew();
-                m.setAbsPos(c.getAbsPos());
-                //if(rn.nextFloat()<.05)m.setHit();
-               // c.setState();
-                m.setLiveCellIndex(point);
-                //c.setMonster(m);
-                monsterList.add(m);
-                c.setMonsterIndex(listSize + 1);
-                liveCellList.set(point, c);
-                temp--;
-            }
-
-        }
-        Monster.reindexMons=true;
-    }
     private void plotShop() {
         int index = rn.nextInt(liveCellList.size());
         liveCellList.get(index).setState();
         liveCellList.get(index).setShop(true);
     }
-
     private void plotLoot() {
         float fillPercent = .01f;
         int loot = (int) (liveCellList.size() * fillPercent);
@@ -323,7 +210,6 @@ public class GridManager {
             loot--;
         }
     }
-
     private void plotCrates() {
         float fillPercent = .01f;
         int crates = (int) (liveCellList.size() * fillPercent);
@@ -372,4 +258,144 @@ public class GridManager {
             }
         }
     }
+    private void clearDigPlusCells(int ii, int jj, int x, int y) {
+        for (int i = 0; i < ii; i++) {
+            for (int j = 0; j < jj; j++) {
+                int nx = 0;
+                int ny = 0;
+                switch (player.facing) {
+                    case North:
+                    case Northwest:
+                    case Northeast: {
+                        nx = x - 1 + i;
+                        ny = y + j;
+                        break;
+                    }
+                    case West: {
+                        nx = x - i;
+                        ny = y - 1 + j;
+                        break;
+                    }
+                    case Southwest:
+                    case South:
+                    case Southeast: {
+                        nx = x - 1 + i;
+                        ny = y - j;
+                        break;
+                    }
+                    case East: {
+                        nx = x + i;
+                        ny = y - 1 + j;
+                        break;
+                    }
+                }
+                /*
+                switch (MapState.lastPressed){
+                    case 'w':{nx=x - 1 + i; ny=y + j;       break;}
+                    case 'd':{nx=x + i;     ny=y - 1 + j;   break;}
+                    case 's':{nx=x - 1 + i; ny=y - j;       break;}
+                    case 'a':{nx=x - i;     ny=y - 1 + j;   break;}
+                }*/
+                if (nx >= 0 && nx < res && ny >= 0 && ny < res) {
+                    if (!dispArray[nx][ny].getState()) {
+                        dispArray[nx][ny].setState();
+                    }
+                }
+            }
+        }
+    }
+    public void initializeGrid(){
+        mapLoadTime=new Timer("MapLoadTime");
+        mapLoadTime.start();
+        MapStateUpdater.spawnCount=1;
+        MapStateUpdater.dtRespawn=0;
+        player.setMana(player.manaMax);
+        player.setEnergy(player.getEnergyMax());
+        Timer t=new Timer();
+        t.start();
+        clearMonsterList();
+        createMap();
+        hm=new HeightMap(dispArray);
+        dispArray=hm.getCells();
+        plotLoot();
+        plotCrates();
+        plotShop();
+        plotWarps();
+        if(!Tests.nospawn)
+            plotMonsters();
+        t.end();
+        out("4:"+t.runtime());
+        // Game.console("7:"+t.runtime());
+        t.start();
+        plotPlayer();
+        t.end();
+        //  Game.console("8:"+t.runtime());
+        MapStateRender.showCircle = true;
+        mapLoadTime.end();
+        Tests.mapLoadTimes.add(mapLoadTime.getElapsedD());
+        out(GridManager.mapLoadTime.runtime());
+
+    }
+    public void clearArea(int x, int y, boolean isPlayer) {
+        try {
+            ArrayList<Cell> temp = getSurroundingCells(x, y);
+            temp.stream().filter(c -> !c.getState()).forEach(Cell::setState);
+            temp.clear();
+
+
+            if (isPlayer && player.hasDigPlus()) {//checks if players dig ability is active
+                if (player.facing.equals(Direction.Facing.East) || player.facing.equals(Direction.Facing.West))
+                    //if (MapState.lastPressed == 'd' ||MapState.lastPressed == 'a')
+                    clearDigPlusCells(9, 3, x, y);
+                if (player.facing.equals(Direction.Facing.North) || player.facing.equals(Direction.Facing.South)
+                        || player.facing.equals(Direction.Facing.Northeast) || player.facing.equals(Direction.Facing.Southeast)
+                        || player.facing.equals(Direction.Facing.Northwest) || player.facing.equals(Direction.Facing.Southwest)) {
+
+                }
+                clearDigPlusCells(3, 9, x, y);
+            }
+            splitMapDataToList();
+        }catch (ArrayIndexOutOfBoundsException e){
+            MapState.out("ArrayIndexOutOfBoundsException");
+            MapState.out("clearArea()");
+
+        }
+    }
+    static Cell loadTiles(Cell c){
+        int x1 = c.getX();
+        int y1 = c.getY();
+        ArrayList<Cell> temp = getSurroundingCells(x1, y1);
+        int count = 0;
+        Texture t = c.getTile();
+        if (temp.size() == 8) {
+            for (int ii = 0; ii < 3; ii++) {
+                for (int jj = 0; jj < 3; jj++) {
+                    if (count < temp.size()) {
+                        if (ii == 1 && jj == 1) {
+                            WallPattern.p[ii][jj] = false;
+                        } else {
+
+                            if (c.getWater()) {
+                                WallPattern.p[ii][jj] = !temp.get(count).getWater();
+                            } else {
+                                WallPattern.p[ii][jj] = temp.get(count).getState();
+                            }
+                            count++;
+                        }
+                    }
+                }
+            }
+            int a = 0;
+            if (c.getWater()) a = 1;
+            Texture t1 = WallPattern.getTile(a);
+            if (t1 != null && t != t1) {
+                c.setTile(t1);
+            }
+        } else {
+            if (!c.getTile().equals(a[0]))
+                c.setTile(a[0]);
+        }
+        return c;
+    }
+
 }

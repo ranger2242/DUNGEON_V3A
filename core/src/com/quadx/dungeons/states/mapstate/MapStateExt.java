@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.math.Vector2;
+import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.AttackMod;
 import com.quadx.dungeons.states.GameStateManager;
@@ -35,13 +36,12 @@ public class MapStateExt extends MapState{
         ParticleEmitter emitter;
        // String s = "fla";
         effect.load(Gdx.files.internal(FilePaths.getPath("particles\\"+fname)), Gdx.files.internal("particles"));
-        effect.getEmitters().get(0).setPosition(x,y);
-        effect.setPosition(x,y);
-        emitter=effect.getEmitters().first();
+
+            emitter=effect.getEmitters().first();
+            ParticleEmitter.ScaledNumericValue spawnWidth = emitter.getSpawnWidth();
         if (type == 1) {
 
             ParticleEmitter.ScaledNumericValue spawnHeight = emitter.getSpawnHeight();
-            ParticleEmitter.ScaledNumericValue spawnWidth = emitter.getSpawnWidth();
 
             ParticleEmitter.ScaledNumericValue angle = emitter.getAngle();
             int ang = 0;
@@ -84,6 +84,7 @@ public class MapStateExt extends MapState{
                     ang = 45;
                     break;
             }
+            //swh=sw;
             spawnHeight.setHigh(sh);
             spawnHeight.setLow(sh);
             spawnWidth.setHigh(sw);
@@ -91,6 +92,10 @@ public class MapStateExt extends MapState{
             angle.setHigh(ang);
             angle.setLow(ang);
         }
+            float r=cellW*(2f/3f);
+            effect.getEmitters().get(0).setPosition(x+(cellW/2), GridManager.getAdjustedHeight(new Vector2(x,y))+r);
+            effect.setPosition(x+(cellW/2),GridManager.getAdjustedHeight(new Vector2(x,y))+r);
+
         return effect;
     }
     public MapStateExt(GameStateManager gsm) {

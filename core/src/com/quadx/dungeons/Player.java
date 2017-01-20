@@ -106,6 +106,7 @@ public class Player {
     private double eRegenMod=1;
     private double moveMod=1;
     Vector2 texturePos=new Vector2();
+    Vector2 modPos= new Vector2();
     Vector2[] statsPos;
     Vector2 dest=new Vector2();
     Rectangle attackBox= new Rectangle();
@@ -126,7 +127,7 @@ public class Player {
         Vector2 neg=new Vector2(-comp.x,-comp.y);
         float kick=cellW*4;
         dest.set(absPos.x+ neg.x*kick,absPos.y+neg.y*kick);
-        Anim a=new Anim(getIcon(),absPos,kick,dest,2,.3f);
+        Anim a=new Anim(getIcon(),absPos,kick,dest,2,.2f);
         MapStateUpdater.anims.add(a);
 
         overrideControls=true;
@@ -160,7 +161,7 @@ public class Player {
         double a=65.9055;
         double b=1.17958;
         int gain= (int) (a*Math.pow(b,lvl)*factor);
-        MapStateRender.setHoverText(gain +" EXP",.8f, Color.GREEN ,Game.player.getPX(),Game.player.getPY()+10,false);
+        MapStateRender.setHoverText(gain +" EXP",.8f, Color.GREEN , player.getAbsPos().x, player.getAbsPos().y+10,false);
         this.exp+=gain;
         out(name+" gained "+ gain +" EXP");
     }
@@ -255,30 +256,16 @@ public class Player {
     }
     public void setAbsPos(Vector2 a){
         absPos.set(a);
-        px = (int) EMath.round(a.x);
-        py = (int) EMath.round(a.y);
-        setPos(new Vector2((int) (EMath.round(absPos.x / cellW)), (int) (EMath.round(absPos.y / cellW))));
+       // px = (int) EMath.round(a.x);
+       // py = (int) EMath.round(a.y);
+        //setPos(new Vector2((int) (EMath.round(absPos.x / cellW)), (int) (EMath.round(absPos.y / cellW))));
     }
     public void setPos(Vector2 v){
         x= (int) v.x;
         y=(int) v.y;
     }
-    public void fixPosition(){
-        int x= (int) absPos.x;
-        int y= (int) absPos.y;
-        if(absPos.x<2){
-            x=2;
-        }
-        else if(absPos.x+getIcon().getWidth()>(res*cellW)-2){
-            x=(res*cellW)-(getIcon().getWidth()-2);
-        }
-        if(absPos.y<2){
-            y=2;
-        }
-        else if(absPos.y+getIcon().getHeight()>(res*cellW)-2){
-            y=(res*cellW)-(getIcon().getHeight()-2);
-        }
-        setAbsPos(new Vector2(x,y));//terminal test
+    public void setModPos(Vector2 v){
+        modPos.set(v);
     }
     //GETTERS------------------------------------------------------------------
 
@@ -293,11 +280,13 @@ public class Player {
         return absPos;
     }
     public Vector2 getTexturePos(){
+        texturePos.set(getAbsPos().x,GridManager.getAdjustedHeight(getAbsPos()));
         return texturePos;
     }
     public Vector2[] getStatPos(){
         return statsPos;
     }
+    public Vector2 getModPos(){return modPos;}
     public Vector2 getPos(){return new Vector2(x,y);}
     public int getLevel()
     {
@@ -485,6 +474,24 @@ public class Player {
     public Item getLastItem(){return lastItem;}
     public Ability getAbility(){return ability;}
     //MISC Functions------------------------------------------------------------------
+    public void fixPosition(){
+        int x= (int) absPos.x;
+        int y= (int) absPos.y;
+        if(absPos.x-(getIcon().getWidth()/2)<2){
+            x=(getIcon().getWidth()/2)+2;
+        }
+        else if(absPos.x+(getIcon().getWidth()/2)>(res*cellW)-2){
+            x=(res*cellW)-((getIcon().getWidth()/2)-2);
+        }
+        if(absPos.y-(getIcon().getHeight()/2)<2){
+            y=(getIcon().getHeight()/2)+2;
+        }
+        else if(absPos.y+(getIcon().getHeight()/2)>(res*cellW)-2){
+            y=(res*cellW)-((getIcon().getHeight()/2)-2);
+        }
+        setAbsPos(new Vector2(x,y));//terminal test
+    }
+
     public void regenModifiers(){
         hpRegen=(2*Math.pow(1.004,(getSpdComp()+getDefComp())/2)*hpRegenMod);
         hp+=hpRegen;
@@ -514,7 +521,7 @@ public class Player {
     public void move(Vector2 vel){
         if(!overrideControls) {
             try {
-                Vector2 end = new Vector2(absPos.x + vel.x, absPos.y + vel.y);
+                Vector2 end = new Vector2(absPos.x + vel.x,absPos.y + vel.y);
                 int gw = cellW * (res + 1);
                 if (end.x < 0)
                     end.x = getIcon().getWidth();
@@ -531,13 +538,13 @@ public class Player {
                 Cell c = dispArray[x][y];
                 if (c.getState() && !c.hasWater) {
                     player.setPos(new Vector2(x, y));
-                    player.setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
+                    player.setAbsPos(new Vector2(absPos.x + comp.x,absPos.y+comp.y));
                 }
                 if (c.getState() && c.hasWater) {
                     for (Ability a : player.secondaryAbilityList) {
                         if (a.getClass().equals(WaterBreath.class)) {
                             player.setPos(new Vector2(x, y));
-                            player.setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
+                            player.setAbsPos(new Vector2(absPos.x + comp.x,absPos.y+comp.y));
                         }
                     }
                 }
@@ -591,7 +598,7 @@ public class Player {
             player.setGold(player.getGold() + item.getValue());
             StatManager.totalGold += item.getValue();
             out(name + " recieved " + item.getValue() + "G");
-            MapStateRender.setHoverText(item.getValue()+ "G", .5f, Color.GOLD, getPX(), getPY(), false);
+            MapStateRender.setHoverText(item.getValue()+ "G", .5f, Color.GOLD,  player.getAbsPos().x, player.getAbsPos().y, false);
         }
         if (item.getHpmod() != 0) {
             hp += item.getHpmod();
@@ -651,14 +658,14 @@ public class Player {
         //velocity=5;
         regenPlayer(dt);
         //set texture cords
-        texturePos.set(absPos.x - getIcon().getWidth() / 4, absPos.y - getIcon().getHeight() / 4);
+     //   texturePos.set(absPos.x - getIcon().getWidth() / 4, absPos.y - getIcon().getHeight() / 4);
         setStatsPos();
         fixPosition();
     }
     public void checkLvlUp() {
         if (exp>=expLimit)
         {
-            MapStateRender.setHoverText("--LVL UP--",.8f, Color.GREEN, Game.player.getPX(),Game.player.getPY()-20,true);
+            MapStateRender.setHoverText("--LVL UP--",.8f, Color.GREEN, player.getAbsPos().x, player.getAbsPos().y-20,true);
 
             exp=0;
 
@@ -795,6 +802,10 @@ public class Player {
             setMana(getManaMax());
             setEnergy(getEnergyMax());
         }
+    }
+
+    public void setTexturePos(Vector2 texturePos) {
+        this.texturePos = texturePos;
     }
 }
 

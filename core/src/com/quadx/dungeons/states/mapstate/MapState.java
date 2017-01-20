@@ -49,6 +49,7 @@ import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtScrollAtt;
 @SuppressWarnings("DefaultFileTemplate")
 public class MapState extends State implements ControllerListener {
     static final boolean debug=true;
+    public static boolean noLerp=false;
     public static boolean pause=false;
 
     static ShapeRenderer shapeR;
@@ -67,7 +68,7 @@ public class MapState extends State implements ControllerListener {
     public static char lastPressed = 'w';
     static boolean effectLoaded = false;
     static final String DIVIDER= "_________________________";
-    public static final int cellW=30;
+    public static int cellW=30;
     public static int warpX=0;
     public static int warpY=0;
     public static float dtStatPopup=0;
@@ -424,7 +425,7 @@ public class MapState extends State implements ControllerListener {
         player.setGold(player.getGold() + gold);
         StatManager.totalGold += gold;
         out(player.getName() + " recieved " + gold + "G");
-        MapStateRender.setHoverText(gold + "G", .5f, Color.GOLD, player.getPX(), player.getPY(), false);
+        MapStateRender.setHoverText(gold + "G", .5f, Color.GOLD, player.getAbsPos().x, player.getAbsPos().y, false);
     }
     public static void openCrate(int index) {
         if (liveCellList.get(index) != null && liveCellList.get(index).getItem() != null)
@@ -434,7 +435,7 @@ public class MapState extends State implements ControllerListener {
                 Gold g = (Gold) liveCellList.get(index).getItem();
                 out(g.getValue() + " added to stash");
                 StatManager.totalGold+=g.getValue();
-                MapStateRender.setHoverText(g.getValue() + "G", 1, Color.GOLD, player.getPX(), player.getPY(), false);
+                MapStateRender.setHoverText(g.getValue() + "G", 1, Color.GOLD, player.getAbsPos().x, player.getAbsPos().y,false);
             } else {
                 Item item = liveCellList.get(index).getItem();
                 if (item != null) {
@@ -458,7 +459,7 @@ public class MapState extends State implements ControllerListener {
                             player.addItemToInventory(item);
                             if (a) inventoryPos = 0;
                             out(item.getName() + " added to inventory");
-                            MapStateRender.setHoverText(item.getName(), 1, Color.WHITE, player.getPX(), player.getPY(), false);
+                            MapStateRender.setHoverText(item.getName(), 1, Color.WHITE,  player.getAbsPos().x, player.getAbsPos().y, false);
                         } else {
                             player.lastItem = new Gold();
                         }
@@ -471,7 +472,7 @@ public class MapState extends State implements ControllerListener {
                         player.addItemToInventory(item);
                         if (a) inventoryPos = 0;
                         out(item.getName() + " added to inventory");
-                        MapStateRender.setHoverText(item.getName(), 1, Color.WHITE, player.getPX(), player.getPY(), false);
+                        MapStateRender.setHoverText(item.getName(), 1, Color.WHITE, player.getAbsPos().x, player.getAbsPos().y,false);
                     }
                 }
             }

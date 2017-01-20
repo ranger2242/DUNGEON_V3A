@@ -27,8 +27,10 @@ import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.ShopState;
 import com.quadx.dungeons.tools.*;
+import com.quadx.dungeons.tools.heightmap.Matrix;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
 import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.GridManager.*;
@@ -54,6 +56,8 @@ public class MapStateUpdater extends MapState{
     static float dtAttack = 0;
     public static float dtRespawn=0;
     static float dtFPS=0;
+    static float dtf=0;
+
     static float fps=0;
     static float dtClearHits =0;
     static float dtInvSwitch = 0;
@@ -69,20 +73,27 @@ public class MapStateUpdater extends MapState{
 
     private static void updateCamPosition() {
         Vector3 position = cam.position;
-        float lerp = 0.2f;
-        float mag= 5;
-        if(shakeCam) {
-            position.x += ((player.getAbsPos().x - position.x) * lerp) + (mag * rn.nextGaussian());
-            position.y += ((player.getAbsPos().y - position.y) * lerp) + (mag * rn.nextGaussian());
+        float[] f = dispArray[(int) player.getPos().x][(int) player.getPos().y].getCorners().getVertices();
+        Vector3 v = new Vector3(f[8], f[9], 0);
+        float mag = 5;
+        if(!noLerp) {
+            if (shakeCam) {
+                v.add((float) (mag * rn.nextGaussian()), (float) (mag * rn.nextGaussian()), 0);
+                position.lerp(v, 1f);
+
+            } else {
+
+                position.lerp(v, .2f);
+            }
         }else{
-            position.x += ((player.getAbsPos().x - position.x) * lerp);
-            position.y += ((player.getAbsPos().y - position.y) * lerp);
+            position.set(player.getAbsPos().x,GridManager.getAdjustedHeight(player.getAbsPos()),0);
+            noLerp=false;
         }
+
         cam.position.set(position);
         cam.update();
         viewX = cam.position.x - cam.viewportWidth / 2;
         viewY = cam.position.y - cam.viewportHeight / 2;
-
     }
     private static void keyboardAttackSelector(){
         if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
@@ -275,6 +286,7 @@ public class MapStateUpdater extends MapState{
         } else {
             dtFPS += dt;
         }
+        dtf+=dt;
         if (dtClearHits <= .1)
             dtClearHits += dt;
         if (dtRespawn <= 10f)
@@ -322,7 +334,7 @@ public class MapStateUpdater extends MapState{
                         c.setMonsterIndex(monsterList.indexOf(m));
                         liveCellList.set(index, c);
                         Game.console("MList:" + monsterList.indexOf(m));
-                        MapStateRender.setHoverText("!", .5f, Color.RED, player.getPX(), player.getPY(), true);
+                        MapStateRender.setHoverText("!", .5f, Color.RED,  player.getAbsPos().x, player.getAbsPos().y, true);
                     }
                 }
             }
@@ -419,12 +431,47 @@ public class MapStateUpdater extends MapState{
             }catch (IndexOutOfBoundsException e){}
         }
     }
+    static Vector2 rotateCords(boolean left,Vector2 pos){
+        Vector2 v=new Vector2();
+        if(left){
+            v.x=res-pos.y-1;
+            v.y=pos.x;
+        }else{
+            v.x=pos.y;
+            v.y=res-pos.x-1;
+        }
+        return v;
+    }
+    static void rotateMap(boolean left){
+        if(dtf>.15) {noLerp=true;
+            Matrix<Integer> rotator = new Matrix<>(Integer.class);
+            dispArray = rotator.rotateMatrix(dispArray, res, left);
+            player.setPos(rotateCords(left,player.getPos()));
+            player.setAbsPos(new Vector2(player.getPos().x*cellW,player.getPos().y*cellW));
+            for(Monster m:monsterList){
+                m.setPos(rotateCords(left,m.getPos()));
+                m.setAbsPos(new Vector2(m.getPos().x*cellW,m.getPos().y*cellW));
+            }
+            GridManager.hm.calcCorners(dispArray);
+            dispArray=hm.getCells();
+            GridManager.loadLiveCells();
+            GridManager.loadDrawList();
+            dtf=0;
+        }
+    }
     static void buttonHandler() {
         //keyboard functions--------------------------------------------------------
         for(Command c: commandList){
             c.execute();
         }
         keyboardAttackSelector();
+        if (Gdx.input.isKeyPressed(Input.Keys.COMMA)) {
+            rotateMap(true);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.PERIOD)) {
+            rotateMap(false);
+
+        }
         if (Gdx.input.isKeyPressed(Input.Keys.F1) && debug) {//reload map
             if (dtMap > .6) {
                 gm.initializeGrid();
