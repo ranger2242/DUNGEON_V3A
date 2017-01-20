@@ -3,6 +3,7 @@ package com.quadx.dungeons;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
@@ -125,10 +126,8 @@ public class GridManager {
             if(c.getState()) {
                 Monster m = Monster.getNew();
                 m.setAbsPos(c.getAbsPos());
-                //if(rn.nextFloat()<.05)m.setHit();
-                // c.setState();
+                m.setPos(c.getPos());
                 m.setLiveCellIndex(point);
-                //c.setMonster(m);
                 monsterList.add(m);
                 c.setMonsterIndex(listSize + 1);
                 liveCellList.set(point, c);
@@ -232,30 +231,18 @@ public class GridManager {
     private void plotPlayer() {
         int index = rn.nextInt(liveCellList.size());
         Cell c = liveCellList.get(index);
-        int w = cellW;
-        while(!(!c.getWater() && c.getState())){
+        while (!(!c.getWater() && c.getState())) {
             index = rn.nextInt(liveCellList.size());
             c = liveCellList.get(index);
         }
-       // player.setCordsPX(c.getX() * w, c.getY() * w);
         player.setPos(c.getPos());
         player.setAbsPos(new Vector2(c.getAbsPos()));
         int range = 35;
-        for (int i = 0; i < range; i++) {
-            for (int j = 0; j < range; j++) {
-                int x = c.getX() - (range / 2) + i;
-                int y = c.getY() - range / 2 + j;
-
-                if (x < 0) x = 0;
-                if (x > res - 1) x = res - 1;
-                if (y < 0) y = 0;
-                if (y > res - 1) y = res - 1;
-                for (Cell cell : liveCellList) {
-                    if (cell.hasMon() && cell.getX() == x && cell.getY() == y) {
-                        monsterList.remove(cell.getMonster());
-                        cell.clearMonster();
-                    }
-                }
+        Rectangle rect = new Rectangle(player.getAbsPos().x - (cell.x * (range / 2)), player.getAbsPos().y - (cell.y * (range / 2)), range * cell.x, range * cell.y);
+        for (int p = monsterList.size() - 1; p >= 0; p--) {
+            Monster m = monsterList.get(p);
+            if (m.getHitBox().overlaps(rect)) {
+                monsterList.remove(p);
             }
         }
     }
