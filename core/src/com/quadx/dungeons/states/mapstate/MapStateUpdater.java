@@ -208,7 +208,7 @@ public class MapStateUpdater extends MapState{
                     if(m !=null) {
                         if (!m.equals(m1))
                             if (m.getHitBox().overlaps(m1.getHitBox())) {
-                                float ang = (float) Math.toRadians(EMath.angle(m.getAbsPos(), m1.getAbsPos()));
+                                float ang = (float) Math.toRadians(EMath.angle(m.getAbsPos(), m1.getAbsPos()));//dvs
 
                                 m.setAbsPos(m.getAbsPos().add((float) (10 * Math.cos(ang)), (float) (10 * Math.sin(ang))));
                                 m1.setAbsPos(m1.getAbsPos().add((float) (10 * Math.cos(ang + Math.toRadians(180))), (float) (10 * Math.sin(ang + Math.toRadians(180)))));
