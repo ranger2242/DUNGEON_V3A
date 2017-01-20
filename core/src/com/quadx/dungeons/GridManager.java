@@ -80,29 +80,28 @@ public class GridManager {
     public static void loadDrawList() {
         drawList.clear();
         monsOnScreen.clear();
-        int x = (int) (viewX / cellW);
-        int y = (int) (viewY / cellW);
-        int endx = (int) ((viewX + Game.WIDTH) / cellW);
-        int endy = (int) ((viewY + Game.HEIGHT) / cellW);
-        for (int i = x - 1; i < endx + 1; i++) {
-            for (int j = y - 1; j < endy + 1; j++) {
+        int x = (int) (viewX / cell.x);
+        int y = (int) (viewY/ cell.y);
+        int endx = (int) ((viewX + Game.WIDTH) / cell.x);
+        int endy = (int) ((viewY + Game.HEIGHT) / cell.y);
+        for (int i = x - 3; i < endx + 3; i++) {
+            for (int j = y - 3; j < endy + 3; j++) {
                 Cell c;
-                try {
-                    //load particle effects
-                    c = dispArray[i][j];
-                    c.updateParticles();
-                    if (!c.getState() || c.getWater()) {
-                        c=loadTiles(c);
+                    if(i>=0 &&i<res && j>=0 &&j<res) {
+                        //load particle effects
+                        c = dispArray[i][j];
+                        c.updateParticles();
+                        if (!c.getState() || c.getWater()) {
+                            c = loadTiles(c);
 
+                        }
+                        drawList.add(c);
+                        //check for monster
+                        if (c.getMonster() != null) {
+                            monsOnScreen.add(c.getMonster());
+                        }
                     }
-                    drawList.add(c);
-                    //check for monster
-                    if (c.getMonster() != null) {
-                        monsOnScreen.add(c.getMonster());
-                    }
-                } catch (ArrayIndexOutOfBoundsException e) {
 
-                }
             }
         }
     }
@@ -238,7 +237,9 @@ public class GridManager {
             index = rn.nextInt(liveCellList.size());
             c = liveCellList.get(index);
         }
-        player.setCordsPX(c.getX() * w, c.getY() * w);
+       // player.setCordsPX(c.getX() * w, c.getY() * w);
+        player.setPos(c.getPos());
+        player.setAbsPos(new Vector2(c.getAbsPos()));
         int range = 35;
         for (int i = 0; i < range; i++) {
             for (int j = 0; j < range; j++) {

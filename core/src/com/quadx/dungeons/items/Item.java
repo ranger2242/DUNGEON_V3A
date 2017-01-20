@@ -3,6 +3,8 @@ package com.quadx.dungeons.items;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.equipment.Equipment;
@@ -28,6 +30,8 @@ public class Item
     protected Color ptColor=Color.WHITE;
     public boolean isEquip=false;
     public boolean isSpell=false;
+    Rectangle hitbox=new Rectangle();
+    Vector2 texturePos=new Vector2();
     Texture icon=null;
     int gold;
     Attack attack;
@@ -87,6 +91,10 @@ public class Item
         this.icon = icon;
     }
 
+    public void setHitBox(Rectangle r){
+        hitbox=r;
+    }
+    public Rectangle getHitbox(){return hitbox;}
     public int getValue() {
         return value;
     }

@@ -18,7 +18,6 @@ import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
-import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 import com.quadx.dungeons.tools.*;
 
 import java.util.ArrayList;
@@ -122,15 +121,21 @@ public class Player {
         setStatsPos();
     }
     //SETTERS------------------------------------------------------------------
-    public void setDest(Vector2 v){
-        Vector2 comp=Physics.getVxyComp(1,absPos,v);
+    public void setDest(Vector2 monPos){
+        Vector2 comp=Physics.getVxyComp(1,absPos,monPos);
         Vector2 neg=new Vector2(-comp.x,-comp.y);
         float kick=cellW*4;
-        dest.set(absPos.x+ neg.x*kick,absPos.y+neg.y*kick);
-        Anim a=new Anim(getIcon(),absPos,kick,dest,2,.2f);
-        MapStateUpdater.anims.add(a);
+        Vector2 r=new Vector2(absPos.x+ neg.x*kick,absPos.y+neg.y*kick);
+        dest.set(r.x,GridManager.getAdjustedHeight(r));
+        int gx=Math.round(dest.x/cell.x);
+        int gy=Math.round(dest.y/cell.y);
+        gm.clearArea(gx,gy,true);
+        setPos(new Vector2(gx,gy));
+        setAbsPos(dest);
+        player.setPos(player.getPos());
+        player.setAbsPos(new Vector2(player.getPos().x*cellW,player.getPos().y*cellW));
 
-        overrideControls=true;
+        //overrideControls=true;
     }
     public void forceMove(Vector2 dest){
 
@@ -475,6 +480,8 @@ public class Player {
     public Ability getAbility(){return ability;}
     //MISC Functions------------------------------------------------------------------
     public void fixPosition(){
+        int gx= (int) getPos().x;
+        int gy= (int) getPos().y;
         int x= (int) absPos.x;
         int y= (int) absPos.y;
         if(absPos.x-(getIcon().getWidth()/2)<2){
@@ -489,6 +496,20 @@ public class Player {
         else if(absPos.y+(getIcon().getHeight()/2)>(res*cellW)-2){
             y=(res*cellW)-((getIcon().getHeight()/2)-2);
         }
+
+        if(gx<0){
+            gx=0;
+        }
+        else if(gx>=res){
+            gx=res-1;
+        }
+        if(gy<0){
+            gy=0;
+        }
+        else if(gy>=res){
+            gy=res-1;
+        }
+        setPos(new Vector2( gx,gy));
         setAbsPos(new Vector2(x,y));//terminal test
     }
 

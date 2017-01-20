@@ -7,6 +7,7 @@ import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 import com.quadx.dungeons.tools.EMath;
 
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.states.mapstate.MapState.cell;
 
 /**
  * Created by range_000 on 1/10/2017.
@@ -65,8 +66,10 @@ public class Anim {
         if((int) dest.x ==(int) pos.x &&(int) dest.y==(int) pos.y )end=true;
         switch (flag){
             case 2:{
-                if(!end)
+                if(!end) {
                     player.setAbsPos(pos);
+                    player.setPos(new Vector2(Math.round(pos.x/cell.x),Math.round(pos.y/cell.y)));
+                }
                 MapStateUpdater.activateDig();
             }
         }

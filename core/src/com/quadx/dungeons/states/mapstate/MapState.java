@@ -1,6 +1,5 @@
 package com.quadx.dungeons.states.mapstate;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
@@ -12,7 +11,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.*;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.AttackMod;
@@ -37,6 +35,7 @@ import java.util.Random;
 
 import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.GridManager.*;
+import static com.quadx.dungeons.states.mapstate.MapStateRender.dtLootPopup;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.inventoryPos;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.renderLayers;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtRespawn;
@@ -69,6 +68,7 @@ public class MapState extends State implements ControllerListener {
     static boolean effectLoaded = false;
     static final String DIVIDER= "_________________________";
     public static int cellW=30;
+    public static Vector2 cell = new Vector2(cellW,cellW*(2f/3f));
     public static int warpX=0;
     public static int warpY=0;
     public static float dtStatPopup=0;
@@ -112,7 +112,7 @@ public class MapState extends State implements ControllerListener {
 
     public void debug() {
         //Tests.testEquipmentRates();
-        Tests.giveItems(20);
+        //Tests.giveItems(20);
     }
     public void handleInput() {
     }
@@ -427,44 +427,23 @@ public class MapState extends State implements ControllerListener {
         out(player.getName() + " recieved " + gold + "G");
         MapStateRender.setHoverText(gold + "G", .5f, Color.GOLD, player.getAbsPos().x, player.getAbsPos().y, false);
     }
-    public static void openCrate(int index) {
-        if (liveCellList.get(index) != null && liveCellList.get(index).getItem() != null)
-            if (liveCellList.get(index).getItem().getClass() == Gold.class) {
-                lootPopup = new Texture(Gdx.files.internal("images/imCoin.png"));
-                player.setGold(player.getGold() + liveCellList.get(index).getGold());
-                Gold g = (Gold) liveCellList.get(index).getItem();
-                out(g.getValue() + " added to stash");
-                StatManager.totalGold+=g.getValue();
-                MapStateRender.setHoverText(g.getValue() + "G", 1, Color.GOLD, player.getAbsPos().x, player.getAbsPos().y,false);
-            } else {
-                Item item = liveCellList.get(index).getItem();
-                if (item != null) {
-                    if (item.isEquip) {
-                        item.loadIcon(item.getType());
-                    } else
-                        if(item.getIcon() == null)
-                            item.loadIcon(item.getName());
-                    try {
-                        lootPopup = item.getIcon();
-                        MapStateRender.dtLootPopup = 0;
-                    } catch (GdxRuntimeException | NullPointerException e) {
-                        Game.printLOG(e);
-                    }
-                    try {
-                        if (item.getClass() != Gold.class) {
-                            boolean a = false;
-                            if (player.invList.isEmpty()) {
-                                a = true;
-                            }
-                            player.addItemToInventory(item);
-                            if (a) inventoryPos = 0;
-                            out(item.getName() + " added to inventory");
-                            MapStateRender.setHoverText(item.getName(), 1, Color.WHITE,  player.getAbsPos().x, player.getAbsPos().y, false);
-                        } else {
-                            player.lastItem = new Gold();
-                        }
-                    } catch (NullPointerException e) {
-                        item = new SpeedPlus();
+    public static void openCrate(Item item) {
+        if(item.getClass().equals(Gold.class)){
+            Gold g = (Gold) item;
+            player.setGold(player.getGold() + g.getValue());
+            out(g.getValue() + " added to stash");
+            StatManager.totalGold+=g.getValue();
+            MapStateRender.setHoverText(g.getValue() + "G", 1, Color.GOLD, player.getAbsPos().x,player.getAbsPos().y,false);
+
+        }else {
+            if (item != null) {
+                if (item.isEquip) {
+                    item.loadIcon(item.getType());
+                } else if (item.getIcon() == null)
+                    item.loadIcon(item.getName());
+
+                try {
+                    if (item.getClass() != Gold.class) {
                         boolean a = false;
                         if (player.invList.isEmpty()) {
                             a = true;
@@ -472,10 +451,24 @@ public class MapState extends State implements ControllerListener {
                         player.addItemToInventory(item);
                         if (a) inventoryPos = 0;
                         out(item.getName() + " added to inventory");
-                        MapStateRender.setHoverText(item.getName(), 1, Color.WHITE, player.getAbsPos().x, player.getAbsPos().y,false);
+                        MapStateRender.setHoverText(item.getName(), 1, Color.WHITE, player.getAbsPos().x,player.getAbsPos().y, false);
+                    } else {
+                        player.lastItem = new Gold();
                     }
+                } catch (NullPointerException e) {
+                    item = new SpeedPlus();
+                    boolean a = false;
+                    if (player.invList.isEmpty()) {
+                        a = true;
+                    }
+                    player.addItemToInventory(item);
+                    if (a) inventoryPos = 0;
+                    out(item.getName() + " added to inventory");
+                    MapStateRender.setHoverText(item.getName(), 1, Color.WHITE, player.getAbsPos().x, player.getAbsPos().y, false);
                 }
             }
+        }
+
         StatManager.totalItems++;
     }
     private void bufferOutput(){

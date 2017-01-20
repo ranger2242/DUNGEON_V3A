@@ -34,6 +34,7 @@ import java.util.ConcurrentModificationException;
 
 import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.GridManager.*;
+import static com.quadx.dungeons.states.mapstate.MapStateRender.dtLootPopup;
 
 
 /**
@@ -270,7 +271,6 @@ public class MapStateUpdater extends MapState{
                     anims.remove(i);
                 }
             }
-        updateCamPosition();
         AttackMod.updaterVariables(dt);
         player.updateVariables(dt);
 
@@ -320,6 +320,7 @@ public class MapStateUpdater extends MapState{
         }
 
         if (effectLoaded) effect.update(Gdx.graphics.getDeltaTime());
+        updateCamPosition();
     }
     public static void spawnMonsters(int x){
             for (int i = 0; i < x; i++) {
@@ -510,6 +511,45 @@ public class MapStateUpdater extends MapState{
         dtShake=0;
     }
     static void collisionHandler() {
+        for(Cell c1 :drawList){
+            int x=(int) c1.getPos().x;
+            int y=(int) c1.getPos().y;
+            Cell c=dispArray[x][y];
+            int index=drawList.indexOf(c);
+
+            //check warp
+            if(c.hasWarp() &&player.getHitBox().overlaps(c.getBounds())){
+                if (player.getAbilityPoints() != 0) {
+                    gsm.push(new AbilitySelectState(gsm));
+                }
+                player.floor++;
+                gm.initializeGrid();
+            }
+            //check item
+            if(c.getItem()!=null &&player.getHitBox().overlaps(c.getBounds())){
+                int x1 = c.getBoosterItem();
+                Item item= c.getItem();
+                if (x1 == 0) {
+                    player.useItem(new EnergyPlus());
+                } else if (x1 == 1) {
+                    player.useItem(new Potion());
+                } else if (x1 == 2) {
+                    player.useItem(new ManaPlus());
+                } else {
+                    openCrate(item);
+                }
+                dtLootPopup=0;
+                lootPopup=item.getIcon();
+                c.setBoosterItem(-1);
+                c.setCrate(false);
+                c.setItem(null);
+                dispArray[x][y]=c;
+            }
+        }
+
+
+
+
         int x=player.getX();
         int y=player.getY();
         Cell c;
@@ -523,35 +563,20 @@ public class MapStateUpdater extends MapState{
             if (x == c.getX() && y == c.getY()) {
 
                 if (c.hasLoot()) {
+                    /*
                     MapStateRender.dtLootPopup = 0;
                     liveCellList.get(index).setHasLoot(false);
                     player.lastItem = liveCellList.get(index).getItem();
                     player.useItem(player.lastItem);
                     liveCellList.get(index).setItem(null);
+               */
                 }
                 if (c.hasCrate()) {
-                    int x1 = liveCellList.get(index).getBoosterItem();
-                    if (x1 == 0) {
-                        player.useItem(new EnergyPlus());
-                    } else if (x1 == 1) {
-                        player.useItem(new Potion());
-                    } else if (x1 == 2) {
-                        player.useItem(new ManaPlus());
-                    } else {
 
-                        openCrate(index);
-                    }
-                    liveCellList.get(index).setBoosterItem(-1);
-                    liveCellList.get(index).setCrate(false);
-                    liveCellList.get(index).setItem(null);
                 }
 
                 if (c.hasWarp()) {
-                    if (player.getAbilityPoints() != 0) {
-                        gsm.push(new AbilitySelectState(gsm));
-                    }
-                    player.floor++;
-                    gm.initializeGrid();
+
                 }
                 if (c.getShop()) {
                     liveCellList.get(index).setShop(false);

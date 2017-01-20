@@ -222,8 +222,10 @@ public class MapStateRender extends MapState {
     private static void sbDrawLootPopup(SpriteBatch sb) {
         try {
             if (dtLootPopup < .4) {
-                Texture t = player.getLastItem().getIcon();
-                sb.draw(t,  player.getAbsPos().x, player.getAbsPos().y+40);
+                Vector2 v=new Vector2(player.getAbsPos());
+                v.y+=40+player.getIcon().getHeight();
+                v.x+=(player.getIcon().getWidth()/2);
+                sb.draw(lootPopup,  v.x, GridManager.getAdjustedHeight(v));
             }
         } catch (NullPointerException ignored) {}
     }
@@ -266,62 +268,68 @@ public class MapStateRender extends MapState {
         }
     }
     //SHAPE RENDERING------------------------------------------------------
-    private static void srDrawLand(SpriteBatch sb){
+    private static void srDrawLand(SpriteBatch sb) {
 
         ArrayList<Vector2> hasItem = new ArrayList<>();
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
 
-        for (int i = 0; i < res; i++) {
-            for (int j = 0; j < res; j++) {
-                float[] f=dispArray[i][j].getCorners().getVertices();
-
-                if(dispArray[i][j].getState()) {
-                    shapeR.setColor(HeightMap.getColors().get(Math.round(f[10])));
-                    shapeR.triangle(f[0], f[1], f[2], f[3], f[8], f[9]);
-                    shapeR.setColor(HeightMap.getColors().get(Math.round(f[11])));
-                    shapeR.triangle(f[2], f[3], f[4], f[5], f[8], f[9]);
-                    shapeR.setColor(HeightMap.getColors().get(Math.round(f[12])));
-                    shapeR.triangle(f[4], f[5], f[6], f[7], f[8], f[9]);
-                    shapeR.setColor(HeightMap.getColors().get(Math.round(f[13])));
-                    shapeR.triangle(f[6], f[7], f[0], f[1], f[8], f[9]);
-                    Item item=dispArray[i][j].getItem();
-                    if(item !=null){
-                        hasItem.add(new Vector2(i,j));
-                    }
+        for (Cell c : drawList) {
+            float[] f = c.getCorners().getVertices();
+            //draw land shaded
+            if (c.getState()) {
+                shapeR.setColor(HeightMap.getColors().get(Math.round(f[10])));
+                shapeR.triangle(f[0], f[1], f[2], f[3], f[8], f[9]);
+                shapeR.setColor(HeightMap.getColors().get(Math.round(f[11])));
+                shapeR.triangle(f[2], f[3], f[4], f[5], f[8], f[9]);
+                shapeR.setColor(HeightMap.getColors().get(Math.round(f[12])));
+                shapeR.triangle(f[4], f[5], f[6], f[7], f[8], f[9]);
+                shapeR.setColor(HeightMap.getColors().get(Math.round(f[13])));
+                shapeR.triangle(f[6], f[7], f[0], f[1], f[8], f[9]);
+                Item item = c.getItem();
+                if (item != null) {
+                    hasItem.add(new Vector2(c.getPos()));
                 }
-                else {
-                    shapeR.setColor(Color.BLACK);
-                    float r=((2f/3f)*cellW);
-                    shapeR.rect( f[0],f[1]+r,cellW,r);
-                }
-
+            } else {
+                shapeR.setColor(Color.BLACK);
+                float r = ((2f / 3f) * cellW);
+                shapeR.rect(f[0], f[1] + r, cellW, r);
             }
-        }
-        shapeR.end();
 
+        }
+        //draw grid
+
+        shapeR.end();
         sb.begin();
-        for(Vector2 v: hasItem){
-            float[] f=dispArray[(int) v.x][(int) v.y].getCorners().getVertices();
-            sb.draw(dispArray[(int) v.x][(int) v.y].getItem().getIcon(),f[8],f[9]);
+        for (Cell c : drawList) {
+            //draw items
+            Item item = c.getItem();
+            if (item != null && c.getState()) {
+                sb.draw(item.getIcon(), c.getAbsPos().x, GridManager.getAdjustedHeight(c.getAbsPos()));
+                item.setHitBox(new Rectangle(c.getAbsPos().x, GridManager.getAdjustedHeight(c.getAbsPos()),item.getIcon().getWidth(),item.getIcon().getHeight()));
+                dispArray[(int) c.getPos().x][(int) c.getPos().y].setItem(item);
+            }
+            //draw warp
+            if(c.hasWarp()){
+                sb.draw(ImageLoader.warp,c.getAbsPos().x,GridManager.getAdjustedHeight(c.getAbsPos()));
+            }
         }
         sb.end();
     }
     private static void srDrawGrid(){
         shapeR.begin(ShapeRenderer.ShapeType.Line);
-        for (int i = 0; i < res; i++) {
-            for (int j = 0; j < res; j++) {
-                if(dispArray[i][j].getState()) {
+        for(Cell c: drawList){
+
+                if(c.getState()) {
 
                     shapeR.setColor(Color.DARK_GRAY);
                     shapeR.getColor().a = .5f;
                     float[] fx = new float[8];
                     for (int x = 0; x < 8; x++) {
-                        fx[x] = dispArray[i][j].getCorners().getVertices()[x];
+                        fx[x] = c.getCorners().getVertices()[x];
                     }
                     shapeR.polygon(fx);
                 }
             }
-        }
         shapeR.end();
     }
     private static void srDrawAttackSelectors(){
