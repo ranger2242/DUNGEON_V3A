@@ -11,7 +11,6 @@ import com.quadx.dungeons.abilities.Warp;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.AttackMod;
 import com.quadx.dungeons.commands.Command;
-import com.quadx.dungeons.commands.DigComm;
 import com.quadx.dungeons.commands.cellcommands.AddItemComm;
 import com.quadx.dungeons.items.EnergyPlus;
 import com.quadx.dungeons.items.Item;
@@ -488,6 +487,12 @@ public class MapStateUpdater extends MapState{
             Tests.calcAvgMapLoadTime();
             Tests.loadEmptyMap();
         }
+        if(Gdx.input.isKeyPressed(Input.Keys.F4)) {
+            gsm.push(new ShopState(gsm));
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.B)){
+            player.jumping=true;
+        }
         if(Gdx.input.isKeyPressed(Input.Keys.Z)){//show stats
             if(dtShowStats>.2) {
                 MapStateRender.showStats = !MapStateRender.showStats;
@@ -510,81 +515,47 @@ public class MapStateUpdater extends MapState{
         dtShake=0;
     }
     static void collisionHandler() {
-        for(Cell c1 :drawList){
-            int x=(int) c1.getPos().x;
-            int y=(int) c1.getPos().y;
-            Cell c=dispArray[x][y];
-            int index=drawList.indexOf(c);
+        for (Cell c1 : drawList) {
+            int x = (int) c1.getPos().x;
+            int y = (int) c1.getPos().y;
+            Cell c = dispArray[x][y];
+            int index = drawList.indexOf(c);
 
-            //check warp
-            if(c.hasWarp() &&player.getHitBox().overlaps(c.getBounds())){
-                if (player.getAbilityPoints() != 0) {
-                    gsm.push(new AbilitySelectState(gsm));
-                }
-                player.floor++;
-                gm.initializeGrid();
-            }
-            //check item
-            if(c.getItem()!=null &&player.getHitBox().overlaps(c.getBounds())){
-                int x1 = c.getBoosterItem();
-                Item item= c.getItem();
-                if (x1 == 0) {
-                    player.useItem(new EnergyPlus());
-                } else if (x1 == 1) {
-                    player.useItem(new Potion());
-                } else if (x1 == 2) {
-                    player.useItem(new ManaPlus());
-                } else {
-                    openCrate(item);
-                }
-                dtLootPopup=0;
-                lootPopup=item.getIcon();
-                c.setBoosterItem(-1);
-                c.setCrate(false);
-                c.setItem(null);
-                dispArray[x][y]=c;
-            }
-        }
-
-
-
-
-        int x=player.getX();
-        int y=player.getY();
-        Cell c;
-        try {
-            c = GridManager.dispArray[x][y];
-        }catch (ArrayIndexOutOfBoundsException e){
-            c=GridManager.dispArray[0][0];
-        }
-        int index=liveCellList.indexOf(c);
-        if(c .getState()) {
-            if (x == c.getX() && y == c.getY()) {
-
-                if (c.hasLoot()) {
-                    /*
-                    MapStateRender.dtLootPopup = 0;
-                    liveCellList.get(index).setHasLoot(false);
-                    player.lastItem = liveCellList.get(index).getItem();
-                    player.useItem(player.lastItem);
-                    liveCellList.get(index).setItem(null);
-               */
-                }
-                if (c.hasCrate()) {
-
-                }
-
+            if (player.getHitBox().overlaps(c.getBounds())) {
+                //check warp
                 if (c.hasWarp()) {
-
+                    if (player.getAbilityPoints() != 0) {
+                        gsm.push(new AbilitySelectState(gsm));
+                    }
+                    player.floor++;
+                    gm.initializeGrid();
                 }
+                //check item
+                if (c.getItem() != null) {
+                    int x1 = c.getBoosterItem();
+                    Item item = c.getItem();
+                    if (x1 == 0) {
+                        player.useItem(new EnergyPlus());
+                    } else if (x1 == 1) {
+                        player.useItem(new Potion());
+                    } else if (x1 == 2) {
+                        player.useItem(new ManaPlus());
+                    } else {
+                        openCrate(item);
+                    }
+                    dtLootPopup = 0;
+                    lootPopup = item.getIcon();
+                    c.setBoosterItem(-1);
+                    c.setCrate(false);
+                    c.setItem(null);
+                    dispArray[x][y] = c;
+                }
+                //check shop
                 if (c.getShop()) {
                     liveCellList.get(index).setShop(false);
                     gsm.push(new ShopState(gsm));
                 }
             }
-        }else{
-            DigComm d=new DigComm();
-            d.execute();
         }
     }
     public static void setAim(Direction.Facing f){//why wont this shit update
