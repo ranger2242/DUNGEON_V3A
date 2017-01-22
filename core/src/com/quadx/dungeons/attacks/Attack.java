@@ -1,6 +1,7 @@
 package com.quadx.dungeons.attacks;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.Arrays;
@@ -26,7 +27,6 @@ public class Attack {
     float weight;
     int ptSpawnH=0;
     int ptSpawnW=0;
-
     private final int[] usesCheck={80,300,650,1000,1500};
     private Texture icon;
 
@@ -40,6 +40,7 @@ public class Attack {
 
     }
     Attack(){}
+    public Rectangle calculateHitBox(){return new Rectangle();}
     public Vector2 getSpawnBox(){return new Vector2(ptSpawnW,ptSpawnH);}
     public String getName(){return name;}
     public String getDescription(){return description;}

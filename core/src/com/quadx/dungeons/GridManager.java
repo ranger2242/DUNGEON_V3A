@@ -85,18 +85,27 @@ public class GridManager {
         int y = (int) (viewY/ cell.y);
         int endx = (int) ((viewX + Game.WIDTH) / cell.x);
         int endy = (int) ((viewY + Game.HEIGHT) / cell.y);
+        int scale=200;
+        Rectangle screen= new Rectangle(viewX-scale,viewY-scale,(viewX + Game.WIDTH)+scale,(viewY + Game.HEIGHT)+scale);
+        for(Monster m : monsterList){
+            if(m.getHitBox().overlaps(screen)){
+                m.setDrawable(true);
+            }else{
+                m.setDrawable(false);
+            }
+        }
         for (int i = x - 3; i < endx + 3; i++) {
             for (int j = y - 3; j < endy + 3; j++) {
                 Cell c;
                     if(i>=0 &&i<res && j>=0 &&j<res) {
-                        //load particle effects
                         c = dispArray[i][j];
-                        c.updateParticles();
                         if (!c.getState() || c.getWater()) {
                             c = loadTiles(c);
 
                         }
                         drawList.add(c);
+                        //load particle effects
+                        c.updateParticles();
                         //check for monster
                         if (c.getMonster() != null) {
                             monsOnScreen.add(c.getMonster());
@@ -118,7 +127,7 @@ public class GridManager {
     public static void plotMonsters() {
         if (player.getFloor() == 1)
             splitMapDataToList();
-        int temp = rn.nextInt(15)+20;//calculate number of monsters
+        int temp = rn.nextInt(10)+10;//calculate number of monsters
         while (temp > 0) {
             int listSize = monsterList.size();
             int point = rn.nextInt(liveCellList.size());
@@ -137,13 +146,13 @@ public class GridManager {
         }
         Monster.reindexMons=true;
     }
-    public static float getAdjustedHeight(Vector2 v){
-        int gx=Math.round(v.x/cellW);
+    public static float fixHeight(Vector2 v){//get vector in absolute pos
+        int gx=Math.round(v.x/cellW);//find grid pos
         int gy=Math.round(v.y/cellW);
         float pery=(v.y-(gy*cellW))/cellW;
-        float r=cellW*(2f/3f);
         try {
-            return (r * dispArray[gx][gy].getHeight()) + (pery * r) + (gy * r);
+            float y= (dispArray[gx][gy].getHeight()*cell.y)+(gy*cell.y)+(pery*cell.y);
+            return y;
         }catch (NullPointerException| ArrayIndexOutOfBoundsException e) {
             return v.y;
         }

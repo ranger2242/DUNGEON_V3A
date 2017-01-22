@@ -7,35 +7,33 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.quadx.dungeons.*;
+import com.quadx.dungeons.Cell;
+import com.quadx.dungeons.Game;
+import com.quadx.dungeons.GridManager;
+import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.attacks.Attack;
-import com.quadx.dungeons.attacks.AttackMod;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.SpeedPlus;
-import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.MainMenuState;
 import com.quadx.dungeons.states.State;
-import com.quadx.dungeons.tools.Direction;
 import com.quadx.dungeons.tools.ImageLoader;
+import com.quadx.dungeons.tools.ShapeRendererExt;
 import com.quadx.dungeons.tools.StatManager;
 import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.gui.InfoOverlay;
 import com.quadx.dungeons.tools.gui.Text;
 
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 import java.util.Random;
 
 import static com.quadx.dungeons.Game.*;
-import static com.quadx.dungeons.GridManager.*;
-import static com.quadx.dungeons.states.mapstate.MapStateRender.dtLootPopup;
+import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.inventoryPos;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.renderLayers;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtRespawn;
@@ -51,7 +49,7 @@ public class MapState extends State implements ControllerListener {
     public static boolean noLerp=false;
     public static boolean pause=false;
 
-    static ShapeRenderer shapeR;
+    static ShapeRendererExt shapeR;
     static ArrayList<String> output;
     static final ArrayList<Cell> hitList=new ArrayList<>();
      static boolean showStats=true;
@@ -64,7 +62,6 @@ public class MapState extends State implements ControllerListener {
     static Attack attack;
     static Attack attack2;
     public static boolean inGame=false;
-    public static char lastPressed = 'w';
     static boolean effectLoaded = false;
     static final String DIVIDER= "_________________________";
     public static int cellW=30;
@@ -74,7 +71,7 @@ public class MapState extends State implements ControllerListener {
     public static float dtStatPopup=0;
     public static float viewX;
     public static float viewY;
-    static final float itemMinTime=.4f;
+    static final float itemMinTime=.15f;
     static final float attackMintime = Game.frame*10;
     static int lastNumPressed=0;
     static int altNumPressed=1;
@@ -96,7 +93,7 @@ public class MapState extends State implements ControllerListener {
         player.getAbility().onActivate();
         inGame=true;
         gm = new GridManager();
-        shapeR = new ShapeRenderer();
+        shapeR = new ShapeRendererExt();
         output= new ArrayList<>();
         if(controllerMode)
         MainMenuState.controller.addListener(this);
@@ -112,7 +109,7 @@ public class MapState extends State implements ControllerListener {
 
     public void debug() {
         //Tests.testEquipmentRates();
-        //Tests.giveItems(20);
+        Tests.giveItems(20);
     }
     public void handleInput() {
     }
@@ -291,120 +288,11 @@ public class MapState extends State implements ControllerListener {
         }
         invOverlay.add(equipOverlay);
     }
-    static void calculateHitBox(Attack attack){
-        if(attack.getMod()==10){//check earthquake
-            hitList.clear();
-            for(Cell c:drawList){
-                setHitList(c.getX(),c.getY());
-            }
-        }else if(attack.getType()==4){
-            for (int i = player.getX()-attack.getSpread()/2; i < player.getX()+attack.getSpread()/2; i++) {
-                for (int j = player.getY()-attack.getSpread()/2; j < player.getY()+attack.getSpread()/2; j++) {
-                    if(i<res && i>=0 && j<res && j>=0)
-                        setHitList(i, j);
-                }
-            }
-        }
-        else {
-            int xlim = 0, ylim = 0, x = 0, y = 0, a = 0, b = 0;
-            int range = attack.getRange();
-            int spread = attack.getSpread();
-            int px = player.getX();
-            int py = player.getY();
-
-            if (player.facing.equals(Direction.Facing.North) ||player.facing.equals(Direction.Facing.Northeast) ||player.facing.equals(Direction.Facing.Northwest)) {
-                xlim = (px) + spread;
-                ylim = py + range;
-                x = px;
-                y = py;
-                a = (int) -Math.ceil(spread / 2);
-                b = 0;
-
-            } else if (player.facing.equals(Direction.Facing.South) ||player.facing.equals(Direction.Facing.Southeast)||player.facing.equals(Direction.Facing.Southwest)) {
-                xlim = (px) + spread;
-                ylim = py;
-                x = px;
-                y = py - range;
-                a = (int) -Math.ceil(spread / 2);
-                b = 0;
-            } else if (player.facing.equals(Direction.Facing.East)) {
-                xlim = (px) + range;
-                ylim = py + spread;
-                x = px;
-                y = py;
-                a = 0;
-                b = (int) -Math.ceil(spread / 2);
-            } else if (player.facing.equals(Direction.Facing.West)) {
-                xlim = px;
-                ylim = py + spread;
-                x = (px) - range;
-                y = py;
-                a = 0;
-                b = (int) -Math.ceil(spread / 2);
-            }
-            for (int i = x; i < xlim; i++) {
-                for (int j = y; j < ylim; j++) {
-
-                    int n=i+a;
-                    int m=j+b;
-                    if(n<res && n>=0 && m<res && m>=0) {
-                        setHitList(n, m);
-                    }
-                }
-            }
-            player.setAttackBox(new Rectangle(x*cellW,y*cellW,(xlim-x)*cellW,(ylim-y)*cellW));
-
-        }
-        hitList.add(dispArray[player.getX()][player.getY()]);
-    }
-
     static void attackCollisionHandler2(int pos) {
         Attack attack = player.attackList.get(pos);
         StatManager.shotFired(attack);
         player.attackList.get(pos).setUses();
-        calculateHitBox(attack);
-        boolean hit = false;
-        try {
-
-        for (Monster m : monsterList) {
-                if (player.getAttackBox().overlaps(m.getHitBox())) {
-                    hit = true;
-                    m.takeEffect(attack);
-                    m.takeAttackDamage(Damage.calcPlayerDamage(attack, m));
-                    m.checkIfDead();
-                }
-        }
-        }catch (ConcurrentModificationException e){}
-
-        if (AttackMod.sacrifice)
-            AttackMod.sacrifice = false;
-        StatManager.shotMissed(hit);
-        Monster.reindexMons = true;
-        loadLiveCells();
-    }
-
-    static void attackCollisionHandler(int pos) {
-        Attack attack = player.attackList.get(pos);
-        StatManager.shotFired(attack);
-        hitList.clear();
-        player.attackList.get(pos).setUses();
-        calculateHitBox(attack);
-        boolean hit = false;
-        for (Cell c : hitList) {
-            c.setAttArea(true);
-            if (c.getMonster() != null) {//monster was hit
-                hit = true;
-                Monster m = c.getMonster();
-                m.takeEffect(attack);
-                m.takeAttackDamage(Damage.calcPlayerDamage(attack, m));
-                m.checkIfDead();
-            }
-        }
-        if(AttackMod.sacrifice)
-            AttackMod.sacrifice=false;
-        StatManager.shotMissed(hit);
-        Monster.reindexMons=true;
-        loadLiveCells();
+        player.setAttackBox(attack.calculateHitBox());
     }
     private static void setHitList(int x, int y){
             hitList.add(dispArray[x][y]);

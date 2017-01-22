@@ -4,13 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.quadx.dungeons.Anim;
-import com.quadx.dungeons.Cell;
-import com.quadx.dungeons.Game;
-import com.quadx.dungeons.GridManager;
+import com.quadx.dungeons.*;
 import com.quadx.dungeons.abilities.Warp;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.AttackMod;
@@ -34,6 +30,7 @@ import java.util.ConcurrentModificationException;
 
 import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.GridManager.*;
+import static com.quadx.dungeons.monsters.Monster.reindexMons;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.dtLootPopup;
 
 
@@ -87,7 +84,7 @@ public class MapStateUpdater extends MapState{
                 position.lerp(v, .2f);
             }
         }else{
-            position.set(player.getAbsPos().x,GridManager.getAdjustedHeight(player.getAbsPos()),0);
+            position.set(player.getAbsPos().x,GridManager.fixHeight(player.getAbsPos()),0);
             noLerp=false;
         }
 
@@ -190,45 +187,44 @@ public class MapStateUpdater extends MapState{
         }
     }
     static void moveMonsters() {
-        ArrayList<Monster> drawableMonsterList= new ArrayList();
-
-        if(!Tests.allstop) {
             try {
-                for (Monster m : monsterList) {
-                    if(m !=null ) {
+                for (int i = 0; i < monsterList.size(); i++) {
+                    Monster m = monsterList.get(i);
+                    if (m != null) {
                         m.checkAgro();
-                        Rectangle screen= new Rectangle(viewX,viewY,viewX+WIDTH,viewY+HEIGHT);
-                        if(m.getHitBox().overlaps(screen)) {
-                            drawableMonsterList.add(m);
-                            m.setOnscreen(true);
-                        } else {
-                            m.setOnscreen(false);
-                        }
-                        if(m.getOnScreen() ||m.isHit()) {
+                        if (m.isDrawable() || m.isHit()) {
+                            //check for attack collision
+                            boolean hit = false;
+                            if (player.getAttackBox().overlaps(m.getHitBox())) {
+                                hit = true;
+                                m.takeEffect(attack);
+                                m.takeAttackDamage(Damage.calcPlayerDamage(attack, m));
+                                m.checkIfDead();
+                            }
+                            StatManager.shotMissed(hit);
+                            ////
                             m.updateVariables(Gdx.graphics.getDeltaTime());
-                            m.move();
+                            if (!Tests.allstop)
+                                m.move();
+                            //check collisions with other monsters
+                            for (int j = i; j < monsterList.size(); j++) {
+                                Monster m1 = monsterList.get(j);
+                                if (!m.equals(m1) && m.isDrawable())
+                                    if (m.getHitBox().overlaps(m1.getHitBox())) {
+                                        float ang = (float) Math.toRadians(EMath.angle(m.getAbsPos(), m1.getAbsPos()));//dvs
+                                        m.setAbsPos(m.getAbsPos().add((float) (10 * Math.cos(ang)), (float) (10 * Math.sin(ang))));
+                                        m1.setAbsPos(m1.getAbsPos().add((float) (10 * Math.cos(ang + Math.toRadians(180))), (float) (10 * Math.sin(ang + Math.toRadians(180)))));
+                                    }
+                            }
                         }
-
                     }
+                    //reindex mons as needed
+                    if (reindexMons)
+                        m.setMonListIndex(monsterList.indexOf(m));
                 }
-
             }
             catch (ConcurrentModificationException e){}
-
-            for(Monster m: drawableMonsterList){
-                for(Monster m1:drawableMonsterList){
-                    if(m !=null) {
-                        if (!m.equals(m1))
-                            if (m.getHitBox().overlaps(m1.getHitBox())) {
-                                float ang = (float) Math.toRadians(EMath.angle(m.getAbsPos(), m1.getAbsPos()));//dvs
-
-                                m.setAbsPos(m.getAbsPos().add((float) (10 * Math.cos(ang)), (float) (10 * Math.sin(ang))));
-                                m1.setAbsPos(m1.getAbsPos().add((float) (10 * Math.cos(ang + Math.toRadians(180))), (float) (10 * Math.sin(ang + Math.toRadians(180)))));
-                            }
-                    }
-                }
-            }
-        }
+        reindexMons = false;
     }
     static void updateVariables(float dt) {
         Runtime runtime = Runtime.getRuntime();
@@ -324,7 +320,7 @@ public class MapStateUpdater extends MapState{
     }
     public static void spawnMonsters(int x){
             for (int i = 0; i < x; i++) {
-                if(monsterList.size()<200) {
+                if(monsterList.size()<70) {
                     Monster m =Monster.getNew();
                     int index = rn.nextInt(liveCellList.size());
                     if (!liveCellList.get(index).getWater() && liveCellList.get(index).getState()) {
@@ -339,7 +335,7 @@ public class MapStateUpdater extends MapState{
                     }
                 }
             }
-            Monster.reindexMons=true;
+            reindexMons=true;
             GridManager.loadLiveCells();
             spawnCount++;
             dtRespawn=0;
@@ -466,6 +462,9 @@ public class MapStateUpdater extends MapState{
             c.execute();
         }
         keyboardAttackSelector();
+        if(Gdx.input.isKeyPressed(Input.Keys.B)){
+            player.jumping=true;
+        }
         if (Gdx.input.isKeyPressed(Input.Keys.COMMA)) {
             rotateMap(true);
         }

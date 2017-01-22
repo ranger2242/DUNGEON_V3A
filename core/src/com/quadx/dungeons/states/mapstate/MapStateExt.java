@@ -93,8 +93,8 @@ public class MapStateExt extends MapState{
             angle.setLow(ang);
         }
             float r=cellW*(2f/3f);
-            effect.getEmitters().get(0).setPosition(x+(cellW/2), GridManager.getAdjustedHeight(new Vector2(x,y))+r);
-            effect.setPosition(x+(cellW/2),GridManager.getAdjustedHeight(new Vector2(x,y))+r);
+            effect.getEmitters().get(0).setPosition(x+(cellW/2), GridManager.fixHeight(new Vector2(x,y))+r);
+            effect.setPosition(x+(cellW/2),GridManager.fixHeight(new Vector2(x,y))+r);
 
         return effect;
     }

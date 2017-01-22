@@ -28,6 +28,7 @@ import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.GridManager.res;
 import static com.quadx.dungeons.states.mapstate.MapState.*;
+import static com.quadx.dungeons.tools.Tests.fastreg;
 
 /**
  * Created by Tom on 11/9/2015.
@@ -35,83 +36,93 @@ import static com.quadx.dungeons.states.mapstate.MapState.*;
 @SuppressWarnings("DefaultFileTemplate")
 public class Player {
 
+    private final ArrayList<String> statsList = new ArrayList<>();
     public final ArrayList<Attack> attackList = new ArrayList<>();
     public final ArrayList<ArrayList<Item>> invList = new ArrayList<>();
-    public ArrayList<Ability> secondaryAbilityList=new ArrayList<>();
     public final ArrayList<Equipment> equipedList = new ArrayList<>();
-    private final ArrayList<String> statsList= new ArrayList<>();
-    private Vector2 absPos =new Vector2(0,0);
+    public ArrayList<Ability> secondaryAbilityList = new ArrayList<>();
+
+    private Vector2 absPos = new Vector2(0, 0);
+    Vector2[] statsPos;
+    Vector2 texturePos = new Vector2();
+    Vector2 modPos = new Vector2();
+    Vector2 dest = new Vector2();
+
+    private final Random rn = new Random();
+    private Texture[] icons = new Texture[4];
     private Ability ability = null;
+    public Direction.Facing facing = Direction.Facing.North;
     public Item lastItem = null;
+    Rectangle attackBox = new Rectangle();
+
     private int x;
     private int px;//(Game.WIDTH/2)+1;
     private int y;
     private int py;//(Game.HEIGHT/2)-2;
-    private int hpMod =0;
-    private int attMod =0;
-    private int defMod =0;
-    private int spdMod =0;
-    private int eMod=0;
+    private int hpMod = 0;
+    private int attMod = 0;
+    private int defMod = 0;
+    private int spdMod = 0;
+    private int eMod = 0;
     private int manaMod = 0;
-    private double mRegen =5;
-    private int spd =15;
-    private double hpRegen =2;
-    private int exp=0;
-    private int killCount =0;
-    private int energy=100;
-    private int energyMax=100;
-    private double eRegen =2 ;
+    private int spd = 15;
+    private int exp = 0;
+    private int killCount = 0;
+    private int energy = 100;
+    private int energyMax = 100;
     private int hpMax = 100;
-    private int intMod =0;
-    private int hp =100;
-    private int def =15;
-    private int intel=15;
+    private int intMod = 0;
+    private int hp = 100;
+    private int def = 15;
+    private int intel = 15;
     private int mana = 100;
-    public int maxSec=2;
-   // private int eMod=0;
-    private int abilityMod =0;
-    private int att =15;
-    public int level =1;
-    public int floor= 1;
-    int expLimit=0;
+    private int abilityMod = 0;
+    private int att = 15;
+    public int maxSec = 2;
+    public int level = 1;
+    public int floor = 1;
+    int expLimit = 0;
     int manaMax = 100;
-    int abilityPoints=0;
+    int abilityPoints = 0;
 
-    double mDamage=0;
+    private boolean clearhit = false;
+    public boolean infiniteRegen = false;
+    public boolean canMove = false;
+    public boolean wasHit = false;
+    public boolean safe = false;
+    public boolean jumping =false;
+    boolean overrideControls = false;
 
-    public boolean infiniteRegen=false;
-    public boolean canMove=false;
-    public boolean wasHit=false;
-    public boolean safe=false;
-    private float hpBuff=1;
-    private float mBuff=1;
-    private float eBuff=1;
-    private float attBuff=1;
-    private float defBuff=1;
-    private float intBuff=1;
-    private float spdBuff=1;
-    float hpRegenMod=1;
-    private float dtRegen = 0;
+    private float hpBuff = 1;
+    private float mBuff = 1;
+    private float eBuff = 1;
+    private float attBuff = 1;
+    private float defBuff = 1;
+    private float intBuff = 1;
+    private float spdBuff = 1;
     private float dtEnergyRe = 0;
-    public float dtSafe=0;
-    public float dtHitInvincibility=0;
-    public float dtMove=0;
-    private double moveSpeed=.1f;
-    private float gold=0;
-    private final Random rn =new Random();
-    private String name ="DEMO";
-    private Texture[] icons=new Texture[4];
-    private double mRegenMod=1;
-    private double eRegenMod=1;
-    private double moveMod=1;
-    Vector2 texturePos=new Vector2();
-    Vector2 modPos= new Vector2();
-    Vector2[] statsPos;
-    Vector2 dest=new Vector2();
-    Rectangle attackBox= new Rectangle();
-    private float velocity=10;
-    public Direction.Facing facing = Direction.Facing.North;
-    boolean overrideControls=false;
+    private float dtRegen = 0;
+    private float dtClearHit = 0;
+    private float gold = 0;
+    private float velocity = 10;
+    private float dtSafe = 0;
+    private float dtHitInvincibility = 0;
+    public float dtMove = 0;
+    float hpRegenMod = 1;
+    float relheight=0;
+    float dtJump=0;
+
+    private double mRegenMod = 1;
+    private double eRegenMod = 1;
+    private double moveMod = 1;
+    private double mRegen = 5;
+    private double hpRegen = 2;
+    private double eRegen = 2;
+    private double moveSpeed = .1f;
+    double mDamage = 0;
+
+    private String name = "DEMO";
+
 
     public Player() {
         //AbilityMod.resetAbilities();
@@ -126,7 +137,7 @@ public class Player {
         Vector2 neg=new Vector2(-comp.x,-comp.y);
         float kick=cellW*4;
         Vector2 r=new Vector2(absPos.x+ neg.x*kick,absPos.y+neg.y*kick);
-        dest.set(r.x,GridManager.getAdjustedHeight(r));
+        dest.set(r.x,GridManager.fixHeight(r));
         int gx=Math.round(dest.x/cell.x);
         int gy=Math.round(dest.y/cell.y);
         gm.clearArea(gx,gy,true);
@@ -275,17 +286,21 @@ public class Player {
     //GETTERS------------------------------------------------------------------
 
     public Rectangle getAttackBox() {
+        //return new Rectangle(attackBox.x,,attackBox.width,attackBox.height);
         return attackBox;
     }
     public Rectangle getHitBox() {
-        return new Rectangle(absPos.x,absPos.y,getIcon().getWidth(),getIcon().getHeight());
+        return new Rectangle(absPos.x,GridManager.fixHeight(absPos),getIcon().getWidth(),getIcon().getHeight());
     }
 
     public Vector2 getAbsPos(){
-        return absPos;
+        if(absPos.y+jump()>absPos.y)
+        return new Vector2(absPos.x,absPos.y+jump());
+        else
+            return new Vector2(absPos.x,absPos.y);
     }
     public Vector2 getTexturePos(){
-        texturePos.set(getAbsPos().x,GridManager.getAdjustedHeight(getAbsPos()));
+        texturePos.set(getAbsPos().x,GridManager.fixHeight(getAbsPos()));
         return texturePos;
     }
     public Vector2[] getStatPos(){
@@ -512,19 +527,27 @@ public class Player {
         setPos(new Vector2( gx,gy));
         setAbsPos(new Vector2(x,y));//terminal test
     }
-
+    public float jump(){
+          return (float) ((625*dtJump)- (927.5*Math.pow(dtJump,2)));
+    }
     public void regenModifiers(){
-        hpRegen=(2*Math.pow(1.004,(getSpdComp()+getDefComp())/2)*hpRegenMod);
-        hp+=hpRegen;
-        if(hp>hpMax)hp=hpMax;
+        if(!fastreg) {
+            hpRegen = (2 * Math.pow(1.004, (getSpdComp() + getDefComp()) / 2) * hpRegenMod);
+            hp += hpRegen;
+            if (hp > hpMax) hp = hpMax;
 
-        mRegen=(5*Math.pow(1.004,(getSpdComp()+getIntComp())/2)*mRegenMod);
-        mana+=mRegen;
-        if(mana>manaMax)mana=manaMax;
+            mRegen = (5 * Math.pow(1.004, (getSpdComp() + getIntComp()) / 2) * mRegenMod);
+            mana += mRegen;
+            if (mana > manaMax) mana = manaMax;
 
-        eRegen=(5*Math.pow(1.004,(getSpdComp()+getAttComp())/2)*eRegenMod);
-        energy+=eRegen;
-        if(energy>energyMax)energy=energyMax;
+            eRegen = (5 * Math.pow(1.004, (getSpdComp() + getAttComp()) / 2) * eRegenMod);
+            energy += eRegen;
+            if (energy > energyMax) energy = energyMax;
+        }else{
+            energy=energyMax;
+            mana=manaMax;
+            hp=hpMax;
+        }
     }
     public void maxStat(){
         int a=10000;
@@ -654,14 +677,27 @@ public class Player {
             spd += item.getSpeedmod();
             s = "+" + item.getSpeedmod()+" SPD";
         }
-        MapStateRender.setHoverText(s,.5f,Color.GREEN,px,py,false);
+        MapStateRender.setHoverText(s,.5f,Color.GREEN,absPos.x,absPos.y,false);
     }
     public void addKills(){
         killCount++;}
     public void updateVariables(float dt){
+        float n=.8f;
+        if(jumping){
+            dtJump+=dt;
+        }
+        if(dtJump>=n){
+            jumping=false;
+            dtJump=0;
+        }
+        dtEnergyRe += dt;
+        dtMove += dt;
+        dtClearHit += dt;
+        if (dtClearHit > dt) {
+            attackBox = new Rectangle(0, 0, 0, 0);
+            dtClearHit = 0;
+        }
 
-        dtEnergyRe+=dt;
-        dtMove+=dt;
         if (wasHit && dtHitInvincibility<=1f)
         dtHitInvincibility+=dt;
         else {

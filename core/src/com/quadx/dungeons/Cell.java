@@ -19,6 +19,9 @@ import com.quadx.dungeons.tools.ImageLoader;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.quadx.dungeons.GridManager.drawList;
+import static com.quadx.dungeons.GridManager.fixHeight;
+import static com.quadx.dungeons.states.mapstate.MapState.cell;
 import static com.quadx.dungeons.states.mapstate.MapState.cellW;
 import static com.quadx.dungeons.states.mapstate.MapStateExt.effects;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.dtWaterEffect;
@@ -161,7 +164,7 @@ public class Cell {
         y = b;
         pos=new Vector2(a,b);
         absPos=new Vector2(a*cellW,b*cellW);
-        bounds = new Rectangle(absPos.x,absPos.y,cellW,cellW);
+        bounds = new Rectangle(absPos.x,fixHeight(absPos),cell.x,cell.y);
     }
     public void setShop(boolean set){hasShop=set;}
     public void setMon(boolean set){hasMon=set;}
@@ -207,7 +210,7 @@ public class Cell {
     public void updateParticles(){
         if(this.item!= null) {
             hasItem = true;
-            if(!effectLoaded && getState() && GridManager.liveCellList.contains(this)){
+            if(!effectLoaded && getState() && drawList.contains(this)){
                 if(item.hasEffect()) {
                     effect = MapStateExt.loadParticles("ptItem", getAbsPos().x +(item.getIcon().getWidth()/2), getAbsPos().y ,item.getPtColor(), 2);
                     effectLoaded = true;

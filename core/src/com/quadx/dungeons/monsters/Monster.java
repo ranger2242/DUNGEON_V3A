@@ -65,7 +65,8 @@ public class Monster {
     protected boolean moved = false;
     protected boolean aa = false;
     protected boolean bb = false;
-    protected boolean isOnscreen;
+    protected boolean drawable=false;
+    protected boolean invWait=false;
     boolean lowhp = false;
 
     protected double attack;
@@ -111,6 +112,7 @@ public class Monster {
     protected float expFactor = 1;
     protected float velocity=5;
     protected float dtChangeDirection=0;
+    protected float dtInv=0;
 
     public Monster() {
     }
@@ -164,7 +166,12 @@ public class Monster {
         return hbar2;
     }
     public Rectangle getHitBox(){
-        return new Rectangle(getAbsPos().x,getAbsPos().y,getIcon().getWidth(),getIcon().getHeight());
+        float x=getAbsPos().x,
+                y=getAbsPos().y,
+                w=getIcon().getWidth(),
+                h=getIcon().getHeight();
+
+        return new Rectangle(x-(w/2),GridManager.fixHeight(new Vector2(x,y))-(h/2),w,h);
     }
     public Rectangle getAgroBox(){
         float r=(getSight()*cellW);
@@ -177,7 +184,7 @@ public class Monster {
         return absPos;
     }
     public Vector2 getTexturePos() {
-        texturePos.set(getAbsPos().x-(getIcon().getWidth())/2, GridManager.getAdjustedHeight(getAbsPos())-(getIcon().getHeight())/2 );
+        texturePos.set(getAbsPos().x-(getIcon().getWidth())/2, GridManager.fixHeight(getAbsPos())-(getIcon().getHeight())/2 );
 
         return texturePos;
     }
@@ -223,13 +230,13 @@ public class Monster {
             player.setHp(player.getHp() - d);//apply damage
             MapStateUpdater.shakeScreen(.5f);
             player.setDest(absPos);
-            MapStateRender.setHoverText("-" + d, 1, Color.WHITE, player.getAbsPos().x, player.getAbsPos().y, true);
+            MapStateRender.setHoverText("-" + d, 1, new Color(1f,.2f,.2f,1f), player.getAbsPos().x, player.getAbsPos().y, true);
             hit = true;
             StatManager.killer = this;
         }
         return hit;
     }
-    public boolean getOnScreen(){return isOnscreen;}
+    public boolean isDrawable(){return drawable;}
     public boolean checkIfDead() {
         if (hp < 1) {
             out(DIVIDER);
@@ -364,19 +371,10 @@ public class Monster {
         py = (int) EMath.round(a.y);
         setPos(new Vector2((int) (EMath.round(absPos.x / cellW)), (int) (EMath.round(absPos.y / cellW))));
     }
-    public void setOnscreen(boolean s) {
-        isOnscreen=s;
+    public void setDrawable(boolean s) {drawable=s;
     }
 
     //OTHER----------------------------------------------------------------------------------
-    public static void reindexMonsterList() {
-        if (reindexMons) {
-            for (Monster m : monsterList) {
-                m.setMonListIndex(monsterList.indexOf(m));
-            }
-            reindexMons = false;
-        }
-    }
     protected void loadIcon() {
         int i=0;
         switch (facing) {
@@ -457,6 +455,8 @@ public class Monster {
     public void updateVariables(float dt) {
         dtMove += dt;
         dtChangeDirection+=dt;
+        if(invWait)
+            dtInv+=dt;
         velocity= (float) (6+.0136*getSpeed()+.000005* Math.pow(getSpeed(),2))*( 3f/4f);
         aa = rn.nextBoolean();
         bb = rn.nextBoolean();
@@ -473,9 +473,9 @@ public class Monster {
         overlay.texts.clear();
         Vector2 ne=new Vector2(absPos.x,absPos.y);
         ne.add(0,-20);
-        overlay.texts.add(new Text("LVL " + level, new Vector2(absPos.x - 22, GridManager.getAdjustedHeight(ne)), Color.GRAY, 1));
+        overlay.texts.add(new Text("LVL " + level, new Vector2(absPos.x - 22, GridManager.fixHeight(ne)), Color.GRAY, 1));
         if (isHit())
-            overlay.texts.add(new Text("!", new Vector2(absPos.x - 22, GridManager.getAdjustedHeight(ne)), Color.GRAY, 1));
+            overlay.texts.add(new Text("!", new Vector2(absPos.x - 22, GridManager.fixHeight(ne)), Color.GRAY, 1));
         checkForDamageToPlayer();
         loadIcon();
         fixPosition();
@@ -503,13 +503,21 @@ public class Monster {
         }
     }
     public void takeAttackDamage(double i) {
-        hp = hp - (int) i;
-        if (hp < 0) {
-            hp = 0;
+        if(!invWait) {
+            hp = hp - (int) i;
+            if (hp < 0) {
+                hp = 0;
+            }
+            setHit();
+            MapStateRender.setHoverText("-" + (int) i, .8f,new Color(1f,.2f,.2f,1f), absPos.x, absPos.y+20, true);
+            out("Hit " + name + " for " + (int) i + " damage.");
+            invWait=true;
+        }else{
+            if(dtInv>.2f){
+                invWait=false;
+                dtInv=0;
+            }
         }
-        setHit();
-        MapStateRender.setHoverText("-" + (int) i, .8f, Color.WHITE, px, py, true);
-        out("Hit " + name + " for " + (int) i + " damage.");
     }
     public void move(Vector2 vel) {
         try {

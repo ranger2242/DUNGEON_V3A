@@ -15,7 +15,7 @@ public abstract class Ability {
     protected Texture icon;
     protected String name="default";
     final ArrayList<String> output=new ArrayList<>();
-    int[] upCost={0,4,8,16,16};
+    int[] upCost={0,2,4,8,8};
     static boolean enabled=false;
     static float cooldown=0;
     static float timeCounter=0;

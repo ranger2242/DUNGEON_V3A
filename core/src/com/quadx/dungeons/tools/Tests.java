@@ -28,11 +28,12 @@ public class Tests {
     public static int meterListMax = 50;
     public static int runs = 100;
     public static float dtReload = 0;
-    public static boolean allstop = false;
-    public static boolean nospawn = false;
-    public static boolean nodeath = false;
-
-
+    public static boolean allstop=      false;
+    public static boolean nospawn=      false;
+    public static boolean nodeath=      false;
+    public static boolean fastreg=      false;
+    public static boolean noLand=       false;
+    public static boolean showhitbox=   false;
     static int testCount = 0;
 
     public static void giveItems(int x) {
