@@ -127,7 +127,7 @@ public class GridManager {
     public static void plotMonsters() {
         if (player.getFloor() == 1)
             splitMapDataToList();
-        int temp = rn.nextInt(10)+10;//calculate number of monsters
+        int temp = rn.nextInt(20)+20;//calculate number of monsters
         while (temp > 0) {
             int listSize = monsterList.size();
             int point = rn.nextInt(liveCellList.size());
@@ -333,9 +333,9 @@ public class GridManager {
         out(GridManager.mapLoadTime.runtime());
 
     }
-    public void clearArea(int x, int y, boolean isPlayer) {
+    public void clearArea(float x, float y, boolean isPlayer) {
         try {
-            ArrayList<Cell> temp = getSurroundingCells(x, y);
+            ArrayList<Cell> temp = getSurroundingCells(Math.round(x),Math.round( y));
             temp.stream().filter(c -> !c.getState()).forEach(Cell::setState);
             temp.clear();
 
@@ -343,13 +343,13 @@ public class GridManager {
             if (isPlayer && player.hasDigPlus()) {//checks if players dig ability is active
                 if (player.facing.equals(Direction.Facing.East) || player.facing.equals(Direction.Facing.West))
                     //if (MapState.lastPressed == 'd' ||MapState.lastPressed == 'a')
-                    clearDigPlusCells(9, 3, x, y);
+                    clearDigPlusCells(9, 3,Math.round( x), Math.round(y));
                 if (player.facing.equals(Direction.Facing.North) || player.facing.equals(Direction.Facing.South)
                         || player.facing.equals(Direction.Facing.Northeast) || player.facing.equals(Direction.Facing.Southeast)
                         || player.facing.equals(Direction.Facing.Northwest) || player.facing.equals(Direction.Facing.Southwest)) {
 
                 }
-                clearDigPlusCells(3, 9, x, y);
+                clearDigPlusCells(3, 9,Math.round( x), Math.round(y));
             }
             splitMapDataToList();
         }catch (ArrayIndexOutOfBoundsException e){

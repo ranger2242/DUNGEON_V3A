@@ -123,6 +123,7 @@ public class MapStateRender extends MapState {
     }
 
     private static void sbDrawPlayer(SpriteBatch sb) {
+
         if (blinkp || !player.wasHit) {
             if(Tests.showhitbox) {
                 shapeR.begin(ShapeRenderer.ShapeType.Filled);
@@ -132,6 +133,14 @@ public class MapStateRender extends MapState {
                 shapeR.rect(player.getAttackBox());
                 shapeR.end();
             }
+            float[] f = dispArray[(int) player.getPos().x][(int) player.getPos().y].getCorners().getVertices();
+            shapeR.begin(ShapeRenderer.ShapeType.Filled);
+            shapeR.setColor(Color.DARK_GRAY);
+            shapeR.triangle(f[0], f[1], f[2], f[3], f[8], f[9]);
+            shapeR.triangle(f[2], f[3], f[4], f[5], f[8], f[9]);
+            shapeR.triangle(f[4], f[5], f[6], f[7], f[8], f[9]);
+            shapeR.triangle(f[6], f[7], f[0], f[1], f[8], f[9]);
+            shapeR.end();
             sb.begin();
             Vector2 v = player.getTexturePos();
             sb.draw(player.getIcon(), v.x, v.y);

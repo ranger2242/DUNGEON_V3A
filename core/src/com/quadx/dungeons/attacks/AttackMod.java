@@ -23,6 +23,7 @@ public class AttackMod {
         }
     }
     static public void runMod(Attack a){
+
         int mod=a.getMod();
         MapState.statPopup=null;
         switch (mod){
@@ -32,7 +33,8 @@ public class AttackMod {
                 break;
             }
             case 1:{//DRAIN
-                player.setHp((int) (player.getHp()+player.getmDamage()/2));
+                player.addHp((int) (player.getmDamage()/2));
+                //player.setHp((int) (player.getHp()+player.getmDamage()/2));
                 out(player.getName() +" stole "+ player.getmDamage()/2+" HP");
                 break;
             }

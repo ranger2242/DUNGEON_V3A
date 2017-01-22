@@ -124,6 +124,7 @@ public class MapState extends State implements ControllerListener {
         }
         MapStateUpdater.buttonHandler();
         if(MapStateUpdater.dtCollision>Game.frame/2) {
+            if(!player.jumping)
             MapStateUpdater.collisionHandler();
         }
         MapStateUpdater.moveMonsters();

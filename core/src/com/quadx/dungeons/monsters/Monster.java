@@ -212,7 +212,7 @@ public class Monster {
     }
     public boolean checkForDamageToPlayer() {
         boolean hit = false;
-        if(getHitBox().overlaps(player.getHitBox()) && !player.wasHit){
+        if(getHitBox().overlaps(player.getHitBox()) && !player.wasHit && !player.jumping){
             player.wasHit=true;
             //    if ((x == px && y == py) || (x + 1 == px && y == py) || (x - 1 == px && y == py)    //check surrounding tiles for player
             //             || (x == px && y + 1 == py) || (x == px && y - 1 == py)) {                  //hurt if found
@@ -227,7 +227,8 @@ public class Monster {
                 else
                     d = Damage.monsterPhysicalDamage(player, this, (int) power);
             }
-            player.setHp(player.getHp() - d);//apply damage
+            player.addHp(-d);
+            //player.setHp(player.getHp() - d);//apply damage
             MapStateUpdater.shakeScreen(.5f);
             player.setDest(absPos);
             MapStateRender.setHoverText("-" + d, 1, new Color(1f,.2f,.2f,1f), player.getAbsPos().x, player.getAbsPos().y, true);

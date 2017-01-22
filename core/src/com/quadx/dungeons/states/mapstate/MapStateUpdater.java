@@ -42,8 +42,9 @@ public class MapStateUpdater extends MapState{
     public static ArrayList<Anim> anims= new ArrayList<>();
      static ArrayList<Cell> pending= new ArrayList<>();
     static boolean displayFPS=true;
-    private static float dtDig = 0;
+    static boolean dig=true;
 
+    private static float dtDig = 0;
     private static float dtInfo = 0;
     private static float dtItem = 0;
     private static float dtMap = 0;
@@ -282,6 +283,7 @@ public class MapStateUpdater extends MapState{
             dtFPS += dt;
         }
         dtf+=dt;
+        dtDig+=dt;
         if (dtClearHits <= .1)
             dtClearHits += dt;
         if (dtRespawn <= 10f)
@@ -464,10 +466,10 @@ public class MapStateUpdater extends MapState{
         if(Gdx.input.isKeyPressed(Input.Keys.B)){
             player.jumping=true;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.COMMA)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.ALT_RIGHT)) {
             rotateMap(true);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.PERIOD)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)) {
             rotateMap(false);
 
         }
@@ -520,8 +522,20 @@ public class MapStateUpdater extends MapState{
             int y = (int) c1.getPos().y;
             Cell c = dispArray[x][y];
             int index = drawList.indexOf(c);
-
             if (player.getHitBox().overlaps(c.getBounds())) {
+                if(!c.getState()){
+                    int e=5+player.getLevel();
+                    if(dtDig>.5){
+                        if(player.getEnergy()>e) {
+                            player.setEnergy(player.getEnergy()-e);
+                            dtDig=0;
+                        }
+                        else{dig=false;}
+                    }
+                    if(dig)
+                    MapStateUpdater.activateDig();
+
+                }
                 //check warp
                 if (c.hasWarp()) {
                     if (player.getAbilityPoints() != 0) {
@@ -552,7 +566,8 @@ public class MapStateUpdater extends MapState{
                 }
                 //check shop
                 if (c.getShop()) {
-                    liveCellList.get(index).setShop(false);
+                    //liveCellList.get(index).setShop(false);
+                    dispArray[x][y].setShop(false);
                     gsm.push(new ShopState(gsm));
                 }
             }

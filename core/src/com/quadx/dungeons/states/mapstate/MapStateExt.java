@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.attacks.Attack;
-import com.quadx.dungeons.attacks.AttackMod;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.tools.FilePaths;
 
@@ -135,7 +134,7 @@ public class MapStateExt extends MapState{
                 addEffect(loadParticles("ptfla",player.getAbsPos().x,player.getAbsPos().y,1));
 
                 MapState.attackCollisionHandler2(i);
-                AttackMod.runMod(a);
+                //AttackMod.runMod(a);
                 player.attackList.get(player.attackList.indexOf(a)).checkLvlUp();
 
             }

@@ -154,9 +154,6 @@ public class Player {
     public void setAttackBox(Rectangle r){
         attackBox=r;
     }
-    public void setEnergy(int e){
-        energy=e;
-    }
     public void setEnergyMax(int e){
         energyMax=e;
     }
@@ -167,12 +164,27 @@ public class Player {
             name=name.substring(0,19);
         }
     }
+
     public void setHp(int hp) {
         this.hp = hp;
     }
     public void setMana(int m) {
         this.mana = m;
     }
+    public void setEnergy(int e){
+        energy=e;
+    }
+
+    public void addHp(int hp) {
+        this.hp += hp;
+    }
+    public void addMana(int m) {
+        this.mana += m;
+    }
+    public void addEnergy(int e){
+        energy +=e;
+    }
+
     public void setExp(int lvl, float factor) {
         double a=65.9055;
         double b=1.17958;
