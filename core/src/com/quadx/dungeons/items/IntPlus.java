@@ -13,7 +13,7 @@ public class IntPlus extends Item {
         name="Intel+";
         ptColor= Color.PURPLE;
         intelmod+=1;
-        cost=1000;
+        cost=3500;
         setIcon(new Texture(FilePaths.getPath("images\\icons\\items\\icInt+.png")));
 
     }

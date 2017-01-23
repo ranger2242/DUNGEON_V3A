@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.abilities.Ability;
 import com.quadx.dungeons.abilities.DigPlus;
 import com.quadx.dungeons.abilities.Investor;
-import com.quadx.dungeons.abilities.WaterBreath;
 import com.quadx.dungeons.attacks.*;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
@@ -186,8 +185,8 @@ public class Player {
     }
 
     public void setExp(int lvl, float factor) {
-        double a=65.9055;
-        double b=1.17958;
+        double a=34.9055;
+        double b=1.00958;
         int gain= (int) (a*Math.pow(b,lvl)*factor);
         MapStateRender.setHoverText(gain +" EXP",.8f, Color.GREEN , player.getAbsPos().x, player.getAbsPos().y+10,false);
         this.exp+=gain;
@@ -544,15 +543,19 @@ public class Player {
     }
     public void regenModifiers(){
         if(!fastreg) {
-            hpRegen = (2 * Math.pow(1.004, (getSpdComp() + getDefComp()) / 2) * hpRegenMod);
+            int r=8;
+            //hpRegen = (2 * Math.pow(1.004, (getSpdComp() + getDefComp()) / 2) * hpRegenMod);
+            hpRegen=Math.pow(Math.E,level/8)+5 +(Math.pow(Math.E,getDefComp()/8)+5)/r;
             hp += hpRegen;
             if (hp > hpMax) hp = hpMax;
 
-            mRegen = (5 * Math.pow(1.004, (getSpdComp() + getIntComp()) / 2) * mRegenMod);
+            //mRegen = (5 * Math.pow(1.004, (getSpdComp() + getIntComp()) / 2) * mRegenMod);
+            mRegen=Math.pow(Math.E,level/8)+5+(Math.pow(Math.E,getIntComp()/8)+5)/r;
             mana += mRegen;
             if (mana > manaMax) mana = manaMax;
 
-            eRegen = (5 * Math.pow(1.004, (getSpdComp() + getAttComp()) / 2) * eRegenMod);
+            //eRegen = (5 * Math.pow(1.004, (getSpdComp() + getAttComp()) / 2) * eRegenMod);
+            eRegen=Math.pow(Math.E,level/8)+5+(Math.pow(Math.E,getAttComp()/8)+5)/r;
             energy += eRegen;
             if (energy > energyMax) energy = energyMax;
         }else{
@@ -592,10 +595,11 @@ public class Player {
                 int y = (int) (EMath.round(absPos.y / cellW));
 
                 Cell c = dispArray[x][y];
-                if (c.getState() && !c.hasWater) {
+                if (c.getState()) {
                     player.setPos(new Vector2(x, y));
                     player.setAbsPos(new Vector2(absPos.x + comp.x,absPos.y+comp.y));
                 }
+                /*
                 if (c.getState() && c.hasWater) {
                     for (Ability a : player.secondaryAbilityList) {
                         if (a.getClass().equals(WaterBreath.class)) {
@@ -603,7 +607,7 @@ public class Player {
                             player.setAbsPos(new Vector2(absPos.x + comp.x,absPos.y+comp.y));
                         }
                     }
-                }
+                }*/
             } catch (ArrayIndexOutOfBoundsException e) {
 
             }
@@ -710,7 +714,7 @@ public class Player {
             dtClearHit = 0;
         }
 
-        if (wasHit && dtHitInvincibility<=1f)
+        if (wasHit && dtHitInvincibility<=.3f)
         dtHitInvincibility+=dt;
         else {
             dtHitInvincibility = 0;
@@ -739,9 +743,13 @@ public class Player {
             exp=0;
 
             level++;
-            hpMax = hpMax +( 25 + rn.nextInt(20));
-            manaMax=manaMax+(25+rn.nextInt(20));
-            energyMax=energyMax+(25+rn.nextInt(20));
+            hpMax= (int) (40*Math.pow(Math.E,.25*(level-1)/2)+100);
+            manaMax= (int) (40*Math.pow(Math.E,.25*(level-1)/2)+100);
+            energyMax= (int) (40*Math.pow(Math.E,.25*(level-1)/2)+100);
+
+//            hpMax = hpMax +( 25 + rn.nextInt(20));
+  //          manaMax=manaMax+(25+rn.nextInt(20));
+    //        energyMax=energyMax+(25+rn.nextInt(20));
             mRegen +=1;
             att = att +((int) (Math.random() * 4));
             def = def +((int) (Math.random() * 4));

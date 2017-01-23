@@ -264,7 +264,7 @@ public class Equipment extends Item {
         x+=intelmod;
         x+=speedmod;
         x=x*100;
-        cost=a*x;
+        cost=a*x*2;
     }
     void generatePtColor(){
         switch (grade) {

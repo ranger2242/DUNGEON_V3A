@@ -24,7 +24,6 @@ import static com.quadx.dungeons.GridManager.fixHeight;
 import static com.quadx.dungeons.states.mapstate.MapState.cell;
 import static com.quadx.dungeons.states.mapstate.MapState.cellW;
 import static com.quadx.dungeons.states.mapstate.MapStateExt.effects;
-import static com.quadx.dungeons.states.mapstate.MapStateRender.dtWaterEffect;
 
 /**
  * Created by Tom isLive 11/7/2015.
@@ -58,7 +57,9 @@ public class Cell {
     ParticleEffect effect=null;
     int height=0;
     Polygon corners=new Polygon();
+    float dtwater=0;
 
+     static Color[] colors= new Color[]{new Color(.1f, .1f, .8f, 1f),new Color(.3f, .3f, .8f, 1f), new Color(0f, 0f, .8f, 1f)};
 
 
 
@@ -73,23 +74,20 @@ public class Cell {
             if(hasCrate() && boosterItem ==0)color=new Color(.627f, .322f, .176f, 1);
             if(getShop()) color=new Color(1f, 0f, 1f, 1);
             if(hasWarp()) color=new Color(0f, 1f, 0f, 1);
-            if(hasMon()) color=new Color(1f, .2f, .2f, 1);
+           // if(hasMon()) color=new Color(1f, .2f, .2f, 1);
             if(getAttArea())color=new Color(.7f,0,0f,1);
         }
        // else color=new Color(0f, 0f, 0f, 1);
-        if(getWater()){
-            color=new Color(.07f, .07f, .8f, 1f);
-        }
-        if( dtWaterEffect>Game.frame*60){
-            boolean blink = false;
-            if (blink && rn.nextBoolean())
-                color= new Color(.12f,.12f,.8f,1f);
-            else if(blink)
-                color=new Color(0f,0f,.8f,1f);
-            dtWaterEffect=0;
-        }
-        else dtWaterEffect+= Gdx.graphics.getDeltaTime();
 
+        if(getWater()) {
+            if (dtwater > .5) {
+                int r = rn.nextInt(3);
+                color = colors[r];
+                dtwater=0;
+            }else{
+                color=colors[0];
+            }
+        }
         return color;
     }
     public Texture getTile(){
@@ -188,6 +186,7 @@ public class Cell {
     public void setWater(){
         tile= ImageLoader.w[0];
         hasWater= true;
+        color=colors[0];
     }
     public void setColor(Color c){
         color=c;
@@ -229,6 +228,12 @@ public class Cell {
 
                 }
             }
+        }
+    }
+    public void updateVariables(){
+        float dt= Gdx.graphics.getDeltaTime();
+        if(getWater()){
+            dtwater+=dt;
         }
     }
     public void clearMonster(){

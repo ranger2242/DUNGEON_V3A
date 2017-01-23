@@ -31,6 +31,7 @@ import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.GridManager.*;
 import static com.quadx.dungeons.monsters.Monster.reindexMons;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.dtLootPopup;
+import static com.quadx.dungeons.states.mapstate.MapStateRender.dtWaterEffect;
 
 
 /**
@@ -48,6 +49,7 @@ public class MapStateUpdater extends MapState{
     private static float dtInfo = 0;
     private static float dtItem = 0;
     private static float dtMap = 0;
+    static float dtWater=0;
     private static float dtShowStats =0;
     static float dtCollision = 0;
     static float dtScrollAtt=0;
@@ -60,6 +62,7 @@ public class MapStateUpdater extends MapState{
     static float dtClearHits =0;
     static float dtInvSwitch = 0;
     static float dtShake=0;
+    static float force=0;
     public static float endShake=0;
 
     public static int spawnCount=1;
@@ -73,11 +76,10 @@ public class MapStateUpdater extends MapState{
         Vector3 position = cam.position;
         float[] f = dispArray[(int) player.getPos().x][(int) player.getPos().y].getCorners().getVertices();
         Vector3 v = new Vector3(f[8], f[9], 0);
-        float mag = 5;
         if(!noLerp) {
             if (shakeCam) {
-                v.add((float) (mag * rn.nextGaussian()), (float) (mag * rn.nextGaussian()), 0);
-                position.lerp(v, 1f);
+                v.add((float) (force * rn.nextGaussian()), (float) (force * rn.nextGaussian()), 0);
+                position.lerp(v, .5f);
 
             } else {
 
@@ -284,6 +286,8 @@ public class MapStateUpdater extends MapState{
         }
         dtf+=dt;
         dtDig+=dt;
+        dtWater+=dt;
+        dtWaterEffect+=dt;
         if (dtClearHits <= .1)
             dtClearHits += dt;
         if (dtRespawn <= 10f)
@@ -511,7 +515,8 @@ public class MapStateUpdater extends MapState{
         cam.position.set(0, 0, 0);
         gsm.push(new ShopState(gsm));
     }
-    public static void shakeScreen(float time){
+    public static void shakeScreen(float time , float f){
+        force=f;
         endShake=time;
         shakeCam=true;
         dtShake=0;
@@ -523,6 +528,7 @@ public class MapStateUpdater extends MapState{
             Cell c = dispArray[x][y];
             int index = drawList.indexOf(c);
             if (player.getHitBox().overlaps(c.getBounds())) {
+                //check walls
                 if(!c.getState()){
                     int e=5+player.getLevel();
                     if(dtDig>.5){
@@ -532,9 +538,17 @@ public class MapStateUpdater extends MapState{
                         }
                         else{dig=false;}
                     }
-                    if(dig)
-                    MapStateUpdater.activateDig();
-
+                    if(dig) {
+                        MapStateUpdater.activateDig();
+                        shakeScreen(.1f,.05f);
+                    }
+                }
+                //check water
+                if(c.getWater()){
+                    if(dtWater>.2f) {
+                        player.addHp(-40);
+                        dtWater=0;
+                    }
                 }
                 //check warp
                 if (c.hasWarp()) {

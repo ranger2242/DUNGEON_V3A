@@ -13,7 +13,7 @@ public class DefPlus extends  Item {
         name="Defense+";
         ptColor= Color.BLUE;
         defensemod+=1;
-        cost=1000;
+        cost=3500;
         setIcon(new Texture(FilePaths.getPath("images\\icons\\items\\icDef+.png")));
     }
 }

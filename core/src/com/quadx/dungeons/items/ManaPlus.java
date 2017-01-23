@@ -15,17 +15,17 @@ public class ManaPlus extends Item {
         if(size==0){
             icon= ImageLoader.mana[0];
             manamod=60;
-            cost=100;
+            cost=2250;
         }
         else if(size==1){
             icon=ImageLoader.mana[1];
             manamod=200;
-            cost=100;
+            cost=2250;
         }
         else if(size>1){
             icon=ImageLoader.mana[2];
             manamod=1000;
-            cost=100;
+            cost=2250;
         }
     }
 }

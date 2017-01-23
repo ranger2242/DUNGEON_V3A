@@ -13,7 +13,7 @@ public class AttackPlus extends Item {
         ptColor= Color.RED;
         name="Attack+";
         attackmod=1;
-        cost=1000;
+        cost=3500;
         setIcon(new Texture(FilePaths.getPath("images\\icons\\items\\icAtt+.png")));
 
     }

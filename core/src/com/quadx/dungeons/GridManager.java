@@ -32,21 +32,16 @@ public class GridManager {
     public static final int res = Map2State.res;
     public static Timer mapLoadTime;
 
-    private static ArrayList<Cell> getSurroundingCells(int x, int y){
+    public static ArrayList<Cell> getSurroundingCells(int x, int y, int r){
         ArrayList<Cell> list=new ArrayList<>();
-        boolean a =x+1<res;
-        boolean b=x-1>=0;
-        boolean c=y+1<res;
-        boolean d=y-1>=0;
         list.add(dispArray[x][y]);
-        if(b && c)  list.add(dispArray[x - 1][y + 1]);
-        if(c)       list.add(dispArray[x][y + 1]);
-        if(a && c)  list.add(dispArray[x + 1][y + 1]);
-        if(b)       list.add(dispArray[x - 1][y]);
-        if(a &&b && d)       list.add(dispArray[x + 1][y]);
-        if(b && d)  list.add(dispArray[x - 1][y - 1]);
-        if(d)       list.add(dispArray[x][y - 1]);
-        if(a && d)  list.add(dispArray[x + 1][y - 1]);
+        for(int i=x-r; i<x+r+1;i++){
+            for(int j=y-r; j<y+r+1; j++){
+                if(i>=0 && i<res && j>=0 && j<res){
+                    list.add(dispArray[i][j]);
+                }
+            }
+        }
         return list;
     }
     private static ArrayList<Vector2> getSurroundingCellsPos(float x, float y){
@@ -99,6 +94,7 @@ public class GridManager {
                 Cell c;
                     if(i>=0 &&i<res && j>=0 &&j<res) {
                         c = dispArray[i][j];
+                        c.updateVariables();
                         if (!c.getState() || c.getWater()) {
                             c = loadTiles(c);
 
@@ -185,7 +181,7 @@ public class GridManager {
             int x = c.getX();
             int y = c.getY();
             int count = 0;
-            for(Cell c1: getSurroundingCells(x,y)){
+            for(Cell c1: getSurroundingCells(x,y,3)){
                 if(c1.hasWater) count++;
             }
             if (count < 7) {
@@ -335,7 +331,10 @@ public class GridManager {
     }
     public void clearArea(float x, float y, boolean isPlayer) {
         try {
-            ArrayList<Cell> temp = getSurroundingCells(Math.round(x),Math.round( y));
+            int r;
+            if(isPlayer)r=3;
+            else r=1;
+            ArrayList<Cell> temp = getSurroundingCells(Math.round(x),Math.round( y), r);
             temp.stream().filter(c -> !c.getState()).forEach(Cell::setState);
             temp.clear();
 
@@ -361,7 +360,7 @@ public class GridManager {
     static Cell loadTiles(Cell c){
         int x1 = c.getX();
         int y1 = c.getY();
-        ArrayList<Cell> temp = getSurroundingCells(x1, y1);
+        ArrayList<Cell> temp = getSurroundingCells(x1, y1,1);
         int count = 0;
         Texture t = c.getTile();
         if (temp.size() == 8) {

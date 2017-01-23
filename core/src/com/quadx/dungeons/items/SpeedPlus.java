@@ -13,7 +13,7 @@ public class SpeedPlus extends Item {
         name="Speed+";
         ptColor= Color.GREEN;
         speedmod+=1;
-        cost=1000 ;
+        cost=3500 ;
         setIcon(new Texture(FilePaths.getPath("images\\icons\\items\\icSpd+.png")));
     }
 }

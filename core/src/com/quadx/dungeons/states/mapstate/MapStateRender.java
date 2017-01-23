@@ -133,14 +133,18 @@ public class MapStateRender extends MapState {
                 shapeR.rect(player.getAttackBox());
                 shapeR.end();
             }
-            float[] f = dispArray[(int) player.getPos().x][(int) player.getPos().y].getCorners().getVertices();
-            shapeR.begin(ShapeRenderer.ShapeType.Filled);
-            shapeR.setColor(Color.DARK_GRAY);
-            shapeR.triangle(f[0], f[1], f[2], f[3], f[8], f[9]);
-            shapeR.triangle(f[2], f[3], f[4], f[5], f[8], f[9]);
-            shapeR.triangle(f[4], f[5], f[6], f[7], f[8], f[9]);
-            shapeR.triangle(f[6], f[7], f[0], f[1], f[8], f[9]);
-            shapeR.end();
+            try {
+                float[] f = dispArray[(int) player.getPos().x][(int) player.getPos().y].getCorners().getVertices();
+                shapeR.begin(ShapeRenderer.ShapeType.Filled);
+                shapeR.setColor(Color.DARK_GRAY);
+                shapeR.triangle(f[0], f[1], f[2], f[3], f[8], f[9]);
+                shapeR.triangle(f[2], f[3], f[4], f[5], f[8], f[9]);
+                shapeR.triangle(f[4], f[5], f[6], f[7], f[8], f[9]);
+                shapeR.triangle(f[6], f[7], f[0], f[1], f[8], f[9]);
+                shapeR.end();
+            }catch (ArrayIndexOutOfBoundsException e){
+
+            }
             sb.begin();
             Vector2 v = player.getTexturePos();
             sb.draw(player.getIcon(), v.x, v.y);
@@ -305,23 +309,29 @@ public class MapStateRender extends MapState {
             float[] f = c.getCorners().getVertices();
             //draw land shaded
             if(!Tests.noLand) {
-                if (c.getState()) {
-                    shapeR.setColor(HeightMap.getColors().get(Math.round(f[10])));
-                    shapeR.triangle(f[0], f[1], f[2], f[3], f[8], f[9]);
-                    shapeR.setColor(HeightMap.getColors().get(Math.round(f[11])));
-                    shapeR.triangle(f[2], f[3], f[4], f[5], f[8], f[9]);
-                    shapeR.setColor(HeightMap.getColors().get(Math.round(f[12])));
-                    shapeR.triangle(f[4], f[5], f[6], f[7], f[8], f[9]);
-                    shapeR.setColor(HeightMap.getColors().get(Math.round(f[13])));
-                    shapeR.triangle(f[6], f[7], f[0], f[1], f[8], f[9]);
-                    Item item = c.getItem();
-                    if (item != null) {
-                        hasItem.add(new Vector2(c.getPos()));
+                if(!c.getWater()) {
+                    if (c.getState()) {
+                        shapeR.setColor(HeightMap.getColors().get(Math.round(f[10])));
+                        shapeR.triangle(f[0], f[1], f[2], f[3], f[8], f[9]);
+                        shapeR.triangle(f[2], f[3], f[4], f[5], f[8], f[9]);
+                        shapeR.triangle(f[4], f[5], f[6], f[7], f[8], f[9]);
+                        shapeR.triangle(f[6], f[7], f[0], f[1], f[8], f[9]);
+                        Item item = c.getItem();
+                        if (item != null) {
+                            hasItem.add(new Vector2(c.getPos()));
+                        }
+                    } else {
+                        shapeR.setColor(Color.BLACK);
+                        float r = ((2f / 3f) * cellW);
+                        shapeR.rect(f[0], f[1] + r, cellW, r);
                     }
-                } else {
-                    shapeR.setColor(Color.BLACK);
-                    float r = ((2f / 3f) * cellW);
-                    shapeR.rect(f[0], f[1] + r, cellW, r);
+                }
+                else {
+                   shapeR.setColor(c.getColor());
+                    shapeR.triangle(f[0], f[1], f[2], f[3], f[8], f[9]);
+                    shapeR.triangle(f[2], f[3], f[4], f[5], f[8], f[9]);
+                    shapeR.triangle(f[4], f[5], f[6], f[7], f[8], f[9]);
+                    shapeR.triangle(f[6], f[7], f[0], f[1], f[8], f[9]);
                 }
             }
         }
@@ -506,7 +516,6 @@ public class MapStateRender extends MapState {
     //OTHER----------------------------------------------------------------
     static void updateVariables(float dt){
         dtBlink+=dt;
-        dtWaterEffect+=dt;
         dtLootPopup +=dt;
         updateHoverTextTime();
         dtBlinkP+=dt;

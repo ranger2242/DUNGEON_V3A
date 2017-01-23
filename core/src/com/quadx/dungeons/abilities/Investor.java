@@ -136,6 +136,6 @@ public class Investor extends Ability {
     }
 
     public static void generatePlayerGold(){
-        Game.player.setGold((float)(Game.player.getGold()*1.001));
+        Game.player.setGold((float)(Game.player.getGold()*1.0001));
     }
 }

@@ -15,17 +15,17 @@ public class Potion extends Item {
         if(size==0){
             icon= ImageLoader.potion[0];
             hpmod=60;
-            cost=100;
+            cost=2250;
         }
         else if(size==1){
             icon=ImageLoader.potion[1];
             hpmod=200;
-            cost=100;
+            cost=2250;
         }
         else if(size>1){
             icon=ImageLoader.potion[2];
             hpmod=1000;
-            cost=100;
+            cost=2250;
         }
     }
 }

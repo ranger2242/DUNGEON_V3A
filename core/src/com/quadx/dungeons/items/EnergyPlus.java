@@ -14,17 +14,17 @@ public class EnergyPlus extends Item {
         if(size==0){
             icon= ImageLoader.energy[0];
             emod=60;
-            cost=100;
+            cost=2250;
         }
         else if(size==1){
             icon=ImageLoader.energy[1];
             emod=200;
-            cost=100;
+            cost=2250;
         }
         else if(size>1){
             icon=ImageLoader.energy[2];
             emod=1000;
-            cost=100;
+            cost=2250;
         }
     }
 }

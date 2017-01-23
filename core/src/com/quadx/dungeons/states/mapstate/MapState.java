@@ -78,7 +78,6 @@ public class MapState extends State implements ControllerListener {
     static InfoOverlay hud= new InfoOverlay();
     static InfoOverlay invOverlay=new InfoOverlay();
     static InfoOverlay equipOverlay=new InfoOverlay();
-
     static ArrayList<InfoOverlay> attackBarHud = new ArrayList<>();
     Item prevItem= null;
 
@@ -106,10 +105,9 @@ public class MapState extends State implements ControllerListener {
         attack2=player.attackList.get(0);
         debug();
     }
-
     public void debug() {
         //Tests.testEquipmentRates();
-        Tests.giveItems(50);
+       //Tests.giveItems(50);
     }
     public void handleInput() {
     }
@@ -144,7 +142,6 @@ public class MapState extends State implements ControllerListener {
     public static ArrayList<InfoOverlay> getAttackBarOverlay(){
         return attackBarHud;
     }
-
     public static void out(String s){
         if(output != null) {
             output.add(s);
@@ -161,8 +158,11 @@ public class MapState extends State implements ControllerListener {
         hud.rects.add(new Rectangle(viewX, viewY, WIDTH, 207));
         hud.texts.clear();
         hud.texts.add(new Text("SCORE: " + player.getPoints() + "", new Vector2((viewX + Game.WIDTH / 3) + 4, (viewY + 200)), Color.GRAY, 1));
-        hud.texts.add(new Text("HIGH SCORE: " + HighScoreState.scores.get(0).getScore(), new Vector2((viewX + (Game.WIDTH / 3) * 2) - (Game.WIDTH / 3 / 2), (viewY + 200)), Color.GRAY, 1));
-        //attack bar hud
+        try {
+            hud.texts.add(new Text("HIGH SCORE: " + HighScoreState.scores.get(0).getScore(), new Vector2((viewX + (Game.WIDTH / 3) * 2) - (Game.WIDTH / 3 / 2), (viewY + 200)), Color.GRAY, 1));
+        }catch (IndexOutOfBoundsException ex){
+            hud.texts.add(new Text("HIGH SCORE: 000000" , new Vector2((viewX + (Game.WIDTH / 3) * 2) - (Game.WIDTH / 3 / 2), (viewY + 200)), Color.GRAY, 1));
+        }
         generateAttackBarUI();
         generateInventoryUI();
     }
@@ -204,7 +204,6 @@ public class MapState extends State implements ControllerListener {
             attackBarHud.add(io);
         }
     }
-
     void generateInventoryUI() {
         //add ability icon
         invOverlay=new InfoOverlay();
@@ -379,7 +378,6 @@ public class MapState extends State implements ControllerListener {
             }
         }
     }
-
     //-----------------------------------------------------------------------------------------
     //Controller Interface
     public void connected(Controller controller) {

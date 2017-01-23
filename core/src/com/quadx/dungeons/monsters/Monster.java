@@ -218,18 +218,18 @@ public class Monster {
             //             || (x == px && y + 1 == py) || (x == px && y - 1 == py)) {                  //hurt if found
             int d;
             if (intel > attack)
-                d = Damage.monsterMagicDamage(player, this, (int) power);
+                d = Damage.monsterMagicDamage(this);
             else if (attack > intel)
-                d = Damage.monsterPhysicalDamage(player, this, (int) power);
+                d = Damage.monsterPhysicalDamage(this);
             else {
                 if (rn.nextBoolean())
-                    d = Damage.monsterMagicDamage(player, this, (int) power);
+                    d = Damage.monsterMagicDamage(this);
                 else
-                    d = Damage.monsterPhysicalDamage(player, this, (int) power);
+                    d = Damage.monsterPhysicalDamage(this);
             }
             player.addHp(-d);
             //player.setHp(player.getHp() - d);//apply damage
-            MapStateUpdater.shakeScreen(.5f);
+            MapStateUpdater.shakeScreen(.5f,5);
             player.setDest(absPos);
             MapStateRender.setHoverText("-" + d, 1, new Color(1f,.2f,.2f,1f), player.getAbsPos().x, player.getAbsPos().y, true);
             hit = true;
@@ -277,7 +277,7 @@ public class Monster {
         return hp / hpMax;
     }
     public double getIntelDamage() {
-        double damage = d.monsterMagicDamage(player, this, (int) power);
+        double damage = d.monsterMagicDamage(this);
         return damage;
     }
     public float getdtMove() {
@@ -582,5 +582,9 @@ public class Monster {
             hit = false;
             sight = 0;
         }
+    }
+
+    public double getPower() {
+        return power;
     }
 }

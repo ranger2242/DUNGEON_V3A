@@ -184,7 +184,7 @@ public class Map2State extends State {
             }
         }
         fillBits(1, true);
-        //plotWater();
+        plotWater();
         dispArray = buffArray;
         return dispArray;
     }
