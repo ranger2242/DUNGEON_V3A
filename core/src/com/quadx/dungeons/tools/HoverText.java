@@ -20,6 +20,8 @@ public class HoverText {
     private boolean active=false;
     private final int x;
     private final int y;
+    private int px=0;
+    private int py=0;
     private int ymod;
     private float dtHov;
     private float dtFlash;
@@ -62,45 +64,45 @@ public class HoverText {
                 }
             }
             while (HoverText.texts.size() > 10) HoverText.texts.remove(0);
+            Game.setFontSize(1);
+            if (active) {
+                float time = 1.2f;
+                if (dtHov < time) {
+                    Game.setFontSize(3);
+                    CharSequence cs = text;
+                    gl.setText(Game.getFont(), cs);
+                    alpha= (float) -(Math.pow(Math.E,5*((dtHov/time)-1f)+1));
+                    if (dtFlash > .1) {
+                        if (cycle) {
+                            font.setColor(Color.WHITE);
+                        } else font.setColor(color);
+                        cycle = !cycle;
+                        dtFlash = 0;
+                    }
+                    font.setColor(color);
+                    font.getColor().a=alpha;
+                    px = (int) (x - (gl.width / 2));
+                    py = y + ymod;
+
+                    ymod++;
+                } else {
+                    dtHov = 0;
+                    ymod = 0;
+                    active = false;
+                }
+
+            }
         }
     }
     public void draw(SpriteBatch sb) {
-        Game.setFontSize(1);
         if (active) {
-           float time = 1.2f;
-            if (dtHov < time) {
-                Game.setFontSize(3);
-                CharSequence cs = text;
-                gl.setText(Game.getFont(), cs);
-                alpha= (float) -(Math.pow(Math.E,5*((dtHov/time)-1f)+1));
-
-                // color.a=alpha;
-                if (dtFlash > .1) {
-                    if (cycle) {
-                        font.setColor(Color.WHITE);
-                    } else font.setColor(color);
-                    cycle = !cycle;
-                    dtFlash = 0;
-                }
-                //if(alpha<.3)alpha=.3f;
-                //color.a=alpha;
-                font.setColor(color);
-                font.getColor().a=alpha;
-                int px = (int) (x - (gl.width / 2));
-                int py = y + ymod;
-                sb.begin();
+            if (dtHov < 1.2) {
                 font.draw(sb, text, px, py);
-                font.getColor().a=1;
-
-                sb.end();
-                ymod++;
-            } else {
-                dtHov = 0;
-                ymod = 0;
-                active = false;
             }
-
         }
+//        font.getColor().a=1;
+
+
     }
     public boolean isActive() {
         return active;

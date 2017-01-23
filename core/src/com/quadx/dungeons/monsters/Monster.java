@@ -18,7 +18,6 @@ import com.quadx.dungeons.states.mapstate.MapStateRender;
 import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 import com.quadx.dungeons.tools.Direction;
 import com.quadx.dungeons.tools.EMath;
-import com.quadx.dungeons.tools.HealthBar;
 import com.quadx.dungeons.tools.StatManager;
 import com.quadx.dungeons.tools.gui.InfoOverlay;
 import com.quadx.dungeons.tools.gui.Text;
@@ -27,6 +26,7 @@ import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.*;
+import static com.quadx.dungeons.states.mapstate.MapState.cell;
 import static com.quadx.dungeons.states.mapstate.MapState.cellW;
 import static com.quadx.dungeons.states.mapstate.MapState.out;
 import static javax.swing.JSplitPane.DIVIDER;
@@ -43,8 +43,8 @@ public class Monster {
     protected Animation anim = null;
     public Direction.Facing facing= Direction.Facing.North;
     public MonAIv1 ai = new MonAIv1();
-    HealthBar hbar = new HealthBar();
-    HealthBar hbar2 = new HealthBar();
+    Rectangle hbar = new Rectangle();
+    Rectangle hbar2 = new Rectangle();
     Vector2 pos = new Vector2();
     Vector2 absPos = new Vector2();
     Vector2 prevPos = new Vector2();
@@ -159,10 +159,10 @@ public class Monster {
     public InfoOverlay getInfoOverlay() {
         return overlay;
     }
-    public HealthBar getHbar() {
+    public Rectangle getHbar() {
         return hbar;
     }
-    public HealthBar getHbar2() {
+    public Rectangle getHbar2() {
         return hbar2;
     }
     public Rectangle getHitBox(){
@@ -174,8 +174,11 @@ public class Monster {
         return new Rectangle(x-(w/2),GridManager.fixHeight(new Vector2(x,y))-(h/2),w,h);
     }
     public Rectangle getAgroBox(){
-        float r=(getSight()*cellW);
-        return new Rectangle(absPos.x-r,absPos.y-r,r*2,r*2);
+        float rx=(getSight()*cell.x);
+        float ry=(getSight()*cell.y);
+        return new Rectangle(absPos.x-rx,fixHeight(new Vector2(absPos.x-rx,absPos.y-ry)),rx*2,ry*2);
+
+//        return new Rectangle(absPos.x-r,absPos.y-r,r*2,r*2);
     }
     public Vector2 getPos() {
         return pos;
@@ -274,7 +277,7 @@ public class Monster {
         return attack;
     }
     public double getPercentHP() {
-        return hp / hpMax;
+        return (double) hp /(double) hpMax;
     }
     public double getIntelDamage() {
         double damage = d.monsterMagicDamage(this);
@@ -466,8 +469,11 @@ public class Monster {
         int side = sight * 2 * cellW;
         sights = new Vector3(px - (side / 2) + (cellW / 2), py - (side / 2) + (cellW / 2), side);
         //update healthbar pos
-        hbar.update(absPos.x - 22, absPos.y - 31, 84, 6);
-        hbar2.update(absPos.x - 20, absPos.y - 30, (float) (80 * getPercentHP()), 4);
+        float width=80;
+        Vector2 hbarpos=new Vector2(absPos.x -(width/2)-2, absPos.y-(getIcon().getHeight()/2)-31 );
+        Vector2 hbarpos2=new Vector2(absPos.x -(width/2), absPos.y-(getIcon().getHeight()/2)-30 );
+        hbar= new Rectangle(hbarpos.x,fixHeight(hbarpos), width+4, 6);
+        hbar2= new Rectangle(hbarpos2.x,fixHeight(hbarpos2), (float) ((double)width * getPercentHP()), 4);
         texturePos.set(pos.x * cellW - icon.getWidth() / 4, pos.y * cellW - icon.getHeight() / 4);
         if (!(hp <= hpMax / 3)) lowhp = true;
         else lowhp = false;

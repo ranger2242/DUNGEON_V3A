@@ -9,6 +9,8 @@ import com.quadx.dungeons.Game;
 
 import java.util.ArrayList;
 
+import static com.quadx.dungeons.GridManager.fixHeight;
+
 /**
  * Created by range_000 on 1/5/2017.
  */
@@ -20,12 +22,12 @@ public class InfoOverlay {
     public void draw(SpriteBatch sb, ShapeRenderer sr){
         try {
             for (int i = 0; i < textures.size(); i++) {
-                sb.draw(textures.get(i), texturePos.get(i).x, texturePos.get(i).y);
+                sb.draw(textures.get(i), texturePos.get(i).x, fixHeight(texturePos.get(i)));
             }
         }catch (NullPointerException e){}
 
         for (Text t : texts) {
-                Game.getFont().draw(sb, t.text, t.pos.x, t.pos.y);
+                Game.getFont().draw(sb, t.text, t.pos.x,fixHeight(t.pos));
             }
      }
     public void add(InfoOverlay io){

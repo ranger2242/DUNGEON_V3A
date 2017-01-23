@@ -527,28 +527,31 @@ public class MapStateUpdater extends MapState{
             int x = (int) c1.getPos().x;
             int y = (int) c1.getPos().y;
             Cell c = dispArray[x][y];
-            int index = drawList.indexOf(c);
-            if (player.getHitBox().overlaps(c.getBounds())) {
-                //check walls
-                if(!c.getState()){
-                    int e=5+player.getLevel();
-                    if(dtDig>.5){
-                        if(player.getEnergy()>e) {
-                            player.setEnergy(player.getEnergy()-e);
-                            dtDig=0;
-                        }
-                        else{dig=false;}
-                    }
-                    if(dig) {
-                        MapStateUpdater.activateDig();
-                        shakeScreen(.1f,.05f);
+            //grid collision---------------------------------------------------
+            if (Math.round(player.getPos().x) == x &&Math.round( player.getPos().y) == y) {
+                if (c.getWater()) {
+                    if (dtWater > .2f) {
+                        player.addHp(-40);
+                        dtWater = 0;
                     }
                 }
-                //check water
-                if(c.getWater()){
-                    if(dtWater>.2f) {
-                        player.addHp(-40);
-                        dtWater=0;
+            }
+            //pixel collision detection-----------------------------------------
+            if (player.getHitBox().overlaps(c.getBounds())) {
+                //check walls
+                if (!c.getState()) {
+                    int e = 5 + player.getLevel();
+                    if (dtDig > .5) {
+                        if (player.getEnergy() > e) {
+                            player.setEnergy(player.getEnergy() - e);
+                            dtDig = 0;
+                        } else {
+                            dig = false;
+                        }
+                    }
+                    if (dig) {
+                        MapStateUpdater.activateDig();
+                       // shakeScreen(.1f, .05f);
                     }
                 }
                 //check warp
@@ -581,7 +584,6 @@ public class MapStateUpdater extends MapState{
                 }
                 //check shop
                 if (c.getShop()) {
-                    //liveCellList.get(index).setShop(false);
                     dispArray[x][y].setShop(false);
                     gsm.push(new ShopState(gsm));
                 }

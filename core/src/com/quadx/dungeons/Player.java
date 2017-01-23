@@ -831,6 +831,9 @@ public class Player {
 
         return dead;
     }
+    public boolean isInBounds(){
+        return getPos().x >= 0 && getPos().y >= 0 && getPos().x < res && getPos().y < res;
+    }
     public void loadAttacks(){
         attackList.clear();
         Attack flameSp = new Flame();

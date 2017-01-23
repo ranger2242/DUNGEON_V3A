@@ -7,4 +7,4 @@ DEMO,342170,28392,Investor 2 Lvl 5,122
 ,246520,19538,Tank 2 Lvl 4,99
 ,112500,0,Tank 1 Lvl 1,0
 DEMO,64790,4184,Investor 0 Lvl 2,26
-DEMO,17450,545,Investor 0 Lvl 1,0
+,24150,915,Tank 1 Lvl 1,5

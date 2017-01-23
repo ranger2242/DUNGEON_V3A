@@ -15,6 +15,7 @@ import com.quadx.dungeons.items.Potion;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.MapStateExt;
 import com.quadx.dungeons.tools.ImageLoader;
+import com.quadx.dungeons.tools.gui.Triangle;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -51,6 +52,7 @@ public class Cell {
     Rectangle bounds=null;
     Vector2 pos = new Vector2();    //<- position relative to grid
     Vector2 absPos = new Vector2(); //<- for use with cellw shift
+    Vector2 fixedPos= new Vector2();
     private boolean hasItem = false;
     public ArrayList<Command> commandQueue= new ArrayList<>();
     boolean effectLoaded=false;
@@ -61,7 +63,7 @@ public class Cell {
 
      static Color[] colors= new Color[]{new Color(.1f, .1f, .8f, 1f),new Color(.3f, .3f, .8f, 1f), new Color(0f, 0f, .8f, 1f)};
 
-
+    ArrayList<Triangle> tris= new ArrayList<>();
 
     public Cell() {
         setTile(ImageLoader.a[0]);
@@ -99,6 +101,7 @@ public class Cell {
     public Monster getMonster(){return monster;}
     public Vector2 getPos(){return pos;}
     public Vector2 getAbsPos(){return absPos;}
+    public Vector2 getFixedPos(){return fixedPos;}
 
     public boolean getAttArea(){return  attArea;}
     public boolean getWater(){return hasWater;}
@@ -132,8 +135,16 @@ public class Cell {
     }
     public void setCorners(Polygon c){
         corners=c;
+        float[] f=c.getVertices();
+        tris.clear();
+        tris.add(new Triangle(new float[]{f[0], f[1], f[2], f[3], f[8], f[9]}));
+        tris.add(new Triangle(new float[]{f[2], f[3], f[4], f[5], f[8], f[9]}));
+        tris.add(new Triangle(new float[]{f[4], f[5], f[6], f[7], f[8], f[9]}));
+        tris.add(new Triangle(new float[]{f[6], f[7], f[0], f[1], f[8], f[9]}));
     }
-
+    public ArrayList<Triangle> getTris(){
+        return tris;
+    }
     public Polygon getCorners() {
         return corners;
     }
@@ -200,6 +211,10 @@ public class Cell {
     public void setMonsterIndex(int set){monsterIndex=set;}
     public void setItem(Item item) {
         this.item = item;
+        if(item !=null){
+            this.item.setTexturePos(new Vector2(absPos.x, GridManager.fixHeight(absPos)));
+            this.item.setHitBox(new Rectangle(absPos.x, GridManager.fixHeight(absPos), item.getIcon().getWidth(), item.getIcon().getHeight()));
+        }
     }
 
 //OTHER----------------------------------------------------------------------------------
@@ -232,6 +247,7 @@ public class Cell {
     }
     public void updateVariables(){
         float dt= Gdx.graphics.getDeltaTime();
+        fixedPos.set(new Vector2(absPos.x, fixHeight(absPos)));
         if(getWater()){
             dtwater+=dt;
         }

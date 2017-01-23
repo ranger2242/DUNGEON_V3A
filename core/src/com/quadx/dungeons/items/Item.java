@@ -31,7 +31,7 @@ public class Item
     public boolean isEquip=false;
     public boolean isSpell=false;
     Rectangle hitbox=new Rectangle();
-    Vector2 texturePos=new Vector2();
+    protected Vector2 texturePos=new Vector2();
     Texture icon=null;
     int gold;
     Attack attack;
@@ -139,5 +139,13 @@ public class Item
                 !this.getClass().equals(Potion.class))
         return true;
         else return false;
+    }
+
+    public void setTexturePos(Vector2 v) {
+        texturePos.set(v);
+    }
+
+    public Vector2 getTexturePos() {
+        return texturePos;
     }
 }
