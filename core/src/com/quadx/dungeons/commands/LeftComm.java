@@ -16,8 +16,10 @@ import static com.quadx.dungeons.Game.player;
 public class LeftComm extends Command {
     public LeftComm(){
         name="Left";
+        axis=-1;
+
         keyboard= Input.Keys.A;
-        contD = Xbox360Pad.BUTTON_DPAD_LEFT;
+        contA = Xbox360Pad.AXIS_LEFT_X;
 
     }
     @Override

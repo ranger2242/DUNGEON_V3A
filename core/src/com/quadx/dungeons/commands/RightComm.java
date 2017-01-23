@@ -17,7 +17,8 @@ public class RightComm extends Command {
     public RightComm(){
         name="Right";
         keyboard= Input.Keys.D;
-        contD = Xbox360Pad.BUTTON_DPAD_RIGHT;
+        contA = Xbox360Pad.AXIS_LEFT_X;
+        axis=1;
 
     }
     @Override

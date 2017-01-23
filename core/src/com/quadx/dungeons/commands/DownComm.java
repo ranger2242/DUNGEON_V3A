@@ -17,8 +17,9 @@ import static com.quadx.dungeons.Game.player;
 public class DownComm extends Command {
     public DownComm(){
         name="Down";
+        axis=1;
         keyboard= Input.Keys.S;
-        contD = Xbox360Pad.BUTTON_DPAD_DOWN;
+        contA = Xbox360Pad.AXIS_LEFT_Y;
 
 
     }

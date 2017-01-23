@@ -41,7 +41,7 @@ public class MainMenuState extends State implements ControllerListener {
     public MainMenuState(GameStateManager gsm) {
         super(gsm);
         Gdx.gl.glClearColor(0,0,0,1);
-        //initController();
+        initController();
         //loadParticles();
         addOptionsToList();
         titlePosY=(int)(viewY+ (Game.HEIGHT/3)*2);

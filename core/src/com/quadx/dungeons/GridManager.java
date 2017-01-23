@@ -186,14 +186,15 @@ public class GridManager {
             }
             if (count < 7) {
                 placed = true;
-                MapState.warpX = x;
-                MapState.warpY = y;
+                warp.set(x,y);
             }else index = rn.nextInt(liveCellList.size());
         }
         liveCellList.get(index).setWarp();
     }
     private void plotShop() {
         int index = rn.nextInt(liveCellList.size());
+        Vector2 v=liveCellList.get(index).getPos();
+        shop.set(v);
         liveCellList.get(index).setState();
         liveCellList.get(index).setShop(true);
     }

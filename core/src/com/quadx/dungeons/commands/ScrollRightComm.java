@@ -12,8 +12,8 @@ public class ScrollRightComm extends Command {
     public ScrollRightComm(){
         name="Scroll Right";
         keyboard= Input.Keys.E;
-        contA = Xbox360Pad.AXIS_LEFT_X;
-        axis=1;
+        contD=Xbox360Pad.BUTTON_DPAD_RIGHT;
+
     }
     @Override
     public void execute() {

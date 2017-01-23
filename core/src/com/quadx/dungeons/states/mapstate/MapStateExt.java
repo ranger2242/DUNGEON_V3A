@@ -131,7 +131,7 @@ public class MapStateExt extends MapState{
                         break;
                     }
                 }
-                addEffect(loadParticles("ptfla",player.getAbsPos().x,player.getAbsPos().y,1));
+                //addEffect(loadParticles("ptfla",player.getAbsPos().x,player.getAbsPos().y,1));
 
                 MapState.attackCollisionHandler2(i);
                 //AttackMod.runMod(a);

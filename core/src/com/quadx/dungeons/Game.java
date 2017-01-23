@@ -72,12 +72,14 @@ enemy and player knock back
         commandList.add(new AltAttackComm());
         commandList.add(new ConfirmComm());
         commandList.add(new BackComm());
-        commandList.add(new DigComm());
+        commandList.add(new JumpComm());
         commandList.add(new DropComm());
         commandList.add(new MainAttackComm());
         commandList.add(new PauseComm());
         commandList.add(new ScrollLeftComm());
         commandList.add(new ScrollRightComm());
+        commandList.add(new RotLeftComm());
+        commandList.add(new RotRightComm());
         commandList.add(new UseComm());
     }
     @Override

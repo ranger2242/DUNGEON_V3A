@@ -121,7 +121,6 @@ public class MapStateRender extends MapState {
         Texture t = m.getIcon();
         sb.draw(t, m.getTexturePos().x,m.getTexturePos().y);
     }
-
     private static void sbDrawPlayer(SpriteBatch sb) {
 
         if (blinkp || !player.wasHit) {
@@ -141,6 +140,8 @@ public class MapStateRender extends MapState {
                 shapeR.triangle(f[2], f[3], f[4], f[5], f[8], f[9]);
                 shapeR.triangle(f[4], f[5], f[6], f[7], f[8], f[9]);
                 shapeR.triangle(f[6], f[7], f[0], f[1], f[8], f[9]);
+                shapeR.setColor(Color.RED);
+                shapeR.rect(player.getAttackBox());
                 shapeR.end();
             }catch (ArrayIndexOutOfBoundsException e){
 
@@ -311,6 +312,7 @@ public class MapStateRender extends MapState {
             if(!Tests.noLand) {
                 if(!c.getWater()) {
                     if (c.getState()) {
+
                         shapeR.setColor(HeightMap.getColors().get(Math.round(f[10])));
                         shapeR.triangle(f[0], f[1], f[2], f[3], f[8], f[9]);
                         shapeR.triangle(f[2], f[3], f[4], f[5], f[8], f[9]);
@@ -367,7 +369,6 @@ public class MapStateRender extends MapState {
         }
         sb.end();
     }
-
     private static void srDrawAttackSelectors(){
         shapeR.end();
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
@@ -556,8 +557,9 @@ public class MapStateRender extends MapState {
     }
     private static void drawGrid(float r, float off) {
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        int tx= (int) (viewX + WIDTH - (r + off))+warpX*2;
-        int ty=(int) (viewY + HEIGHT - (r + off))+warpY*2;
+        Vector2 mapshop=new Vector2(((viewX + WIDTH - (r + off))+shop.x*2),((viewY + HEIGHT - (r + off))+shop.y*2));
+        int tx= (int) ((viewX + WIDTH - (r + off))+warp.x*2);
+        int ty= (int) ((viewY + HEIGHT - (r + off))+warp.y*2);
         int px= (int) (viewX + WIDTH - (r + off))+ player.getX()*2;
         int py=(int) (viewY + HEIGHT - (r + off))+ player.getY()*2;
         for(Cell c: GridManager.liveCellList){
@@ -582,6 +584,8 @@ public class MapStateRender extends MapState {
         shapeR.begin(ShapeRenderer.ShapeType.Line);
         shapeR.setColor(Color.GREEN);
         shapeR.circle(tx+1,ty+1,9);
+        shapeR.setColor(Color.MAGENTA);
+        shapeR.circle(mapshop.x+1,mapshop.y+1,9);
 
         if(blink){shapeR.setColor(Color.BLUE);}
         else if(!blink){shapeR.setColor(Color.WHITE);}

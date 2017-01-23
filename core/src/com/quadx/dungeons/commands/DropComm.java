@@ -12,7 +12,7 @@ public class DropComm extends Command {
     public DropComm(){
         name="Drop";
         keyboard= Input.Keys.X;
-        contB= Xbox360Pad.BUTTON_BACK;
+        contD= Xbox360Pad.BUTTON_DPAD_DOWN;
     }
     @Override
     public void execute() {

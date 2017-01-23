@@ -51,7 +51,7 @@ public class Damage {
             damage *= 1.15;
             MapStateRender.setHoverText("-CRITICAL-", .2f, Color.BLUE, player.getAbsPos().x,player.getAbsPos().y, true);
         }
-        return damage;
+        return damage/2;
     }
     public static int monsterMagicDamage(Monster m){
         float a, b, c, d, e;
@@ -68,6 +68,6 @@ public class Damage {
             damage *= 1.15;
             MapStateRender.setHoverText("-CRITICAL-", .2f, Color.BLUE, player.getAbsPos().x,player.getAbsPos().y, true);
         }
-        return damage;
+        return damage/2;
     }
 }

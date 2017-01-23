@@ -543,9 +543,9 @@ public class Player {
     }
     public void regenModifiers(){
         if(!fastreg) {
-            int r=8;
+            int r=4;
             //hpRegen = (2 * Math.pow(1.004, (getSpdComp() + getDefComp()) / 2) * hpRegenMod);
-            hpRegen=Math.pow(Math.E,level/8)+5 +(Math.pow(Math.E,getDefComp()/8)+5)/r;
+            hpRegen=Math.pow(Math.E,level/8)+5 +(Math.pow(Math.E,getDefComp()/8)+5)/32;
             hp += hpRegen;
             if (hp > hpMax) hp = hpMax;
 
@@ -595,7 +595,7 @@ public class Player {
                 int y = (int) (EMath.round(absPos.y / cellW));
 
                 Cell c = dispArray[x][y];
-                if (c.getState()) {
+                if (c.getState() && !c.hasWater) {
                     player.setPos(new Vector2(x, y));
                     player.setAbsPos(new Vector2(absPos.x + comp.x,absPos.y+comp.y));
                 }
@@ -864,7 +864,7 @@ public class Player {
         if(!infiniteRegen) {
             dtRegen += dt; //move all this shit to PLAYER
             if (safe) dtSafe += dt;
-            if (dtRegen > .3) {
+            if (dtRegen > .9) {
                 regenModifiers();
                 if (getAbility().getClass().equals(Investor.class))
                     Investor.generatePlayerGold();

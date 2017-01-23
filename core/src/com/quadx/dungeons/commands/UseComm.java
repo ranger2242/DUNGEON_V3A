@@ -12,7 +12,7 @@ public class UseComm extends Command{
     public UseComm(){
         name="Use";
         keyboard= Input.Keys.C;
-        contB = Xbox360Pad.BUTTON_Y;
+        contB = Xbox360Pad.BUTTON_X;
     }
     @Override
     public void execute() {

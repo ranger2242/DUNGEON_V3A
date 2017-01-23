@@ -444,11 +444,13 @@ public class MapStateUpdater extends MapState{
         }
         return v;
     }
-    static void rotateMap(boolean left){
+    public static void rotateMap(boolean left){
         if(dtf>.15) {noLerp=true;
             Matrix<Integer> rotator = new Matrix<>(Integer.class);
             dispArray = rotator.rotateMatrix(dispArray, res, left);
             player.setPos(rotateCords(left,player.getPos()));
+            warp.set ( rotateCords(left,warp));
+            shop.set(rotateCords(left,shop));
             player.setAbsPos(new Vector2(player.getPos().x*cellW,player.getPos().y*cellW));
             for(Monster m:monsterList){
                 m.setPos(rotateCords(left,m.getPos()));
@@ -471,7 +473,6 @@ public class MapStateUpdater extends MapState{
             player.jumping=true;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.ALT_RIGHT)) {
-            rotateMap(true);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)) {
             rotateMap(false);

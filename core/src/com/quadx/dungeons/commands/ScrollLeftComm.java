@@ -12,8 +12,7 @@ public class ScrollLeftComm extends Command {
     public ScrollLeftComm(){
         name="Scroll Left";
         keyboard= Input.Keys.Q;
-        contA = Xbox360Pad.AXIS_LEFT_X;
-        axis=-1;
+        contD=Xbox360Pad.BUTTON_DPAD_LEFT;
     }
     @Override
     public void execute() {

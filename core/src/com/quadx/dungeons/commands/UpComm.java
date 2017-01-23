@@ -19,6 +19,9 @@ public class UpComm extends Command {
         name="Up";
         keyboard= Input.Keys.W;
         contD = Xbox360Pad.BUTTON_DPAD_UP;
+        contA=Xbox360Pad.AXIS_LEFT_Y;
+        axis=-1;
+
     }
     @Override
     public void execute() {

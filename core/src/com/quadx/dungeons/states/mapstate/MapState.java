@@ -66,6 +66,9 @@ public class MapState extends State implements ControllerListener {
     static final String DIVIDER= "_________________________";
     public static int cellW=30;
     public static Vector2 cell = new Vector2(cellW,cellW*(2f/3f));
+    public static Vector2 warp=new Vector2();
+    public static Vector2 shop=new Vector2();
+
     public static int warpX=0;
     public static int warpY=0;
     public static float dtStatPopup=0;

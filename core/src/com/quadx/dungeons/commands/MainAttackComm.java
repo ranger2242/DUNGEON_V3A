@@ -12,9 +12,7 @@ public class MainAttackComm extends Command {
     public MainAttackComm(){
         name="Main Attack";
         keyboard= Input.Keys.SPACE;
-        contA = Xbox360Pad.AXIS_RIGHT_TRIGGER;
-        axis=1;
-        if(!Xbox360Pad.win10) axis=-1;
+        contB= Xbox360Pad.BUTTON_RB;
     }
     @Override
     public void execute() {

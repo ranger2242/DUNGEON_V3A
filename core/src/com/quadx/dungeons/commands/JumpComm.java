@@ -9,15 +9,11 @@ import static com.quadx.dungeons.Game.player;
 /**
  * Created by Chris Cavazos on 8/8/2016.
  */
-public class DigComm extends Command{
-    public DigComm(){
-        name="Dig";
+public class JumpComm extends Command{
+    public JumpComm(){
+        name="Jump";
         keyboard= Input.Keys.SHIFT_RIGHT;
-        contB=Xbox360Pad.BUTTON_LB;
-        contA= Xbox360Pad.AXIS_LEFT_TRIGGER;
-        if(Xbox360Pad.win10)
-             axis=0;
-        else axis=1;
+        contB= Xbox360Pad.BUTTON_A;
     }
     @Override
     public void execute() {
