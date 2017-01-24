@@ -22,8 +22,7 @@ import com.quadx.dungeons.tools.*;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.quadx.dungeons.Game.HEIGHT;
-import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.GridManager.res;
 import static com.quadx.dungeons.states.mapstate.MapState.*;
@@ -128,7 +127,7 @@ public class Player {
         level=1;
         getStatsList();
         statsPos= new Vector2[statsList.size()];
-        setStatsPos();
+        setStatsListPos();
     }
     //SETTERS------------------------------------------------------------------
     public void setDest(Vector2 monPos){
@@ -188,7 +187,7 @@ public class Player {
         double a=34.9055;
         double b=1.00958;
         int gain= (int) (a*Math.pow(b,lvl)*factor);
-        MapStateRender.setHoverText(gain +" EXP",.8f, Color.GREEN , player.getAbsPos().x, player.getAbsPos().y+10,false);
+        new HoverText(gain +" EXP",.8f, Color.GREEN , player.getAbsPos().x, player.getAbsPos().y+10,false);
         this.exp+=gain;
         out(name+" gained "+ gain +" EXP");
     }
@@ -276,7 +275,7 @@ public class Player {
     public void setxEnergyMax(double xEnergyMax) {
         this.energyMax *= xEnergyMax;
     }
-    void setStatsPos(){
+    public void setStatsListPos(){
         for(int i=0;i<statsList.size();i++){
             statsPos[i]=new Vector2(viewX+30,viewY+HEIGHT - 30 - (i * 20));
         }
@@ -295,7 +294,19 @@ public class Player {
         modPos.set(v);
     }
     //GETTERS------------------------------------------------------------------
-
+    public Rectangle[] getStatBars(){
+        Rectangle[] r=new Rectangle[3];
+        float h=10;
+        float barMax = (WIDTH/3)-10;
+        float pHPBar = ((float) player.getHp() / (float) player.getHpMax()) * barMax;
+        float pManaBar = ((float)player.getMana() / (float)player.getManaMax()) * barMax;
+        float pEnergyBar=((float)player.getEnergy()/(float)player.getEnergyMax())*barMax;
+        int barsX= (int) (viewX+(WIDTH/3)+5);
+        r[0]=new Rectangle(barsX,viewY+175 , pHPBar, h);
+        r[1]=new Rectangle(barsX, viewY+160, pManaBar, h);
+        r[2]=new Rectangle(barsX, viewY+145, pEnergyBar, h);
+        return r;
+    }
     public Rectangle getAttackBox() {
         //return new Rectangle(attackBox.x,,attackBox.width,attackBox.height);
         return attackBox;
@@ -303,7 +314,6 @@ public class Player {
     public Rectangle getHitBox() {
         return new Rectangle(absPos.x,GridManager.fixHeight(absPos),getIcon().getWidth(),getIcon().getHeight());
     }
-
     public Vector2 getAbsPos(){
         if(absPos.y+jump()>absPos.y)
         return new Vector2(absPos.x,absPos.y+jump());
@@ -595,7 +605,7 @@ public class Player {
                 int y = (int) (EMath.round(absPos.y / cellW));
 
                 Cell c = dispArray[x][y];
-                if (c.getState() && !c.hasWater) {
+                if (c.getState()) {
                     player.setPos(new Vector2(x, y));
                     player.setAbsPos(new Vector2(absPos.x + comp.x,absPos.y+comp.y));
                 }
@@ -658,7 +668,7 @@ public class Player {
             player.setGold(player.getGold() + item.getValue());
             StatManager.totalGold += item.getValue();
             out(name + " recieved " + item.getValue() + "G");
-            MapStateRender.setHoverText(item.getValue()+ "G", .5f, Color.GOLD,  player.getAbsPos().x, player.getAbsPos().y, false);
+            new HoverText(item.getValue()+ "G", .5f, Color.GOLD,  player.getAbsPos().x, player.getAbsPos().y, false);
         }
         if (item.getHpmod() != 0) {
             hp += item.getHpmod();
@@ -693,7 +703,7 @@ public class Player {
             spd += item.getSpeedmod();
             s = "+" + item.getSpeedmod()+" SPD";
         }
-        MapStateRender.setHoverText(s,.5f,Color.GREEN,absPos.x,absPos.y,false);
+        new HoverText(s,.5f,Color.GREEN,absPos.x,absPos.y,false);
     }
     public void addKills(){
         killCount++;}
@@ -732,13 +742,13 @@ public class Player {
         regenPlayer(dt);
         //set texture cords
      //   texturePos.set(absPos.x - getIcon().getWidth() / 4, absPos.y - getIcon().getHeight() / 4);
-        setStatsPos();
+        //setStatsListPos();
         fixPosition();
     }
     public void checkLvlUp() {
         if (exp>=expLimit)
         {
-            MapStateRender.setHoverText("--LVL UP--",.8f, Color.GREEN, player.getAbsPos().x, player.getAbsPos().y-20,true);
+            new HoverText("--LVL UP--",.8f, Color.GREEN, player.getAbsPos().x, player.getAbsPos().y-20,true);
 
             exp=0;
 
@@ -756,7 +766,7 @@ public class Player {
             intel=intel+((int) (Math.random() * 4));
             spd = spd +((int) (Math.random() * 4));
             abilityPoints++;
-            MapStateRender.setHoverText("+1 Ability Point",.7f,Color.GREEN,px,py-40, true);
+            new HoverText("+1 Ability Point",.7f,Color.GREEN,px,py-40, true);
         }
     }
     public void addItemToInventory(Item item){

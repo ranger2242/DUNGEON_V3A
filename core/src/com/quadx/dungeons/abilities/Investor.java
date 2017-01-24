@@ -3,7 +3,7 @@ package com.quadx.dungeons.abilities;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Game;
-import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.tools.HoverText;
 import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class Investor extends Ability {
 
     public void onActivate() {
         player.setAbilityMod(1);
-        MapStateRender.setHoverText("INVESTOR!",1.5f, Color.WHITE, player.getPX(),player.getPY(),false);
+        new HoverText("INVESTOR!",1.5f, Color.WHITE, player.getPX(),player.getPY(),false);
     }
 
     @Override

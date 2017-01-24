@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.tools.HoverText;
 
 import java.util.ArrayList;
 
@@ -27,7 +27,7 @@ public class DigPlus extends Ability {
         MapState.out("----------------------------------");
         MapState.out(Game.player.getName()+" activated the Dig+ ability!");
         MapState.out("DIG!");
-        MapStateRender.setHoverText("DIG+!",1.5f, Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
+        new HoverText("DIG+!",1.5f, Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
 
         //super.onActivate();
     }

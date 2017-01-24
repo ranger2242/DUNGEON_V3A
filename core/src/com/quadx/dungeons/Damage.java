@@ -3,7 +3,7 @@ package com.quadx.dungeons;
 import com.badlogic.gdx.graphics.Color;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.monsters.Monster;
-import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.tools.HoverText;
 
 import java.util.Random;
 
@@ -32,7 +32,7 @@ public class Damage {
             damage = defaultDamage;
         if (rn.nextFloat() < .1) {
             damage *= 1.15;
-            MapStateRender.setHoverText("-CRITICAL-", .2f, Color.BLUE, m.getPX(), m.getPY(), true);
+            new HoverText("-CRITICAL-", .2f, Color.BLUE, m.getPX(), m.getPY(), true);
         }
         return damage;
     }
@@ -49,7 +49,7 @@ public class Damage {
             damage = defaultDamage;
         if (rn.nextFloat() < .1) {
             damage *= 1.15;
-            MapStateRender.setHoverText("-CRITICAL-", .2f, Color.BLUE, player.getAbsPos().x,player.getAbsPos().y, true);
+            new HoverText("-CRITICAL-", .2f, Color.BLUE, player.getAbsPos().x,player.getAbsPos().y, true);
         }
         return damage/2;
     }
@@ -66,7 +66,7 @@ public class Damage {
             damage = defaultDamage;
         if (rn.nextFloat() < .1) {
             damage *= 1.15;
-            MapStateRender.setHoverText("-CRITICAL-", .2f, Color.BLUE, player.getAbsPos().x,player.getAbsPos().y, true);
+            new HoverText("-CRITICAL-", .2f, Color.BLUE, player.getAbsPos().x,player.getAbsPos().y, true);
         }
         return damage/2;
     }

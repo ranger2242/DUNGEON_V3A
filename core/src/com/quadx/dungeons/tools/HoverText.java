@@ -31,7 +31,7 @@ public class HoverText {
     private float time;
     BitmapFont font;
 
-    public HoverText(String s, Color c, float x1, float y1, float t, boolean flash){
+    public HoverText(String s, float t, Color c, float x1, float y1, boolean flash){
         Game.setFontSize(2);
         font= Game.getFont();
         active=true;

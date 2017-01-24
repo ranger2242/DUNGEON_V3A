@@ -2,7 +2,7 @@ package com.quadx.dungeons.attacks;
 
 import com.badlogic.gdx.graphics.Color;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.tools.HoverText;
 
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.states.mapstate.MapState.out;
@@ -50,7 +50,7 @@ public class AttackMod {
                 break;
             }
             case 4:{//TORMENT
-                MapStateRender.setHoverText("-Tormented-",.15f, Color.BLUE, player.getPX(),player.getPY()-15,false);
+                new HoverText("-Tormented-",.15f, Color.BLUE, player.getPX(),player.getPY()-15,false);
                 torment=true;
                 break;
             }

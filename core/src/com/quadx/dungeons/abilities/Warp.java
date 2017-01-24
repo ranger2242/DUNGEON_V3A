@@ -3,7 +3,7 @@ package com.quadx.dungeons.abilities;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.tools.HoverText;
 
 import java.util.ArrayList;
 
@@ -26,7 +26,7 @@ public class Warp extends Ability {
         MapState.out("Warp 10 spaces forward on demand.");
         MapState.out("Cost 10E");
         MapState.out("Cooldown 4s");
-        MapStateRender.setHoverText("WARP!", 1.5f, Color.WHITE, player.getPX(), player.getPY(),false);
+        new HoverText("WARP!", 1.5f, Color.WHITE, player.getPX(), player.getPY(),false);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class Warp extends Ability {
             timeCounter=0;
         }
         else{
-            MapStateRender.setHoverText(""+(cooldown-timeCounter),.5f,Color.GRAY, player.getPX(), player.getPY(),false);
+            new HoverText(""+(cooldown-timeCounter),.5f,Color.GRAY, player.getPX(), player.getPY(),false);
         }
     }
     @Override

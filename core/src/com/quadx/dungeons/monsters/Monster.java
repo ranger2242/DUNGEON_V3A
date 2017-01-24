@@ -14,10 +14,10 @@ import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.Physics;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.states.mapstate.MapStateRender;
 import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 import com.quadx.dungeons.tools.Direction;
 import com.quadx.dungeons.tools.EMath;
+import com.quadx.dungeons.tools.HoverText;
 import com.quadx.dungeons.tools.StatManager;
 import com.quadx.dungeons.tools.gui.InfoOverlay;
 import com.quadx.dungeons.tools.gui.Text;
@@ -26,9 +26,8 @@ import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.*;
-import static com.quadx.dungeons.states.mapstate.MapState.cell;
-import static com.quadx.dungeons.states.mapstate.MapState.cellW;
-import static com.quadx.dungeons.states.mapstate.MapState.out;
+import static com.quadx.dungeons.GridManager.rn;
+import static com.quadx.dungeons.states.mapstate.MapState.*;
 import static javax.swing.JSplitPane.DIVIDER;
 
 /**
@@ -234,7 +233,7 @@ public class Monster {
             //player.setHp(player.getHp() - d);//apply damage
             MapStateUpdater.shakeScreen(.5f,5);
             player.setDest(absPos);
-            MapStateRender.setHoverText("-" + d, 1, new Color(1f,.2f,.2f,1f), player.getAbsPos().x, player.getAbsPos().y, true);
+            new HoverText("-" + d, 1, new Color(1f,.2f,.2f,1f), player.getAbsPos().x, player.getAbsPos().y, true);
             hit = true;
             StatManager.killer = this;
         }
@@ -516,7 +515,7 @@ public class Monster {
                 hp = 0;
             }
             setHit();
-            MapStateRender.setHoverText("-" + (int) i, .8f,new Color(1f,.2f,.2f,1f), absPos.x, absPos.y+20, true);
+            new HoverText("-" + (int) i, .8f,new Color(1f,.2f,.2f,1f), absPos.x, absPos.y+20, true);
             out("Hit " + name + " for " + (int) i + " damage.");
             invWait=true;
         }else{

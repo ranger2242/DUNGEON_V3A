@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.*;
@@ -237,6 +238,9 @@ public class MapStateUpdater extends MapState{
         Tests.memUsageList.add((double) (allocatedMemory/maxMemory));
         if(Tests.memUsageList.size()>Tests.meterListMax)
             Tests.memUsageList.remove(0);
+
+
+
         for(Anim a: anims){
             a.update();
         }
@@ -322,6 +326,12 @@ public class MapStateUpdater extends MapState{
 
         if (effectLoaded) effect.update(Gdx.graphics.getDeltaTime());
         updateCamPosition();
+        player.setStatsListPos();
+        updateMinimapPos();
+        updateEquipmentHUD();
+    }
+    static void updateMinimapPos(){
+        MapStateRender.fpsGridPos.set((int) (viewX + Game.WIDTH - 150),(viewY + Game.HEIGHT / 2)+ -70);
     }
     public static void spawnMonsters(int x){
             for (int i = 0; i < x; i++) {
@@ -336,7 +346,7 @@ public class MapStateUpdater extends MapState{
                         c.setMonsterIndex(monsterList.indexOf(m));
                         liveCellList.set(index, c);
                         Game.console("MList:" + monsterList.indexOf(m));
-                        MapStateRender.setHoverText("!", .5f, Color.RED,  player.getAbsPos().x, player.getAbsPos().y, true);
+                        new HoverText("!", .5f, Color.RED,  player.getAbsPos().x, player.getAbsPos().y, true);
                     }
                 }
             }
@@ -539,7 +549,7 @@ public class MapStateUpdater extends MapState{
             //pixel collision detection-----------------------------------------
             if (player.getHitBox().overlaps(c.getBounds())) {
                 //check walls
-                if (!c.getState()) {
+                if (!c.getState()|| c.getWater()) {
                     int e = 5 + player.getLevel();
                     if (dtDig > .5) {
                         if (player.getEnergy() > e) {
@@ -592,5 +602,15 @@ public class MapStateUpdater extends MapState{
     }
     public static void setAim(Direction.Facing f){//why wont this shit update
         player.facing=f;
+    }
+    static void updateEquipmentHUD(){
+        MapStateRender.equipBoxes.clear();
+        int x = (int) (viewX + ((WIDTH / 3) * 2) + 15);
+        int y = (int) (viewY + 130);
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 4; j++) {
+                MapStateRender.equipBoxes.add(new Rectangle(x + (j * 36), y + (i * 36) - 20, 32, 32));
+            }
+        }
     }
 }

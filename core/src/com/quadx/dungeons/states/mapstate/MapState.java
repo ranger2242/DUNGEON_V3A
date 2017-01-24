@@ -22,10 +22,7 @@ import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.MainMenuState;
 import com.quadx.dungeons.states.State;
-import com.quadx.dungeons.tools.ImageLoader;
-import com.quadx.dungeons.tools.ShapeRendererExt;
-import com.quadx.dungeons.tools.StatManager;
-import com.quadx.dungeons.tools.Tests;
+import com.quadx.dungeons.tools.*;
 import com.quadx.dungeons.tools.gui.InfoOverlay;
 import com.quadx.dungeons.tools.gui.Text;
 
@@ -152,10 +149,11 @@ public class MapState extends State implements ControllerListener {
         }
     }
     void createHUD(){
-        hud.rects.clear();
+        hud.rects.clear();//hud lines
         hud.rects.add(new Rectangle(viewX + WIDTH / 3, viewY, 2, 205));
         hud.rects.add(new Rectangle(viewX + (WIDTH / 3) * 2, viewY, 2, 205));
         hud.rects.add(new Rectangle(viewX, viewY + 205, WIDTH, 2));
+        //hud rects
         if (showStats)
             hud.rects.add(new Rectangle(viewX, viewY + HEIGHT - 300, 300, 300));
         hud.rects.add(new Rectangle(viewX, viewY, WIDTH, 207));
@@ -316,7 +314,7 @@ public class MapState extends State implements ControllerListener {
         player.setGold(player.getGold() + gold);
         StatManager.totalGold += gold;
         out(player.getName() + " recieved " + gold + "G");
-        MapStateRender.setHoverText(gold + "G", .5f, Color.GOLD, player.getAbsPos().x, player.getAbsPos().y, false);
+        new HoverText(gold + "G", .5f, Color.GOLD, player.getAbsPos().x, player.getAbsPos().y, false);
     }
     public static void openCrate(Item item) {
         if(item.getClass().equals(Gold.class)){
@@ -324,7 +322,7 @@ public class MapState extends State implements ControllerListener {
             player.setGold(player.getGold() + g.getValue());
             out(g.getValue() + " added to stash");
             StatManager.totalGold+=g.getValue();
-            MapStateRender.setHoverText(g.getValue() + "G", 1, Color.GOLD, player.getAbsPos().x,player.getAbsPos().y,false);
+            new HoverText(g.getValue() + "G", 1, Color.GOLD, player.getAbsPos().x,player.getAbsPos().y,false);
 
         }else {
             if (item != null) {
@@ -342,7 +340,7 @@ public class MapState extends State implements ControllerListener {
                         player.addItemToInventory(item);
                         if (a) inventoryPos = 0;
                         out(item.getName() + " added to inventory");
-                        MapStateRender.setHoverText(item.getName(), 1, Color.WHITE, player.getAbsPos().x,player.getAbsPos().y, false);
+                        new HoverText(item.getName(), 1, Color.WHITE, player.getAbsPos().x,player.getAbsPos().y, false);
                     } else {
                         player.lastItem = new Gold();
                     }
@@ -355,7 +353,7 @@ public class MapState extends State implements ControllerListener {
                     player.addItemToInventory(item);
                     if (a) inventoryPos = 0;
                     out(item.getName() + " added to inventory");
-                    MapStateRender.setHoverText(item.getName(), 1, Color.WHITE, player.getAbsPos().x, player.getAbsPos().y, false);
+                    new HoverText(item.getName(), 1, Color.WHITE, player.getAbsPos().x, player.getAbsPos().y, false);
                 }
             }
         }

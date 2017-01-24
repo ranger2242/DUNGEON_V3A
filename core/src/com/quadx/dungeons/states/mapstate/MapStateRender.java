@@ -44,34 +44,29 @@ public class MapStateRender extends MapState {
     public static boolean showCircle=false;
     private static boolean blink=false;
     private static boolean blinkp=false;
-
     private static float dtBlink =0;
     private static float dtBlinkP =0;
-
     static float dtLootPopup=0;
     private static float dtCircle=1f;
     public static float dtWaterEffect=0;
     private static int blradius=0;
     public static int inventoryPos=0;
     public static ArrayList<Rectangle> monAgroBoxes= new ArrayList<>();
-     static int[] statCompare=null;
+    public static ArrayList<Rectangle> equipBoxes= new ArrayList<>();
+    public static Vector2 fpsGridPos = new Vector2();
+
+    static int[] statCompare=null;
 
 
     static void renderLayers(SpriteBatch sb) {
-
         shapeR.setProjectionMatrix(cam.combined);
         sb.setProjectionMatrix(cam.combined);
         drawGameLayer(sb);
-        //HUD Layer ---------------------------------------------------------------------------------------------------------
-        srDrawAttackSelectors();
-        srDrawFPSMeter();
-        sbdrawFPS(sb);
-        srDrawMiniMap();
-        srDrawHUD();
-        sbDrawHUD(sb);
+        drawHUDLayer(sb);
+        drawFPSModule(sb);
+        drawMiniMapModule();
     }
-    //Game Layer
-    public static void drawGameLayer(SpriteBatch sb){
+    static void drawGLShapes(){
         //shape renderer filled------------------------------------
         shapeR.setAutoShapeType(true);
         shapeR.begin();
@@ -170,14 +165,15 @@ public class MapStateRender extends MapState {
             }
         }
         shapeR.end();
-
+    }
+    static void drawGLBatch(SpriteBatch sb){
         //spritebatch drawing section------------------------------------------
         sb.begin();
         for (Cell c : drawList) {
             //draw items
             Item item = c.getItem();
             if (item != null && c.getState())
-                sb.draw(item.getIcon(),item.getTexturePos().x,item.getTexturePos().y);
+                sb.draw(item.getIcon(),c.getAbsPos().x,fixHeight(c.getAbsPos()));
             //draw warp
             if(c.hasWarp())
                 sb.draw(ImageLoader.warp,c.getFixedPos().x,c.getFixedPos().y);
@@ -200,7 +196,7 @@ public class MapStateRender extends MapState {
                     //draw monster texts
                     for(Text t: m.getInfoOverlay().texts) {
                         Game.setFontSize(t.size);
-                        Game.getFont().draw(sb,t.text,m.getAbsPos().x,m.getAbsPos().y-40);
+                        Game.getFont().draw(sb,t.text,m.getAbsPos().x,fixHeight(m.getAbsPos())-40);
                     }
                 }
             }
@@ -213,42 +209,103 @@ public class MapStateRender extends MapState {
         }catch (ConcurrentModificationException e){}
 
         sb.end();//end drawing--------------------------------------------------------------------------------
+         }
+    //HUD Layer----------------------------------------------------------
+    static void drawHUDLayer(SpriteBatch sb){
+        //HUD Layer ---------------------------------------------------------------------------------------------------------//
+        drawHUDShapes();
+        drawHUDBatch(sb);
     }
-    //SPRITEBATCH RENDERING-----------------------------------------------
-    private static void sbDrawHUD(SpriteBatch sb) {
+    //Game Layer---------------------------------------------------------
+    static void drawGameLayer(SpriteBatch sb){
+        /*
+        functions in glshapes
+        draw cells
+            land shaded
+            walls
+            water
+        draw player
+            shadow
+            attack box
+            hit box
+        draw monsters
+            hit box
+            health bars
+        transparents-
+            mon agro box
+        lines
+            grid
+        */
+        drawGLShapes();
+        /*
+        functions in glBatch
+        textures
+           items
+           warp
+           animations
+           player
+           monsters
+         texts
+            mon stats
+            hovertexts
+        */
+        drawGLBatch(sb);
+    }
+    static void drawHUDShapes(){
+        //shape renderer filled------------------------------------
+        //enable transparency
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        shapeR.begin(ShapeRenderer.ShapeType.Filled);
+        //draw hud rectangles
+        for(Rectangle r: MapState.getInfoOverlay().rects){
+            shapeR.setColor(.1f, .1f, .1f, .7f);
+            shapeR.rect(r);
+        }
+        shapeR.end();
+        Gdx.gl.glDisable(GL_BLEND);
+        // end transparency------------------------------------------------------------
+        shapeR.begin(ShapeRenderer.ShapeType.Filled);
+        //draw player stat bars
+        shapeR.setColor(0f, 1f, 0f, 1);
+        Rectangle[] bars = player.getStatBars();
+        if (player.getHp() < player.getHpMax() / 2) {
+            shapeR.setColor(1f, 0f, 0f, 1);
+        }
+        shapeR.rect(bars[0]);
+        shapeR.setColor(0f, 0f, 1f, 1);
+        shapeR.rect(bars[1]);
+        shapeR.setColor(1f,1f,0,1);
+        shapeR.rect(bars[2]);
+        shapeR.end();
+
+
+        //line draw functions---------------------------------------------------
+        shapeR.begin(ShapeRenderer.ShapeType.Line);
+        shapeR.setColor(Color.GRAY);
+        //draw equipment slots
+        for(Rectangle r: equipBoxes)
+            shapeR.rect(r);
+        shapeR.end();
+
+    }
+    static void drawHUDBatch(SpriteBatch sb){
+        //spritebatch draw functions---------------------------------------------------
         sb.begin();
         Game.setFontSize(1);
-        sbDrawPlayerStats(sb);
-        sbDrawAttackMenu(sb);
-        sbDrawInventory(sb);
-        sbDrawMessageOutput(sb);
-        sbDrawLootPopup(sb);
-        sb.end();
-    }
-    private static void sbDrawMessageOutput(SpriteBatch sb){
-        Game.setFontSize(1);
-        Game.font.setColor(Color.WHITE);
-        for(int i=0;i<10;i++){
-            try {
-                Game.getFont().draw(sb, output.get(i), viewX+30,viewY+195-(i * 20));
-            }
-            catch(IndexOutOfBoundsException ignored){}
-        }
-    }
-    private static void sbDrawPlayerStats(SpriteBatch sb) {
-
-        if(showStats) {//Draw STATS
+        //Draw player stats
+        if(showStats) {
             Game.setFontSize(1);
             Game.font.setColor(Color.WHITE);
             ArrayList<String> a = player.getStatsList();
             Vector2[] v=player.getStatPos();
             for (int i = 0; i < a.size(); i++) {
                 if (statCompare != null && i-3 < statCompare.length && i-3 >= 0) {
-                      switch (statCompare[i-3]) {
+                    switch (statCompare[i-3]) {
                         case 1: {Game.font.setColor(Color.BLUE);break;}
                         case 2: {Game.font.setColor(Color.RED);break;}
                         default: {Game.font.setColor(Color.WHITE);break;}
-                      }
+                    }
                 }
                 else{
                     Game.font.setColor(Color.WHITE);
@@ -261,8 +318,94 @@ public class MapStateRender extends MapState {
         for(Text t: MapState.getInfoOverlay().texts){
             Game.getFont().draw(sb,t.text,t.pos.x,t.pos.y);
         }
+        //draw attack menu
+        ArrayList<InfoOverlay> list = MapState.getAttackBarOverlay();
+        for(InfoOverlay io :list){
+            io.draw(sb,shapeR);
+        }
+        //draw inventory
+        getInvOverlay().draw(sb,shapeR);
+        //draw output messages
+        if(Tests.output) {
+            Game.setFontSize(1);
+            Game.font.setColor(Color.WHITE);
+            for (int i = 0; i < 10; i++) {
+                try {
+                    Game.getFont().draw(sb, output.get(i), viewX + 30, viewY + 195 - (i * 20));
+                } catch (IndexOutOfBoundsException ignored) {
+                }
+            }
+        }
+        //draw loot popup
+        try {
+            if (dtLootPopup < .4) {
+                Vector2 v=new Vector2(player.getAbsPos());
+                v.y+=40+player.getIcon().getHeight();
+                v.x+=(player.getIcon().getWidth()/2);
+                sb.draw(lootPopup,  v.x, GridManager.fixHeight(v));
+            }
+        } catch (NullPointerException ignored) {}
 
+        sb.end();
     }
+    ////Modules----------------------------------------------------------
+    static void drawFPSModule(SpriteBatch sb){
+        //fps meter module
+        if(displayFPS) { //TODO optomize this to draw faster
+            //DRAW FPS meter
+            shapeR.begin(ShapeRenderer.ShapeType.Filled);
+            shapeR.setColor(Color.BLACK);
+            shapeR.rect(fpsGridPos.x, fpsGridPos.y, 100, 100);
+            shapeR.end();
+            shapeR.begin(ShapeRenderer.ShapeType.Line);
+            shapeR.setColor(Color.WHITE);
+            shapeR.rect(fpsGridPos.x, fpsGridPos.y, 100, 100);
+            shapeR.line(fpsGridPos.x, fpsGridPos.y, fpsGridPos.x + 100, fpsGridPos.y);
+
+            shapeR.setColor(Color.GREEN);
+            int prev = 0;
+            for (int i = 0; i < fpsList.size(); i++) {
+                shapeR.line(fpsGridPos.x + (i * 2), fpsGridPos.y + prev, fpsGridPos.x + ((i + 1) * 2), fpsGridPos.y + fpsList.get(i));
+                prev = fpsList.get(i);
+            }
+            double prev1=0;
+            for (int i = 0; i < Tests.memUsageList.size(); i++) {
+                shapeR.setColor(Color.PURPLE);
+                shapeR.line(fpsGridPos.x + (i * 2), (float) (fpsGridPos.y +100* prev1), fpsGridPos.x + ((i + 1) * 2), (float) (fpsGridPos.y + 100*Tests.memUsageList.get(i)));
+                prev1 = Tests.memUsageList.get(i);
+            }
+            shapeR.end();
+            //draw fps counter
+            sb.begin();
+            if(displayFPS){
+                Game.setFontSize(1);
+                Game.getFont().setColor(Color.WHITE);
+                Game.getFont().draw(sb, (int) fps + " FPS", fpsGridPos.x+2, fpsGridPos.y + 80);
+                double x=0;
+                try {
+                    x= Tests.memUsageList.get(Tests.memUsageList.size() - 1);
+                }catch(Exception e){}
+                Game.getFont().draw(sb, (int) Tests.currentMemUsage + "MB "+Math.floor(x*100)+"%" , fpsGridPos.x+2, fpsGridPos.y + 95);
+            }
+            sb.end();
+        }
+    }
+    private static void drawMiniMapModule(){
+        float r=res*2;
+        float off=20;
+        shapeR.begin(ShapeRenderer.ShapeType.Filled);
+        shapeR.setColor(Color.BLACK);
+        shapeR.rect(viewX+ WIDTH-(r+off),viewY+ HEIGHT-(r+off), r, r);
+        shapeR.end();
+
+        drawGrid(r, off);
+
+        shapeR.begin(ShapeRenderer.ShapeType.Line);
+        shapeR.setColor(Color.WHITE);
+        shapeR.rect(viewX+ WIDTH-(r+off),viewY+ HEIGHT-(r+off), r, r);
+        shapeR.end();
+    }
+    //OLD RENDERING------------------------------------------------------
     private static void sbDrawTiles(SpriteBatch sb) {
         sb.begin();
         for (Cell c : drawList) {
@@ -279,44 +422,6 @@ public class MapStateRender extends MapState {
             if (c.hasWarp()) {
                 sb.draw(ImageLoader.warp, v.x, v.y);
             }
-        }
-        sb.end();
-    }
-    private static void sbDrawAttackMenu(SpriteBatch sb) {
-        ArrayList<InfoOverlay> list = MapState.getAttackBarOverlay();
-        for(InfoOverlay io :list){
-            io.draw(sb,shapeR);
-        }
-    }
-    private static void sbDrawInventory(SpriteBatch sb) {
-        InfoOverlay io= getInvOverlay();
-        io.draw(sb,shapeR);
-    }
-    private static void sbDrawLootPopup(SpriteBatch sb) {
-        try {
-            if (dtLootPopup < .4) {
-                Vector2 v=new Vector2(player.getAbsPos());
-                v.y+=40+player.getIcon().getHeight();
-                v.x+=(player.getIcon().getWidth()/2);
-                sb.draw(lootPopup,  v.x, GridManager.fixHeight(v));
-            }
-        } catch (NullPointerException ignored) {}
-    }
-    private static void sbdrawFPS(SpriteBatch sb) {
-        sb.begin();
-        int yoff=-70;
-        int basex = (int) (viewX + Game.WIDTH - 150);
-        int basey = (int) (viewY + Game.HEIGHT / 2)+ yoff;
-        if(displayFPS){
-            Game.setFontSize(1);
-            Game.getFont().setColor(Color.WHITE);
-            Game.getFont().draw(sb, (int) fps + " FPS", basex+2, basey + 80);
-            double x=0;
-            try {
-                x= Tests.memUsageList.get(Tests.memUsageList.size() - 1);
-            }catch(Exception e){}
-            Game.getFont().draw(sb, (int) Tests.currentMemUsage + "MB "+Math.floor(x*100)+"%" , basex+2, basey + 95);
-
         }
         sb.end();
     }
@@ -340,7 +445,6 @@ public class MapStateRender extends MapState {
             }
         }
     }
-    //SHAPE RENDERING------------------------------------------------------
     private static void srDrawAttackSelectors(){
         shapeR.end();
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
@@ -359,98 +463,10 @@ public class MapStateRender extends MapState {
         }
         shapeR.end();
     }
-    private static void srDrawHUD(){
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        InfoOverlay io = MapState.getInfoOverlay();
-        for(Rectangle r:io.rects){
-            if(io.rects.indexOf(r)<3) shapeR.setColor(Color.WHITE);
-            else shapeR.setColor(.1f, .1f, .1f, .7f);
-            shapeR.rect(r.x,r.y,r.width,r.height);
-        }
-        shapeR.end();
-        Gdx.gl.glDisable(GL_BLEND);
-        srDrawPlayerStatBars();
-        srDrawEquipmentSlots();
-    }
-    private static void srDrawFPSMeter(){
-        int yoff=-70;
-        if(displayFPS) {
-            int basex = (int) (viewX + Game.WIDTH - 150);
-            int basey = (int) (viewY + Game.HEIGHT / 2)+ yoff;
-            //DRAW FPS COUNTER
-            shapeR.begin(ShapeRenderer.ShapeType.Filled);
-            shapeR.setColor(Color.BLACK);
-            shapeR.rect(basex, basey, 100, 100);
-            shapeR.end();
-            shapeR.begin(ShapeRenderer.ShapeType.Line);
-            shapeR.setColor(Color.WHITE);
-            shapeR.rect(basex, basey, 100, 100);
-            shapeR.line(basex, basey, basex + 100, basey);
-
-            shapeR.setColor(Color.GREEN);
-            int prev = 0;
-            for (int i = 0; i < fpsList.size(); i++) {
-                shapeR.line(basex + (i * 2), basey + prev, basex + ((i + 1) * 2), basey + fpsList.get(i));
-                prev = fpsList.get(i);
-            }
-            double prev1=0;
-            for (int i = 0; i < Tests.memUsageList.size(); i++) {
-                shapeR.setColor(Color.PURPLE);
-                shapeR.line(basex + (i * 2), (float) (basey +100* prev1), basex + ((i + 1) * 2), (float) (basey + 100*Tests.memUsageList.get(i)));
-                prev1 = Tests.memUsageList.get(i);
-            }
-            shapeR.end();
-        }
-    }
-    private static void srDrawPlayerStatBars(){
-        double barMax = (WIDTH/3)-10;
-        double pHPBar = ((float) player.getHp() / (float) player.getHpMax()) * barMax;
-        double pManaBar = ((float)player.getMana() / (float)player.getManaMax()) * barMax;
-        double pEnergyBar=((float)player.getEnergy()/(float)player.getEnergyMax())*barMax;
-
-        shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        shapeR.setColor(0f, 1f, 0f, 1);
-        if (player.getHp() < player.getHpMax() / 2) {
-            shapeR.setColor(1f, 0f, 0f, 1);
-        }
-        int barsX= (int) (viewX+(WIDTH/3)+5);
-        shapeR.rect(barsX,viewY+175 , (float) pHPBar, 10);
-        shapeR.setColor(0f, 0f, 1f, 1);
-        shapeR.rect(barsX, viewY+160, (float) pManaBar, 10);
-        shapeR.setColor(1f,1f,0,1);
-        shapeR.rect(barsX, viewY+145, (float) pEnergyBar, 10);
-        shapeR.end();
-    }
-    private static void srDrawEquipmentSlots(){
-        shapeR.begin(ShapeRenderer.ShapeType.Line);
-        shapeR.setColor(Color.GRAY);
-        int x = (int) (viewX + ((WIDTH / 3) * 2) + 15);
-        int y = (int) (viewY + 130);
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 4; j++) {
-                shapeR.rect(x + (j * 36), y + (i * 36) - 20, 32, 32);
-            }
-        }
-        shapeR.end();
-    }
-    private static void srDrawMiniMap(){
-        float r=res*2;
-        float off=20;
-        shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        shapeR.setColor(Color.BLACK);
-        shapeR.rect(viewX+ WIDTH-(r+off),viewY+ HEIGHT-(r+off), r, r);
-        shapeR.end();
-
-        drawGrid(r, off);
-
-        shapeR.begin(ShapeRenderer.ShapeType.Line);
-        shapeR.setColor(Color.WHITE);
-        shapeR.rect(viewX+ WIDTH-(r+off),viewY+ HEIGHT-(r+off), r, r);
-        shapeR.end();
-    }
     //OTHER----------------------------------------------------------------
+    public MapStateRender(GameStateManager gsm) {
+        super(gsm);
+    }
     static void updateVariables(float dt){
         dtBlink+=dt;
         dtLootPopup +=dt;
@@ -472,18 +488,6 @@ public class MapStateRender extends MapState {
         try {
             HoverText.texts.forEach(HoverText::updateDT);
         }catch (ConcurrentModificationException e){}
-    }
-    public MapStateRender(GameStateManager gsm) {
-        super(gsm);
-    }
-    public static void setHoverText(String s, float time, Color color, float x, float y, boolean flash){
-            new HoverText(s, color, x, GridManager.fixHeight(new Vector2(x,y)), time, flash);
-    }
-    private static void drawPlayerFinder(){
-        shapeR.begin(ShapeRenderer.ShapeType.Line);
-        shapeR.setColor(Color.WHITE);
-        shapeR.circle( player.getAbsPos().x, player.getAbsPos().y,100*dtCircle);
-        shapeR.end();
     }
     public static void drawCircle(int x, int y, float r, Color c){
         shapeR.begin(ShapeRenderer.ShapeType.Line);

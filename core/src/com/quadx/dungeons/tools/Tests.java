@@ -33,7 +33,8 @@ public class Tests {
     public static boolean nodeath=      false;
     public static boolean fastreg=      false;
     public static boolean noLand=       false;
-    public static boolean showhitbox=   true;
+    public static boolean showhitbox=   false;
+    public static boolean output=       false;
     static int testCount = 0;
 
     public static void giveItems(int x) {

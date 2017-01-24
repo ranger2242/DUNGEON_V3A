@@ -2,7 +2,7 @@ package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.quadx.dungeons.states.mapstate.MapStateRender;
+import com.quadx.dungeons.tools.HoverText;
 import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class Tank extends Ability {
     public void onActivate() {
         player.setAbilityMod(0);
         l1();
-        MapStateRender.setHoverText("Tank!!",1.5f, Color.WHITE, player.getPX(),player.getPY(),false);
+        new HoverText("Tank!!",1.5f, Color.WHITE, player.getPX(),player.getPY(),false);
 
     }
 
