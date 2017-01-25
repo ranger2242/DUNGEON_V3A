@@ -189,7 +189,7 @@ public class Map2State extends State {
         return dispArray;
     }
     private static void plotWater(){
-        int cycles = rn.nextInt(7)+1;
+        int cycles = rn.nextInt(7);
         int grow=2;
         for(int i=0;i<cycles;i++) {
             int x=rn.nextInt(live.size());

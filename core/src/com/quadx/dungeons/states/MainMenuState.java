@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.states.mapstate.MapState.viewX;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
-import static com.quadx.dungeons.tools.Tests.centerString;
+import static com.quadx.dungeons.tools.gui.Text.centerString;
 
 /**
  * Created by Tom on 12/22/2015.

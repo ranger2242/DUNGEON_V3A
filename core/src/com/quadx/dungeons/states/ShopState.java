@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.states.mapstate.MapState.viewX;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
-import static com.quadx.dungeons.tools.Tests.strWidth;
+import static com.quadx.dungeons.tools.gui.Text.strWidth;
 
 /**
  * Created by Tom on 12/24/2015.

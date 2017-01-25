@@ -41,7 +41,6 @@ public class Player {
     public ArrayList<Ability> secondaryAbilityList = new ArrayList<>();
 
     private Vector2 absPos = new Vector2(0, 0);
-    Vector2[] statsPos;
     Vector2 texturePos = new Vector2();
     Vector2 modPos = new Vector2();
     Vector2 dest = new Vector2();
@@ -126,8 +125,8 @@ public class Player {
         //AbilityMod.resetAbilities();
         level=1;
         getStatsList();
-        statsPos= new Vector2[statsList.size()];
-        setStatsListPos();
+
+        //secondaryAbilityList.add(new WaterBreath());
     }
     //SETTERS------------------------------------------------------------------
     public void setDest(Vector2 monPos){
@@ -184,8 +183,8 @@ public class Player {
     }
 
     public void setExp(int lvl, float factor) {
-        double a=34.9055;
-        double b=1.00958;
+        double a=50.9055;
+        double b=1.0015;
         int gain= (int) (a*Math.pow(b,lvl)*factor);
         new HoverText(gain +" EXP",.8f, Color.GREEN , player.getAbsPos().x, player.getAbsPos().y+10,false);
         this.exp+=gain;
@@ -275,11 +274,6 @@ public class Player {
     public void setxEnergyMax(double xEnergyMax) {
         this.energyMax *= xEnergyMax;
     }
-    public void setStatsListPos(){
-        for(int i=0;i<statsList.size();i++){
-            statsPos[i]=new Vector2(viewX+30,viewY+HEIGHT - 30 - (i * 20));
-        }
-    }
     public void setAbsPos(Vector2 a){
         absPos.set(a);
        // px = (int) EMath.round(a.x);
@@ -294,19 +288,16 @@ public class Player {
         modPos.set(v);
     }
     //GETTERS------------------------------------------------------------------
-    public Rectangle[] getStatBars(){
-        Rectangle[] r=new Rectangle[3];
-        float h=10;
-        float barMax = (WIDTH/3)-10;
-        float pHPBar = ((float) player.getHp() / (float) player.getHpMax()) * barMax;
-        float pManaBar = ((float)player.getMana() / (float)player.getManaMax()) * barMax;
-        float pEnergyBar=((float)player.getEnergy()/(float)player.getEnergyMax())*barMax;
-        int barsX= (int) (viewX+(WIDTH/3)+5);
-        r[0]=new Rectangle(barsX,viewY+175 , pHPBar, h);
-        r[1]=new Rectangle(barsX, viewY+160, pManaBar, h);
-        r[2]=new Rectangle(barsX, viewY+145, pEnergyBar, h);
-        return r;
+    public boolean hasAbility(Class cls){
+        boolean b=false;
+        for(Ability a: player.getSecondaryAbilityList()){
+            if(a.getClass().equals(cls)){
+                 b=true;
+            }
+        }
+        return b;
     }
+
     public Rectangle getAttackBox() {
         //return new Rectangle(attackBox.x,,attackBox.width,attackBox.height);
         return attackBox;
@@ -323,9 +314,6 @@ public class Player {
     public Vector2 getTexturePos(){
         texturePos.set(getAbsPos().x,GridManager.fixHeight(getAbsPos()));
         return texturePos;
-    }
-    public Vector2[] getStatPos(){
-        return statsPos;
     }
     public Vector2 getModPos(){return modPos;}
     public Vector2 getPos(){return new Vector2(x,y);}
@@ -604,10 +592,14 @@ public class Player {
                 int x = (int) (EMath.round(absPos.x / cellW));
                 int y = (int) (EMath.round(absPos.y / cellW));
 
+                if(canMove) {
+                    player.setPos(new Vector2(x, y));
+                    player.setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
+
+                }
                 Cell c = dispArray[x][y];
                 if (c.getState()) {
-                    player.setPos(new Vector2(x, y));
-                    player.setAbsPos(new Vector2(absPos.x + comp.x,absPos.y+comp.y));
+
                 }
                 /*
                 if (c.getState() && c.hasWater) {
@@ -730,20 +722,24 @@ public class Player {
             dtHitInvincibility = 0;
             wasHit = false;
         }
-        canMove = true;
         calculateArmorBuff();
         expLimit=(int)((((Math.pow(1.2,level))*1000)/2)-300);
         velocity= (float) (6+.0136*getSpdComp()+.000005* Math.pow(getSpdComp(),2));
         if(velocity<5)velocity=5;
         if(velocity>18)velocity=18;
-        //velocity= (float) (.5*Math.pow(1.00005,(getSpdComp()))*getSpdComp());
-        //if(moveSpeed<1.03)moveSpeed=1.03;
-        //velocity=5;
         regenPlayer(dt);
-        //set texture cords
-     //   texturePos.set(absPos.x - getIcon().getWidth() / 4, absPos.y - getIcon().getHeight() / 4);
-        //setStatsListPos();
+        resetBars();
         fixPosition();
+    }
+    public void resetBars(){
+        if(hp>hpMax)hp=hpMax;
+        else if(hp<0)hp=0;
+
+        if(mana>manaMax)mana=manaMax;
+        else if(mana<0)mana=0;
+
+        if(energy>energyMax)energy=energyMax;
+        else if(energy<0)energy=0;
     }
     public void checkLvlUp() {
         if (exp>=expLimit)

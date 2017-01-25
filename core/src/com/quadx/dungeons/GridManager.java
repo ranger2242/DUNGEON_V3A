@@ -5,11 +5,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.items.Gold;
-import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.items.*;
+import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.*;
-import com.quadx.dungeons.tools.*;
+import com.quadx.dungeons.tools.Direction;
+import com.quadx.dungeons.tools.Tests;
+import com.quadx.dungeons.tools.Timer;
+import com.quadx.dungeons.tools.WallPattern;
 import com.quadx.dungeons.tools.heightmap.HeightMap;
 
 import java.util.ArrayList;
@@ -199,38 +202,64 @@ public class GridManager {
         liveCellList.get(index).setShop(true);
     }
     private void plotLoot() {
-        float fillPercent = .01f;
-        int loot = (int) (liveCellList.size() * fillPercent);
-        while (loot > 0) {
-            int index = rn.nextInt(liveCellList.size());
-            Cell c =liveCellList.get(index);
-            while(c.getWater()){
-                index = rn.nextInt(liveCellList.size());
-                c = liveCellList.get(index);
+        int seeds= 20+rn.nextInt(10);
+        ArrayList<Vector2> points= new ArrayList<>();
+        for(int i=0;i<seeds;i++){
+            points.add(new Vector2(rn.nextInt(res),rn.nextInt(res)));
+        }
+        for(int i=0;i<seeds;i++) {
+            int seeds2= rn.nextInt(13);
+            for(int j=0;j<seeds2;j++) {
+                int x = (int) (points.get(i).x + (4*rn.nextGaussian()));
+                int y = (int) (points.get(i).y + (4*rn.nextGaussian()));
+                x=setInBounds(x);
+                y=setInBounds(y);
+                dispArray[x][y].setHasLoot(true);
+                dispArray[x][y].setItem(new Gold());
             }
-            Item i = new Gold();
-            liveCellList.get(index).setItem(i);
-            liveCellList.get(index).setHasLoot(true);
-            loot--;
         }
     }
-    private void plotCrates() {
-        float fillPercent = .01f;
+    public static int setInBounds(int x){
+        if(x<0)return 0;
+        else if(x>res-1) return  res-1;
+        else return x;
+    }
+    private void plotItems() {
+        int seeds =10 + rn.nextInt(20);
+        ArrayList<Vector2> points = new ArrayList<>();
+        for (int i = 0; i < seeds; i++) {
+            points.add(new Vector2(rn.nextInt(res), rn.nextInt(res)));
+        }
+        for (int i = 0; i < seeds; i++) {
+            Item item = Item.generate();
+            if (!item.isEquip && !(item.getClass().equals(SpellBook.class) || item.getClass().equals(Gold.class)
+                    || item.getClass().equals(Potion.class) || item.getClass().equals(ManaPlus.class)
+                    || item.getClass().equals(EnergyPlus.class))) {
+                int seeds2 = rn.nextInt(8);
+                for (int j = 0; j < seeds2; j++) {
+                    int x = (int) (points.get(i).x + (4 * rn.nextGaussian()));
+                    int y = (int) (points.get(i).y + (4 * rn.nextGaussian()));
+                    x = setInBounds(x);
+                    y = setInBounds(y);
+                    dispArray[x][y].setItem(item);
+                }
+            }
+
+        }
+
+        float fillPercent = .005f;
         int crates = (int) (liveCellList.size() * fillPercent);
         for (int a = 0; a < crates; a++) {
-            int index = rn.nextInt(liveCellList.size());
-            Cell c =liveCellList.get(index);
-            while(c.getWater()){
-                index = rn.nextInt(liveCellList.size());
-                c = liveCellList.get(index);
+            int x=rn.nextInt(res);
+            int y=rn.nextInt(res);
+
+            if(rn.nextInt(8)<7){
+                dispArray[x][y].setBoosterItem(rn.nextInt(3));
             }
-            if (rn.nextFloat() < .4) {
-                int x = rn.nextInt(3);
-                liveCellList.get(index).setBoosterItem(x);
-            } else {
-                    liveCellList.get(index).setItem(Item.generate());
+            else{
+                Item item = Equipment.generate();
+                dispArray[x][y].setItem(item);
             }
-            liveCellList.get(index).setCrate(true);
         }
 
     }
@@ -243,7 +272,7 @@ public class GridManager {
         }
         player.setPos(c.getPos());
         player.setAbsPos(new Vector2(c.getAbsPos()));
-        int range = 35;
+        int range = 100;
         Rectangle rect = new Rectangle(player.getAbsPos().x - (cell.x * (range / 2)), player.getAbsPos().y - (cell.y * (range / 2)), range * cell.x, range * cell.y);
         for (int p = monsterList.size() - 1; p >= 0; p--) {
             Monster m = monsterList.get(p);
@@ -310,21 +339,25 @@ public class GridManager {
         clearMonsterList();
         createMap();
         hm=new HeightMap(dispArray);
+        HeightMap.initColorList(HeightMap.n);
         dispArray=hm.getCells();
         plotLoot();
-        plotCrates();
+        plotItems();
         plotShop();
         plotWarps();
         if(!Tests.nospawn)
             plotMonsters();
         t.end();
         out("4:"+t.runtime());
-        // Game.console("7:"+t.runtime());
         t.start();
         plotPlayer();
         t.end();
-        //  Game.console("8:"+t.runtime());
         MapStateRender.showCircle = true;
+
+        if(Tests.clearmap)
+            Tests.loadEmptyMap();
+
+        //nothing below here
         mapLoadTime.end();
         Tests.mapLoadTimes.add(mapLoadTime.getElapsedD());
         out(GridManager.mapLoadTime.runtime());

@@ -1,8 +1,10 @@
 package com.quadx.dungeons.commands;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.states.mapstate.MapState;
+import com.quadx.dungeons.tools.HoverText;
 
 import static com.quadx.dungeons.Game.player;
 
@@ -22,6 +24,8 @@ public class JumpComm extends Command{
                 if (player.getEnergy() > 30 && !player.jumping) {
                     player.jumping = true;
                     player.setEnergy(player.getEnergy()-30);
+                }else if(player.getEnergy() < 30) {
+                    new HoverText("-!-",.5f, Color.YELLOW,player.getAbsPos().x+(player.getIcon().getWidth()/2),player.getAbsPos().y+player.getIcon().getHeight()+10,true);
                 }
             }
     }

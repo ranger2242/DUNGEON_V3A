@@ -1,20 +1,27 @@
 package com.quadx.dungeons.abilities;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.quadx.dungeons.tools.ImageLoader;
+
 import java.util.ArrayList;
 
 /**
  * Created by range_000 on 8/6/2016.
  */
 public class WaterBreath extends Ability {
-    public static boolean active =false;
 
     public WaterBreath(){
         name="Water Breath";
     }
     @Override
     public void onActivate() {
-        active=true;
+        loadIcon("images\\icons\\abilities\\icWB.png");
         l1();
+    }
+
+    @Override
+    public Texture getIcon() {
+        return ImageLoader.abilities2.get(0);
     }
 
     @Override
@@ -24,6 +31,7 @@ public class WaterBreath extends Ability {
 
     @Override
     public void l1() {
+        level++;
 
     }
 

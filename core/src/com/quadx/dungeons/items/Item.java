@@ -12,7 +12,10 @@ import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.ImageLoader;
 
 import static com.quadx.dungeons.Game.equipSets;
+import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.GridManager.rn;
+import static com.quadx.dungeons.states.mapstate.MapState.openCrate;
 
 public class Item
 {
@@ -147,5 +150,22 @@ public class Item
 
     public Vector2 getTexturePos() {
         return texturePos;
+    }
+
+    public void colliion(int x, int y) {
+        if (this.getClass().equals(EnergyPlus.class))
+            player.useItem(new EnergyPlus());
+        else if (this.getClass().equals(Potion.class))
+            player.useItem(new Potion());
+        else if (this.getClass().equals(ManaPlus.class))
+            player.useItem(new ManaPlus());
+        else
+            openCrate(this);
+        player.resetBars();
+        dispArray[x][y].setBoosterItem(-1);
+        dispArray[x][y].setCrate(false);
+        dispArray[x][y].setItem(null);
+        dispArray[x][y].setHasLoot(false);
+
     }
 }

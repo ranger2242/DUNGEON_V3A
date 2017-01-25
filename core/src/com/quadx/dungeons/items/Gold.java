@@ -16,7 +16,7 @@ public class Gold extends Item{
         while (f < .05) {
             f = rn.nextFloat();
         }
-        gold = (int) ((f) * 100) * player.getLevel();
+        gold = (int) ((f) * 20) * player.getLevel();
         if (gold < 0) gold = 1;
         if (gold > 1000) {
             gold = 1000;

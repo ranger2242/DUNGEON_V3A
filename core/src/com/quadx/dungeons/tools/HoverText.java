@@ -4,10 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Game;
 
 import java.util.ArrayList;
 
+import static com.quadx.dungeons.GridManager.fixHeight;
 import static com.quadx.dungeons.states.MainMenuState.gl;
 
 /**
@@ -97,7 +99,8 @@ public class HoverText {
     public void draw(SpriteBatch sb) {
         if (active) {
             if (dtHov < 1.2) {
-                font.draw(sb, text, px, py);
+                font.setColor(color);
+                font.draw(sb, text, px,fixHeight(new Vector2(px,py)));
             }
         }
 //        font.getColor().a=1;

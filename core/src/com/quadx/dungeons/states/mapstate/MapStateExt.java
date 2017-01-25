@@ -9,6 +9,7 @@ import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.tools.FilePaths;
+import com.quadx.dungeons.tools.HoverText;
 
 import java.util.ArrayList;
 
@@ -138,6 +139,9 @@ public class MapStateExt extends MapState{
                 player.attackList.get(player.attackList.indexOf(a)).checkLvlUp();
 
             }
+            else
+                new HoverText("-!-",.5f, Color.MAGENTA,player.getAbsPos().x+(player.getIcon().getWidth()/2),player.getAbsPos().y+player.getIcon().getHeight()+10,true);
+
         }
     }
     public static void addEffect(ParticleEffect e){

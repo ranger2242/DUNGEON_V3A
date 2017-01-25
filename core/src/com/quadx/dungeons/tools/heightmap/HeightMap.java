@@ -24,27 +24,30 @@ import static com.quadx.dungeons.states.mapstate.MapState.cellW;
 public class HeightMap{
     static float viewX;
     static float viewY;
+    private static Random rn= new Random();
     float dtf=0;
-    int n = 10;
+    public static int n = 10;
     int[][] grid = new int[res][res];
     private ShapeRenderer shapeR = new ShapeRenderer();
     static ArrayList<Color> colors = new ArrayList<>();
     Vector2 centerCamPos = new Vector2(Game.WIDTH / 2, Game.HEIGHT / 2);
-    Random rn = new Random();
     Vector2 playerpos=new Vector2(100,100);
     Cell[][] cells=null;
 
     public HeightMap(Cell[][] g) {
         cells=g;
-        initColorList();
+        initColorList(n);
         initGrid();
     }
-    void initColorList(){
-        for (int i = 0; i < n + 1; i++) {
-            float a = 1 * ((float) i / (float) n)*.4f;
-            colors.add(new Color(a, a, a, 1));
+    public static void initColorList(int n){
+        colors.clear();
+        float d=(3f/4f);
+        Color c = new Color(rn.nextFloat()*d,rn.nextFloat()*d,rn.nextFloat()*d,1);
+        for (int i = 0; i < n + 3; i++) {
+            float a = 1 * ((float) i / (float) n)*.7f;
+            colors.add(new Color(c.r*a, c.g*a, c.b*a, 1));
         }
-       // Collections.reverse(colors);
+        colors.remove(0);
     }
     public static ArrayList<Color> getColors(){return colors;}
     float[][] addToMap(float[][] f,float[][]f2) {

@@ -21,8 +21,8 @@ import static com.quadx.dungeons.states.mapstate.MapState.viewX;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
 import static com.quadx.dungeons.tools.StatManager.pScore;
 import static com.quadx.dungeons.tools.StatManager.stats;
-import static com.quadx.dungeons.tools.Tests.centerString;
-import static com.quadx.dungeons.tools.Tests.strWidth;
+import static com.quadx.dungeons.tools.gui.Text.centerString;
+import static com.quadx.dungeons.tools.gui.Text.strWidth;
 
 /**
  * Created by Chris Cavazos on 5/29/2016.
@@ -247,7 +247,10 @@ public class HighScoreState extends State {
         }
         sb.end();
     }
-//----------------------------------------------------
+
+
+
+    //----------------------------------------------------
     public void dispose() {
 
     }

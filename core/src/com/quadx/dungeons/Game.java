@@ -141,11 +141,13 @@ enemy and player knock back
             FileReader file= new FileReader("scores.txt");
             BufferedReader bf = new BufferedReader(file);
             String s;
-            while((s=bf.readLine()) != null){
-                List<String> split = Arrays.asList(s.split(","));
-                HighScoreState.addScore(new Score(split.get(0),split.get(1),split.get(2),split.get(3),split.get(4)));
+            while((s=bf.readLine()) != null) {
+                if (!s.equals("")) {
+                    List<String> split = Arrays.asList(s.split(","));
+                    HighScoreState.addScore(new Score(split.get(0), split.get(1), split.get(2), split.get(3), split.get(4)));
+                }
             }
-        } //penis
+        }
         catch (IOException e) {
             e.printStackTrace();
         }

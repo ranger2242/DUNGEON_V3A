@@ -35,6 +35,7 @@ public class Tests {
     public static boolean noLand=       false;
     public static boolean showhitbox=   false;
     public static boolean output=       false;
+    public static boolean clearmap=     false;
     static int testCount = 0;
 
     public static void giveItems(int x) {
@@ -42,14 +43,7 @@ public class Tests {
             player.addItemToInventory(Item.generateNoGold());
         }
     }
-    public static float strWidth(String s){
-        CharSequence cs=s;
-        gl.setText(Game.getFont(),cs);
-        return gl.width;
-    }
-    public static float centerString(String s){
-        return (viewX+WIDTH/2)- (strWidth(s)/2);
-    }
+
     public static void loadEmptyMap() {
         Map2State.fillArray();
     }

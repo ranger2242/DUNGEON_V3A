@@ -14,7 +14,6 @@ import com.quadx.dungeons.abilities.*;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.FilePaths;
 import com.quadx.dungeons.tools.ImageLoader;
-import com.quadx.dungeons.tools.MyTextInputListener;
 
 import java.util.ArrayList;
 
@@ -46,8 +45,8 @@ public class AbilitySelectState extends State implements ControllerListener {
         if(Game.controllerMode)
         controller.addListener(this);
         if(!MapState.inGame && FilePaths.checkOS()==0) {
-            MyTextInputListener listener = new MyTextInputListener();
-            Gdx.input.getTextInput(listener, "Name", "", "");
+           // MyTextInputListener listener = new MyTextInputListener();
+           // Gdx.input.getTextInput(listener, "Name", "", "");
         }
         Game.setFontSize(5);
 
@@ -71,6 +70,7 @@ public class AbilitySelectState extends State implements ControllerListener {
         abilityList.add(mage);
         abilityList.add(quick);
         //abilityList.add(brawler);
+
         secondaryList.add(wb);
     }
 
@@ -98,6 +98,7 @@ public class AbilitySelectState extends State implements ControllerListener {
                 if(!found){
                     if(player.secondaryAbilityList.size()<player.maxSec){
                         player.secondaryAbilityList.add(hovering);
+                        player.secondaryAbilityList.get(player.secondaryAbilityList.size()-1).onActivate();
                     }
                 }
             }else {

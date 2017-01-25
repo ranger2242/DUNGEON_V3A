@@ -32,6 +32,7 @@ public class Investor extends Ability {
 
     public void onActivate() {
         player.setAbilityMod(1);
+        l1();
         new HoverText("INVESTOR!",1.5f, Color.WHITE, player.getPX(),player.getPY(),false);
     }
 
