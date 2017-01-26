@@ -6,7 +6,6 @@ import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.MainMenuState;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 import com.quadx.dungeons.tools.Direction;
 
 import static com.quadx.dungeons.Game.player;
@@ -34,7 +33,7 @@ public class UpComm extends Command {
             }
             if (cls.equals(MapState.class)) {
                 if (player.canMove) {
-                    MapStateUpdater.setAim(Direction.Facing.North);
+                    player.setAim(Direction.Facing.North);
 
                     player.move(new Vector2(0, 1));
                     player.dtMove = 0;

@@ -81,6 +81,7 @@ public class MapState extends State implements ControllerListener {
         player.loadIcons();
         player.loadAttacks();
         player.getAbility().onActivate();
+        player.fullHeal();
         inGame=true;
         gm = new GridManager();
         shapeR = new ShapeRendererExt();
@@ -98,7 +99,8 @@ public class MapState extends State implements ControllerListener {
     }
     public void debug() {
         //Tests.testEquipmentRates();
-       Tests.giveItems(50);
+       //
+        // Tests.giveItems(50);
     }
     public void handleInput() {
     }
@@ -121,6 +123,7 @@ public class MapState extends State implements ControllerListener {
         HUD.create();
     }
     public void render(SpriteBatch sb) {
+
         renderLayers(sb);
     }
     public void dispose() {

@@ -189,34 +189,34 @@ public class Map2State extends State {
         return dispArray;
     }
     private static void plotWater(){
-        int cycles = rn.nextInt(7);
-        int grow=2;
-        for(int i=0;i<cycles;i++) {
-            int x=rn.nextInt(live.size());
-            int x1=live.get(x).getX();
-            int y1=live.get(x).getY();
-            live.get(x).setState();
-            live.get(x).setWater();
-            buffArray[x1][y1].setState();
-            buffArray[x1][y1].setWater();
+        int cycles = rn.nextInt(13);
+        if(cycles<3)cycles=rn.nextInt(13);
+        int grow=3;
+        for (int i = 0; i < cycles; i++) {
+            int x = rn.nextInt(res);
+            int y = rn.nextInt(res);
+            buffArray[x][y].setState();
+            buffArray[x][y].setWater();
         }
-        for(int i=0;i<grow;i++) {
-            live.stream().filter(c -> c.getWater()).forEach(c -> {
-                int x = c.getX();
-                int y = c.getY();
-                try {
-                    if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y - 1].setWater();
-                    if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y].setWater();
-                    if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y + 1].setWater();
-                    if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x][y + 1].setWater();
-                    if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x + 1][y + 1].setWater();
-                    if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x + 1][y].setWater();
-                    if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x + 1][y - 1].setWater();
-                    if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x][y - 1].setWater();
-                } catch (ArrayIndexOutOfBoundsException ignored) {
-                }
+        for (int i = 0; i < grow; i++) {
+            for (int x = 0; x < res; x++) {
+                for (int y = 0; y < res; y++) {
+                    if (buffArray[x][y].getWater()) {
+                        try {
+                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y - 1].setWater();
+                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y].setWater();
+                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y + 1].setWater();
+                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x][y + 1].setWater();
+                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x + 1][y + 1].setWater();
+                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x + 1][y].setWater();
+                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x + 1][y - 1].setWater();
+                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x][y - 1].setWater();
+                        } catch (ArrayIndexOutOfBoundsException ignored) {
+                        }
 
-            });
+                    }
+                }
+            }
         }
     }
     private static void fillBits(int factor, boolean b){

@@ -45,7 +45,7 @@ public class Investor extends Ability {
     public void l1() {
         level=1;
         player.setxHpRegen(2);
-        player.setxEnergyRegen(2);
+        //player.setxEnergyRegen(2);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class Investor extends Ability {
     @Override
     public void l3() {
         player.setxMoveSpeed(.75);
-        player.setxEnergyRegen(2);
+        //.setxEnergyRegen(2);
         player.setxAttack(1.2);
         player.setxIntel(1.2);
         player.addItemToInventory(equipSets.ref[1].get(0));

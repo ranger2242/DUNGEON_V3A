@@ -13,10 +13,8 @@ import java.util.*;
 
 import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.GridManager.monsterList;
-import static com.quadx.dungeons.states.MainMenuState.gl;
 import static com.quadx.dungeons.states.mapstate.MapState.gm;
 import static com.quadx.dungeons.states.mapstate.MapState.out;
-import static com.quadx.dungeons.states.mapstate.MapState.viewX;
 
 /**
  * Created by Chris Cavazos on 7/10/2016.
@@ -36,6 +34,8 @@ public class Tests {
     public static boolean showhitbox=   false;
     public static boolean output=       false;
     public static boolean clearmap=     false;
+    public static boolean infiniteRegen = false;
+
     static int testCount = 0;
 
     public static void giveItems(int x) {
@@ -156,7 +156,7 @@ public class Tests {
                 outText="Added Ability Points.";
             }
             if (comm.get(1).equals("maxmove")) {
-                player.setMoveSpeed(.000000001f);
+                //player.setMoveSpeed(.000000001f);
                 player.seteRegen(100000);
                 outText="Move speed Maxed.";
             }

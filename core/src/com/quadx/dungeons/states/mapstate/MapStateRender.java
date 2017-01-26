@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 
+import static com.badlogic.gdx.graphics.Color.BLACK;
 import static com.badlogic.gdx.graphics.GL20.GL_BLEND;
 import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.GridManager.*;
@@ -59,6 +60,8 @@ public class MapStateRender extends MapState {
 
 
     static void renderLayers(SpriteBatch sb) {
+        Gdx.gl.glClearColor(0,0,0,1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         shapeR.setProjectionMatrix(cam.combined);
         sb.setProjectionMatrix(cam.combined);
         drawGameLayer(sb);
@@ -83,6 +86,8 @@ public class MapStateRender extends MapState {
             shapeR.setColor(.1f, .1f, .1f, .7f);
             shapeR.rect(r);
         }
+        shapeR.setColor(1,0,0,(1-((float)player.getHp()/(float)player.getHpMax()))/2.8f);
+        shapeR.rect(viewX,viewY,WIDTH,HEIGHT);
         shapeR.end();
         Gdx.gl.glDisable(GL_BLEND);
         // end transparency------------------------------------------------------------
@@ -238,16 +243,35 @@ public class MapStateRender extends MapState {
             float[] f = c.getCorners().getVertices();
             if(!Tests.noLand) {
                 if(!c.getWater()) {
-                    if (c.getState()) {
+                    if(!c.getState()) {
+                        shapeR.setColor(new Color(.1f,.1f,.1f,1));
+                        for(Triangle t: c.getTris()){
+                            shapeR.triangle(t);
+                        }
+                        /*
+                        //draw walls
+                        shapeR.setColor(Color.BLACK);
+                        //+(cell.y*HeightMap.getMaxHeight())
+
+                        float re= (((HeightMap.getMaxHeight()+1)-c.getHeight()));
+                        float yshelf= (re*cell.y)/2;
+                       // shapeR.triangle(f[0],f[1],f[8],f[9],f[0],f[1]+yshelf);
+                       // shapeR.triangle(f[2],f[3],f[8],f[9],f[2],f[3]+yshelf);
+                        //shapeR.triangle(f[0],(c.getPos().y*cell.y)+yshelf,f[8],f[9],f[2],(c.getPos().y*cell.y)+yshelf);
+                        shapeR.triangle(f[4],f[5]+yshelf,f[8],f[9]+yshelf,f[4],f[5]);
+                        shapeR.triangle(f[4],f[5],f[8],f[9]+yshelf,f[6],f[7]);
+
+                        // shapeR.triangle(f[0],f[1],f[8],f[9],f[2],f[3]);
+
+                        //shapeR.rect(f[0], f[1] + cell.x, cell.x, cell.y);
+                        */
+                    }
+                    else {
                         //draw land shaded
                         shapeR.setColor(HeightMap.getColors().get(Math.round(f[10])));
                         for(Triangle t: c.getTris()){
                             shapeR.triangle(t);
                         }
-                    } else {
-                        //draw walls
-                        shapeR.setColor(Color.BLACK);
-                        shapeR.rect(f[0], f[1] + cell.x, cell.x, cell.y);
                     }
                 }
                 else {
@@ -382,7 +406,7 @@ public class MapStateRender extends MapState {
         if(displayFPS) { //TODO optomize this to draw faster
             //DRAW FPS meter
             shapeR.begin(ShapeRenderer.ShapeType.Filled);
-            shapeR.setColor(Color.BLACK);
+            shapeR.setColor(BLACK);
             shapeR.rect(pos.x, pos.y, 100, 100);
             shapeR.end();
             shapeR.begin(ShapeRenderer.ShapeType.Line);
@@ -421,7 +445,7 @@ public class MapStateRender extends MapState {
     private static void drawMiniMapModule(Vector2 pos){
         float r=res*2;
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        shapeR.setColor(Color.BLACK);
+        shapeR.setColor(BLACK);
         shapeR.rect(pos.x,pos.y, r, r);
         shapeR.end();
 

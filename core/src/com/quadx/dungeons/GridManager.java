@@ -126,7 +126,7 @@ public class GridManager {
     public static void plotMonsters() {
         if (player.getFloor() == 1)
             splitMapDataToList();
-        int temp = rn.nextInt(20)+20;//calculate number of monsters
+        int temp = rn.nextInt(40)+20;//calculate number of monsters
         while (temp > 0) {
             int listSize = monsterList.size();
             int point = rn.nextInt(liveCellList.size());
@@ -332,7 +332,7 @@ public class GridManager {
         mapLoadTime.start();
         MapStateUpdater.spawnCount=1;
         MapStateUpdater.dtRespawn=0;
-        player.setMana(player.manaMax);
+        player.setMana(player.getManaMax());
         player.setEnergy(player.getEnergyMax());
         Timer t=new Timer();
         t.start();

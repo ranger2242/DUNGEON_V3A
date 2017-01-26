@@ -27,6 +27,7 @@ import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.GridManager.res;
 import static com.quadx.dungeons.states.mapstate.MapState.*;
 import static com.quadx.dungeons.tools.Tests.fastreg;
+import static com.quadx.dungeons.tools.Tests.infiniteRegen;
 
 /**
  * Created by Tom on 11/9/2015.
@@ -38,19 +39,19 @@ public class Player {
     public final ArrayList<Attack> attackList = new ArrayList<>();
     public final ArrayList<ArrayList<Item>> invList = new ArrayList<>();
     public final ArrayList<Equipment> equipedList = new ArrayList<>();
-    public ArrayList<Ability> secondaryAbilityList = new ArrayList<>();
+    public final ArrayList<Ability> secondaryAbilityList = new ArrayList<>();
 
     private Vector2 absPos = new Vector2(0, 0);
-    Vector2 texturePos = new Vector2();
-    Vector2 modPos = new Vector2();
-    Vector2 dest = new Vector2();
+    private Vector2 texturePos = new Vector2();
+    private Vector2 modPos = new Vector2();
+    private Vector2 dest = new Vector2();
 
     private final Random rn = new Random();
     private Texture[] icons = new Texture[4];
     private Ability ability = null;
     public Direction.Facing facing = Direction.Facing.North;
     public Item lastItem = null;
-    Rectangle attackBox = new Rectangle();
+    private Rectangle attackBox = new Rectangle();
 
     private int x;
     private int px;//(Game.WIDTH/2)+1;
@@ -65,25 +66,26 @@ public class Player {
     private int spd = 15;
     private int exp = 0;
     private int killCount = 0;
-    private int energy = 100;
-    private int energyMax = 100;
-    private int hpMax = 100;
+
+
+    private int hpMax = barStatGrowthFunction(1);
+    private int hp = barStatGrowthFunction(1);
+    private int mana = barStatGrowthFunction(1);
+    private int manaMax = barStatGrowthFunction(1);
+    private int energy = barStatGrowthFunction(1);
+    private int energyMax = barStatGrowthFunction(1);
+
     private int intMod = 0;
-    private int hp = 100;
     private int def = 15;
     private int intel = 15;
-    private int mana = 100;
     private int abilityMod = 0;
     private int att = 15;
     public int maxSec = 2;
     public int level = 1;
     public int floor = 1;
-    int expLimit = 0;
-    int manaMax = 100;
-    int abilityPoints = 0;
+    private int expLimit = 0;
+    private int abilityPoints = 0;
 
-    private boolean clearhit = false;
-    public boolean infiniteRegen = false;
     public boolean canMove = false;
     public boolean wasHit = false;
     public boolean safe = false;
@@ -97,7 +99,6 @@ public class Player {
     private float defBuff = 1;
     private float intBuff = 1;
     private float spdBuff = 1;
-    private float dtEnergyRe = 0;
     private float dtRegen = 0;
     private float dtClearHit = 0;
     private float gold = 0;
@@ -105,18 +106,14 @@ public class Player {
     private float dtSafe = 0;
     private float dtHitInvincibility = 0;
     public float dtMove = 0;
-    float hpRegenMod = 1;
-    float relheight=0;
-    float dtJump=0;
+    private float hpRegenMod = 1;
+    private float dtJump=0;
 
     private double mRegenMod = 1;
-    private double eRegenMod = 1;
-    private double moveMod = 1;
     private double mRegen = 5;
     private double hpRegen = 2;
     private double eRegen = 2;
     private double moveSpeed = .1f;
-    double mDamage = 0;
 
     private String name = "DEMO";
 
@@ -125,7 +122,7 @@ public class Player {
         //AbilityMod.resetAbilities();
         level=1;
         getStatsList();
-
+        fullHeal();
         //secondaryAbilityList.add(new WaterBreath());
     }
     //SETTERS------------------------------------------------------------------
@@ -195,9 +192,6 @@ public class Player {
         px=i;
         py=i1;
     }
-    public void setMoveSpeed(float moveSpeed) {
-        this.moveMod = moveSpeed;
-    }
     public void seteRegen(int i) {
         eRegen =i;
     }
@@ -228,9 +222,6 @@ public class Player {
             //Stat Multipliers--------------------------
     public void setxMoveSpeed(double moveSpeed) {
         this.moveSpeed *= moveSpeed;
-    }
-    public void setxEnergyRegen(double i) {
-        eRegenMod *=i;
     }
     public void setxManaMax(double manaMax) {
         this.manaMax *= manaMax;
@@ -286,6 +277,9 @@ public class Player {
     }
     public void setModPos(Vector2 v){
         modPos.set(v);
+    }
+    public void setAim(Direction.Facing f){//why wont this shit update
+        facing=f;
     }
     //GETTERS------------------------------------------------------------------
     public boolean hasAbility(Class cls){
@@ -365,13 +359,13 @@ public class Player {
     {
         return intel;
     }
-    public int getHpComp(){return (int) (hpMax*hpBuff+hpMod);}
-    public int getMComp(){return (int) (manaMax*mBuff+manaMod);}
-    public int getEComp(){return (int) (energyMax*eBuff+eMod);}
-    public int getAttComp(){return (int) (att *attBuff+ attMod);}
+    private int getHpComp(){return (int) (hpMax*hpBuff+hpMod);}
+    private int getMComp(){return (int) (manaMax*mBuff+manaMod);}
+    private int getEComp(){return (int) (energyMax*eBuff+eMod);}
+    private int getAttComp(){return (int) (att *attBuff+ attMod);}
     public int getDefComp(){return (int) (def *defBuff+ defMod);}
     public int getIntComp(){return (int) (intel*intBuff+ intMod);}
-    public int getSpdComp(){return (int) (spd *spdBuff+ spdMod);}
+    private int getSpdComp(){return (int) (spd *spdBuff+ spdMod);}
     public int getExp(){return exp;}
     public int getMana(){return mana;}
     public int getPoints(){
@@ -408,9 +402,6 @@ public class Player {
     }
     public double getMoveSpeed() {
         return moveSpeed;
-    }
-    public double getmDamage() {
-        return mDamage;
     }
     public String getName()
     {
@@ -497,13 +488,13 @@ public class Player {
         */
         return icons[u];
     }
-    public Score getScore(){
+    private Score getScore(){
         return new Score( ""+name, ""+getPoints(),""+(int)(gold), player.getAbility().getName()+" "+ability.getLevel() + " Lvl " + level, ""+ killCount);
     }
     public Item getLastItem(){return lastItem;}
     public Ability getAbility(){return ability;}
     //MISC Functions------------------------------------------------------------------
-    public void fixPosition(){
+    private void fixPosition(){
         int gx= (int) getPos().x;
         int gy= (int) getPos().y;
         int x= (int) absPos.x;
@@ -536,10 +527,10 @@ public class Player {
         setPos(new Vector2( gx,gy));
         setAbsPos(new Vector2(x,y));//terminal test
     }
-    public float jump(){
+    private float jump(){
           return (float) ((625*dtJump)- (927.5*Math.pow(dtJump,2)));
     }
-    public void regenModifiers(){
+    private void regenModifiers(){
         if(!fastreg) {
             int r=4;
             //hpRegen = (2 * Math.pow(1.004, (getSpdComp() + getDefComp()) / 2) * hpRegenMod);
@@ -708,7 +699,7 @@ public class Player {
             jumping=false;
             dtJump=0;
         }
-        dtEnergyRe += dt;
+        //dtEnergyRe += dt;
         dtMove += dt;
         dtClearHit += dt;
         if (dtClearHit > dt) {
@@ -741,17 +732,18 @@ public class Player {
         if(energy>energyMax)energy=energyMax;
         else if(energy<0)energy=0;
     }
+    private int barStatGrowthFunction(int level){
+        return (int) (40*Math.pow(Math.E,.25*(level-1)/2)+100);
+    }
     public void checkLvlUp() {
         if (exp>=expLimit)
         {
             new HoverText("--LVL UP--",.8f, Color.GREEN, player.getAbsPos().x, player.getAbsPos().y-20,true);
-
             exp=0;
-
             level++;
-            hpMax= (int) (40*Math.pow(Math.E,.25*(level-1)/2)+100);
-            manaMax= (int) (40*Math.pow(Math.E,.25*(level-1)/2)+100);
-            energyMax= (int) (40*Math.pow(Math.E,.25*(level-1)/2)+100);
+            hpMax= barStatGrowthFunction(level);
+            manaMax= barStatGrowthFunction(level);
+            energyMax= barStatGrowthFunction(level);
 
 //            hpMax = hpMax +( 25 + rn.nextInt(20));
   //          manaMax=manaMax+(25+rn.nextInt(20));
@@ -869,7 +861,7 @@ public class Player {
         }
         return b;
     }
-    void regenPlayer(float dt) {
+    private void regenPlayer(float dt) {
         if(!infiniteRegen) {
             dtRegen += dt; //move all this shit to PLAYER
             if (safe) dtSafe += dt;
@@ -884,12 +876,14 @@ public class Player {
                 dtSafe = 0;
             });
         }else{
-            setHp(getHpMax());
-            setMana(getManaMax());
-            setEnergy(getEnergyMax());
+            fullHeal();
         }
     }
-
+    public void fullHeal(){
+        setHp(getHpMax());
+        setMana(getManaMax());
+        setEnergy(getEnergyMax());
+    }
     public void setTexturePos(Vector2 texturePos) {
         this.texturePos = texturePos;
     }

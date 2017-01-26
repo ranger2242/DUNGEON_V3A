@@ -43,7 +43,7 @@ public class Quick extends Ability {
         level=1;
         Game.player.setxMoveSpeed(.3);
         Game.player.setxSpeed(2);
-        Game.player.setxEnergyRegen(1.5);
+        //Game.player.setxEnergyRegen(1.5);
         Game.player.setxManaRegen(1.5);
         Game.player.setxDefense(.75);
         Game.player.setxIntel(.75);
@@ -63,7 +63,7 @@ public class Quick extends Ability {
         player.setxMoveSpeed(.7);
         player.setxSpeed(1.5);
         player.setxHpRegen(1.2);
-        player.setxEnergyRegen(1.2);
+        //player.setxEnergyRegen(1.2);
         player.addItemToInventory(equipSets.ref[3].get(3));
     }
 
@@ -82,7 +82,7 @@ public class Quick extends Ability {
         player.setxMoveSpeed(.4);
         player.setxHpMax(1.6);
         player.setxManaRegen(1.4);
-        player.setxEnergyRegen(1.4);
+        //player.setxEnergyRegen(1.4);
         player.addItemToInventory(equipSets.ref[3].get(1));
         player.maxSec=3;
     }

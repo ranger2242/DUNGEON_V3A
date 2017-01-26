@@ -16,6 +16,7 @@ import java.util.Random;
 
 import static com.quadx.dungeons.GridManager.res;
 import static com.quadx.dungeons.states.State.cam;
+import static com.quadx.dungeons.states.mapstate.MapState.cell;
 import static com.quadx.dungeons.states.mapstate.MapState.cellW;
 
 /**
@@ -33,6 +34,7 @@ public class HeightMap{
     Vector2 centerCamPos = new Vector2(Game.WIDTH / 2, Game.HEIGHT / 2);
     Vector2 playerpos=new Vector2(100,100);
     Cell[][] cells=null;
+    static int maxHeight=0;
 
     public HeightMap(Cell[][] g) {
         cells=g;
@@ -68,6 +70,18 @@ public class HeightMap{
         }
         a/=(res*res);
         return a;
+    }
+    void setMaxHeight() {
+        maxHeight = 0;
+        for (int i = 0; i < res; i++) {
+            for (int j = 0; j < res; j++) {
+                if(grid[i][j]>maxHeight)maxHeight= (int) grid[i][j];
+
+            }
+        }
+    }
+    public static float getMaxHeight(){
+        return maxHeight;
     }
     protected void handleInput() {
         float rate = 20;
@@ -159,7 +173,6 @@ public class HeightMap{
             float[][] f = noisemap.getGrid();
             f3 = addToMap(f3,f);
             check=scanAverageHeight(f3);
-
         }
         for (int i = 0; i < res; i++) {
             for (int j = 0; j < res; j++) {
@@ -169,6 +182,7 @@ public class HeightMap{
             }
         }
         calcCorners(cells);
+        setMaxHeight();
     }
     public void calcCorners(Cell[][] cc){
         cells=cc;
@@ -227,13 +241,12 @@ public class HeightMap{
                 dl=  EMath.average(new float[]{a,s,z,x});
                 dr=  EMath.average(new float[]{s,d,x,c});
                 float heightmx=20;
-                float t=(cellW*(2f/3f));
-                float px0=(i*cellW);
-                float px1=((i+1)*cellW);
-                float py0=(heightmx*ul)+((j+1)*t);
-                float py1=(heightmx*ur)+((j+1)*t);
-                float py2=(j*t)+(heightmx*dl);
-                float py3=(j*t)+(heightmx*dr);
+                float px0=(i*cell.x);
+                float px1=((i+1)*cell.x);
+                float py0=(heightmx*ul)+((j+1)*cell.y);
+                float py1=(heightmx*ur)+((j+1)*cell.y);
+                float py2=(j*cell.y)+(heightmx*dl);
+                float py3=(j*cell.y)+(heightmx*dr);
                 float xavg=(px0+px1)/2;
                 float yavg=(py0+py1+py2+py3)/4;
                 polygon.setVertices(new float[]{

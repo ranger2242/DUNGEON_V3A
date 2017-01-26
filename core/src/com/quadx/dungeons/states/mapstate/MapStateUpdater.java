@@ -190,7 +190,7 @@ public class MapStateUpdater extends MapState{
     }
     public static void spawnMonsters(int x){
         for (int i = 0; i < x; i++) {
-            if(monsterList.size()<70) {
+            if(monsterList.size()<120) {
                 Monster m =Monster.getNew();
                 int index = rn.nextInt(liveCellList.size());
                 if (!liveCellList.get(index).getWater() && liveCellList.get(index).getState()) {
@@ -303,9 +303,6 @@ public class MapStateUpdater extends MapState{
         endShake=time;
         shakeCam=true;
         dtShake=0;
-    }
-    public static void setAim(Direction.Facing f){//why wont this shit update
-        player.facing=f;
     }
     static void moveMonsters() {
             try {
