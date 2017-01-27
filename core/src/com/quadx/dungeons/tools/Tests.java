@@ -157,7 +157,7 @@ public class Tests {
             }
             if (comm.get(1).equals("maxmove")) {
                 //player.setMoveSpeed(.000000001f);
-                player.seteRegen(100000);
+                //player.seteRegen(100000);
                 outText="Move speed Maxed.";
             }
             if(comm.get(1).equals("lvlup")){

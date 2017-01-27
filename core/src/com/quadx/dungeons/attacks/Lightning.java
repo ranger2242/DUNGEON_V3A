@@ -11,7 +11,7 @@ public class Lightning extends Attack {
     public Lightning(){
         costGold=30000;
         type=2;
-        int a=player.getManaMax()/2;
+        int a= (int) (player.getManaMax()/2);
         powerA = new int[]{80,90,110,130,150};
         costA =new int[]{a,a,a,a,a};
         name="Lightning";

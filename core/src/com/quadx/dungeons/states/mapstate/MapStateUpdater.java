@@ -57,11 +57,11 @@ public class MapStateUpdater extends MapState{
     static float dtAttack = 0;
     static float dtFPS=0;
     static float dtf=0;
-    static float fps=0;
+    public static float fps=0;
     static float dtClearHits =0;
     static float dtInvSwitch = 0;
     static float dtShake=0;
-    static float force=0;
+    public static float force=0;
 
     public static int spawnCount=1;
 
@@ -242,37 +242,53 @@ public class MapStateUpdater extends MapState{
             dtAttack = 0;
         }
     }
-    public static void discardItem(){
-        if(dtItem>itemMinTime){
-            try {
-                Item item= player.invList.get(MapStateRender.inventoryPos).get(0);
-                int nx=(int) (player.getX()+(rn.nextGaussian()*2));
-                int ny=(int) (player.getY()+(rn.nextGaussian()*2));
-                Cell test= dispArray[nx][ny];
-                while(test.hasCrate() || !test.getState() || test.hasLoot() ||test.hasWarp() || test.getWater()
-                        ||( nx == player.getX() && ny == player.getY())){
-                    nx=(int) (player.getX()+(rn.nextGaussian()*2));
-                    ny=(int) (player.getY()+(rn.nextGaussian()*2));
-                    test= dispArray[nx][ny];
-                }
-                Vector2 v = new Vector2(nx,ny);
-                Cell c= dispArray[(int) v.x][(int) v.y];
-                int index= liveCellList.indexOf(c);
-                c.addCommand(new AddItemComm(item,index));
-                pending.add(c);
-                int x= (int) player.getAbsPos().x;
-                int y= (int) player.getAbsPos().y;
-                Vector2 v2= new Vector2(x,y);
-                anims.add(new Anim(item.getIcon(),v2,10,liveCellList.get(index).getAbsPos(),0));
-                player.invList.get(MapStateRender.inventoryPos).remove(0);
-                if (player.invList.get(MapStateRender.inventoryPos).isEmpty()) {
-                    player.invList.remove(MapStateRender.inventoryPos);
-                    if (MapStateRender.inventoryPos >= player.invList.size())
-                        MapStateRender.inventoryPos = player.invList.size();
-                }
-                dtItem=0;
-            }catch (IndexOutOfBoundsException e){}
+
+    public static void discardItem(Vector2 pos, boolean isPlayer, Monster m) {
+        Item item;
+        if (isPlayer) {
+            item = player.invList.get(MapStateRender.inventoryPos).get(0);
+        } else {
+            item = Item.generate();
         }
+        if (!isPlayer || dtItem > itemMinTime) {
+            try {
+                int nx = (int) (pos.x + (rn.nextGaussian() * 2));
+                int ny = (int) (pos.y + (rn.nextGaussian() * 2));
+                Cell test = dispArray[nx][ny];
+                while (test.hasCrate() || !test.getState() || test.hasLoot() || test.hasWarp() || test.getWater()
+                        || (nx == pos.x && ny == pos.y)) {
+                    nx = (int) (pos.x + (rn.nextGaussian() * 2));
+                    ny = (int) (pos.y + (rn.nextGaussian() * 2));
+                    test = dispArray[nx][ny];
+                }
+                Vector2 v = new Vector2(nx, ny);
+                Cell c = dispArray[(int) v.x][(int) v.y];
+                int index = liveCellList.indexOf(c);
+                c.addCommand(new AddItemComm(item, index));
+                pending.add(c);
+                int x, y;
+                if (isPlayer) {
+                    x = (int) player.getAbsPos().x;
+                    y = (int) player.getAbsPos().y;
+                } else {
+                    x = (int) m.getAbsPos().x;
+                    y = (int) m.getAbsPos().y;
+                }
+                Vector2 v2 = new Vector2(x, y);
+                anims.add(new Anim(item.getIcon(), v2, 10, liveCellList.get(index).getAbsPos(), 0));
+                if (isPlayer) {
+                    player.invList.get(MapStateRender.inventoryPos).remove(0);
+                    if (player.invList.get(MapStateRender.inventoryPos).isEmpty()) {
+                        player.invList.remove(MapStateRender.inventoryPos);
+                        if (MapStateRender.inventoryPos >= player.invList.size())
+                            MapStateRender.inventoryPos = player.invList.size();
+                    }
+                    dtItem = 0;
+                }
+            } catch (IndexOutOfBoundsException e) {
+            }
+        }
+
     }
     public static void rotateMap(boolean left){
         if(dtf>.15) {noLerp=true;
@@ -556,7 +572,7 @@ public class MapStateUpdater extends MapState{
                 }
 
                 if (!c.getState()) {
-                    int e = 5 + player.getLevel();
+                    float e = (float) (6.5 + player.getLevel()*5);
                     if (player.getEnergy() > e) {
                         MapStateUpdater.activateDig();
                         player.setEnergy(player.getEnergy() - e);

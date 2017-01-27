@@ -284,7 +284,7 @@ public class MapStateRender extends MapState {
             }
         }
         //draw player
-        if ((blinkp || !player.wasHit) && player.isInBounds()) {
+        if ((blinkp || !player.wasHit) && GridManager.isInBounds(player.getPos())) {
             //draw player shadow
             ArrayList<Triangle> tris = dispArray[(int) player.getPos().x][(int) player.getPos().y].getTris();
             shapeR.setColor(Color.DARK_GRAY);

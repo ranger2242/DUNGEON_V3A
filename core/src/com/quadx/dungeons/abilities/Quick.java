@@ -30,7 +30,7 @@ public class Quick extends Ability {
 
     public  void onActivate() {
         player.setAbilityMod(3);
-        new HoverText("QUICK!",1.5f, Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
+        new HoverText("QUICK!",1.5f, Color.WHITE, Game.player.getAbsPos().x,Game.player.getAbsPos().y,false);
     }
 
     @Override

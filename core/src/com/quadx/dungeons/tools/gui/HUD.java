@@ -98,7 +98,7 @@ public class HUD {
                         if (i <= 7)
                             io.texts.add(new Text( (i + 1) + "", new Vector2( x, pos.y+28),Color.WHITE,1));
                     } else {
-                        int rem = a.getCost() - player.getMana();
+                        int rem = (int) (a.getCost() - player.getMana());
                         io.texts.add(new Text( rem + "", new Vector2(x + 52 / 2, pos.y + 40),Color.WHITE,1));
                     }
                     io.texts.add(new Text("M" + a.getCost(), new Vector2(x, pos.y),Color.WHITE,1));
@@ -109,7 +109,7 @@ public class HUD {
                         if (i <= 7)
                             io.texts.add(new Text( (i + 1) + "", new Vector2( x, pos.y + 28),Color.WHITE,1));
                     } else {
-                        int rem = a.getCost() - player.getEnergy();
+                        int rem = (int) (a.getCost() - player.getEnergy());
                         io.texts.add(new Text( rem + "", new Vector2(x + 52 / 2, pos.y + 40),Color.WHITE,1));
                     }
                     io.texts.add(new Text("E" + a.getCost(), new Vector2(x, pos.y),Color.WHITE,1));

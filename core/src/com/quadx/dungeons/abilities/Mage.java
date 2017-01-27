@@ -31,7 +31,7 @@ public class Mage extends Ability {
     public  void onActivate() {
         player.setAbilityMod(2);
         l1();
-        new HoverText("MAGE!",1.5f, Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
+        new HoverText("MAGE!",1.5f, Color.WHITE, Game.player.getAbsPos().x,Game.player.getAbsPos().y,false);
 
     }
 

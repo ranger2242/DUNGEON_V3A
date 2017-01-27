@@ -132,15 +132,15 @@ public class Monster {
         int total = player.getAttack() + player.getIntel() + player.getSpeed() + player.getDefense();
         if (total > 300 && rn.nextBoolean()) {
             m = new Muk();
-        } else if (total > 230 && rn.nextBoolean()) {
+        } else if (total > 500 && rn.nextBoolean()) {
             m = new Dodrio();
-        } else if (total > 200 && rn.nextBoolean()) {
+        } else if (total > 500 && rn.nextBoolean()) {
             if (rn.nextBoolean())
                 m = new Gengar();
             else m = new Dragonair();
-        } else if (total > 140 && rn.nextBoolean()) {
+        } else if (total > 300 && rn.nextBoolean()) {
             m = new Ponyta();
-        } else if (total > 80 && rn.nextBoolean()) {
+        } else if (total > 150 && rn.nextBoolean()) {
             if (rn.nextBoolean())
                 m = new Porygon();
             else
@@ -248,11 +248,13 @@ public class Monster {
             player.setExp(level, getExpFactor());
             player.checkLvlUp();
             MapState.makeGold(level);
+            dropItems();
             try {
                 monsterList.remove(this);
                 dispArray[x][y].clearMonster();
             } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
             }
+
             return true;
         } else
             return false;
@@ -378,6 +380,13 @@ public class Monster {
     }
 
     //OTHER----------------------------------------------------------------------------------
+    void dropItems(){
+        int r=rn.nextInt(4);
+        if(rn.nextBoolean())
+        for(int i=0;i<r;i++){
+            MapStateUpdater.discardItem(getPos(),false,this);
+        }
+    }
     protected void loadIcon() {
         int i=0;
         switch (facing) {

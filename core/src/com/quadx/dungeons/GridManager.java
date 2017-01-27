@@ -37,11 +37,13 @@ public class GridManager {
 
     public static ArrayList<Cell> getSurroundingCells(int x, int y, int r){
         ArrayList<Cell> list=new ArrayList<>();
-        list.add(dispArray[x][y]);
-        for(int i=x-r; i<x+r+1;i++){
-            for(int j=y-r; j<y+r+1; j++){
-                if(i>=0 && i<res && j>=0 && j<res){
-                    list.add(dispArray[i][j]);
+        if(isInBounds(new Vector2(x,y))) {
+            list.add(dispArray[x][y]);
+            for (int i = x - r; i < x + r + 1; i++) {
+                for (int j = y - r; j < y + r + 1; j++) {
+                    if (i >= 0 && i < res && j >= 0 && j < res) {
+                        list.add(dispArray[i][j]);
+                    }
                 }
             }
         }
@@ -144,6 +146,9 @@ public class GridManager {
 
         }
         Monster.reindexMons=true;
+    }
+    public static boolean isInBounds(Vector2 pos){
+        return pos.x >= 0 && pos.y >= 0 && pos.x < res && pos.y < res;
     }
     public static float fixHeight(Vector2 v){//get vector in absolute pos
         int gx=Math.round(v.x/cellW);//find grid pos

@@ -1,8 +1,6 @@
 package com.quadx.dungeons.attacks;
 
-import com.badlogic.gdx.graphics.Color;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.tools.HoverText;
 
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.states.mapstate.MapState.out;
@@ -39,8 +37,8 @@ public class AttackMod {
                 break;
             }
             case 2:{//Heal
-                int total=player.getMana()+player.getEnergy()+player.getHp();
-                if(total>player.getHpMax())total=player.getHpMax();
+                int total= (int) (player.getMana()+player.getEnergy()+player.getHp());
+                if(total>player.getHpMax())total= (int) player.getHpMax();
                 player.setHp(total);
                 player.setMana(0);
                 player.setEnergy(0);
@@ -50,8 +48,8 @@ public class AttackMod {
                 break;
             }
             case 4:{//TORMENT
-                new HoverText("-Tormented-",.15f, Color.BLUE, player.getPX(),player.getPY()-15,false);
-                torment=true;
+                //new HoverText("-Tormented-",.15f, Color.BLUE, player.getPX(),player.getPY()-15,false);
+                //torment=true;
                 break;
             }
             case 5:{//ILLUSION
@@ -106,16 +104,10 @@ public class AttackMod {
     }
     static void torment(){
         if(dtTorment<30){
-            torment=true;
-            player.setAttBuff(2);
-            player.setIntBuff(.5f);
+
         }
         else{
-            out("The torment has ended");
-            player.setAttBuff(1);
-            player.setIntBuff(1);
-            dtTorment=0;
-            torment=false;
+
         }
     }
 

@@ -29,10 +29,10 @@ public class Brawler extends Ability {
     public  void onActivate() {
         player.setAbilityMod(4);
         player.setEnergy(player.getEnergy()*2);
-        player.setEnergyMax(player.getEnergyMax()*2);
+        player.setEnergyMax((int) (player.getEnergyMax()*2));
         //player.setxEnergyRegen(2);
         player.setMana(player.getMana()/2);
-        player.setManaMax(player.getManaMax()/2);
+        player.setManaMax((int) (player.getManaMax()/2));
         player.setAttack(player.getAttack()*2);
         MapState.out("----------------------------------");
         MapState.out(player.getName()+" activated the BRAWLER ability!");
@@ -40,7 +40,7 @@ public class Brawler extends Ability {
         MapState.out("E Regen doubled!");
         MapState.out("M Max was halved!");
         MapState.out("1.2x DMG for E Attacks");
-        new HoverText("BRAWLER!",1.5f, Color.WHITE, player.getPX(), player.getPY(),false);
+        new HoverText("BRAWLER!",1.5f, Color.WHITE, player.getAbsPos().x, player.getAbsPos().y,false);
 
         //super.onActivate();
     }

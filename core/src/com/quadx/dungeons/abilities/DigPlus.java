@@ -27,7 +27,7 @@ public class DigPlus extends Ability {
         MapState.out("----------------------------------");
         MapState.out(Game.player.getName()+" activated the Dig+ ability!");
         MapState.out("DIG!");
-        new HoverText("DIG+!",1.5f, Color.WHITE, Game.player.getPX(),Game.player.getPY(),false);
+        new HoverText("DIG+!",1.5f, Color.WHITE, Game.player.getAbsPos().x,Game.player.getAbsPos().y,false);
 
         //super.onActivate();
     }

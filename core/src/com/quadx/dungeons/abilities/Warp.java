@@ -26,7 +26,7 @@ public class Warp extends Ability {
         MapState.out("Warp 10 spaces forward on demand.");
         MapState.out("Cost 10E");
         MapState.out("Cooldown 4s");
-        new HoverText("WARP!", 1.5f, Color.WHITE, player.getPX(), player.getPY(),false);
+        new HoverText("WARP!", 1.5f, Color.WHITE, player.getAbsPos().x, player.getAbsPos().y,false);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class Warp extends Ability {
             timeCounter=0;
         }
         else{
-            new HoverText(""+(cooldown-timeCounter),.5f,Color.GRAY, player.getPX(), player.getPY(),false);
+            new HoverText(""+(cooldown-timeCounter),.5f,Color.GRAY, player.getAbsPos().x, player.getAbsPos().y,false);
         }
     }
     @Override

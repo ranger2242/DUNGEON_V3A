@@ -29,7 +29,7 @@ public class Tank extends Ability {
     public void onActivate() {
         player.setAbilityMod(0);
         l1();
-        new HoverText("Tank!!",1.5f, Color.WHITE, player.getPX(),player.getPY(),false);
+        new HoverText("Tank!!",1.5f, Color.WHITE, player.getAbsPos().x,player.getAbsPos().y,false);
 
     }
 

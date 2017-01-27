@@ -5,6 +5,8 @@ import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 
+import static com.quadx.dungeons.Game.player;
+
 /**
  * Created by Chris Cavazos on 8/8/2016.
  */
@@ -18,7 +20,7 @@ public class DropComm extends Command {
     public void execute() {
         if(pressed()){
             if(cls.equals(MapState.class));
-                MapStateUpdater.discardItem();
+                MapStateUpdater.discardItem(player.getPos(),true,null);
         }
     }
 }

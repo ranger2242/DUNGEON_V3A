@@ -1,5 +1,6 @@
 package com.quadx.dungeons.abilities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Game;
@@ -17,7 +18,7 @@ import static com.quadx.dungeons.Game.player;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class Investor extends Ability {
-
+    static float dtGold= 0;
     public Investor(){
         icon=  ImageLoader.abilities.get(1);
         name="Investor";
@@ -33,7 +34,7 @@ public class Investor extends Ability {
     public void onActivate() {
         player.setAbilityMod(1);
         l1();
-        new HoverText("INVESTOR!",1.5f, Color.WHITE, player.getPX(),player.getPY(),false);
+        new HoverText("INVESTOR!",1.5f, Color.WHITE, player.getAbsPos().x,player.getAbsPos().y,false);
     }
 
     @Override
@@ -136,7 +137,12 @@ public class Investor extends Ability {
         return this.name;
     }
 
-    public static void generatePlayerGold(){
-        Game.player.setGold((float)(Game.player.getGold()*1.0001));
+    public static void generatePlayerGold() {
+        dtGold += Gdx.graphics.getDeltaTime();
+        if (dtGold > 1) {
+            Game.player.addGold((int) (Game.player.getGold() * .0001));
+            dtGold = 0;
+        }
     }
+
 }
