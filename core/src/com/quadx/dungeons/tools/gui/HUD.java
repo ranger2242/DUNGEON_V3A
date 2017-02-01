@@ -26,6 +26,7 @@ public class HUD {
     static InfoOverlay invOverlay=new InfoOverlay();
     static InfoOverlay equipOverlay=new InfoOverlay();
     static ArrayList<InfoOverlay> attackBarHud = new ArrayList<>();
+    public static ArrayList<String> output= new ArrayList<>();
 
     public static Vector2[] statsPos;
     public static Vector2 minimapPos= new Vector2();
@@ -39,6 +40,9 @@ public class HUD {
     public static ArrayList<Rectangle> equipBoxes= new ArrayList<>();
     public static Rectangle[] playerStatBars=new Rectangle[3];
 
+    public HUD(){
+        bufferOutput();
+    }
     public static void create(){
         //reset variables
         equipBoxes.clear();
@@ -81,6 +85,12 @@ public class HUD {
         fpsGridPos.set((int) (viewX + (Game.WIDTH * 2 / 3)), viewY + 20);
         statListPos = new Vector2(viewX + 30, viewY + HEIGHT - 30);
         playerStatBarPos= new Vector2(viewX+20,viewY+145);
+    }
+    public static void out(String s){
+        if(output != null) {
+            output.add(s);
+            if (output.size() > 10) output.remove(0);
+        }
     }
     static void generateAttackBarUI(Vector2 pos){
         attackBarHud.clear();
@@ -226,5 +236,8 @@ public class HUD {
     public static ArrayList<InfoOverlay> getAttackBarOverlay(){
         return attackBarHud;
     }
-
+    private void bufferOutput(){
+        for(int i=0;i<10;i++)
+            out("");
+    }
 }

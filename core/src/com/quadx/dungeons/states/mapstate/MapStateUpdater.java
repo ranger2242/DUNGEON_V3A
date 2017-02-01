@@ -14,6 +14,7 @@ import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.AttackMod;
 import com.quadx.dungeons.commands.Command;
 import com.quadx.dungeons.commands.cellcommands.AddItemComm;
+import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
@@ -22,6 +23,7 @@ import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.ShopState;
 import com.quadx.dungeons.tools.*;
 import com.quadx.dungeons.tools.gui.HUD;
+import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.heightmap.Matrix;
 
 import java.util.ArrayList;
@@ -32,6 +34,7 @@ import static com.quadx.dungeons.GridManager.*;
 import static com.quadx.dungeons.monsters.Monster.reindexMons;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.dtWaterEffect;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.inventoryPos;
+import static com.quadx.dungeons.tools.gui.HUD.out;
 
 
 /**
@@ -125,7 +128,6 @@ public class MapStateUpdater extends MapState{
         if(Gdx.input.isKeyPressed(Input.Keys.MINUS)){
             if(player.attackList.get(x) != null) {
                 altNumPressed = x;
-                attack2 = player.attackList.get(x);
             }
         }
         else if(Gdx.input.isKeyPressed(Input.Keys.X) &&dtItem >.15){
@@ -154,20 +156,10 @@ public class MapStateUpdater extends MapState{
         } else {
             if (dtAttack > attackMintime) {
                 try {
-                    attack = player.attackList.get( i);
+                    //attack = player.attackList.get( i);
                 }catch (IndexOutOfBoundsException e){}
             }
         }
-    }
-    public static void activateDig(){
-        //if (dtDig > player.getMoveSpeed()) {
-           // if (player.getEnergy() > 2) {
-                int x = player.getX();
-                int y = player.getY();
-                gm.clearArea(x, y, true);
-              //  player.setEnergy(player.getEnergy() - 2);
-            //}
-            //dtDig = 0;
     }
     public static void selectItemFromInventory() {
         if (dtItem > itemMinTime && player.invList.size() > 0) {            //check if cooldown is over
@@ -244,8 +236,9 @@ public class MapStateUpdater extends MapState{
     }
 
     public static void discardItem(Vector2 pos, boolean isPlayer, Monster m) {
-        Item item;
+        Item item= new Gold();
         if (isPlayer) {
+            if(player.invList.size()>0)
             item = player.invList.get(MapStateRender.inventoryPos).get(0);
         } else {
             item = Item.generate();
@@ -331,8 +324,9 @@ public class MapStateUpdater extends MapState{
                             boolean hit = false;
                             if (player.getAttackBox().overlaps(m.getHitBox())) {
                                 hit = true;
-                                m.takeEffect(attack);
-                                m.takeAttackDamage(Damage.calcPlayerDamage(attack, m));
+                                Attack a=player.attackList.get(0);
+                                m.takeEffect(a);
+                                m.takeAttackDamage(Damage.calcPlayerDamage(a, m));
                                 m.checkIfDead();
                             }
                             StatManager.shotMissed(hit);
@@ -574,7 +568,7 @@ public class MapStateUpdater extends MapState{
                 if (!c.getState()) {
                     float e = (float) (6.5 + player.getLevel()*5);
                     if (player.getEnergy() > e) {
-                        MapStateUpdater.activateDig();
+                        player.dig();
                         player.setEnergy(player.getEnergy() - e);
                     }else{
                         player.canMove=false;

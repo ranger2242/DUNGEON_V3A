@@ -3,7 +3,6 @@ package com.quadx.dungeons;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 import com.quadx.dungeons.tools.EMath;
 
 import static com.quadx.dungeons.Game.player;
@@ -70,7 +69,7 @@ public class Anim {
                     player.setAbsPos(pos);
                     player.setPos(new Vector2(Math.round(pos.x/cell.x),Math.round(pos.y/cell.y)));
                 }
-                MapStateUpdater.activateDig();
+                player.dig();
             }
         }
         if(end)

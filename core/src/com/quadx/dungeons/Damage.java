@@ -3,7 +3,7 @@ package com.quadx.dungeons;
 import com.badlogic.gdx.graphics.Color;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.monsters.Monster;
-import com.quadx.dungeons.tools.HoverText;
+import com.quadx.dungeons.tools.gui.HoverText;
 
 import java.util.Random;
 

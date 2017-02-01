@@ -6,9 +6,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.abilities.Ability;
-import com.quadx.dungeons.abilities.DigPlus;
 import com.quadx.dungeons.abilities.Investor;
-import com.quadx.dungeons.attacks.*;
+import com.quadx.dungeons.attacks.Attack;
+import com.quadx.dungeons.attacks.AttackMod;
+import com.quadx.dungeons.attacks.Flame;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.SpellBook;
@@ -18,16 +19,18 @@ import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
 import com.quadx.dungeons.tools.*;
+import com.quadx.dungeons.tools.gui.HoverText;
 
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.GridManager.res;
 import static com.quadx.dungeons.states.mapstate.MapState.*;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.fps;
+import static com.quadx.dungeons.tools.ImageLoader.pl;
 import static com.quadx.dungeons.tools.Tests.fastreg;
 import static com.quadx.dungeons.tools.Tests.infiniteRegen;
+import static com.quadx.dungeons.tools.gui.HUD.out;
 
 /**
  * Created by Tom on 11/9/2015.
@@ -43,7 +46,6 @@ public class Player {
 
     private final Vector2 absPos = new Vector2(0, 0);
     private final Vector2 texturePos = new Vector2();
-    private final Vector2 modPos = new Vector2();
     private final Vector2 dest = new Vector2();
 
     private Texture[] icons = new Texture[4];
@@ -58,20 +60,11 @@ public class Player {
     private int attMod = 0;
     private int defMod = 0;
     private int spdMod = 0;
-    private final int eMod = 0;
+    private int eMod = 0;
     private int manaMod = 0;
     private int spd = 15;
     private int exp = 0;
     private int killCount = 0;
-
-
-    private float hpMax = barStatGrowthFunction(1);
-    private float hp = barStatGrowthFunction(1);
-    private float mana = barStatGrowthFunction(1);
-    private float manaMax = barStatGrowthFunction(1);
-    private float energy = barStatGrowthFunction(1);
-    private float energyMax = barStatGrowthFunction(1);
-
     private int intMod = 0;
     private int def = 15;
     private int intel = 15;
@@ -89,6 +82,12 @@ public class Player {
     public boolean jumping =false;
     boolean overrideControls = false;
 
+    private float hpMax = barStatGrowthFunction(1);
+    private float hp = barStatGrowthFunction(1);
+    private float mana = barStatGrowthFunction(1);
+    private float manaMax = barStatGrowthFunction(1);
+    private float energy = barStatGrowthFunction(1);
+    private float energyMax = barStatGrowthFunction(1);
     private float hpMult = 1;
     private float mMult = 1;
     private float eMult = 1;
@@ -96,7 +95,6 @@ public class Player {
     private float defMult = 1;
     private float intMult = 1;
     private float spdMult = 1;
-
     private float dtClearHit = 0;
     private float gold = 0;
     private float velocity = 10;
@@ -119,7 +117,7 @@ public class Player {
         fullHeal();
         //secondaryAbilityList.add(new WaterBreath());
     }
-    //-----------SETTERS------------------------------------------------------------------
+    //-----------------------------------------------SETTERS------------------------------------------------------------------
     public void setDest(Vector2 monPos){
         Vector2 comp=Physics.getVxyComp(1,absPos,monPos);
         Vector2 neg=new Vector2(-comp.x,-comp.y);
@@ -243,7 +241,7 @@ public class Player {
     public void setDefBuff(float f){ defMult=f;}
     public void setIntBuff(float f){ intMult=f;}
     public void setSpdBuff(float f){ spdMult=f;}*/
-
+    //-----------------------------------------------ADDERS------------------------------------------------------------------
     public void addHp(int hp) {
         this.hp += hp;
     }
@@ -254,6 +252,9 @@ public class Player {
         energy +=e;
     }
     public void addGold(int g){gold+=g;}
+    public void addKills(){
+        killCount++;}
+
     //-----------------------------------------------GETTERS------------------------------------------------------------------
     public boolean hasAbility(Class cls){
         boolean b=false;
@@ -347,7 +348,6 @@ public class Player {
     public int getPoints(){
         return (int) (((int)gold*10)+(att *100)+(def *100)+(spd *100)+(level*2000)+(intel*100)+(hpMax*10)+(manaMax*10)+(energyMax*10)+(floor*1000)+(killCount *200));
     }
-
     public int getAbilityMod(){return abilityMod;}
     public int getKillCount() {
         return killCount;
@@ -453,8 +453,8 @@ public class Player {
         return new Score( ""+name, ""+getPoints(),""+(int)(gold), player.getAbility().getName()+" "+ability.getLevel() + " Lvl " + level, ""+ killCount);
     }
     public Ability getAbility(){return ability;}
-    //MISC Functions------------------------------------------------------------------
 
+    //-----------------------------------------------MISC------------------------------------------------------------------
     public void updateVariables(float dt){
         float n=.8f;
         if(jumping){
@@ -525,6 +525,10 @@ public class Player {
     private float jump(){
           return (float) ((625*dtJump)- (927.5*Math.pow(dtJump,2)));
     }
+    public void dig() {
+        gm.clearArea(x, y, true);
+    }
+
     private float regenGrowthFunction(int level, int stat,float reduce){
 
         float dt= Gdx.graphics.getDeltaTime();
@@ -534,7 +538,6 @@ public class Player {
     }
     private void regenModifiers(){
         if(!fastreg) {
-
             hp += regenGrowthFunction(level,getDefComp(),1);
             if (hp > hpMax) hp = hpMax;
             mana+= regenGrowthFunction(level,getIntComp(),1);
@@ -547,49 +550,40 @@ public class Player {
             hp=hpMax;
         }
     }
-    public void maxStat(){
-        int a=10000;
-        hpMax=a;
-        hp=a;
-        manaMax=a;
-        mana=a;
-        energyMax=a;
-        energy=a;
-        att=a;
-        def=a;
-        intel=a;
-        spd=a;
-    }
-    public void move(Vector2 vel){
-        if(!overrideControls) {
-            try {
-                float dt= Gdx.graphics.getDeltaTime();
-                Vector2 end = new Vector2(absPos.x + (vel.x*dt),absPos.y + (vel.y*dt));
-                int gw = cellW * (res + 1);
-                if (end.x < 0)
-                    end.x = getIcon().getWidth();
-                else if (end.x + getIcon().getWidth() > gw)
-                    end.x = (gw) - getIcon().getWidth();
-                if (end.y < 0)
-                    end.y = getIcon().getHeight();
-                else if (end.y + getIcon().getHeight() > gw)
-                    end.y = (gw) - getIcon().getHeight();
-                Vector2 comp = Physics.getVxyComp(velocity, absPos, end);
+    private void regenPlayer(float dt) {
+        if (!infiniteRegen) {
+            if (safe) dtSafe += dt;
+            regenModifiers();
+            if (getAbility().getClass().equals(Investor.class))
+                attackList.stream().filter(a -> a.getMod() == 6 && (dtSafe > a.getLevel())).forEach(a -> {
+                    safe = false;
+                    dtSafe = 0;
+                });
 
-
-                if(canMove) {
-                    player.setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
-                    int x = (int) (EMath.round(absPos.x / cell.x));
-                    int y = (int) (EMath.round(absPos.y / cell.x));
-                    player.setPos(new Vector2(x, y));
-
-                }
-                Cell c = dispArray[x][y];
-            } catch (ArrayIndexOutOfBoundsException ignored) {
-
-            }
+        } else {
+            fullHeal();
         }
     }
+    public void fullHeal(){
+        setHp(getHpMax());
+        setMana(getManaMax());
+        setEnergy(getEnergyMax());
+    }
+
+    private int barStatGrowthFunction(int level){
+        return (int) (40*Math.pow(Math.E,.25*(level-1)/2)+100);
+    }
+    public void resetBars(){
+        if(hp>hpMax)hp=hpMax;
+        else if(hp<0)hp=0;
+
+        if(mana>manaMax)mana=manaMax;
+        else if(mana<0)mana=0;
+
+        if(energy>energyMax)energy=energyMax;
+        else if(energy<0)energy=0;
+    }
+
     public void useItem(int i){
         if(i>=0 && i<invList.size()) {
             Item item = invList.get(i).get(0);
@@ -672,20 +666,67 @@ public class Player {
         }
         new HoverText(s,.5f,Color.GREEN,absPos.x,absPos.y,false);
     }
-    public void addKills(){
-        killCount++;}
-    public void resetBars(){
-        if(hp>hpMax)hp=hpMax;
-        else if(hp<0)hp=0;
+    public void addItemToInventory(Item item){
+        if(item != null) {
+            lastItem=item;
+            boolean added = false;
+            for (ArrayList<Item> al : invList) {
+                if (!al.isEmpty()) {
+                    try {
+                        if (al.get(0).getName().equals(item.getName())) {
+                            al.add(item);
+                            added = true;
+                        }
+                    } catch (NullPointerException ignored) {}
+                }
+            }
 
-        if(mana>manaMax)mana=manaMax;
-        else if(mana<0)mana=0;
+            if (!added) {
+                ArrayList<Item> al = new ArrayList<>();
+                al.add(item);
+                invList.add(al);
+            }
+        }
 
-        if(energy>energyMax)energy=energyMax;
-        else if(energy<0)energy=0;
     }
-    private int barStatGrowthFunction(int level){
-        return (int) (40*Math.pow(Math.E,.25*(level-1)/2)+100);
+
+    public void move(Vector2 vel){
+        if(!overrideControls) {
+            try {
+                float dt= Gdx.graphics.getDeltaTime();
+                Vector2 end = new Vector2(absPos.x + (vel.x*dt),absPos.y + (vel.y*dt));
+                int gw = cellW * (res + 1);
+                if (end.x < 0)
+                    end.x = getIcon().getWidth();
+                else if (end.x + getIcon().getWidth() > gw)
+                    end.x = (gw) - getIcon().getWidth();
+                if (end.y < 0)
+                    end.y = getIcon().getHeight();
+                else if (end.y + getIcon().getHeight() > gw)
+                    end.y = (gw) - getIcon().getHeight();
+                Vector2 comp = Physics.getVxyComp(velocity, absPos, end);
+                if(canMove) {
+                    player.setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
+                    int x = (int) (EMath.round(absPos.x / cell.x));
+                    int y = (int) (EMath.round(absPos.y / cell.x));
+                    player.setPos(new Vector2(x, y));
+
+                }
+            } catch (ArrayIndexOutOfBoundsException ignored) {
+
+            }
+        }
+    }
+
+    public void initPlayer(){
+        //load icons
+        icons = new Texture[]{pl[0], pl[1], pl[2], pl[3]};
+        //load attacks
+        attackList.clear();
+        Attack flameSp = new Flame();
+        attackList.add(flameSp);
+        ability.onActivate();
+        fullHeal();
     }
     public void checkLvlUp() {
         if (exp>=expLimit)
@@ -703,29 +744,6 @@ public class Player {
             abilityPoints++;
             new HoverText("+1 Ability Point",.7f,Color.GREEN,absPos.x,absPos.y-40, true);
         }
-    }
-    public void addItemToInventory(Item item){
-        if(item != null) {
-            lastItem=item;
-            boolean added = false;
-                for (ArrayList<Item> al : invList) {
-                    if (!al.isEmpty()) {
-                        try {
-                            if (al.get(0).getName().equals(item.getName())) {
-                                al.add(item);
-                                added = true;
-                            }
-                        } catch (NullPointerException ignored) {}
-                    }
-                }
-
-            if (!added) {
-                ArrayList<Item> al = new ArrayList<>();
-                al.add(item);
-                invList.add(al);
-            }
-        }
-
     }
     private void calculateArmorBuff() {
         int sum1=0;
@@ -775,54 +793,6 @@ public class Player {
         }
 
         return dead;
-    }
-    public void loadAttacks(){
-        attackList.clear();
-        Attack flameSp = new Flame();
-        Attack stab = new Stab();
-        Attack torment= new Torment();
-        Attack light= new Lightning();
-        Attack quake = new Quake();
-        Attack blind= new Blind();
-        Attack sac = new Sacrifice();
-        attackList.add(flameSp);
-        attackList.add(stab);
-        attackList.add(sac);
-    }
-    public void loadIcons(){
-        Texture t1 = new Texture(Gdx.files.internal("images/icons/player/00.png"));
-        Texture t2 = new Texture(Gdx.files.internal("images/icons/player/03.png"));
-        Texture t3 = new Texture(Gdx.files.internal("images/icons/player/01.png"));
-        Texture t4 = new Texture(Gdx.files.internal("images/icons/player/02.png"));
-        icons = new Texture[]{t1, t2, t3, t4};
-
-    }
-    boolean hasDigPlus() {
-        boolean b=false;
-        for(Ability a: secondaryAbilityList){
-            if(a.getClass().equals(DigPlus.class))
-                b= true;
-        }
-        return b;
-    }
-    private void regenPlayer(float dt) {
-        if (!infiniteRegen) {
-            if (safe) dtSafe += dt;
-            regenModifiers();
-            if (getAbility().getClass().equals(Investor.class))
-                attackList.stream().filter(a -> a.getMod() == 6 && (dtSafe > a.getLevel())).forEach(a -> {
-                    safe = false;
-                    dtSafe = 0;
-                });
-
-        } else {
-            fullHeal();
-        }
-    }
-    public void fullHeal(){
-        setHp(getHpMax());
-        setMana(getManaMax());
-        setEnergy(getEnergyMax());
     }
 }
 

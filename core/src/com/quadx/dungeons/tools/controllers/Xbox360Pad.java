@@ -1,4 +1,4 @@
-package com.quadx.dungeons;
+package com.quadx.dungeons.tools.controllers;
 
 import com.badlogic.gdx.controllers.PovDirection;
 

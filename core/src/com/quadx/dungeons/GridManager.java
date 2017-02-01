@@ -21,6 +21,7 @@ import java.util.Random;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.states.mapstate.MapState.*;
 import static com.quadx.dungeons.tools.ImageLoader.a;
+import static com.quadx.dungeons.tools.gui.HUD.out;
 
 public class GridManager {
     public static final Random rn = new Random();
@@ -35,6 +36,9 @@ public class GridManager {
     public static final int res = Map2State.res;
     public static Timer mapLoadTime;
 
+    public GridManager(){
+        initializeGrid();
+    }
     public static ArrayList<Cell> getSurroundingCells(int x, int y, int r){
         ArrayList<Cell> list=new ArrayList<>();
         if(isInBounds(new Vector2(x,y))) {
@@ -377,8 +381,7 @@ public class GridManager {
             temp.stream().filter(c -> !c.getState()).forEach(Cell::setState);
             temp.clear();
 
-
-            if (isPlayer && player.hasDigPlus()) {//checks if players dig ability is active
+            if (isPlayer) {//checks if players dig ability is active
                 if (player.facing.equals(Direction.Facing.East) || player.facing.equals(Direction.Facing.West))
                     //if (MapState.lastPressed == 'd' ||MapState.lastPressed == 'a')
                     clearDigPlusCells(9, 3,Math.round( x), Math.round(y));
@@ -391,8 +394,8 @@ public class GridManager {
             }
             splitMapDataToList();
         }catch (ArrayIndexOutOfBoundsException e){
-            MapState.out("ArrayIndexOutOfBoundsException");
-            MapState.out("clearArea()");
+            out("ArrayIndexOutOfBoundsException");
+            out("clearArea()");
 
         }
     }

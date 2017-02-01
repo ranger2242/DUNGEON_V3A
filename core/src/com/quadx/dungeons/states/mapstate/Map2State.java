@@ -13,7 +13,8 @@ import com.quadx.dungeons.tools.Timer;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.quadx.dungeons.states.mapstate.MapState.out;
+import static com.quadx.dungeons.tools.gui.HUD.out;
+
 
 /**
  * Created by Tom on 1/18/2016.

@@ -1,6 +1,6 @@
 package com.quadx.dungeons.commands;
 
-import com.quadx.dungeons.Xbox360Pad;
+import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 import com.quadx.dungeons.states.mapstate.MapState;
 
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.rotateMap;

@@ -9,7 +9,7 @@ import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.tools.FilePaths;
-import com.quadx.dungeons.tools.HoverText;
+import com.quadx.dungeons.tools.gui.HoverText;
 
 import java.util.ArrayList;
 

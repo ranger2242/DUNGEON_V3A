@@ -2,6 +2,7 @@ package com.quadx.dungeons.tools;
 
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.monsters.Monster;
+import com.quadx.dungeons.states.mapstate.MapState;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -86,6 +87,8 @@ public class StatManager {
         return list;
     }
     public static void reset() {
+        gameTime.start();
+        MapState.inGame=true;
         shotsFired=0;
         shotsMissed=0;
         accurcy=0;

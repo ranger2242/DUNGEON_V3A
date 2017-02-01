@@ -2,7 +2,7 @@ package com.quadx.dungeons.commands;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.PovDirection;
-import com.quadx.dungeons.Xbox360Pad;
+import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 
 import static com.quadx.dungeons.Game.controllerMode;
 import static com.quadx.dungeons.states.MainMenuState.controller;

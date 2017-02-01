@@ -17,7 +17,7 @@ import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 import com.quadx.dungeons.tools.Direction;
 import com.quadx.dungeons.tools.EMath;
-import com.quadx.dungeons.tools.HoverText;
+import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.StatManager;
 import com.quadx.dungeons.tools.gui.InfoOverlay;
 import com.quadx.dungeons.tools.gui.Text;
@@ -28,6 +28,7 @@ import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.*;
 import static com.quadx.dungeons.GridManager.rn;
 import static com.quadx.dungeons.states.mapstate.MapState.*;
+import static com.quadx.dungeons.tools.gui.HUD.out;
 import static javax.swing.JSplitPane.DIVIDER;
 
 /**
@@ -41,7 +42,6 @@ public class Monster {
     protected TextureAtlas textureAtlas = null;
     protected Animation anim = null;
     public Direction.Facing facing= Direction.Facing.North;
-    public MonAIv1 ai = new MonAIv1();
     Rectangle hbar = new Rectangle();
     Rectangle hbar2 = new Rectangle();
     Vector2 pos = new Vector2();
@@ -209,8 +209,8 @@ public class Monster {
         return lowhp;
     }
     public boolean PlayerInSight() {
-        return player.getX() > this.getX() - this.getSight() && player.getX() < this.getX() + this.getSight()
-                && player.getY() > this.getY() - this.getSight() && player.getY() < this.getY() + this.getSight();
+        return player.getPos().x > this.getX() - this.getSight() && player.getPos().x < this.getX() + this.getSight()
+                && player.getPos().y > this.getY() - this.getSight() && player.getPos().y < this.getY() + this.getSight();
     }
     public boolean checkForDamageToPlayer() {
         boolean hit = false;

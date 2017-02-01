@@ -18,7 +18,7 @@ import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
-import com.quadx.dungeons.tools.HoverText;
+import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.gui.HUD;
@@ -169,8 +169,8 @@ public class MapStateRender extends MapState {
             Game.font.setColor(Color.WHITE);
             for (int i = 0; i < 10; i++) {
                 try {
-                    Game.getFont().draw(sb, output.get(i), viewX + 30, viewY + 195 - (i * 20));
-                } catch (IndexOutOfBoundsException ignored) {
+                    Game.getFont().draw(sb, HUD.output.get(i), viewX+(2*WIDTH/3) - 30, viewY + HEIGHT - (i * 20)-30);
+                } catch (IndexOutOfBoundsException|NullPointerException ignored) {
                 }
             }
         }
@@ -558,7 +558,7 @@ public class MapStateRender extends MapState {
                 shapeR.setColor(c.getColor());
                 if (c.getItem() != null && !c.getItem().getClass().equals(Gold.class))
                     shapeR.setColor(Color.SKY);
-                if (player.getX() == x && player.getY() == y) {
+                if (player.getPos().x == x &&player.getPos().y == y) {
                     if (blink)
                         shapeR.setColor(0, 0, 1, 1);
                     else

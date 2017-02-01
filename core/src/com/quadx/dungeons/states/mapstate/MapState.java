@@ -12,29 +12,29 @@ import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Cell;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.GridManager;
-import com.quadx.dungeons.Xbox360Pad;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.SpeedPlus;
 import com.quadx.dungeons.states.GameStateManager;
-import com.quadx.dungeons.states.MainMenuState;
 import com.quadx.dungeons.states.State;
-import com.quadx.dungeons.tools.HoverText;
 import com.quadx.dungeons.tools.ShapeRendererExt;
 import com.quadx.dungeons.tools.StatManager;
 import com.quadx.dungeons.tools.Tests;
+import com.quadx.dungeons.tools.controllers.Controllers;
+import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 import com.quadx.dungeons.tools.gui.HUD;
+import com.quadx.dungeons.tools.gui.HoverText;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.quadx.dungeons.Game.controllerMode;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.inventoryPos;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.renderLayers;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.*;
+import static com.quadx.dungeons.tools.gui.HUD.out;
 
 
 /**
@@ -46,18 +46,15 @@ public class MapState extends State implements ControllerListener {
     public static boolean noLerp=false;
     public static boolean pause=false;
 
-    static ShapeRendererExt shapeR;
-    static ArrayList<String> output;
+    static ShapeRendererExt shapeR = new ShapeRendererExt();
     static final ArrayList<Cell> hitList=new ArrayList<>();
-     public static boolean showStats=true;
+    public static boolean showStats=true;
 
     static Texture lootPopup;
     public static Texture statPopup;
     public static GridManager gm;
     static ParticleEffect effect;
     static final Random rn = new Random();
-    static Attack attack;
-    static Attack attack2;
     public static boolean inGame=false;
     static boolean effectLoaded = false;
     static final String DIVIDER= "_________________________";
@@ -76,30 +73,16 @@ public class MapState extends State implements ControllerListener {
 
     public MapState(GameStateManager gsm) {
         super(gsm);
-        StatManager.gameTime.start();
+        new HUD();
         StatManager.reset();
-        player.loadIcons();
-        player.loadAttacks();
-        player.getAbility().onActivate();
-        player.fullHeal();
-        inGame=true;
+        Controllers.initControllers(this);
+        player.initPlayer();
         gm = new GridManager();
-        shapeR = new ShapeRendererExt();
-        output= new ArrayList<>();
-        if(controllerMode)
-        MainMenuState.controller.addListener(this);
-        bufferOutput();
-        Game.setFontSize(1);
         cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT);
-        gm.initializeGrid();
-        out("---Welcome to DUNGEON---");
-        attack= player.attackList.get(0);
-        attack2=player.attackList.get(0);
         debug();
     }
     public void debug() {
         //Tests.testEquipmentRates();
-       //
         // Tests.giveItems(50);
     }
     public void handleInput() {
@@ -128,12 +111,7 @@ public class MapState extends State implements ControllerListener {
     }
     public void dispose() {
     }
-    public static void out(String s){
-        if(output != null) {
-            output.add(s);
-            if (output.size() > 10) output.remove(0);
-        }
-    }
+
 
     static void attackCollisionHandler2(int pos) {
         Attack attack = player.attackList.get(pos);
@@ -206,10 +184,7 @@ public class MapState extends State implements ControllerListener {
         setLootPopup(item.getIcon());
         StatManager.totalItems++;
     }
-    private void bufferOutput(){
-        for(int i=0;i<10;i++)
-            out("");
-    }
+
     public static void scrollAttacks(boolean right){
         if (dtScrollAtt > .3) {
             if (right) {

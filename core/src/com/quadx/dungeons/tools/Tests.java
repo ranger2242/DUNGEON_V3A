@@ -14,7 +14,7 @@ import java.util.*;
 import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.GridManager.monsterList;
 import static com.quadx.dungeons.states.mapstate.MapState.gm;
-import static com.quadx.dungeons.states.mapstate.MapState.out;
+import static com.quadx.dungeons.tools.gui.HUD.out;
 
 /**
  * Created by Chris Cavazos on 7/10/2016.
@@ -32,7 +32,7 @@ public class Tests {
     public static boolean fastreg=      false;
     public static boolean noLand=       false;
     public static boolean showhitbox=   false;
-    public static boolean output=       false;
+    public static boolean output=       true;
     public static boolean clearmap=     false;
     public static boolean infiniteRegen = false;
 
@@ -135,7 +135,17 @@ public class Tests {
 
         if(comm.get(0).equals("p")){
             if (comm.get(1).equals("maxstat")) {
-                player.maxStat();
+                int a=10000;
+                player.setHp(a);
+                player.setHpMax(a);
+                player.setMana(a);
+                player.setManaMax(a);
+                player.setEnergy(a);
+                player.setEnergyMax(a);
+                player.setAttack(a);
+                player.setDefense(a);
+                player.setIntel(a);
+                player.setSpeed(a);
                 outText="Stats Maxed.";
             }
             if(comm.get(1).equals("item")){

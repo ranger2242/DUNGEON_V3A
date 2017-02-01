@@ -3,7 +3,7 @@ package com.quadx.dungeons.attacks;
 import com.quadx.dungeons.states.mapstate.MapState;
 
 import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.states.mapstate.MapState.out;
+import static com.quadx.dungeons.tools.gui.HUD.out;
 
 /**
  * Created by Tom on 11/17/2015.

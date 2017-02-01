@@ -19,6 +19,7 @@ import com.quadx.dungeons.tools.FilePaths;
 import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.Score;
 import com.quadx.dungeons.tools.WallPattern;
+import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -85,10 +86,10 @@ enemy and player knock back
     @Override
     public void create () {
         FilePaths.checkOS();
-
         ImageLoader il=new ImageLoader();
         equipSets= new EquipSets();
         WallPattern wp=new WallPattern();
+        Gdx.graphics.setVSync(true);
         addCommand();
         Xbox360Pad.addNames();
         fonts[0]=createFont(8);

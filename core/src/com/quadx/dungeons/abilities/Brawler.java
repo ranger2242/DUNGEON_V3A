@@ -2,13 +2,13 @@ package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.tools.HoverText;
+import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.tools.gui.HUD.out;
 
 /**
  * Created by range on 5/20/2016.
@@ -34,12 +34,12 @@ public class Brawler extends Ability {
         player.setMana(player.getMana()/2);
         player.setManaMax((int) (player.getManaMax()/2));
         player.setAttack(player.getAttack()*2);
-        MapState.out("----------------------------------");
-        MapState.out(player.getName()+" activated the BRAWLER ability!");
-        MapState.out("E Max doubled!");
-        MapState.out("E Regen doubled!");
-        MapState.out("M Max was halved!");
-        MapState.out("1.2x DMG for E Attacks");
+        out("----------------------------------");
+        out(player.getName()+" activated the BRAWLER ability!");
+        out("E Max doubled!");
+        out("E Regen doubled!");
+        out("M Max was halved!");
+        out("1.2x DMG for E Attacks");
         new HoverText("BRAWLER!",1.5f, Color.WHITE, player.getAbsPos().x, player.getAbsPos().y,false);
 
         //super.onActivate();

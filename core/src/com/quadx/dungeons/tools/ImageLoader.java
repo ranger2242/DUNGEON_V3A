@@ -10,6 +10,8 @@ import java.util.ArrayList;
  * Created by Chris Cavazos on 6/14/2016.
  */
 public class ImageLoader {
+   public static Texture[] pl=new Texture[4];
+
     public static final ArrayList<Texture> attacks = new ArrayList<>();
     public static final ArrayList<Texture> abilities = new ArrayList<>();
     public static final ArrayList<Texture> abilities2 = new ArrayList<>();
@@ -39,6 +41,10 @@ public class ImageLoader {
 
 
     public ImageLoader(){
+        pl[0]= new Texture(Gdx.files.internal("images/icons/player/00.png"));
+        pl[1]=  new Texture(Gdx.files.internal("images/icons/player/03.png"));
+        pl[2]=  new Texture(Gdx.files.internal("images/icons/player/01.png"));
+        pl[3]=  new Texture(Gdx.files.internal("images/icons/player/02.png"));
         for(int i=0;i<17;i++){
             floors[i]=new Texture(FilePaths.getPath("images\\tiles\\floor\\f"+(i)+".png"));
         }

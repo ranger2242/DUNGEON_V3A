@@ -1,4 +1,4 @@
-package com.quadx.dungeons.tools;
+package com.quadx.dungeons.tools.gui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;

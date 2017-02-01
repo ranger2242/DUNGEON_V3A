@@ -2,9 +2,9 @@ package com.quadx.dungeons.commands;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.quadx.dungeons.Xbox360Pad;
+import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.tools.HoverText;
+import com.quadx.dungeons.tools.gui.HoverText;
 
 import static com.quadx.dungeons.Game.player;
 

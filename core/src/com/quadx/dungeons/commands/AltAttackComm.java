@@ -1,7 +1,7 @@
 package com.quadx.dungeons.commands;
 
 import com.badlogic.gdx.Input;
-import com.quadx.dungeons.Xbox360Pad;
+import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 import com.quadx.dungeons.states.mapstate.MapState;
 
 /**

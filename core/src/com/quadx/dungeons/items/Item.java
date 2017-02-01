@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.equipment.Equipment;
-import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.ImageLoader;
 
 import static com.quadx.dungeons.Game.equipSets;
@@ -16,6 +15,7 @@ import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.GridManager.rn;
 import static com.quadx.dungeons.states.mapstate.MapState.openCrate;
+import static com.quadx.dungeons.tools.gui.HUD.out;
 
 public class Item
 {
@@ -75,7 +75,7 @@ public class Item
             icon = new Texture(Gdx.files.internal("images\\icons\\items\\ic" + s + ".png"));
         }catch (GdxRuntimeException e){
             if(this.isEquip){
-                MapState.out(this.getClass().getName());
+                out(this.getClass().getName());
 
             }
             icon= ImageLoader.crate;

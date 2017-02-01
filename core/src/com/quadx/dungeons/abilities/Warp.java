@@ -2,12 +2,12 @@ package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.tools.HoverText;
+import com.quadx.dungeons.tools.gui.HoverText;
 
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.tools.gui.HUD.out;
 
 /**
  * Created by Chris Cavazos on 5/27/2016.
@@ -21,11 +21,11 @@ public class Warp extends Ability {
     public void onActivate() {
         cooldown = 2f;
         enabled = true;
-        MapState.out("----------------------------------");
-        MapState.out(player.getName() + " activated the WARP ability!");
-        MapState.out("Warp 10 spaces forward on demand.");
-        MapState.out("Cost 10E");
-        MapState.out("Cooldown 4s");
+        out("----------------------------------");
+        out(player.getName() + " activated the WARP ability!");
+        out("Warp 10 spaces forward on demand.");
+        out("Cost 10E");
+        out("Cooldown 4s");
         new HoverText("WARP!", 1.5f, Color.WHITE, player.getAbsPos().x, player.getAbsPos().y,false);
     }
 
