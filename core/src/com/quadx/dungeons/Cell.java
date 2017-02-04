@@ -15,7 +15,7 @@ import com.quadx.dungeons.items.Potion;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.MapStateExt;
 import com.quadx.dungeons.tools.ImageLoader;
-import com.quadx.dungeons.tools.gui.Triangle;
+import com.quadx.dungeons.tools.shapes.Triangle;
 
 import java.util.ArrayList;
 import java.util.Random;

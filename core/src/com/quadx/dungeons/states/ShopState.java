@@ -214,7 +214,7 @@ public class ShopState extends State {
         shopInv.clear();
         shopInv.add(new Potion());
         shopInv.add(new ManaPlus());
-        shopInv.add(new AttackPlus());
+        shopInv.add(new StrengthPlus());
         shopInv.add(new DefPlus());
         shopInv.add(new IntPlus());
         shopInv.add(new SpeedPlus());

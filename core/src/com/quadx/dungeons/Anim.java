@@ -3,7 +3,11 @@ package com.quadx.dungeons;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.quadx.dungeons.commands.Command;
+import com.quadx.dungeons.commands.cellcommands.AddItemComm;
 import com.quadx.dungeons.tools.EMath;
+
+import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.states.mapstate.MapState.cell;
@@ -12,6 +16,9 @@ import static com.quadx.dungeons.states.mapstate.MapState.cell;
  * Created by range_000 on 1/10/2017.
  */
 public class Anim {
+    public static ArrayList<Anim> anims= new ArrayList<>();
+    public static ArrayList<Cell> pending= new ArrayList<>();
+
     Texture texture= null;
     Vector2 pos= null;
     float vel= 0;
@@ -74,8 +81,8 @@ public class Anim {
         }
         if(end)
             player.overrideControls=false;
+        handleDropAnim();
     }
-
     public Vector2 getPos() {
         return pos;
     }
@@ -83,8 +90,25 @@ public class Anim {
     public boolean isEnd(){
         return end;
     }
-
     public Texture getTexture() {
         return texture;
+    }
+    void handleDropAnim(){
+        if (isEnd()) {
+            for (Cell c : pending) {
+                if (getFlag() == 0) {//if anim is drop command
+                    int remComm = -1;
+                    for (Command comm : c.commandQueue) {
+                        if (comm.getClass().equals(AddItemComm.class)) {//queue item to be added to cell
+                            remComm = c.commandQueue.indexOf(comm);
+                            comm.execute();
+                        }
+                    }
+                    if (remComm >= 0 && remComm < c.commandQueue.size())
+                        c.commandQueue.remove(remComm);
+                }
+            }
+            anims.remove(this);
+        }
     }
 }

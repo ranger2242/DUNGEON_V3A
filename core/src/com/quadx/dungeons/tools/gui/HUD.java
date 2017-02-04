@@ -1,14 +1,15 @@
 package com.quadx.dungeons.tools.gui;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Game;
+import com.quadx.dungeons.Inventory;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.states.mapstate.MapStateRender;
 import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.ArrayList;
@@ -32,10 +33,13 @@ public class HUD {
     public static Vector2 minimapPos= new Vector2();
     public static Vector2 fpsGridPos = new Vector2();
     static Vector2 equipPos=new Vector2();
-    static Vector2 attackBarPos= new Vector2();
+    public static Vector2 attackBarPos= new Vector2();
     static Vector2 inventoryPos= new Vector2();
     static Vector2 statListPos = new Vector2();
     static Vector2 playerStatBarPos = new Vector2();
+    public static float dtLootPopup=0;
+    public static Texture lootPopup;
+
 
     public static ArrayList<Rectangle> equipBoxes= new ArrayList<>();
     public static Rectangle[] playerStatBars=new Rectangle[3];
@@ -132,12 +136,12 @@ public class HUD {
     }
     static void generateInventoryUI(Vector2 pos) {
         //add selected item
-        if (!player.invList.isEmpty() && MapStateRender.inventoryPos > -1) {
+        if (!player.invList.isEmpty() && Inventory.pos > -1) {
             try {
-                Item item = player.invList.get(MapStateRender.inventoryPos).get(0);
+                Item item = player.invList.get(Inventory.pos).get(0);
                 invOverlay = new InfoOverlay();
                 //if (prevItem != item) {
-                String name = (MapStateRender.inventoryPos) + ":" + item.getName();
+                String name = (Inventory.pos) + ":" + item.getName();
                 ArrayList<String> outList = new ArrayList<>();
                 if (item.getHpmod() != 0) {
                     outList.add("HP " + item.getHpmod());
@@ -148,8 +152,8 @@ public class HUD {
                 if (item.getEmod() != 0) {
                     outList.add("E :" + item.getEmod());
                 }//Mana
-                if (item.getAttackmod() != 0) {
-                    outList.add("ATT :" + item.getAttackmod());
+                if (item.getStrmod() != 0) {
+                    outList.add("ATT :" + item.getStrmod());
                 }  //attack
                 if (item.getDefensemod() != 0) {
                     outList.add("DEF :" + item.getDefensemod());
@@ -164,9 +168,9 @@ public class HUD {
                 for (int i = 0; i < outList.size(); i++) {
                     invOverlay.texts.add(new Text(outList.get(i), new Vector2(pos.x, pos.y-((i + 1) * 20)), Color.WHITE, 1));
                 }
-                invOverlay.texts.add(new Text("x" + player.invList.get(MapStateRender.inventoryPos).size(),pos, Color.WHITE, 1));
+                invOverlay.texts.add(new Text("x" + player.invList.get(Inventory.pos).size(),pos, Color.WHITE, 1));
                 try {
-                    invOverlay.textures.add(player.invList.get(MapStateRender.inventoryPos).get(0).getIcon());
+                    invOverlay.textures.add(player.invList.get(Inventory.pos).get(0).getIcon());
                     invOverlay.texturePos.add(pos);
 
                 } catch (Exception e) {
@@ -240,4 +244,9 @@ public class HUD {
         for(int i=0;i<10;i++)
             out("");
     }
+    public static void setLootPopup(Texture t){
+        dtLootPopup = 0;
+        lootPopup = t;
+    }
+
 }

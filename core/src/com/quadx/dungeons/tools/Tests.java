@@ -5,7 +5,6 @@ import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.Map2State;
-import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,7 +36,13 @@ public class Tests {
     public static boolean infiniteRegen = false;
 
     static int testCount = 0;
-
+    public static void processMetrics(){
+        Runtime runtime = Runtime.getRuntime();
+        currentMemUsage = runtime.totalMemory()/(1024*1024);
+        memUsageList.add((double) (currentMemUsage/runtime.maxMemory()/(1024*1024)));
+        if(memUsageList.size()>meterListMax)
+            memUsageList.remove(0);
+    }
     public static void giveItems(int x) {
         for (int i = 0; i < x; i++) {
             player.addItemToInventory(Item.generateNoGold());
@@ -142,7 +147,7 @@ public class Tests {
                 player.setManaMax(a);
                 player.setEnergy(a);
                 player.setEnergyMax(a);
-                player.setAttack(a);
+                player.setStrength(a);
                 player.setDefense(a);
                 player.setIntel(a);
                 player.setSpeed(a);
@@ -196,7 +201,7 @@ public class Tests {
             }
             if(comm.get(1).equals("att")){
                 int a=Integer.parseInt(comm.get(2));
-                player.setAttack(a);
+                player.setStrength(a);
                 outText="ATT set to "+a;
             }
             if(comm.get(1).equals("int")){
@@ -258,12 +263,7 @@ public class Tests {
             nospawn = true;
             outText = "Monster Spawn Disabled!";
         }
-        if (comm.get(0).equals("spawn")) {
-            nospawn = false;
-            int a=Integer.parseInt(comm.get(1));
-            MapStateUpdater.spawnMonsters(a);
-            outText = "Monster Spawn Enabled!";
-        }
+
         out(outText);
     }
 

@@ -15,6 +15,7 @@ import static com.quadx.dungeons.states.mapstate.MapState.cell;
 @SuppressWarnings("DefaultFileTemplate")
 public class Flame extends Attack {
     public Flame()  {
+        hbs=HitBoxShape.Rect;
         ptSpawnH=0;
         ptSpawnW=50;
         costGold=100;
@@ -55,6 +56,8 @@ public class Flame extends Attack {
             x = player.getAbsPos().x-w;
             y = player.getAbsPos().y-(h/2)+(player.getIcon().getHeight()/2);
         }
+       // return new Rectangle(x,y,w,h);
+
         return new Rectangle(x,fixHeight(new Vector2(x,y)),w,h);
     }
 }

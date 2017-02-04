@@ -38,8 +38,8 @@ public class HeightMap{
 
     public HeightMap(Cell[][] g) {
         cells=g;
-        initColorList(n);
         initGrid();
+        initColorList(n);
     }
     public static void initColorList(int n){
         colors.clear();

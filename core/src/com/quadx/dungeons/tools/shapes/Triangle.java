@@ -1,4 +1,4 @@
-package com.quadx.dungeons.tools.gui;
+package com.quadx.dungeons.tools.shapes;
 
 /**
  * Created by Chris Cavazos on 1/23/2017.

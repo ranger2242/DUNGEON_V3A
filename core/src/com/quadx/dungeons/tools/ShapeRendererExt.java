@@ -2,7 +2,7 @@ package com.quadx.dungeons.tools;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
-import com.quadx.dungeons.tools.gui.Triangle;
+import com.quadx.dungeons.tools.shapes.Triangle;
 
 
 /**

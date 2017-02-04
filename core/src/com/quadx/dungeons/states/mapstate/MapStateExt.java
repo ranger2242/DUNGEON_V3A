@@ -9,7 +9,6 @@ import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.tools.FilePaths;
-import com.quadx.dungeons.tools.gui.HoverText;
 
 import java.util.ArrayList;
 
@@ -47,7 +46,7 @@ public class MapStateExt extends MapState{
             int ang = 0;
             int sw = 0;
             int sh = 0;
-            Attack a = player.attackList.get(MapState.lastNumPressed);
+            Attack a = player.attackList.get(Attack.pos);
             Vector2 v = a.getSpawnBox();
             switch (player.facing) {
 
@@ -101,49 +100,7 @@ public class MapStateExt extends MapState{
     public MapStateExt(GameStateManager gsm) {
         super(gsm);
     }
-    public static void battleFunctions(int i) {
-        if (i < player.attackList.size()) {
-            boolean condition = false;
-            Attack a;
-            if (i == altNumPressed) a = player.attackList.get(altNumPressed);
-            else a = player.attackList.get(lastNumPressed);
-            switch (a.getType()) {
-                case 1: {
-                    condition = player.getEnergy() >= a.getCost();
-                    break;
-                }
-                case 2:
-                case 3:
-                case 4:{
-                    condition = player.getMana() >= a.getCost();
-                    break;
-                }
-            }
-            if (condition) {
-                switch (a.getType()) {
-                    case 1: {
-                        player.setEnergy(player.getEnergy() - a.getCost());
-                        break;
-                    }
-                    case 2:
-                    case 3:
-                    case 4:{
-                        player.setMana(player.getMana() - a.getCost());
-                        break;
-                    }
-                }
-                //addEffect(loadParticles("ptfla",player.getAbsPos().x,player.getAbsPos().y,1));
 
-                MapState.attackCollisionHandler2(i);
-                //AttackMod.runMod(a);
-                player.attackList.get(player.attackList.indexOf(a)).checkLvlUp();
-
-            }
-            else
-                new HoverText("-!-",.5f, Color.MAGENTA,player.getAbsPos().x+(player.getIcon().getWidth()/2),player.getAbsPos().y+player.getIcon().getHeight()+10,true);
-
-        }
-    }
     public static void addEffect(ParticleEffect e){
         e.start();
         effects.add(e);

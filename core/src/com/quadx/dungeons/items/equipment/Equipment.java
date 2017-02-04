@@ -37,7 +37,7 @@ public class Equipment extends Item {
         hpmod= buffs[0];
         manamod=buffs[1];
         emod=buffs[2];
-        attackmod=buffs[3];
+        strmod =buffs[3];
         defensemod=buffs[4];
         intelmod=buffs[5];
         speedmod=buffs[6];
@@ -51,7 +51,7 @@ public class Equipment extends Item {
         hpmod= buffs[0];
         manamod=buffs[1];
         emod=buffs[2];
-        attackmod=buffs[3];
+        strmod =buffs[3];
         defensemod=buffs[4];
         intelmod=buffs[5];
         speedmod=buffs[6];
@@ -93,7 +93,7 @@ public class Equipment extends Item {
                     break;
                 }
                 case Power: {
-                    attackmod += calculateBuff();
+                    strmod += calculateBuff();
                     break;
                 }
                 case Haste: {
@@ -166,9 +166,9 @@ public class Equipment extends Item {
             }else{
                 x[2]=0;
             }
-            if(this.attackmod>eq2.attackmod){
+            if(this.strmod >eq2.strmod){
                 x[3]=1;
-            }else if(this.attackmod<eq2.attackmod){
+            }else if(this.strmod <eq2.strmod){
                 x[3]=2;
             }else{
                 x[3]=0;
@@ -210,7 +210,7 @@ public class Equipment extends Item {
         if(this.emod>0){
             x[2]=1;
         }
-        if(this.attackmod>0){
+        if(this.strmod >0){
             x[3]=1;}
 
         if(this.defensemod>0){
@@ -259,7 +259,7 @@ public class Equipment extends Item {
         x+= hpmod;
         x+=manamod;
         x+=emod;
-        x+=attackmod;
+        x+= strmod;
         x+=defensemod;
         x+=intelmod;
         x+=speedmod;

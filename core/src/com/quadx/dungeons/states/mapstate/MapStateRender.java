@@ -9,11 +9,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.Anim;
-import com.quadx.dungeons.Cell;
-import com.quadx.dungeons.Game;
-import com.quadx.dungeons.GridManager;
+import com.quadx.dungeons.*;
 import com.quadx.dungeons.abilities.Ability;
+import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.monsters.Monster;
@@ -24,7 +22,8 @@ import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.gui.HUD;
 import com.quadx.dungeons.tools.gui.InfoOverlay;
 import com.quadx.dungeons.tools.gui.Text;
-import com.quadx.dungeons.tools.gui.Triangle;
+import com.quadx.dungeons.tools.shapes.Circle;
+import com.quadx.dungeons.tools.shapes.Triangle;
 import com.quadx.dungeons.tools.heightmap.HeightMap;
 
 import java.util.ArrayList;
@@ -53,10 +52,8 @@ public class MapStateRender extends MapState {
     private static float dtCircle=1f;
     public static float dtWaterEffect=0;
     private static int blradius=0;
-    public static int inventoryPos=0;
     public static ArrayList<Rectangle> monAgroBoxes= new ArrayList<>();
 
-    static int[] statCompare=null;
 
 
     static void renderLayers(SpriteBatch sb) {
@@ -68,6 +65,7 @@ public class MapStateRender extends MapState {
         drawHUDLayer(sb);
         drawFPSModule(sb, HUD.fpsGridPos);
         drawMiniMapModule(HUD.minimapPos);
+        srDrawAttackSelectors();
     }
     //HUD Layer----------------------------------------------------------
     static void drawHUDLayer(SpriteBatch sb){
@@ -129,8 +127,8 @@ public class MapStateRender extends MapState {
             if(HUD.statsPos!=null) {
                 Vector2[] v = HUD.statsPos;
                 for (int i = 0; i < a.size(); i++) {
-                    if (statCompare != null && i - 3 < statCompare.length && i - 3 >= 0) {
-                        switch (statCompare[i - 3]) {
+                    if (Inventory.statCompare != null && i - 3 < Inventory.statCompare.length && i - 3 >= 0) {
+                        switch (Inventory.statCompare[i - 3]) {
                             case 1: {
                                 Game.font.setColor(Color.BLUE);
                                 break;
@@ -176,11 +174,11 @@ public class MapStateRender extends MapState {
         }
         //draw loot popup
         try {
-            if (dtLootPopup < .4) {
+        if (HUD.dtLootPopup < .4) {
                 Vector2 v=new Vector2(player.getAbsPos());
                 v.y+=40+player.getIcon().getHeight();
                 v.x+=(player.getIcon().getWidth()/2);
-                sb.draw(lootPopup,  v.x, GridManager.fixHeight(v));
+                sb.draw(HUD.lootPopup,  v.x, GridManager.fixHeight(v));
             }
         } catch (NullPointerException ignored) {}
         //draw ability icon
@@ -197,7 +195,7 @@ public class MapStateRender extends MapState {
 
                 }
         }
-        sb.end();
+    sb.end();
     }
     //Game Layer---------------------------------------------------------
     static void drawGameLayer(SpriteBatch sb){
@@ -248,23 +246,6 @@ public class MapStateRender extends MapState {
                         for(Triangle t: c.getTris()){
                             shapeR.triangle(t);
                         }
-                        /*
-                        //draw walls
-                        shapeR.setColor(Color.BLACK);
-                        //+(cell.y*HeightMap.getMaxHeight())
-
-                        float re= (((HeightMap.getMaxHeight()+1)-c.getHeight()));
-                        float yshelf= (re*cell.y)/2;
-                       // shapeR.triangle(f[0],f[1],f[8],f[9],f[0],f[1]+yshelf);
-                       // shapeR.triangle(f[2],f[3],f[8],f[9],f[2],f[3]+yshelf);
-                        //shapeR.triangle(f[0],(c.getPos().y*cell.y)+yshelf,f[8],f[9],f[2],(c.getPos().y*cell.y)+yshelf);
-                        shapeR.triangle(f[4],f[5]+yshelf,f[8],f[9]+yshelf,f[4],f[5]);
-                        shapeR.triangle(f[4],f[5],f[8],f[9]+yshelf,f[6],f[7]);
-
-                        // shapeR.triangle(f[0],f[1],f[8],f[9],f[2],f[3]);
-
-                        //shapeR.rect(f[0], f[1] + cell.x, cell.x, cell.y);
-                        */
                     }
                     else {
                         //draw land shaded
@@ -293,7 +274,17 @@ public class MapStateRender extends MapState {
             }
             //draw player attack box
             shapeR.setColor(Color.RED);
-            shapeR.rect(player.getAttackBox());
+            Attack.HitBoxShape hbs=player.attackList.get(Attack.pos).getHitBoxShape();
+            switch (hbs){
+
+                case Circle:
+                    Circle c= player.getAttackCircle();
+                    shapeR.circle(c.center.x,c.center.y,c.radius);
+                    break;
+                case Rect:
+                    shapeR.rect(player.getAttackBox());
+                    break;
+            }
             //draw player hitbox
             if (Tests.showhitbox) {
                 shapeR.setColor(Color.BLUE);
@@ -323,6 +314,7 @@ public class MapStateRender extends MapState {
                 }
             }
         }catch (ConcurrentModificationException e){}
+        //shapeR.circle(MapState.circle.center.x,MapState.circle.center.y,MapState.circle.radius);
         shapeR.end();
 
         //draw transparent things---------------------------------------------------------------
@@ -369,7 +361,7 @@ public class MapStateRender extends MapState {
                 sb.draw(ImageLoader.warp,c.getFixedPos().x,c.getFixedPos().y);
         }
         //draw animations
-        for(Anim a: anims){
+        for(Anim a: Anim.anims){
             if(a.getTexture() != null)
                 sb.draw(a.getTexture(),a.getPos().x,fixHeight(a.getPos()));
         }
@@ -497,9 +489,8 @@ public class MapStateRender extends MapState {
         }
     }
     private static void srDrawAttackSelectors(){
-        shapeR.end();
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        int xoffset = (int) (viewX + (WIDTH / 2) - (52 * 4));
+        int xoffset = (int) HUD.attackBarPos.x;
         for (int i = 0; i < player.attackList.size(); i++) {
 
             int x = xoffset + (i * 52);
@@ -507,7 +498,7 @@ public class MapStateRender extends MapState {
                 shapeR.setColor(Color.BLUE);
                 shapeR.rect(x,viewY + 86,10,10);
             }
-            if (i == lastNumPressed) {
+            if (i == Attack.pos) {
                 shapeR.setColor(Color.RED);
                 shapeR.rect(x+38,viewY + 86,10,10);
             }
@@ -520,7 +511,6 @@ public class MapStateRender extends MapState {
     }
     static void updateVariables(float dt){
         dtBlink+=dt;
-        dtLootPopup +=dt;
         updateHoverTextTime();
         dtBlinkP+=dt;
         if(dtBlinkP>.1f){

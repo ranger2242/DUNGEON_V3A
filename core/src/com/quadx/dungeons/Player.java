@@ -9,6 +9,7 @@ import com.quadx.dungeons.abilities.Ability;
 import com.quadx.dungeons.abilities.Investor;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.AttackMod;
+import com.quadx.dungeons.attacks.Blind;
 import com.quadx.dungeons.attacks.Flame;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
@@ -17,9 +18,9 @@ import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
-import com.quadx.dungeons.states.mapstate.MapStateRender;
 import com.quadx.dungeons.tools.*;
 import com.quadx.dungeons.tools.gui.HoverText;
+import com.quadx.dungeons.tools.shapes.Circle;
 
 import java.util.ArrayList;
 
@@ -50,6 +51,7 @@ public class Player {
 
     private Texture[] icons = new Texture[4];
     private Rectangle attackBox = new Rectangle();
+    private Circle attackCircle = new Circle();
     private Ability ability = null;
     public Direction.Facing facing = Direction.Facing.North;
     public Item lastItem = null;
@@ -57,7 +59,7 @@ public class Player {
     private int x;
     private int y;
     private int hpMod = 0;
-    private int attMod = 0;
+    private int strMod = 0;
     private int defMod = 0;
     private int spdMod = 0;
     private int eMod = 0;
@@ -69,7 +71,7 @@ public class Player {
     private int def = 15;
     private int intel = 15;
     private int abilityMod = 0;
-    private int att = 15;
+    private int str = 15;
     private int expLimit = 0;
     private int abilityPoints = 0;
     public int maxSec = 2;
@@ -91,7 +93,7 @@ public class Player {
     private float hpMult = 1;
     private float mMult = 1;
     private float eMult = 1;
-    private float attMult = 1;
+    private float strMult = 1;
     private float defMult = 1;
     private float intMult = 1;
     private float spdMult = 1;
@@ -148,6 +150,9 @@ public class Player {
     public void setAttackBox(Rectangle r){
         attackBox=r;
     }
+    public void setAttackCircle(Circle c){
+        attackCircle=c;
+    }
 
     public void setName(String n) {
         name = n;
@@ -173,8 +178,8 @@ public class Player {
     public void setEnergyMax(int e){
         energyMax=e;
     }
-    public void setAttack(int attack) {
-        this.att = attack;
+    public void setStrength(int attack) {
+        this.str = attack;
     }
     public void setDefense(int defense) {
         this.def = defense;
@@ -211,7 +216,7 @@ public class Player {
         this.hpMax*= hpMax;
     }
     public void setxAttack(double attack) {
-        this.att *= attack;
+        this.str *= attack;
     }
     public void setxEnergyMax(double xEnergyMax) {
         this.energyMax *= xEnergyMax;
@@ -237,7 +242,7 @@ public class Player {
 /*  public void setHpBuff(float f){ hpMult=f;}
     public void setMMod(float f){ mMult=f;}
     public void setEBuff(float f){ eMult=f;}
-    public void setAttBuff(float f){ attMult=f;}
+    public void setAttBuff(float f){ strMult=f;}
     public void setDefBuff(float f){ defMult=f;}
     public void setIntBuff(float f){ intMult=f;}
     public void setSpdBuff(float f){ spdMult=f;}*/
@@ -269,6 +274,9 @@ public class Player {
     public Rectangle getAttackBox() {
         //return new Rectangle(attackBox.x,,attackBox.width,attackBox.height);
         return attackBox;
+    }
+    public Circle getAttackCircle() {
+        return attackCircle;
     }
     public Rectangle getHitBox() {
         return new Rectangle(absPos.x,GridManager.fixHeight(absPos),getIcon().getWidth(),getIcon().getHeight());
@@ -321,6 +329,7 @@ public class Player {
     public float getExp(){return exp;}
     public float getMana(){return mana;}
 
+    public int getStrength(){return str;}
     public int getDefense()
     {
         return def;
@@ -329,9 +338,8 @@ public class Player {
     {
         return spd;
     }
-    public int getAttack()
-    {
-        return att;
+    public Attack getAttack() {
+        return attackList.get(Attack.pos);
     }
     public int getIntel()
     {
@@ -340,13 +348,13 @@ public class Player {
     private int getHpComp(){return (int) (hpMax* hpMult +hpMod);}
     private int getMComp(){return (int) (manaMax* mMult +manaMod);}
     private int getEComp(){return (int) (energyMax* eMult +eMod);}
-    private int getAttComp(){return (int) (att * attMult + attMod);}
+    private int getStrComp(){return (int) (str * strMult + strMod);}
     public int getDefComp(){return (int) (def * defMult + defMod);}
     public int getIntComp(){return (int) (intel* intMult + intMod);}
     private int getSpdComp(){return (int) (spd * spdMult + spdMod);}
 
     public int getPoints(){
-        return (int) (((int)gold*10)+(att *100)+(def *100)+(spd *100)+(level*2000)+(intel*100)+(hpMax*10)+(manaMax*10)+(energyMax*10)+(floor*1000)+(killCount *200));
+        return (int) (((int)gold*10)+(str *100)+(def *100)+(spd *100)+(level*2000)+(intel*100)+(hpMax*10)+(manaMax*10)+(energyMax*10)+(floor*1000)+(killCount *200));
     }
     public int getAbilityMod(){return abilityMod;}
     public int getKillCount() {
@@ -380,7 +388,7 @@ public class Player {
         statsList.add("HP " + (int) (hp * hpMult) + "/" + (int) hpMax + "+" + hpMod + ": " + getHpComp());
         statsList.add("M " + (int) (mana * mMult) + "/" + (int) manaMax + " + " + manaMod + ": " + getMComp());
         statsList.add("E " + (int) (energy * eMult) + "/" + (int) energyMax + " + " + eMod + ": " + getEComp());
-        statsList.add("ATT:      " + att * attMult + " + " + attMod + ": " + getAttComp());
+        statsList.add("STR:      " + str * strMult + " + " + strMod + ": " + getStrComp());
         statsList.add("DEF:      " + def * defMult + " + " + defMod + ": " + getDefComp());
         statsList.add("INT:      " + intel * intMult + " + " + intMod + ": " + getIntComp());
         statsList.add("SPD:      " + spd * spdMult + " + " + spdMod + ": " + getSpdComp());
@@ -467,8 +475,9 @@ public class Player {
         //dtEnergyRe += dt;
         dtMove += dt;
         dtClearHit += dt;
-        if (dtClearHit > dt) {
+        if (dtClearHit > .1f) {
             attackBox = new Rectangle(0, 0, 0, 0);
+            attackCircle= new Circle();
             dtClearHit = 0;
         }
 
@@ -487,9 +496,10 @@ public class Player {
         regenPlayer(dt);
         resetBars();
         fixPosition();
+        Inventory.fixPos();
     }
 
-    private void fixPosition(){
+    public void fixPosition(){
         int gx= (int) getPos().x;
         int gy= (int) getPos().y;
         int x= (int) absPos.x;
@@ -542,7 +552,7 @@ public class Player {
             if (hp > hpMax) hp = hpMax;
             mana+= regenGrowthFunction(level,getIntComp(),1);
             if (mana > manaMax) mana = manaMax;
-            energy += regenGrowthFunction(level,getAttComp(),1);
+            energy += regenGrowthFunction(level, getStrComp(),1);
             if (energy > energyMax) energy = energyMax;
         }else{
             energy=energyMax;
@@ -596,8 +606,8 @@ public class Player {
                 }
                 invList.get(i).remove(0);
                 invList.remove(i);
-                if (MapStateRender.inventoryPos >= invList.size() - 1) {
-                    MapStateRender.inventoryPos = 0;
+                if (Inventory.pos >= invList.size() - 1) {
+                    Inventory.pos = 0;
                 }
                 if (temp != null) {
                     equipedList.remove(temp);
@@ -644,10 +654,10 @@ public class Player {
             mana += item.getManamod();
             s = "+" + item.getManamod()+" M";
         }
-        //att
-        if (item.getAttackmod() != 0) {
-            att += item.getAttackmod();
-            s = "+" +  item.getAttackmod()+" ATT";
+        //str
+        if (item.getStrmod() != 0) {
+            str += item.getStrmod();
+            s = "+" +  item.getStrmod()+" STR";
         }
         //def
         if (item.getDefensemod() != 0) {
@@ -724,7 +734,10 @@ public class Player {
         //load attacks
         attackList.clear();
         Attack flameSp = new Flame();
+        Attack blindSp=new Blind();
         attackList.add(flameSp);
+        attackList.add(blindSp);
+
         ability.onActivate();
         fullHeal();
     }
@@ -737,7 +750,7 @@ public class Player {
             hpMax= barStatGrowthFunction(level);
             manaMax= barStatGrowthFunction(level);
             energyMax= barStatGrowthFunction(level);
-            att = att +((int) (Math.random() * 4));
+            str = str +((int) (Math.random() * 4));
             def = def +((int) (Math.random() * 4));
             intel=intel+((int) (Math.random() * 4));
             spd = spd +((int) (Math.random() * 4));
@@ -753,9 +766,9 @@ public class Player {
         int sum5=0;
         int sum6=0;
         for(Equipment eq : equipedList){
-            sum1+=eq.getAttackmod();
+            sum1+=eq.getStrmod();
         }
-        attMod =sum1;
+        strMod =sum1;
         for(Equipment eq : equipedList){
             sum2+=eq.getDefensemod();
         }

@@ -25,7 +25,7 @@ public class Item
     protected int cost;
     protected int hpmod;
     protected int manamod;
-    protected int attackmod;
+    protected int strmod;
     protected int defensemod;
     protected int intelmod;
     protected int speedmod;
@@ -48,9 +48,9 @@ public class Item
     {
         return speedmod;
     }
-    public int getAttackmod()
+    public int getStrmod()
     {
-        return attackmod;
+        return strmod;
     }
     public int getIntelmod()
     {
@@ -106,7 +106,7 @@ public class Item
         Item a;
         int q = rn.nextInt(10) + 1;
         a = new Item();
-        if (q == 1 || q == 2) a = new AttackPlus();
+        if (q == 1 || q == 2) a = new StrengthPlus();
         else if (q == 3 || q == 4) a = new DefPlus();
         else if (q == 5 || q == 6) a = new IntPlus();
         else if (q == 7 || q == 8) a = new SpeedPlus();

@@ -8,12 +8,15 @@ import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.items.*;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
-import com.quadx.dungeons.states.mapstate.*;
+import com.quadx.dungeons.states.mapstate.Map2State;
+import com.quadx.dungeons.states.mapstate.MapStateExt;
+import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 import com.quadx.dungeons.tools.Direction;
 import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.Timer;
 import com.quadx.dungeons.tools.WallPattern;
 import com.quadx.dungeons.tools.heightmap.HeightMap;
+import com.quadx.dungeons.tools.heightmap.Matrix;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -39,6 +42,38 @@ public class GridManager {
     public GridManager(){
         initializeGrid();
     }
+    static Vector2 rotateCords(boolean left,Vector2 pos){
+        Vector2 v=new Vector2();
+        if(left){
+            v.x=res-pos.y-1;
+            v.y=pos.x;
+        }else{
+            v.x=pos.y;
+            v.y=res-pos.x-1;
+        }
+        return v;
+    }
+
+    public static void rotateMap(boolean left){
+        if(MapStateUpdater.dtf>.15) {
+            noLerp=true;
+            Matrix<Integer> rotator = new Matrix<>(Integer.class);
+            dispArray = rotator.rotateMatrix(dispArray, res, left);
+            player.setPos(rotateCords(left,player.getPos()));
+            warp.set ( rotateCords(left,warp));
+            shop.set(rotateCords(left,shop));
+            player.setAbsPos(new Vector2(player.getPos().x*cellW,player.getPos().y*cellW));
+            for(Monster m:monsterList){
+                m.setPos(rotateCords(left,m.getPos()));
+                m.setAbsPos(new Vector2(m.getPos().x*cellW,m.getPos().y*cellW));
+            }
+            hm.calcCorners(dispArray);
+            hm.getCells();
+            loadLiveCells();
+            loadDrawList();
+            MapStateUpdater.dtf=0;
+        }
+    }
     public static ArrayList<Cell> getSurroundingCells(int x, int y, int r){
         ArrayList<Cell> list=new ArrayList<>();
         if(isInBounds(new Vector2(x,y))) {
@@ -51,23 +86,6 @@ public class GridManager {
                 }
             }
         }
-        return list;
-    }
-    private static ArrayList<Vector2> getSurroundingCellsPos(float x, float y){
-        ArrayList<Vector2> list=new ArrayList<>();
-        boolean a =x+1<res;
-        boolean b=x-1>=0;
-        boolean c=y+1<res;
-        boolean d=y-1>=0;
-      //  list.add(new Vector2(x,y));
-        if(b && c)  list.add(new Vector2(x - 1,y + 1));
-        if(c)       list.add(new Vector2(x,y+1));//dispArray[x][y + 1]);
-        if(a && c)  list.add(new Vector2(x+1,y+1));//dispArray[x + 1][y + 1]);
-        if(a &&b && d)list.add(new Vector2(x+1,y));//dispArray[x + 1][y]);
-        if(a && d)  list.add(new Vector2(x+1,y-1));//dispArray[x + 1][y - 1]);
-        if(d)       list.add(new Vector2(x,y-1));//dispArray[x][y - 1]);
-        if(b && d)  list.add(new Vector2(x-1,y-1));//dispArray[x - 1][y - 1]);
-        if(b)       list.add(new Vector2(x-1,y));//dispArray[x - 1][y]);
         return list;
     }
     private static void splitMapDataToList() {
@@ -133,19 +151,21 @@ public class GridManager {
         if (player.getFloor() == 1)
             splitMapDataToList();
         int temp = rn.nextInt(40)+20;//calculate number of monsters
-        while (temp > 0) {
+        while (temp > 0 && !Tests.nospawn) {
             int listSize = monsterList.size();
             int point = rn.nextInt(liveCellList.size());
             Cell c = liveCellList.get(point);
-            if(c.getState()) {
-                Monster m = Monster.getNew();
-                m.setAbsPos(c.getAbsPos());
-                m.setPos(c.getPos());
-                m.setLiveCellIndex(point);
-                monsterList.add(m);
-                c.setMonsterIndex(listSize + 1);
-                liveCellList.set(point, c);
-                temp--;
+            if(!Monster.isNearPlayer(c.getPos())) {
+                if (c.getState()) {
+                    Monster m = Monster.getNew();
+                    m.setAbsPos(c.getAbsPos());
+                    m.setPos(c.getPos());
+                    m.setLiveCellIndex(point);
+                    monsterList.add(m);
+                    c.setMonsterIndex(listSize + 1);
+                    liveCellList.set(point, c);
+                    temp--;
+                }
             }
 
         }
@@ -178,29 +198,14 @@ public class GridManager {
         //splitMapDataToList();
         loadLiveCells();
     }
+
     private void plotWarps() {
-        boolean placed = false;
         int index = rn.nextInt(liveCellList.size());
         Cell c = liveCellList.get(index);
-        while (!placed) {
-            while (c.getWater()) {
-
-                index = rn.nextInt(liveCellList.size());
-                c = liveCellList.get(index);
-
-            }
-            liveCellList.get(index).setState();
-            int x = c.getX();
-            int y = c.getY();
-            int count = 0;
-            for(Cell c1: getSurroundingCells(x,y,3)){
-                if(c1.hasWater) count++;
-            }
-            if (count < 7) {
-                placed = true;
-                warp.set(x,y);
-            }else index = rn.nextInt(liveCellList.size());
-        }
+        liveCellList.get(index).setState();
+        int x = c.getX();
+        int y = c.getY();
+        warp.set(x, y);
         liveCellList.get(index).setWarp();
     }
     private void plotShop() {
@@ -339,38 +344,23 @@ public class GridManager {
     public void initializeGrid(){
         mapLoadTime=new Timer("MapLoadTime");
         mapLoadTime.start();
-        MapStateUpdater.spawnCount=1;
-        MapStateUpdater.dtRespawn=0;
-        player.setMana(player.getManaMax());
-        player.setEnergy(player.getEnergyMax());
-        Timer t=new Timer();
-        t.start();
+        player.fullHeal();
         clearMonsterList();
         createMap();
         hm=new HeightMap(dispArray);
-        HeightMap.initColorList(HeightMap.n);
         dispArray=hm.getCells();
         plotLoot();
         plotItems();
         plotShop();
         plotWarps();
-        if(!Tests.nospawn)
-            plotMonsters();
-        t.end();
-        out("4:"+t.runtime());
-        t.start();
         plotPlayer();
-        t.end();
-        MapStateRender.showCircle = true;
-
+        plotMonsters();
         if(Tests.clearmap)
             Tests.loadEmptyMap();
-
         //nothing below here
         mapLoadTime.end();
         Tests.mapLoadTimes.add(mapLoadTime.getElapsedD());
         out(GridManager.mapLoadTime.runtime());
-
     }
     public void clearArea(float x, float y, boolean isPlayer) {
         try {

@@ -33,13 +33,12 @@ import java.util.List;
 @SuppressWarnings("UnusedParameters")
 public class Game extends ApplicationAdapter implements ControllerListener{
 /*
-screen shake
 shaders
 particle effect for dig
 hidden enemie comes out of ground
 particle effect on warp
 release velocity falloff
-enemy and player knock back
+enemy knock back
 
  */
     public static boolean disableGfx=true;
@@ -82,6 +81,7 @@ enemy and player knock back
         commandList.add(new RotLeftComm());
         commandList.add(new RotRightComm());
         commandList.add(new UseComm());
+        commandList.add(new ChangeAttackComm());
     }
     @Override
     public void create () {

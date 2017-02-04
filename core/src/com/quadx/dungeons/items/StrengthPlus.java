@@ -8,11 +8,11 @@ import com.quadx.dungeons.tools.FilePaths;
  * Created by Tom on 11/21/2015.
  */
 @SuppressWarnings("DefaultFileTemplate")
-public class AttackPlus extends Item {
-    public AttackPlus(){
+public class StrengthPlus extends Item {
+    public StrengthPlus(){
         ptColor= Color.RED;
-        name="Attack+";
-        attackmod=1;
+        name="Strength+";
+        strmod =1;
         cost=3500;
         setIcon(new Texture(FilePaths.getPath("images\\icons\\items\\icAtt+.png")));
 
