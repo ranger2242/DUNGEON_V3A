@@ -23,6 +23,7 @@ import com.quadx.dungeons.tools.gui.HUD;
 import com.quadx.dungeons.tools.gui.InfoOverlay;
 import com.quadx.dungeons.tools.gui.Text;
 import com.quadx.dungeons.tools.shapes.Circle;
+import com.quadx.dungeons.tools.shapes.Line;
 import com.quadx.dungeons.tools.shapes.Triangle;
 import com.quadx.dungeons.tools.heightmap.HeightMap;
 
@@ -32,6 +33,7 @@ import java.util.Collections;
 import java.util.ConcurrentModificationException;
 
 import static com.badlogic.gdx.graphics.Color.BLACK;
+import static com.badlogic.gdx.graphics.Color.WHITE;
 import static com.badlogic.gdx.graphics.GL20.GL_BLEND;
 import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.GridManager.*;
@@ -342,6 +344,11 @@ public class MapStateRender extends MapState {
                 shapeR.getColor().a=.3f;
                 shapeR.polygon(Arrays.copyOf(c.getCorners().getVertices(),8));
             }
+        }
+        ArrayList<Line> lines = player.getAttackChain();
+         for(Line l:lines){
+             shapeR.setColor(WHITE);
+            shapeR.line(l);
         }
         shapeR.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);

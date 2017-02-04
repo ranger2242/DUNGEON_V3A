@@ -7,10 +7,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.abilities.Ability;
 import com.quadx.dungeons.abilities.Investor;
-import com.quadx.dungeons.attacks.Attack;
-import com.quadx.dungeons.attacks.AttackMod;
-import com.quadx.dungeons.attacks.Blind;
-import com.quadx.dungeons.attacks.Flame;
+import com.quadx.dungeons.attacks.*;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.SpellBook;
@@ -21,6 +18,7 @@ import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.tools.*;
 import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.shapes.Circle;
+import com.quadx.dungeons.tools.shapes.Line;
 
 import java.util.ArrayList;
 
@@ -50,8 +48,11 @@ public class Player {
     private final Vector2 dest = new Vector2();
 
     private Texture[] icons = new Texture[4];
+
+    public ArrayList<Line> attackChain= new ArrayList<>();
     private Rectangle attackBox = new Rectangle();
     private Circle attackCircle = new Circle();
+
     private Ability ability = null;
     public Direction.Facing facing = Direction.Facing.North;
     public Item lastItem = null;
@@ -153,6 +154,7 @@ public class Player {
     public void setAttackCircle(Circle c){
         attackCircle=c;
     }
+    public void setAttackChain(ArrayList<Line> c){attackChain=c;}
 
     public void setName(String n) {
         name = n;
@@ -278,6 +280,8 @@ public class Player {
     public Circle getAttackCircle() {
         return attackCircle;
     }
+    public ArrayList<Line> getAttackChain(){return attackChain;}
+
     public Rectangle getHitBox() {
         return new Rectangle(absPos.x,GridManager.fixHeight(absPos),getIcon().getWidth(),getIcon().getHeight());
     }
@@ -478,6 +482,7 @@ public class Player {
         if (dtClearHit > .1f) {
             attackBox = new Rectangle(0, 0, 0, 0);
             attackCircle= new Circle();
+            attackChain=new ArrayList<>();
             dtClearHit = 0;
         }
 
@@ -733,8 +738,10 @@ public class Player {
         icons = new Texture[]{pl[0], pl[1], pl[2], pl[3]};
         //load attacks
         attackList.clear();
+        Attack light=new Lightning();
         Attack flameSp = new Flame();
         Attack blindSp=new Blind();
+        attackList.add(light);
         attackList.add(flameSp);
         attackList.add(blindSp);
 

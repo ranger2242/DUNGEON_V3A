@@ -7,7 +7,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.shapes.Circle;
+import com.quadx.dungeons.tools.shapes.Line;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static com.quadx.dungeons.Game.player;
@@ -23,7 +25,7 @@ public class Attack {
     }
 
     public enum HitBoxShape{
-        Circle,Rect
+        Circle,Rect,Chain
     }
     HitBoxShape hbs=null;
     int[] powerA = new int[5];
@@ -72,6 +74,7 @@ public class Attack {
     public Circle calculateHitCircle(){
         return new Circle();
     }
+    ArrayList<Line> chain(){return new ArrayList<>();}
     public Vector2 getSpawnBox() {
         return new Vector2(ptSpawnW, ptSpawnH);
     }
@@ -187,6 +190,9 @@ public class Attack {
                             break;
                         case Rect:
                             player.setAttackBox(calculateHitBox());
+                            break;
+                        case Chain:
+                            player.setAttackChain(chain());
                             break;
                     }
                     setUses();
