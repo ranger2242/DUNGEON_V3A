@@ -2,6 +2,7 @@ package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.quadx.dungeons.attacks.Stab;
 import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.ImageLoader;
 
@@ -41,6 +42,7 @@ public class Tank extends Ability {
     @Override
     public void l1() {
         level=1;
+        player.attackList.add(new Stab());
         player.setxDefense(2);
         player.setxHpMax(1.5);
         player.setxHpRegen(2);

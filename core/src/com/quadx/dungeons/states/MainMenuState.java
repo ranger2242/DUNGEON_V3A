@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Game;
+import com.quadx.dungeons.states.mapstate.MapStateRender;
 import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.FilePaths;
@@ -88,8 +89,10 @@ public class MainMenuState extends State implements ControllerListener {
                 //if (Tests.timeKill()) {
                     if (MapState.inGame)
                         gsm.pop();
-                    else
+                    else {
+                        MapStateRender.time=0;
                         gsm.push(new AbilitySelectState(gsm));
+                    }
                 //}
                 break;
             }

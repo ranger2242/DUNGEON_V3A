@@ -19,6 +19,7 @@ import com.quadx.dungeons.tools.*;
 import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.shapes.Circle;
 import com.quadx.dungeons.tools.shapes.Line;
+import com.quadx.dungeons.tools.shapes.Triangle;
 
 import java.util.ArrayList;
 
@@ -52,6 +53,7 @@ public class Player {
     public ArrayList<Line> attackChain= new ArrayList<>();
     private Rectangle attackBox = new Rectangle();
     private Circle attackCircle = new Circle();
+    Triangle attackTri = new Triangle();
 
     private Ability ability = null;
     public Direction.Facing facing = Direction.Facing.North;
@@ -154,6 +156,7 @@ public class Player {
     public void setAttackCircle(Circle c){
         attackCircle=c;
     }
+    public void setAttackTriangle(Triangle t){attackTri=t;}
     public void setAttackChain(ArrayList<Line> c){attackChain=c;}
 
     public void setName(String n) {
@@ -277,11 +280,18 @@ public class Player {
         //return new Rectangle(attackBox.x,,attackBox.width,attackBox.height);
         return attackBox;
     }
+    public Triangle getAttackTriangle(){return attackTri;}
     public Circle getAttackCircle() {
         return attackCircle;
     }
     public ArrayList<Line> getAttackChain(){return attackChain;}
+    public Attack getAttack() {
+        return attackList.get(Attack.pos);
+    }
 
+    public Illusion.Dummy getDummy(){
+     return  new Illusion.Dummy((int) getHpMax()*2,getPos(),getAbsPos(),getHitBox());
+    }
     public Rectangle getHitBox() {
         return new Rectangle(absPos.x,GridManager.fixHeight(absPos),getIcon().getWidth(),getIcon().getHeight());
     }
@@ -341,9 +351,6 @@ public class Player {
     public int getSpeed()
     {
         return spd;
-    }
-    public Attack getAttack() {
-        return attackList.get(Attack.pos);
     }
     public int getIntel()
     {
@@ -483,6 +490,7 @@ public class Player {
             attackBox = new Rectangle(0, 0, 0, 0);
             attackCircle= new Circle();
             attackChain=new ArrayList<>();
+            attackTri=new Triangle();
             dtClearHit = 0;
         }
 
@@ -492,9 +500,13 @@ public class Player {
             dtHitInvincibility = 0;
             wasHit = false;
         }
+
+        if(Dash.active)
+            player.setAttackBox(getAttack().calculateHitBox());
+
         calculateArmorBuff();
         expLimit=(int)((((Math.pow(1.2,level))*1000)/2)-300);
-        velocity= (float) (6+.0136*getSpdComp()+.000005* Math.pow(getSpdComp(),2));
+        velocity= velocityFunction();
         if(velocity<5)velocity=5;
         if(velocity>18)velocity=18;
         Investor.generatePlayerGold();
@@ -551,6 +563,16 @@ public class Player {
         float g= (fps*dt)*rate;
         return g;
     }
+    private int barStatGrowthFunction(int level){
+        return (int) (40*Math.pow(Math.E,.25*(level-1)/2)+100);
+    }
+    float velocityFunction(){
+        float v=(float) (6+.0136*getSpdComp()+.000005* Math.pow(getSpdComp(),2));
+        if(Dash.active)
+            v*=6;
+        return v;
+    }
+
     private void regenModifiers(){
         if(!fastreg) {
             hp += regenGrowthFunction(level,getDefComp(),1);
@@ -585,9 +607,6 @@ public class Player {
         setEnergy(getEnergyMax());
     }
 
-    private int barStatGrowthFunction(int level){
-        return (int) (40*Math.pow(Math.E,.25*(level-1)/2)+100);
-    }
     public void resetBars(){
         if(hp>hpMax)hp=hpMax;
         else if(hp<0)hp=0;
@@ -738,13 +757,7 @@ public class Player {
         icons = new Texture[]{pl[0], pl[1], pl[2], pl[3]};
         //load attacks
         attackList.clear();
-        Attack light=new Lightning();
-        Attack flameSp = new Flame();
-        Attack blindSp=new Blind();
-        attackList.add(light);
-        attackList.add(flameSp);
-        attackList.add(blindSp);
-
+        attackList.add( new Dash());
         ability.onActivate();
         fullHeal();
     }

@@ -31,7 +31,7 @@ public class Tests {
     public static boolean fastreg=      false;
     public static boolean noLand=       false;
     public static boolean showhitbox=   false;
-    public static boolean output=       true;
+    public static boolean output=       false;
     public static boolean clearmap=     false;
     public static boolean infiniteRegen = false;
 

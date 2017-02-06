@@ -12,21 +12,25 @@ import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.*;
 import com.quadx.dungeons.abilities.Ability;
 import com.quadx.dungeons.attacks.Attack;
+import com.quadx.dungeons.attacks.Illusion;
+import com.quadx.dungeons.attacks.Protect;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
-import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.gui.HUD;
+import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.gui.InfoOverlay;
 import com.quadx.dungeons.tools.gui.Text;
+import com.quadx.dungeons.tools.heightmap.HeightMap;
 import com.quadx.dungeons.tools.shapes.Circle;
 import com.quadx.dungeons.tools.shapes.Line;
 import com.quadx.dungeons.tools.shapes.Triangle;
-import com.quadx.dungeons.tools.heightmap.HeightMap;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,6 +43,7 @@ import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.GridManager.*;
 import static com.quadx.dungeons.states.mapstate.Map2State.res;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.*;
+import static com.quadx.dungeons.tools.StatManager.gameTime;
 
 
 /**
@@ -55,7 +60,7 @@ public class MapStateRender extends MapState {
     public static float dtWaterEffect=0;
     private static int blradius=0;
     public static ArrayList<Rectangle> monAgroBoxes= new ArrayList<>();
-
+    public static double time=0;
 
 
     static void renderLayers(SpriteBatch sb) {
@@ -86,7 +91,11 @@ public class MapStateRender extends MapState {
             shapeR.setColor(.1f, .1f, .1f, .7f);
             shapeR.rect(r);
         }
-        shapeR.setColor(1,0,0,(1-((float)player.getHp()/(float)player.getHpMax()))/2.8f);
+        if(Protect.active)
+        shapeR.setColor(0,0,1,1/3f);
+        else
+            shapeR.setColor(1,0,0,(1-((float)player.getHp()/(float)player.getHpMax()))/2.8f);
+
         shapeR.rect(viewX,viewY,WIDTH,HEIGHT);
         shapeR.end();
         Gdx.gl.glDisable(GL_BLEND);
@@ -123,8 +132,16 @@ public class MapStateRender extends MapState {
         Game.setFontSize(1);
         //Draw player stats
         if(showStats) {
+
             Game.setFontSize(1);
             Game.font.setColor(Color.WHITE);
+            NumberFormat formatter = new DecimalFormat("#00.00");
+            gameTime.end();
+            double d=Double.valueOf(formatter.format( Double.valueOf(gameTime.getElapsed())));
+            time+=d;
+            time=Double.valueOf(formatter.format(time));
+            Game.getFont().draw(sb,"Game Time: "+(int)(time/60)+":"+Double.valueOf(formatter.format(time%60)),viewX-100+WIDTH/2,viewY+HEIGHT-30);
+           gameTime.start();
             ArrayList<String> a = player.getStatsList();
             if(HUD.statsPos!=null) {
                 Vector2[] v = HUD.statsPos;
@@ -277,6 +294,7 @@ public class MapStateRender extends MapState {
             //draw player attack box
             shapeR.setColor(Color.RED);
             Attack.HitBoxShape hbs=player.attackList.get(Attack.pos).getHitBoxShape();
+            if(hbs !=null)
             switch (hbs){
 
                 case Circle:
@@ -285,6 +303,9 @@ public class MapStateRender extends MapState {
                     break;
                 case Rect:
                     shapeR.rect(player.getAttackBox());
+                    break;
+                case Triangle:
+                    shapeR.triangle(player.getAttackTriangle());
                     break;
             }
             //draw player hitbox
@@ -375,6 +396,9 @@ public class MapStateRender extends MapState {
         //draw player
         Vector2 v = player.getTexturePos();
         sb.draw(player.getIcon(), v.x, v.y);
+        for(Illusion.Dummy d:Illusion.dummies){
+            sb.draw(d.icon,d.absPos.x,fixHeight(d.absPos));
+        }
 
         //spritebatch monster draw functions
         try {

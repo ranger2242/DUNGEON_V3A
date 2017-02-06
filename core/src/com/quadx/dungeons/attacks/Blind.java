@@ -14,11 +14,11 @@ import static com.quadx.dungeons.Game.player;
 @SuppressWarnings("DefaultFileTemplate")
 public class Blind extends Attack {
     public Blind()  {
-        hbs=HitBoxShape.Circle;
+        hitBoxShape =HitBoxShape.Circle;
         costGold=15309;
         type=4;
-        powerA = new int[]{10,20,30,40,50};
-        costA =new int[]{15,25,35,45,55};
+        powerA = new int[]{30,50,70,90,110};
+        costA =new int[]{10,20,30,40,50};
         name="Blind";
         power=10;
         cost=25;

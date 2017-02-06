@@ -1,11 +1,15 @@
 package com.quadx.dungeons.attacks;
 
+import com.badlogic.gdx.graphics.Color;
 import com.quadx.dungeons.tools.ImageLoader;
+import com.quadx.dungeons.tools.gui.HoverText;
+
+import static com.quadx.dungeons.Game.player;
 
 /**
  * Created by Chris Cavazos on 6/21/2016.
  */
-class Focus extends Attack {
+public class Focus extends Attack {
     public Focus()  {
         costGold=2510;
         type=1;
@@ -18,6 +22,12 @@ class Focus extends Attack {
         description="Player focuses E and restores M.";
         spread=0;
         range=0;
+        hitBoxShape =HitBoxShape.None;
         setIcon(ImageLoader.attacks.get(3));
+    }
+    public void runAttackMod(){
+        int d=(cost*3)/4;
+        player.addMana(d);
+        new HoverText("+"+d,1, new Color(.2f,.2f,1,1),player.getAbsPos().x,player.getAbsPos().y+50,false);
     }
 }

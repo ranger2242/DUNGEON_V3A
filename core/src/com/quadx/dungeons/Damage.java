@@ -2,6 +2,8 @@ package com.quadx.dungeons;
 
 import com.badlogic.gdx.graphics.Color;
 import com.quadx.dungeons.attacks.Attack;
+import com.quadx.dungeons.attacks.Dash;
+import com.quadx.dungeons.attacks.Protect;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.tools.gui.HoverText;
 
@@ -51,9 +53,12 @@ public class Damage {
             damage *= 1.15;
             new HoverText("-CRITICAL-", .2f, Color.BLUE, player.getAbsPos().x,player.getAbsPos().y, true);
         }
-        return (int) ( damage*rate);
+        if(Protect.active || Dash.active)
+            return 0;
+        else
+            return (int) ( damage*rate);
     }
-    static float rate=5;
+    static float rate=2;
     public static int monsterMagicDamage(Monster m){
         float a, b, c, d, e;
         a = (float) Math.pow(Math.E,.18);
@@ -69,6 +74,9 @@ public class Damage {
             damage *= 1.15;
             new HoverText("-CRITICAL-", .2f, Color.BLUE, player.getAbsPos().x,player.getAbsPos().y, true);
         }
+        if(Protect.active || Dash.active)
+            return 0;
+        else
         return (int) (damage *rate);
     }
 }

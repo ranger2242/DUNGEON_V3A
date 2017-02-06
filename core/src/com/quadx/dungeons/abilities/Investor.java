@@ -4,8 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Game;
-import com.quadx.dungeons.tools.gui.HoverText;
+import com.quadx.dungeons.attacks.Blind;
 import com.quadx.dungeons.tools.ImageLoader;
+import com.quadx.dungeons.tools.gui.HoverText;
 
 import java.util.ArrayList;
 
@@ -47,6 +48,8 @@ public class Investor extends Ability {
         level=1;
         player.setxHpRegen(2);
         //player.setxEnergyRegen(2);
+        player.attackList.add(new Blind());
+
     }
 
     @Override

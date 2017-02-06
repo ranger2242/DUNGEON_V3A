@@ -109,6 +109,7 @@ public class ImageLoader {
         attacks.add(new Texture(FilePaths.getPath("images\\icons\\attacks\\icStab.png")));//10
         attacks.add(new Texture(FilePaths.getPath("images\\icons\\attacks\\icTorment.png")));
         attacks.add(new Texture(FilePaths.getPath("images\\icons\\attacks\\icLightning.png")));
+        attacks.add(new Texture(FilePaths.getPath("images\\icons\\attacks\\icDash.png")));
 
     }
     private void loadMonsters(){

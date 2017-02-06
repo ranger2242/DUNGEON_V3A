@@ -8,6 +8,7 @@ import com.quadx.dungeons.Game;
 import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.shapes.Circle;
 import com.quadx.dungeons.tools.shapes.Line;
+import com.quadx.dungeons.tools.shapes.Triangle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,13 +22,13 @@ import static com.quadx.dungeons.tools.gui.HUD.out;
 @SuppressWarnings("DefaultFileTemplate")
 public class Attack {
     public HitBoxShape getHitBoxShape() {
-        return hbs;
+        return hitBoxShape;
     }
 
     public enum HitBoxShape{
-        Circle,Rect,Chain
+        Circle,Rect,Chain,Triangle,None
     }
-    HitBoxShape hbs=null;
+    HitBoxShape hitBoxShape =null;
     int[] powerA = new int[5];
     int[] costA = new int[5];
     String name = "";
@@ -48,7 +49,6 @@ public class Attack {
     public static float dtInfo = 0;
     public static final float attackMintime = Game.frame*3;
     public static int pos =0;
-
     String description = "s";
     public static float dtAttack = 0;
 
@@ -74,7 +74,10 @@ public class Attack {
     public Circle calculateHitCircle(){
         return new Circle();
     }
-    ArrayList<Line> chain(){return new ArrayList<>();}
+    public Triangle calculateHitTri(){return new Triangle();}
+    ArrayList<Line> calculateHitChain(){return new ArrayList<>();}
+
+    public void runAttackMod(){}
     public Vector2 getSpawnBox() {
         return new Vector2(ptSpawnW, ptSpawnH);
     }
@@ -184,7 +187,7 @@ public class Attack {
                             break;
                         }
                     }
-                    switch (hbs){
+                    switch (hitBoxShape){
                         case Circle:
                             player.setAttackCircle(calculateHitCircle());
                             break;
@@ -192,7 +195,13 @@ public class Attack {
                             player.setAttackBox(calculateHitBox());
                             break;
                         case Chain:
-                            player.setAttackChain(chain());
+                            player.setAttackChain(calculateHitChain());
+                            break;
+                        case Triangle:
+                            player.setAttackTriangle(calculateHitTri());
+                            break;
+                        case None:
+                            runAttackMod();
                             break;
                     }
                     setUses();

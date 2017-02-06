@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.*;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.Blind;
+import com.quadx.dungeons.attacks.Illusion;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 import com.quadx.dungeons.tools.Direction;
@@ -502,6 +503,12 @@ public class Monster {
         setSights();
         setMonOverlay();
         checkForDamageToPlayer();
+        checkForDamageToDummies();
+
+
+
+
+
         loadIcon();
 
         if (!Tests.allstop) {
@@ -521,7 +528,34 @@ public class Monster {
         if (reindexMons)
             setMonListIndex(monsterList.indexOf(this));
     }
+    void checkForDamageToDummies(){
+        for(Illusion.Dummy d: Illusion.dummies) {
+            if (getHitBox().overlaps(d.hitbox)) {
+                int damage;
+                if (intel > attack)
+                    damage = Damage.monsterMagicDamage(this);
+                else if (attack > intel)
+                    damage = Damage.monsterPhysicalDamage(this);
+                else {
+                    if (rn.nextBoolean())
+                        damage = Damage.monsterMagicDamage(this);
+                    else
+                        damage = Damage.monsterPhysicalDamage(this);
+                }
+                d.hp += -damage;
+                if(d.hp<=0) d.dead=true;
+                new HoverText("-" + damage, 1, new Color(1f, .2f, .2f, 1f), d.absPos.x, d.absPos.y, true);
+            }
+        }
+        for(int i=Illusion.dummies.size()-1;i>=0;i--){
+            Illusion.Dummy d=Illusion.dummies.get(i);
+            if(d.dead)
+                Illusion.dummies.remove(i);
+        }
+
+    }
     public void hitByAttack(){
+        player.getAttack().runAttackMod();
         hit = true;
         Attack attack= player.attackList.get(Attack.pos);
         takeAttackDamage(Damage.calcPlayerDamage(attack , this));
@@ -534,7 +568,7 @@ public class Monster {
         return EMath.pathag(player.getPos(),pos)<10;
     }
     public static void spawn(){
-        if(!Tests.nospawn && dtRespawn>2.5f && monsterList.size()<120  ) {
+        if(!Tests.nospawn && dtRespawn>1f && monsterList.size()<120  ) {
             Monster m =Monster.getNew();
             int index = rn.nextInt(liveCellList.size());
             if (!liveCellList.get(index).getWater() && liveCellList.get(index).getState()) {
@@ -636,7 +670,11 @@ public class Monster {
             }
             move(Direction.getVector(facing));
         }else{
-            float angle= (float) Math.toRadians(EMath.angle(absPos,player.getAbsPos())+180);
+            float angle;
+            if(!Illusion.dummies.isEmpty()){
+                angle= (float) Math.toRadians(EMath.angle(absPos,Illusion.dummies.get(rn.nextInt(Illusion.dummies.size())).absPos)+180);
+            }else
+            angle= (float) Math.toRadians(EMath.angle(absPos,player.getAbsPos())+180);
             facing=Direction.getDirection(angle);
             move(Direction.getVector(facing));
         }

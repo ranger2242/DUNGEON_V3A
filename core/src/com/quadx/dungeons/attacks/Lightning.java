@@ -19,12 +19,14 @@ public class Lightning extends Attack {
     public Lightning(){
         costGold=30000;
         type=2;
-        hbs=HitBoxShape.Chain;
+        hitBoxShape =HitBoxShape.Chain;
         int a=0;
-        powerA = new int[]{80,90,110,130,150};
-        costA =new int[]{a,a,a,a,a};
+        powerA = new int[]{50,75,100,130,150};
+        costA =new int[]{40,65,75,100,120};
+        //costA =new int[]{0,0,0,0,0};
+
         name="Lightning";
-        power=80;
+        power=50;
         cost=a;
         mod=10;
         description="Summons lightning.";
@@ -32,7 +34,7 @@ public class Lightning extends Attack {
         range=0;
         setIcon(ImageLoader.attacks.get(12));
     }
-    ArrayList<Line> chain(){
+    ArrayList<Line> calculateHitChain(){
         ArrayList<Line> edges=new ArrayList<>();
         ArrayList<Monster> hit=new ArrayList<>();
         try{

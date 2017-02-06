@@ -10,6 +10,8 @@ import com.quadx.dungeons.abilities.Warp;
 import com.quadx.dungeons.abilities.WaterBreath;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.AttackMod;
+import com.quadx.dungeons.attacks.Dash;
+import com.quadx.dungeons.attacks.Protect;
 import com.quadx.dungeons.commands.Command;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.AbilitySelectState;
@@ -120,7 +122,9 @@ public class MapStateUpdater extends MapState{
         player.updateVariables(dt);
         try {
             for (Monster m : monsterList) {
-                switch (player.attackList.get(Attack.pos).getHitBoxShape()){
+                Attack.HitBoxShape hbs = player.attackList.get(Attack.pos).getHitBoxShape();
+                if(hbs != null)
+                switch (hbs){
 
                     case Circle:
                         if ( player.getAttackCircle().overlaps(m.getHitBox())) {
@@ -132,6 +136,11 @@ public class MapStateUpdater extends MapState{
                             m.hitByAttack();
                         }
                         break;
+                    case Triangle:{
+                        if(player.getAttackTriangle().overlaps(m.getHitBox()))
+                        m.hitByAttack();
+                        break;
+                    }
                 }
 
             }
@@ -155,6 +164,10 @@ public class MapStateUpdater extends MapState{
         dtWater+=dt;
         dtWaterEffect+=dt;
         HUD.dtLootPopup +=dt;
+
+        Protect.update(dt);
+        Dash.update(dt);
+
         if (dtClearHits <= .1)
             dtClearHits += dt;
         if ( Monster.dtRespawn <= 10f)

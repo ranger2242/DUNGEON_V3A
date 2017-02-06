@@ -3,6 +3,7 @@ package com.quadx.dungeons.abilities;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Game;
+import com.quadx.dungeons.attacks.Flame;
 import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.ImageLoader;
 
@@ -42,6 +43,7 @@ public class Mage extends Ability {
 
     @Override
     public void l1() {
+        player.attackList.add(new Flame());
         level=1;
         Game.player.setxManaMax(2);
         Game.player.setxManaRegen(2);

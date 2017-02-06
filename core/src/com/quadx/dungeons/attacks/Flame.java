@@ -15,7 +15,7 @@ import static com.quadx.dungeons.states.mapstate.MapState.cell;
 @SuppressWarnings("DefaultFileTemplate")
 public class Flame extends Attack {
     public Flame()  {
-        hbs=HitBoxShape.Rect;
+        hitBoxShape =HitBoxShape.Rect;
         ptSpawnH=0;
         ptSpawnW=50;
         costGold=100;
@@ -32,9 +32,11 @@ public class Flame extends Attack {
         setIcon(ImageLoader.attacks.get(2));
     }
 
-    @Override
+
     public Rectangle calculateHitBox() {
         float x, y, w, h;
+        int spread=3;
+        int range=6;
         if (player.facing.equals(Direction.Facing.North) || player.facing.equals(Direction.Facing.Northeast) || player.facing.equals(Direction.Facing.Northwest)) {
             w=spread*cell.x;
             h=range*cell.y;

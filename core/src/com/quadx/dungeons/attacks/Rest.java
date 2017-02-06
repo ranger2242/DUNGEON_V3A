@@ -1,6 +1,10 @@
 package com.quadx.dungeons.attacks;
 
+import com.badlogic.gdx.graphics.Color;
 import com.quadx.dungeons.tools.ImageLoader;
+import com.quadx.dungeons.tools.gui.HoverText;
+
+import static com.quadx.dungeons.Game.player;
 
 /**
  * Created by range on 5/17/2016.
@@ -20,6 +24,11 @@ public class Rest extends Attack {
         spread = 0;
         description = "Converts M to Energy";
         setIcon(ImageLoader.attacks.get(7));
-
+        hitBoxShape=HitBoxShape.None;
+    }
+    public void runAttackMod() {
+        int d=(cost*3)/4;
+        player.addEnergy(d);
+        new HoverText("+"+d,1, Color.YELLOW,player.getAbsPos().x,player.getAbsPos().y+50,false);
     }
 }
