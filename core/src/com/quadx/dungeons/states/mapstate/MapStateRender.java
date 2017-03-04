@@ -173,7 +173,7 @@ public class MapStateRender extends MapState {
         for(Text t: HUD.getInfoOverlay().texts){
             Game.getFont().draw(sb,t.text,t.pos.x,t.pos.y);
         }
-        //draw attack menu
+        //draw str menu
         ArrayList<InfoOverlay> list = HUD.getAttackBarOverlay();
         for(InfoOverlay io :list){
             io.draw(sb,shapeR);
@@ -226,7 +226,7 @@ public class MapStateRender extends MapState {
             water
         draw player
             shadow
-            attack box
+            str box
             hit box
         draw monsters
             hit box
@@ -291,23 +291,25 @@ public class MapStateRender extends MapState {
             for (Triangle t : tris) {
                 shapeR.triangle(t);
             }
-            //draw player attack box
+            //draw player str box
             shapeR.setColor(Color.RED);
-            Attack.HitBoxShape hbs=player.attackList.get(Attack.pos).getHitBoxShape();
-            if(hbs !=null)
-            switch (hbs){
+            try {
+                Attack.HitBoxShape hbs = player.attackList.get(Attack.pos).getHitBoxShape();
+                if (hbs != null)
+                    switch (hbs) {
 
-                case Circle:
-                    Circle c= player.getAttackCircle();
-                    shapeR.circle(c.center.x,c.center.y,c.radius);
-                    break;
-                case Rect:
-                    shapeR.rect(player.getAttackBox());
-                    break;
-                case Triangle:
-                    shapeR.triangle(player.getAttackTriangle());
-                    break;
-            }
+                        case Circle:
+                            Circle c = player.getAttackCircle();
+                            shapeR.circle(c.center.x, c.center.y, c.radius);
+                            break;
+                        case Rect:
+                            shapeR.rect(player.getAttackBox());
+                            break;
+                        case Triangle:
+                            shapeR.triangle(player.getAttackTriangle());
+                            break;
+                    }
+            }catch (IndexOutOfBoundsException e){}
             //draw player hitbox
             if (Tests.showhitbox) {
                 shapeR.setColor(Color.BLUE);

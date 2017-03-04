@@ -122,6 +122,7 @@ public class MapStateUpdater extends MapState{
         player.updateVariables(dt);
         try {
             for (Monster m : monsterList) {
+                Attack.fixPos();
                 Attack.HitBoxShape hbs = player.attackList.get(Attack.pos).getHitBoxShape();
                 if(hbs != null)
                 switch (hbs){
@@ -165,6 +166,7 @@ public class MapStateUpdater extends MapState{
         dtWaterEffect+=dt;
         HUD.dtLootPopup +=dt;
 
+        //System.out.println(EMath.randomGaussianAverage(100,20)+"");
         Protect.update(dt);
         Dash.update(dt);
 

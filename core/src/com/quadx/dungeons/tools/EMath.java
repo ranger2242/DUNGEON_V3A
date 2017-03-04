@@ -2,6 +2,8 @@ package com.quadx.dungeons.tools;
 
 import com.badlogic.gdx.math.Vector2;
 
+import static com.quadx.dungeons.states.mapstate.MapState.rn;
+
 /**
  * Created by Chris Cavazos on 9/16/2016.
  */
@@ -87,5 +89,30 @@ public class EMath {
             sum+= f[i];
         }
         return sum/f.length;
+    }
+    public static double randomAverage(double a, double b){
+        double dif=a-b;
+        if(b>a) dif=b-a;
+        double step=dif/100;
+        double fill=step* rn.nextInt(100)+1;
+        if(a>b) return b+fill;
+        else return a+fill;
+    }
+    public static double randomGaussianAverage(double a, double b){
+        double mid= (a+b)/2;
+        double r=rn.nextGaussian();
+        double max=1, min=1;
+        if(a>b){
+            min=b/mid;
+            max=a/mid;
+        }
+        if(b>a){
+            min=a/mid;
+            max=b/mid;
+        }
+        while(r<min ||r>max)
+           r=rn.nextGaussian();
+
+        return (int)mid*r;
     }
 }

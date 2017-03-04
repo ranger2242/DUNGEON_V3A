@@ -154,7 +154,7 @@ public class HUD {
                 }//Mana
                 if (item.getStrmod() != 0) {
                     outList.add("ATT :" + item.getStrmod());
-                }  //attack
+                }  //str
                 if (item.getDefensemod() != 0) {
                     outList.add("DEF :" + item.getDefensemod());
                 } //defense

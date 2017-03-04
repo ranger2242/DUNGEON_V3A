@@ -44,7 +44,7 @@ public class Attack {
     float weight;
     int ptSpawnH = 0;
     int ptSpawnW = 0;
-    private final int[] usesCheck = {80, 300, 650, 1000, 1500};
+    private final int[] usesCheck = {80, 300, 550, 750, 1000};
     private Texture icon;
     public static float dtInfo = 0;
     public static final float attackMintime = Game.frame*3;
@@ -81,7 +81,10 @@ public class Attack {
     public Vector2 getSpawnBox() {
         return new Vector2(ptSpawnW, ptSpawnH);
     }
-
+    public static void fixPos(){
+        if(pos>=player.attackList.size())
+            pos=0;
+    }
     public String getName() {
         return name;
     }

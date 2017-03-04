@@ -20,6 +20,7 @@ import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.State;
 import com.quadx.dungeons.tools.ShapeRendererExt;
 import com.quadx.dungeons.tools.StatManager;
+import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.controllers.Controllers;
 import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 import com.quadx.dungeons.tools.gui.HUD;
@@ -51,7 +52,7 @@ public class MapState extends State implements ControllerListener {
     public static Texture statPopup;
     public static GridManager gm;
     static ParticleEffect effect;
-    static final Random rn = new Random();
+    public static final Random rn = new Random();
     public static boolean inGame=false;
     static boolean effectLoaded = false;
     static final String DIVIDER= "_________________________";
@@ -79,6 +80,7 @@ public class MapState extends State implements ControllerListener {
     public void debug() {
         //Tests.testEquipmentRates();
         // Tests.giveItems(50);
+        Tests.testsMonsterStats();
     }
     public void handleInput() {
     }

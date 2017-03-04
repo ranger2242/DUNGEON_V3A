@@ -32,10 +32,10 @@ public class StatManager {
          total games played
          total play time
 
-         most used attack
+         most used str
 
          ----per round
-         most used attack
+         most used str
          */
     //----PER ROUND VARS------------------
     public static ArrayList<String>stats = new ArrayList<>();

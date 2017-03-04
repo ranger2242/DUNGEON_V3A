@@ -5,11 +5,11 @@ import com.quadx.dungeons.tools.ImageLoader;
 /**
  * Created by Chris Cavazos on 6/22/2016.
  */
-class Dragonair extends Monster {
+public class Dragonair extends Monster {
     public Dragonair(){
         power=80;
         hpBase =130;
-        attBase =110;
+        strBase =110;
         defBase =40;
         intBase =80;
         spdBase =150;

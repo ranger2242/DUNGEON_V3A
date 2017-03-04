@@ -3,7 +3,7 @@ package com.quadx.dungeons.tools;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
-import com.quadx.dungeons.monsters.Monster;
+import com.quadx.dungeons.monsters.*;
 import com.quadx.dungeons.states.mapstate.Map2State;
 
 import java.text.ParseException;
@@ -31,7 +31,7 @@ public class Tests {
     public static boolean fastreg=      false;
     public static boolean noLand=       false;
     public static boolean showhitbox=   false;
-    public static boolean output=       false;
+    public static boolean output=       true;
     public static boolean clearmap=     false;
     public static boolean infiniteRegen = false;
 
@@ -51,6 +51,62 @@ public class Tests {
 
     public static void loadEmptyMap() {
         Map2State.fillArray();
+    }
+
+    public static void testsMonsterStats(){
+        ArrayList<Monster> mons=new  ArrayList<>();
+        mons.add(new Anortih());
+        mons.add(new Dodrio());
+        mons.add(new Dragonair());
+        mons.add(new Gengar());
+        mons.add(new Kabuto());
+        mons.add(new Krabby());
+        mons.add(new Muk());
+        mons.add(new Ponyta());
+        mons.add(new Porygon());
+
+        for(Monster m:mons){
+            String out="";
+            String name= m.getName();
+            ArrayList<Integer> hp = new ArrayList<>();
+            ArrayList<Integer> str = new ArrayList<>();
+            ArrayList<Integer> def = new ArrayList<>();
+            ArrayList<Integer> in = new ArrayList<>();
+            ArrayList<Integer> spd = new ArrayList<>();
+            console(name);
+            for(int j=1;j<50;j++) {
+                hp.clear();
+                str.clear();
+                def.clear();
+                in.clear();
+                spd.clear();
+                int n=100;
+                for (int i = 0; i < n; i++) {
+                    m.genStats(j);
+                    hp.add((int) m.getHpMax());
+                    str.add((int) m.getStrength());
+                    def.add((int) m.getDefense());
+                    in.add((int) m.getIntel());
+                    spd.add((int) m.getSpeed());
+                }
+                float hpav=0,strav=0,defav=0,inav=0,spdav=0;
+                for (int i = 0; i < n; i++) {
+                    hpav+=hp.get(i);
+                    strav+=str.get(i);
+                    defav+=def.get(i);
+                    inav+=in.get(i);
+                    spdav+=spd.get(i);
+                }
+                hpav/=n;
+                strav/=n;
+                defav/=n;
+                inav/=n;
+                spdav/=n;
+                out=j+":\t"+hpav+"\t\t"+strav+"\t\t"+defav+"\t\t"+inav+"\t\t"+spdav;
+                console(out);
+            }
+        }
+
     }
 
     public static void testEquipmentRates() {

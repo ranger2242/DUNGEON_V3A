@@ -5,6 +5,7 @@ import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.Dash;
 import com.quadx.dungeons.attacks.Protect;
 import com.quadx.dungeons.monsters.Monster;
+import com.quadx.dungeons.tools.EMath;
 import com.quadx.dungeons.tools.gui.HoverText;
 
 import java.util.Random;
@@ -38,36 +39,15 @@ public class Damage {
         }
         return damage;
     }
-    public static int monsterPhysicalDamage( Monster m){
-        float a, b, c, d, e;
-        a = (float) Math.pow(Math.E,.18);
-        b = player.getDefComp();
-        c = (float) m.getAttack();
-        d = (float) m.getPower();
-        e = (float) (m.getLevel()/1.8);
-
-        damage = Math.round(a*(c/b)*d*e);
-        if (damage < 0) //checks for negative damage
-            damage = defaultDamage;
-        if (rn.nextFloat() < .1) {
-            damage *= 1.15;
-            new HoverText("-CRITICAL-", .2f, Color.BLUE, player.getAbsPos().x,player.getAbsPos().y, true);
-        }
-        if(Protect.active || Dash.active)
-            return 0;
-        else
-            return (int) ( damage*rate);
-    }
     static float rate=2;
     public static int monsterMagicDamage(Monster m){
-        float a, b, c, d, e;
-        a = (float) Math.pow(Math.E,.18);
-        b = player.getIntComp();
-        c = (float) m.getIntel();
-        d = (float) m.getPower();
-        e = (float) (m.getLevel()/1.8);
+        float a, b, c, d;
+        a = (float) EMath.randomGaussianAverage(player.getIntComp(),player.getDefComp());
+        b = (float) EMath.randomGaussianAverage(m.getIntel(),m.getStrength());
+        c = (float) m.getPower();
+        d = (float) m.getLevel();
 
-        damage = Math.round(a*(c/b)*d*e);
+        damage = Math.round(((c*d)+(b*8))/(a));
         if (damage < 0) //checks for negative damage
             damage = defaultDamage;
         if (rn.nextFloat() < .1) {

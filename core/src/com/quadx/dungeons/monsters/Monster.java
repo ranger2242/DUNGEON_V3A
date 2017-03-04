@@ -69,11 +69,11 @@ public class Monster {
     protected boolean invWait=false;
     boolean lowhp = false;
 
-    protected double attack;
+    protected double str;
     protected double intel;
     protected double power = 20;
     protected double hpBase = 60;
-    protected double attBase = 40;
+    protected double strBase = 40;
     protected double defBase = 40;
     protected double intBase = 40;
     protected double spdBase = 40;
@@ -117,13 +117,16 @@ public class Monster {
 
     public Monster() {
     }
+    public Monster(int i){
+        genStats(i);
+    }
     //GETTERS--------------------------------------------------------------------------------
     public ArrayList<String> getStatsList() {
         ArrayList<String> stats = new ArrayList<>();
         stats.add(name);
         stats.add("HP: " + (int) hp);
         stats.add("Level: " + level);
-        stats.add("Attack: " + (int) attack);
+        stats.add("Attack: " + (int) str);
         stats.add("Defense: " + (int) defense);
         stats.add("Intel: " + (int) intel);
         stats.add("Speed: " + (int) speed);
@@ -221,16 +224,7 @@ public class Monster {
             //    if ((x == px && y == py) || (x + 1 == px && y == py) || (x - 1 == px && y == py)    //check surrounding tiles for player
             //             || (x == px && y + 1 == py) || (x == px && y - 1 == py)) {                  //hurt if found
             int d;
-            if (intel > attack)
                 d = Damage.monsterMagicDamage(this);
-            else if (attack > intel)
-                d = Damage.monsterPhysicalDamage(this);
-            else {
-                if (rn.nextBoolean())
-                    d = Damage.monsterMagicDamage(this);
-                else
-                    d = Damage.monsterPhysicalDamage(this);
-            }
             player.addHp(-d);
             //player.setHp(player.getHp() - d);//apply damage
             MapStateUpdater.shakeScreen(.5f,5);
@@ -276,8 +270,8 @@ public class Monster {
     public double getIntel() {
         return intel;
     }
-    public double getAttack() {
-        return attack;
+    public double getStrength() {
+        return str;
     }
     public double getPercentHP() {
         return (double) hp /(double) hpMax;
@@ -292,7 +286,7 @@ public class Monster {
     public float getExpFactor() {
         float a = 1;
         float m = maxes[0] + maxes[1] + maxes[2] + maxes[3];
-        float tot = (float) (attack + defense + intel + speed);
+        float tot = (float) (str + defense + intel + speed);
         a = m / tot;
         return a;
     }
@@ -363,8 +357,8 @@ public class Monster {
     public void setIntel(double intel) {
         this.intel = intel;
     }
-    public void setAttack(double attack) {
-        this.attack = attack;
+    public void setStr(double str) {
+        this.str = str;
     }
     public void setMoved() {
         moved = true;
@@ -434,20 +428,21 @@ public class Monster {
         level = player.level + rn.nextInt(player.floor);
         //out(level+"");
     }
+
     protected void genStats() {
         // System.out.println("---------------------------------------");
         genHp();
-        genAttack();
+        genStrength();
         genDefense();
         genIntel();
         genSpeed();
     }
-    private void genAttack() {
-        double a = attBase + rn.nextInt(31);
+    private void genStrength() {
+        double a = strBase + rn.nextInt(31);
         double b = Math.sqrt(rn.nextInt(65535)) / 4;
-        attack = (((a * 2 + b) * level) / 100) + 5;
-        maxes[0] = (int) (((((attBase + 31) * 2 + (Math.sqrt(65535) / 4)) * level) / 100) + 5);
-        //System.out.println("Attack :"+attack);
+        str = (((a * 2 + b) * level) / 100) + 5;
+        maxes[0] = (int) (((((strBase + 31) * 2 + (Math.sqrt(65535) / 4)) * level) / 100) + 5);
+        //System.out.println("Attack :"+str);
     }
     private void genDefense() {
         double a = defBase + rn.nextInt(31);
@@ -473,10 +468,21 @@ public class Monster {
         double a = hpBase + rn.nextInt(31);
         double b = Math.sqrt(rn.nextInt(65535)) / 4;
         //hp = ((((a * 2 + b) * level) / 100) + level + 10)*1.5;
-        hp = 15 + Math.exp(Math.sqrt(Math.pow(level, 1.5)) / 2) * 2;
+        hp = 15 +(hpBase)* Math.exp(Math.sqrt(Math.pow(level, 1.5)) / 2)/2 ;
         hpMax = hp;
         hpsoft = hp;
     }
+    public void genStats(int i) {
+        // System.out.println("---------------------------------------");
+        level=i;
+        genHp();
+        genStrength();
+        genDefense();
+        genIntel();
+        genSpeed();
+    }
+
+
     public void checkAgro(){
         if (agroTime < dtAgro) {
             setHit();
@@ -495,7 +501,7 @@ public class Monster {
         bb = rn.nextBoolean();
         checkAgro();
 
-        //check for attack collision
+        //check for str collision
 
 
         StatManager.shotMissed(hit);
@@ -532,16 +538,7 @@ public class Monster {
         for(Illusion.Dummy d: Illusion.dummies) {
             if (getHitBox().overlaps(d.hitbox)) {
                 int damage;
-                if (intel > attack)
-                    damage = Damage.monsterMagicDamage(this);
-                else if (attack > intel)
-                    damage = Damage.monsterPhysicalDamage(this);
-                else {
-                    if (rn.nextBoolean())
-                        damage = Damage.monsterMagicDamage(this);
-                    else
-                        damage = Damage.monsterPhysicalDamage(this);
-                }
+                damage = Damage.monsterMagicDamage(this);
                 d.hp += -damage;
                 if(d.hp<=0) d.dead=true;
                 new HoverText("-" + damage, 1, new Color(1f, .2f, .2f, 1f), d.absPos.x, d.absPos.y, true);

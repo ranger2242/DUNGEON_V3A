@@ -8,7 +8,7 @@
     int hpmin=550;
     int hpmax=600;
     int hpmod=0;
-    int attack;
+    int str;
     int attackmin=650;
     int attackmax=700;
     int attackMod=0;

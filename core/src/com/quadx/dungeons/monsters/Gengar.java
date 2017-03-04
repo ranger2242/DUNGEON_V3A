@@ -5,11 +5,11 @@ import com.quadx.dungeons.tools.ImageLoader;
 /**
  * Created by Chris Cavazos on 6/22/2016.
  */
-class Gengar extends Monster {
+public class Gengar extends Monster {
     public Gengar(){
         power=100;
         hpBase =100;
-        attBase =10;
+        strBase =10;
         defBase =100;
         intBase =100;
         spdBase =60;

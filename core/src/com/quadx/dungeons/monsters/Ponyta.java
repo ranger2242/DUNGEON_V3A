@@ -5,11 +5,11 @@ import com.quadx.dungeons.tools.ImageLoader;
 /**
  * Created by Chris Cavazos on 6/20/2016.
  */
-class Ponyta extends Monster {
+public class Ponyta extends Monster {
     public Ponyta(){
         power=90;
         hpBase =50;
-        attBase =30;
+        strBase =30;
         defBase =10;
         intBase =20;
         spdBase =100;

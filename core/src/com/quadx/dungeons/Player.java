@@ -564,7 +564,7 @@ public class Player {
         return g;
     }
     private int barStatGrowthFunction(int level){
-        return (int) (40*Math.pow(Math.E,.25*(level-1)/2)+100);
+        return (int) (45*Math.pow(Math.E,.25*(level-1)/2)+100);
     }
     float velocityFunction(){
         float v=(float) (6+.0136*getSpdComp()+.000005* Math.pow(getSpdComp(),2));
@@ -757,8 +757,9 @@ public class Player {
         icons = new Texture[]{pl[0], pl[1], pl[2], pl[3]};
         //load attacks
         attackList.clear();
-        attackList.add( new Dash());
+
         ability.onActivate();
+        attackList.add( new Dash());
         fullHeal();
     }
     public void checkLvlUp() {
@@ -767,13 +768,13 @@ public class Player {
             new HoverText("--LVL UP--",.8f, Color.GREEN, player.getAbsPos().x, player.getAbsPos().y-20,true);
             exp=0;
             level++;
-            hpMax= barStatGrowthFunction(level);
+            hpMax= barStatGrowthFunction(level)*2;
             manaMax= barStatGrowthFunction(level);
             energyMax= barStatGrowthFunction(level);
-            str = str +((int) (Math.random() * 4));
-            def = def +((int) (Math.random() * 4));
-            intel=intel+((int) (Math.random() * 4));
-            spd = spd +((int) (Math.random() * 4));
+            str = str +rn.nextInt(15);
+            def = def +rn.nextInt(15);
+            intel=intel+rn.nextInt(15);
+            spd = spd +rn.nextInt(15);
             abilityPoints++;
             new HoverText("+1 Ability Point",.7f,Color.GREEN,absPos.x,absPos.y-40, true);
         }

@@ -10,7 +10,7 @@ import static com.quadx.dungeons.Game.player;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class Dash extends Attack {
-    public static boolean active =false;
+    public static boolean active                                         =false;
     public static float dtDash=0;
     public static float dashEnd=.5f;
 
@@ -45,8 +45,8 @@ public class Dash extends Attack {
     public Rectangle calculateHitBox() {
         active=true;
         Rectangle rect=player.getHitBox();
-        int h=player.getIcon().getHeight();
-        int w=player.getIcon().getWidth();
+        int h=player.getIcon().getHeight()/2;
+        int w=player.getIcon().getWidth()/2;
         switch (player.facing) {
             case North:
                 rect.y+=h;
