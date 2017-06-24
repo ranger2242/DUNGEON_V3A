@@ -174,6 +174,7 @@ public class GridManager {
     public static boolean isInBounds(Vector2 pos){
         return pos.x >= 0 && pos.y >= 0 && pos.x < res && pos.y < res;
     }
+
     public static float fixHeight(Vector2 v){//get vector in absolute pos
         int gx=Math.round(v.x/cellW);//find grid pos
         int gy=Math.round(v.y/cellW);

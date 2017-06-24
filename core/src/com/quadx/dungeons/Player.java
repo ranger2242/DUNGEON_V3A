@@ -286,6 +286,8 @@ public class Player {
     }
     public ArrayList<Line> getAttackChain(){return attackChain;}
     public Attack getAttack() {
+        if(Attack.pos>attackList.size())
+            Attack.pos=attackList.size()-1;
         return attackList.get(Attack.pos);
     }
 

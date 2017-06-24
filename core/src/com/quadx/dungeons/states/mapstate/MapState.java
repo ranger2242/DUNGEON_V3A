@@ -13,6 +13,7 @@ import com.quadx.dungeons.Cell;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.Inventory;
+import com.quadx.dungeons.attacks.Flame;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.SpeedPlus;
@@ -80,6 +81,9 @@ public class MapState extends State implements ControllerListener {
     public void debug() {
         //Tests.testEquipmentRates();
         // Tests.giveItems(50);
+        player.attackList.clear();
+        player.attackList.add(new Flame());
+
         Tests.testsMonsterStats();
     }
     public void handleInput() {
