@@ -3,7 +3,6 @@ package com.quadx.dungeons.states.mapstate;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -16,7 +15,6 @@ import com.quadx.dungeons.Inventory;
 import com.quadx.dungeons.attacks.Flame;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
-import com.quadx.dungeons.items.SpeedPlus;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.State;
 import com.quadx.dungeons.tools.ShapeRendererExt;
@@ -25,7 +23,6 @@ import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.controllers.Controllers;
 import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 import com.quadx.dungeons.tools.gui.HUD;
-import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.shapes.Circle;
 
 import java.util.ArrayList;
@@ -34,7 +31,6 @@ import java.util.Random;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.renderLayers;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtScrollAtt;
-import static com.quadx.dungeons.tools.gui.HUD.out;
 
 
 /**
@@ -79,12 +75,13 @@ public class MapState extends State implements ControllerListener {
         debug();
     }
     public void debug() {
-        //Tests.testEquipmentRates();
-        // Tests.giveItems(50);
+        Tests.timeKill();
         player.attackList.clear();
         player.attackList.add(new Flame());
-
-        Tests.testsMonsterStats();
+        //Tests.goldTest();
+        //Tests.testEquipmentRates();
+        //Tests.giveItems(50);
+        //Tests.testsMonsterStats();
     }
     public void handleInput() {
     }
@@ -108,59 +105,26 @@ public class MapState extends State implements ControllerListener {
     public void dispose() {
     }
 
-    public static void makeGold(int x) {
-        float f = rn.nextFloat();
-        while (f < .05) {
-            f = rn.nextFloat();
-        }
-        int gold = (int) ((f) * 100) * x;
-        if (gold < 0) gold = 1;
-        if (gold > 1000) {
-            gold = 1000;
-        }
-        player.setGold(player.getGold() + gold);
-        StatManager.totalGold += gold;
-        out(player.getName() + " recieved " + gold + "G");
-        new HoverText(gold + "G", .5f, Color.GOLD, player.getAbsPos().x, player.getAbsPos().y, false);
-    }
     public static void openCrate(Item item) {
-        if(item.getClass().equals(Gold.class)){
+        if (item.isGold()) {
             Gold g = (Gold) item;
-            player.setGold(player.getGold() + g.getValue());
-            out(g.getValue() + " added to stash");
-            StatManager.totalGold+=g.getValue();
-            new HoverText(g.getValue() + "G", 1, Color.GOLD, player.getAbsPos().x,player.getAbsPos().y,false);
-
-        }else {
+            player.addGold(g);
+        } else {
             if (item != null) {
                 if (item.isEquip) {
                     item.loadIcon(item.getType());
                 } else if (item.getIcon() == null)
                     item.loadIcon(item.getName());
 
-                try {
-                    if (item.getClass() != Gold.class) {
-                        boolean a = false;
-                        if (player.invList.isEmpty()) {
-                            a = true;
-                        }
-                        player.addItemToInventory(item);
-                        if (a) Inventory.pos = 0;
-                        out(item.getName() + " added to inventory");
-                        new HoverText(item.getName(), 1, Color.WHITE, player.getAbsPos().x,player.getAbsPos().y, false);
-                    } else {
-                        player.lastItem = new Gold();
-                    }
-                } catch (NullPointerException e) {
-                    item = new SpeedPlus();
+                if (!item.isGold()) {
                     boolean a = false;
-                    if (player.invList.isEmpty()) {
+                    if (player.isInvEmpty()) {
                         a = true;
                     }
                     player.addItemToInventory(item);
                     if (a) Inventory.pos = 0;
-                    out(item.getName() + " added to inventory");
-                    new HoverText(item.getName(), 1, Color.WHITE, player.getAbsPos().x, player.getAbsPos().y, false);
+                } else {
+                    player.lastItem = new Gold();
                 }
             }
         }

@@ -1,6 +1,7 @@
 package com.quadx.dungeons.tools;
 
 import com.quadx.dungeons.Game;
+import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.*;
@@ -36,6 +37,21 @@ public class Tests {
     public static boolean infiniteRegen = false;
 
     static int testCount = 0;
+    public static void goldTest(){
+        int[] avgarr=new int[100];
+        for(int i=1;i<=100;i++) {
+            double avg=0;
+            for(int j=0;j<100;j++) {
+                Gold g=new Gold(i);
+                avg+=g.getValue();
+                Game.console(i+": "+g.getValue());
+            }
+            Game.console("");
+            avg/=100;
+            avgarr[i-1]= (int) avg;
+        }
+        Game.console(Arrays.toString(avgarr));
+    }
     public static void processMetrics(){
         Runtime runtime = Runtime.getRuntime();
         currentMemUsage = runtime.totalMemory()/(1024*1024);
@@ -164,7 +180,7 @@ public class Tests {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date kill = null;
         try {
-            kill = sdf.parse("2016-12-31");
+            kill = sdf.parse("2017-8-28");
         } catch (ParseException e) {
             e.printStackTrace();
         }

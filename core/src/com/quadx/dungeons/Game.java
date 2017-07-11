@@ -51,7 +51,7 @@ enemy knock back
     public static boolean controllerMode =false;
     public static final int WIDTH = 1366;
     public static final int HEIGHT = 724;
-    public static final float frame = .01666f;
+    public static final float frame = .01666666f;
     private SpriteBatch spriteBatch;
     private static GameStateManager gameStateManager;
     private static final BitmapFont[] fonts = new BitmapFont[6];
@@ -70,18 +70,18 @@ enemy knock back
         commandList.add(new AimLeftComm());
         commandList.add(new AimRightComm());
         commandList.add(new AltAttackComm());
-        commandList.add(new ConfirmComm());
-        commandList.add(new BackComm());
-        commandList.add(new JumpComm());
-        commandList.add(new DropComm());
-        commandList.add(new MainAttackComm());
-        commandList.add(new PauseComm());
         commandList.add(new ScrollLeftComm());
         commandList.add(new ScrollRightComm());
         commandList.add(new RotLeftComm());
         commandList.add(new RotRightComm());
-        commandList.add(new UseComm());
+        commandList.add(new MainAttackComm());
         commandList.add(new ChangeAttackComm());
+        commandList.add(new UseComm());
+        commandList.add(new JumpComm());
+        commandList.add(new DropComm());
+        commandList.add(new PauseComm());
+        commandList.add(new BackComm());
+        commandList.add(new ConfirmComm());
     }
     @Override
     public void create () {
@@ -136,9 +136,19 @@ enemy knock back
         fontA=fontsA[x];
 
     }
+
     private void initFile(){
 
         try {
+            FileReader file2= new FileReader("controls.txt");
+            BufferedReader bf2 = new BufferedReader(file2);
+            String s2=bf2.readLine();
+            String[] sp= s2.split(" ");
+            for(int i=0;i<sp.length;i++) {
+               commandList.get(i).changeKey(Integer.parseInt(sp[i]));
+            }
+
+
             FileReader file= new FileReader("scores.txt");
             BufferedReader bf = new BufferedReader(file);
             String s;

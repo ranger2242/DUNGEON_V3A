@@ -66,7 +66,7 @@ public class Xbox360Pad
     public static final int BUTTON_START = 7;
     public static final int BUTTON_L3 = 8;
     public static final int BUTTON_R3 = 9;
-    public static final PovDirection BUTTON_DPAD_UP = PovDirection.north;
+    public static final PovDirection    BUTTON_DPAD_UP = PovDirection.north;
     public static final PovDirection BUTTON_DPAD_DOWN = PovDirection.south;
     public static final PovDirection BUTTON_DPAD_RIGHT = PovDirection.east;
     public static final PovDirection BUTTON_DPAD_LEFT = PovDirection.west;

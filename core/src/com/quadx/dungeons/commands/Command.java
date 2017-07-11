@@ -1,6 +1,7 @@
 package com.quadx.dungeons.commands;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 
@@ -18,6 +19,7 @@ public abstract class Command {
     protected int axis=0;
     protected PovDirection contD;
     protected String contButtonName="";
+    public static boolean disableControls=false;
 
     public Command(){
         init();
@@ -35,14 +37,19 @@ public abstract class Command {
     public int getButtonK(){return keyboard;}
     public int getButtonC(){return contB;}
 
-    protected boolean pressed(){
-        boolean special=false;
-        if(keyboard==59||keyboard==60){//check shift
-            if(Gdx.input.isKeyPressed(59) || Gdx.input.isKeyPressed(60)){
-                special=true;
+
+    protected boolean pressed() {
+        if (!disableControls) {
+            boolean special = false;
+            if (keyboard == 59 || keyboard == 60) {//check shift
+                if (Gdx.input.isKeyPressed(59) || Gdx.input.isKeyPressed(60)) {
+                    special = true;
+                }
             }
+            return (Gdx.input.isKeyPressed(keyboard) || special) || (controllerMode && (isDpad() || isStick() || isButton()));
+        } else {
+            return false;
         }
-        return (Gdx.input.isKeyPressed(keyboard) || special) ||  (controllerMode && (isDpad() || isStick()|| isButton()));
     }
     private boolean isButton(){
         if(contB !=-1){
@@ -158,13 +165,13 @@ public abstract class Command {
         return false;
     }
     public String print(){
-        String s=name;
-        while (s.length()<40)
+        String s="  "+name;
+        while (s.length()<70)
             s+=" ";
-        s+=(char)(keyboard+36);
-        while(s.length()<52)
-            s+=" ";
-        s+=contButtonName;
+        if(!controllerMode)
+            s+= Input.Keys.toString(keyboard);
+        if(controllerMode)
+            s+=contButtonName;
 
         return s;
     }

@@ -12,6 +12,7 @@ import com.quadx.dungeons.*;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.Blind;
 import com.quadx.dungeons.attacks.Illusion;
+import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 import com.quadx.dungeons.tools.Direction;
@@ -243,7 +244,8 @@ public class Monster {
             player.addKills();
             player.setExp(level, getExpFactor());
             player.checkLvlUp();
-            MapState.makeGold(level);
+            player.addGold(new Gold(level));
+            //MapState.makeGold(level);
             dropItems();
             try {
                 monsterList.remove(this);

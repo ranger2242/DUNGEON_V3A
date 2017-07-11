@@ -9,7 +9,7 @@ import com.quadx.dungeons.states.mapstate.MapState;
  */
 public class RotRightComm extends Command {
     public RotRightComm(){
-        name="Rotate Left";
+        name="Rotate Right";
         //keyboard= Input.Keys.SHIFT_RIGHT;
         contB= Xbox360Pad.BUTTON_B;
     }

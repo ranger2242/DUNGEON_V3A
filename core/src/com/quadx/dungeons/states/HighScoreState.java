@@ -103,6 +103,9 @@ public class HighScoreState extends State {
             dtBlink=0;
         }
     }
+    public static void addScore(Score s){
+        scores.add(s);
+    }
     float[] fitLineToWord(String s){
         //x1,y1,x2,y2
         float[] arr=new float[8];
@@ -115,9 +118,6 @@ public class HighScoreState extends State {
         arr[6]=strWidth(s)+35;
         arr[7]=-12;
         return arr;
-    }
-    public static void addScore(Score s){
-        scores.add(s);
     }
 //---------------------------------------------------------
 // Render

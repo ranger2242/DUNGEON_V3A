@@ -4,33 +4,30 @@ import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.Random;
 
-import static com.quadx.dungeons.Game.player;
-
 /**
  * Created by Chris Cavazos on 6/14/2016.
  */
 public class Gold extends Item{
+    float lvl= 1;
+
+    public Gold(int lvl){
+        this.lvl=lvl;
+        genValue();
+    }
     public Gold(){
+       genValue();
+    }
+    void genValue(){
         Random rn = new Random();
         float f = rn.nextFloat();
         while (f < .05) {
             f = rn.nextFloat();
         }
-        gold = (int) ((f) * 20) * player.getLevel();
+        gold = (int) Math.abs((( 50) *lvl)*rn.nextGaussian());
         if (gold < 0) gold = 1;
-        if (gold > 1000) {
-            gold = 1000;
-        }
-        if(gold>=1 && gold<333){
-            icon= ImageLoader.gold[0];
-        }
-        else if(gold>=333 && gold<666){
-            icon=ImageLoader.gold[1];
-        }
-        else if(gold>=666){
-            icon=ImageLoader.gold[2];
-        }
-        value=gold;
+        icon= ImageLoader.gold[0];
+        value= (int) (gold);
+
     }
     public int getValue(){
         return value;

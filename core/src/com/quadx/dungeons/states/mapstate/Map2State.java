@@ -35,10 +35,7 @@ public class Map2State extends State {
         initBools();
         generateMap2();
     }
-
-    protected void handleInput() {
-
-    }
+    protected void handleInput() {}
     ////////////////////////////////////////
     //UPDATE FUNCTIONS
     public void update(float dt) {
@@ -98,7 +95,6 @@ public class Map2State extends State {
     }
     private void drawGrid(){
         //int cellW=1;
-
         int cellW= Game.HEIGHT/res;
         for(int i=0;i<res;i++){
             for(int j=0;j<res;j++) {

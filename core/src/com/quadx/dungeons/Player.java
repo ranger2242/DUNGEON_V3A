@@ -262,6 +262,13 @@ public class Player {
         energy +=e;
     }
     public void addGold(int g){gold+=g;}
+    public void addGold(Gold g){
+        addGold(g.getValue());
+        out(g.getValue() + " added to stash");
+        StatManager.totalGold+=g.getValue();
+        new HoverText(g.getValue() + "G", 1, Color.GOLD, player.getAbsPos().x,player.getAbsPos().y,false);
+
+    }
     public void addKills(){
         killCount++;}
 
@@ -274,6 +281,9 @@ public class Player {
             }
         }
         return b;
+    }
+    public boolean isInvEmpty(){
+        return invList.isEmpty();
     }
 
     public Rectangle getAttackBox() {
@@ -308,6 +318,7 @@ public class Player {
         return texturePos;
     }
     public Vector2 getPos(){return new Vector2(x,y);}
+
     public int getLevel()
     {
         return level;
@@ -324,27 +335,22 @@ public class Player {
     {
         return y;
     }
-
-    public float getHp()
-    {
-        return hp;
+    public int getPoints(){
+        return (int) (((int)gold*10)+(str *100)+(def *100)+(spd *100)+(level*2000)+(intel*100)+(hpMax*10)+(manaMax*10)+(energyMax*10)+(floor*1000)+(killCount *200));
     }
-    public float getHpMax()
-    {
-        return hpMax;
+    public int getAbilityMod(){return abilityMod;}
+    public int getKillCount() {
+        return killCount;
     }
-    public float getEnergy(){
-        return  energy;
+    public int getFloor() {
+        return floor;
     }
-    public float getEnergyMax(){
-        return energyMax;
+    public int getExpLimit() {
+        return expLimit;
     }
-    public float getManaMax() {
-        return manaMax;
+    public int getAbilityPoints() {
+        return abilityPoints;
     }
-    public float getExp(){return exp;}
-    public float getMana(){return mana;}
-
     public int getStrength(){return str;}
     public int getDefense()
     {
@@ -366,25 +372,30 @@ public class Player {
     public int getIntComp(){return (int) (intel* intMult + intMod);}
     private int getSpdComp(){return (int) (spd * spdMult + spdMod);}
 
-    public int getPoints(){
-        return (int) (((int)gold*10)+(str *100)+(def *100)+(spd *100)+(level*2000)+(intel*100)+(hpMax*10)+(manaMax*10)+(energyMax*10)+(floor*1000)+(killCount *200));
+    public float getHp()
+    {
+        return hp;
     }
-    public int getAbilityMod(){return abilityMod;}
-    public int getKillCount() {
-        return killCount;
+    public float getHpMax()
+    {
+        return hpMax;
     }
-    public int getFloor() {
-        return floor;
+    public float getEnergy(){
+        return  energy;
     }
-    public int getExpLimit() {
-        return expLimit;
+    public float getEnergyMax(){
+        return energyMax;
     }
-    public int getAbilityPoints() {
-        return abilityPoints;
+    public float getManaMax() {
+        return manaMax;
     }
+    public float getExp(){return exp;}
+    public float getMana(){return mana;}
+
     public double getMoveSpeed() {
         return moveSpeed;
     }
+
     public String getName()
     {
         return name;
@@ -496,7 +507,7 @@ public class Player {
             dtClearHit = 0;
         }
 
-        if (wasHit && dtHitInvincibility<=.3f)
+        if (wasHit && dtHitInvincibility<=.2f)
             dtHitInvincibility+=dt;
         else {
             dtHitInvincibility = 0;
@@ -577,7 +588,7 @@ public class Player {
 
     private void regenModifiers(){
         if(!fastreg) {
-            hp += regenGrowthFunction(level,getDefComp(),1);
+            hp += regenGrowthFunction(level,getDefComp()/2,1);
             if (hp > hpMax) hp = hpMax;
             mana+= regenGrowthFunction(level,getIntComp(),1);
             if (mana > manaMax) mana = manaMax;
@@ -702,9 +713,9 @@ public class Player {
         }
         new HoverText(s,.5f,Color.GREEN,absPos.x,absPos.y,false);
     }
-    public void addItemToInventory(Item item){
-        if(item != null) {
-            lastItem=item;
+    public void addItemToInventory(Item item) {
+        if (item != null) {
+            lastItem = item;
             boolean added = false;
             for (ArrayList<Item> al : invList) {
                 if (!al.isEmpty()) {
@@ -716,14 +727,15 @@ public class Player {
                     } catch (NullPointerException ignored) {}
                 }
             }
-
             if (!added) {
                 ArrayList<Item> al = new ArrayList<>();
                 al.add(item);
                 invList.add(al);
             }
-        }
+            out(item.getName() + " added to inventory");
+            new HoverText(item.getName(), 1, Color.WHITE, getAbsPos().x, getAbsPos().y, false);
 
+        }
     }
 
     public void move(Vector2 vel){

@@ -39,7 +39,7 @@ public class Damage {
         }
         return damage;
     }
-    static float rate=2;
+    static float rate=10;
     public static int monsterMagicDamage(Monster m){
         float a, b, c, d;
         a = (float) EMath.randomGaussianAverage(player.getIntComp(),player.getDefComp());
@@ -47,7 +47,7 @@ public class Damage {
         c = (float) m.getPower();
         d = (float) m.getLevel();
 
-        damage = Math.round(((c*d)+(b*8))/(a));
+        damage = (int) (Math.round(((c*d)+(b*8))/(a)));
         if (damage < 0) //checks for negative damage
             damage = defaultDamage;
         if (rn.nextFloat() < .1) {

@@ -38,70 +38,9 @@ public class Item
     Texture icon=null;
     int gold;
     Attack attack;
+
     public Item() {
     }
-    public int getDefensemod()
-    {
-        return defensemod;
-    }
-    public int getSpeedmod()
-    {
-        return speedmod;
-    }
-    public int getStrmod()
-    {
-        return strmod;
-    }
-    public int getIntelmod()
-    {
-        return intelmod;
-    }
-    public int getHpmod()
-    {
-        return hpmod;
-    }
-    public int getEmod()
-    {
-        return emod;
-    }
-    public Color getPtColor(){return ptColor;}
-    public int getCost() {return cost;}
-    public String getName(){return name;}
-    public String getType(){
-        return null;
-    }
-    public void loadIcon(String s){
-        try {
-            icon = new Texture(Gdx.files.internal("images\\icons\\items\\ic" + s + ".png"));
-        }catch (GdxRuntimeException e){
-            if(this.isEquip){
-                out(this.getClass().getName());
-
-            }
-            icon= ImageLoader.crate;
-        }
-    }
-
-    public int getManamod() {
-        return manamod;
-    }
-
-    public Texture getIcon() {
-        return icon;
-    }
-
-    public void setIcon(Texture icon)  {
-        this.icon = icon;
-    }
-
-    public void setHitBox(Rectangle r){
-        hitbox=r;
-    }
-    public Rectangle getHitbox(){return hitbox;}
-    public int getValue() {
-        return value;
-    }
-
     public static Item generateNoGold() {
         Item a;
         int q = rn.nextInt(10) + 1;
@@ -136,22 +75,69 @@ public class Item
         }
         return a;
     }
-
-    public boolean hasEffect() {
-        if(!this.getClass().equals(Gold.class) &&!this.getClass().equals(EnergyPlus.class)&&
-                !this.getClass().equals(Potion.class))
-        return true;
-        else return false;
-    }
-
-    public void setTexturePos(Vector2 v) {
-        texturePos.set(v);
-    }
-
     public Vector2 getTexturePos() {
         return texturePos;
     }
+    public Rectangle getHitbox(){return hitbox;}
+    public Color getPtColor(){return ptColor;}
+    public String getName(){return name;}
+    public String getType(){
+        return null;
+    }
+    public Texture getIcon() {
+        return icon;
+    }
+    public int getDefensemod()
+    {
+        return defensemod;
+    }
+    public int getSpeedmod()
+    {
+        return speedmod;
+    }
+    public int getStrmod()
+    {
+        return strmod;
+    }
+    public int getIntelmod()
+    {
+        return intelmod;
+    }
+    public int getHpmod()
+    {
+        return hpmod;
+    }
+    public int getEmod()
+    {
+        return emod;
+    }
+    public int getCost() {return cost;}
+    public int getManamod() {
+        return manamod;
+    }
+    public int getValue() {
+        return value;
+    }
+    public void setIcon(Texture icon)  {
+        this.icon = icon;
+    }
+    public void setHitBox(Rectangle r){
+        hitbox=r;
+    }
+    public void setTexturePos(Vector2 v) {
+        texturePos.set(v);
+    }
+    public void loadIcon(String s){
+        try {
+            icon = new Texture(Gdx.files.internal("images\\icons\\items\\ic" + s + ".png"));
+        }catch (GdxRuntimeException e){
+            if(this.isEquip){
+                out(this.getClass().getName());
 
+            }
+            icon= ImageLoader.crate;
+        }
+    }
     public void colliion(int x, int y) {
         if (this.getClass().equals(EnergyPlus.class))
             player.useItem(new EnergyPlus());
@@ -167,5 +153,14 @@ public class Item
         dispArray[x][y].setItem(null);
         dispArray[x][y].setHasLoot(false);
 
+    }
+    public boolean isGold(){
+        return getClass().equals(Gold.class);
+    }
+    public boolean hasEffect() {
+        if(!this.getClass().equals(Gold.class) &&!this.getClass().equals(EnergyPlus.class)&&
+                !this.getClass().equals(Potion.class))
+        return true;
+        else return false;
     }
 }

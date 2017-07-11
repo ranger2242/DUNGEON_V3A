@@ -13,10 +13,11 @@ import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Game;
-import com.quadx.dungeons.states.mapstate.MapStateRender;
-import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 import com.quadx.dungeons.states.mapstate.MapState;
+import com.quadx.dungeons.states.mapstate.MapStateRender;
 import com.quadx.dungeons.tools.FilePaths;
+import com.quadx.dungeons.tools.Tests;
+import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 
 import java.util.ArrayList;
 
@@ -24,6 +25,7 @@ import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.states.mapstate.MapState.viewX;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
 import static com.quadx.dungeons.tools.gui.Text.centerString;
+import static com.quadx.dungeons.tools.gui.Text.strWidth;
 
 /**
  * Created by Tom on 12/22/2015.
@@ -86,14 +88,14 @@ public class MainMenuState extends State implements ControllerListener {
     public static void selectOption(){
         switch (selector){
             case(0):{
-                //if (Tests.timeKill()) {
+                if (Tests.timeKill()) {
                     if (MapState.inGame)
                         gsm.pop();
                     else {
                         MapStateRender.time=0;
                         gsm.push(new AbilitySelectState(gsm));
                     }
-                //}
+                }
                 break;
             }
             case(1):{
@@ -114,6 +116,9 @@ public class MainMenuState extends State implements ControllerListener {
     @Override
     public void update(float dt) {
         dtCursor+=dt;
+        if(!Tests.timeKill()){
+            selector=options.size()-1;
+        }
         if(dtCursor>.15) {
             dtCursor = 0;
             handleInput();
@@ -126,14 +131,22 @@ public class MainMenuState extends State implements ControllerListener {
     //    effect.dispose();
     }
     /////////////////////////////////////////////////////////////////////////////////////////
-    //DRAWING FUNCTIONS
-    @Override
+     @Override
     public void render(SpriteBatch sb) {
-        sb.begin();
-        sb.draw(title,viewX+(WIDTH/2)-(title.getWidth()/2),viewY+HEIGHT- title.getHeight()-30);
-        sb.end();
+
+
         drawTitle(sb);
         drawOptions(sb);
+        sb.begin();
+        sb.draw(title,viewX+(WIDTH/2)-(title.getWidth()/2),viewY+HEIGHT- title.getHeight()-30);
+        if(!Tests.timeKill()) {
+
+            String s = "DEMO TIME EXPIRED";
+            Game.setFontSize(4);
+            Game.getFont().setColor(Color.WHITE);
+            Game.getFont().draw(sb, s, viewX + WIDTH / 2 - strWidth(s) / 2, viewY + HEIGHT / 2);
+        }
+        sb.end();
     }
     private void drawTitle(SpriteBatch sb){
         sb.begin();
@@ -149,11 +162,14 @@ public class MainMenuState extends State implements ControllerListener {
         sb.begin();
         Game.setFontSize(5);
         for(int i=0;i<options.size();i++){
-            if(selector==i)
-                Game.getFont().setColor(Color.BLUE);
-            else
-                Game.getFont().setColor(Color.WHITE);
-
+            if(!Tests.timeKill()) {
+                Game.getFont().setColor(Color.RED);
+            }else{
+                if (selector == i)
+                    Game.getFont().setColor(Color.BLUE);
+                else
+                    Game.getFont().setColor(Color.WHITE);
+            }
             Game.getFont().draw(sb,options.get(i),centerString(options.get(i)),optionsPosY-(i*20));
         }
         sb.end();

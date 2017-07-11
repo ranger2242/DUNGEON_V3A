@@ -11,7 +11,6 @@ import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.Map2State;
 import com.quadx.dungeons.states.mapstate.MapStateExt;
 import com.quadx.dungeons.states.mapstate.MapStateUpdater;
-import com.quadx.dungeons.tools.Direction;
 import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.Timer;
 import com.quadx.dungeons.tools.WallPattern;
@@ -372,7 +371,7 @@ public class GridManager {
             temp.stream().filter(c -> !c.getState()).forEach(Cell::setState);
             temp.clear();
 
-            if (isPlayer) {//checks if players dig ability is active
+         /*   if (isPlayer) {//checks if players dig ability is active
                 if (player.facing.equals(Direction.Facing.East) || player.facing.equals(Direction.Facing.West))
                     //if (MapState.lastPressed == 'd' ||MapState.lastPressed == 'a')
                     clearDigPlusCells(9, 3,Math.round( x), Math.round(y));
@@ -382,7 +381,7 @@ public class GridManager {
 
                 }
                 clearDigPlusCells(3, 9,Math.round( x), Math.round(y));
-            }
+            }*/
             splitMapDataToList();
         }catch (ArrayIndexOutOfBoundsException e){
             out("ArrayIndexOutOfBoundsException");
