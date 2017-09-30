@@ -1,6 +1,5 @@
 package com.quadx.dungeons.monsters;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -15,10 +14,7 @@ import com.quadx.dungeons.attacks.Illusion;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateUpdater;
-import com.quadx.dungeons.tools.Direction;
-import com.quadx.dungeons.tools.EMath;
-import com.quadx.dungeons.tools.StatManager;
-import com.quadx.dungeons.tools.Tests;
+import com.quadx.dungeons.tools.*;
 import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.gui.InfoOverlay;
 import com.quadx.dungeons.tools.gui.Text;
@@ -64,10 +60,8 @@ public class Monster {
     protected boolean blind = false;
     protected boolean hit = false;
     protected boolean moved = false;
-    protected boolean aa = false;
-    protected boolean bb = false;
     protected boolean drawable=false;
-    protected boolean invWait=false;
+    protected boolean invincable =false;
     boolean lowhp = false;
 
     protected double str;
@@ -95,7 +89,6 @@ public class Monster {
     protected int x;
     protected int px;
     protected int y;
-    protected int agroTime = rn.nextInt(200) + 15;
     protected int py;
     protected int circleAgro = rn.nextInt(6);
     protected int circleCount = 0;
@@ -103,18 +96,19 @@ public class Monster {
     protected int circleAngle = 0;
     protected int[] maxes = new int[4];
 
-    public static float dtRespawn=0;
+    protected static Delta dRespawn = new Delta(10);
+    protected static Delta dChangeDirection = new Delta(.5f);
+    protected static Delta dInvincibility= new Delta(Game.frame*3);
+    protected static Delta dAgro = new Delta(rn.nextInt(200) + 15);
+
     protected float dtAnim = 0;
     protected float moveSpeedMin = .12f;
     protected float moveSpeedMax = .09f;
-    protected float dtMove = 0;
     protected float moveSpeed = .15f;
     protected float dtAgro = 0;
     protected float callRadius = 0;
     protected float expFactor = 1;
     protected float velocity=5;
-    protected float dtChangeDirection=0;
-    protected float dtInv=0;
 
     public Monster() {
     }
@@ -281,9 +275,6 @@ public class Monster {
     public double getIntelDamage() {
         double damage = d.monsterMagicDamage(this);
         return damage;
-    }
-    public float getdtMove() {
-        return dtMove;
     }
     public float getExpFactor() {
         float a = 1;
@@ -486,37 +477,21 @@ public class Monster {
 
 
     public void checkAgro(){
-        if (agroTime < dtAgro) {
+        if (dAgro.isDone())
             setHit();
-        } else {
-            dtAgro += Gdx.graphics.getDeltaTime();
-        }
     }
 
     public void updateVariables(float dt) {
-        dtMove += dt;
-        dtChangeDirection += dt;
-        if (invWait)
-            dtInv += dt;
-        velocity = (float) (6 + .0136 * getSpeed() + .000005 * Math.pow(getSpeed(), 2)) * (3f / 4f);
-        aa = rn.nextBoolean();
-        bb = rn.nextBoolean();
+        dChangeDirection.update(dt);
+        dAgro.update(dt);
+        if (invincable)
+            dInvincibility.update(dt);
+        velocity = (float) (6 + .0136 * speed + .000005 * Math.pow(speed, 2)) * (3f / 4f);
         checkAgro();
-
-        //check for str collision
-
-
-        StatManager.shotMissed(hit);
-
         setSights();
         setMonOverlay();
         checkForDamageToPlayer();
         checkForDamageToDummies();
-
-
-
-
-
         loadIcon();
 
         if (!Tests.allstop) {
@@ -567,7 +542,7 @@ public class Monster {
         return EMath.pathag(player.getPos(),pos)<10;
     }
     public static void spawn(){
-        if(!Tests.nospawn && dtRespawn>1f && monsterList.size()<120  ) {
+        if(Tests.spawn && dRespawn.isDone() && monsterList.size()<120  ) {
             Monster m =Monster.getNew();
             int index = rn.nextInt(liveCellList.size());
             if (!liveCellList.get(index).hasWater() && liveCellList.get(index).isClear()) {
@@ -584,7 +559,7 @@ public class Monster {
                     new HoverText("!", .5f, Color.RED, player.getAbsPos().x, player.getAbsPos().y, true);
                     reindexMons=true;
                     GridManager.loadLiveCells();
-                    dtRespawn=0;
+                    dRespawn.reset();
                 }
             }
         }
@@ -612,7 +587,7 @@ public class Monster {
         }
     }
     public void takeAttackDamage(double i) {
-        if(!invWait) {
+        if(!invincable) {
             hp = hp - (int) i;
             if (hp < 0) {
                 hp = 0;
@@ -620,11 +595,11 @@ public class Monster {
             setHit();
             new HoverText("-" + (int) i, .8f,new Color(1f,.2f,.2f,1f), absPos.x, absPos.y+20, true);
             out("Hit " + name + " for " + (int) i + " damage.");
-            invWait=true;
+            invincable =true;
         }else{
-            if(dtInv>.05f){
-                invWait=false;
-                dtInv=0;
+            if(dInvincibility.isDone()){
+                invincable =false;
+                dInvincibility.reset();
             }
         }
 
@@ -663,9 +638,9 @@ public class Monster {
         }
 
         if(!hit && !agro){
-            if(dtChangeDirection>.5) {
+            if(dChangeDirection.isDone()) {
                 facing = Direction.Facing.getRandom();
-                dtChangeDirection=0;
+                dChangeDirection.reset();
             }
             move(Direction.getVector(facing));
         }else{
@@ -693,6 +668,7 @@ public class Monster {
     }
 
     public static void update(float dt) {
+        dRespawn.update(dt);
         spawn();
         try {
             for (Monster m : monsterList) {

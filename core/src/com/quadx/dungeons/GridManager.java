@@ -150,7 +150,7 @@ public class GridManager {
         if (player.getFloor() == 1)
             splitMapDataToList();
         int temp = rn.nextInt(40)+20;//calculate number of monsters
-        while (temp > 0 && !Tests.nospawn) {
+        while (temp > 0 && Tests.spawn) {
             int listSize = monsterList.size();
             int point = rn.nextInt(liveCellList.size());
             Cell c = liveCellList.get(point);
@@ -170,9 +170,7 @@ public class GridManager {
         }
         Monster.reindexMons=true;
     }
-    public static boolean isInBounds(Vector2 pos){
-        return pos.x >= 0 && pos.y >= 0 && pos.x < res && pos.y < res;
-    }
+
 
     public static float fixHeight(Vector2 v){//get vector in absolute pos
         int gx=Math.round(v.x/cellW);//find grid pos
@@ -237,6 +235,9 @@ public class GridManager {
         if(x<0)return 0;
         else if(x>res-1) return  res-1;
         else return x;
+    }
+    public static boolean isInBounds(Vector2 v){
+        return (int)v.x>=0 &&(int)v.y>=0 && (int)v.x<res &&(int)v.y<res;
     }
     private void plotItems() {
         int seeds =10 + rn.nextInt(20);

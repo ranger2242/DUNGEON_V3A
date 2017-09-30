@@ -868,7 +868,9 @@ public class Player {
     }
 
     public Cell getStandingTile() {
-        return dispArray[player.getX()][player.getY()];
+        if (GridManager.isInBounds(getPos()))
+            return dispArray[getX()][getY()];
+        else return new Cell();
     }
     public void update(float dt){
         dWater.update(dt);

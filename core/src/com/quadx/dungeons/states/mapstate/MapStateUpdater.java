@@ -144,7 +144,6 @@ public class MapStateUpdater extends MapState{
             }
         } catch (ConcurrentModificationException e) {
         }
-        Monster.update(dt);
 
         MapStateRender.updateVariables(dt);
         if (dtFPS > .05) {
@@ -169,8 +168,7 @@ public class MapStateUpdater extends MapState{
         if (dtClearHits <= .1)
             dtClearHits += dt;
 
-        if ( Monster.dtRespawn <= 10f)
-            Monster.dtRespawn += dt;
+
 
         dDig.update(dt);
         if (Inventory.dtItem <= Inventory.itemMinTime)

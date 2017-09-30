@@ -15,6 +15,7 @@ import com.quadx.dungeons.Inventory;
 import com.quadx.dungeons.attacks.Flame;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.State;
 import com.quadx.dungeons.tools.ShapeRendererExt;
@@ -86,10 +87,11 @@ public class MapState extends State implements ControllerListener {
     public void handleInput() {
     }
     public void update(float dt) {
+        MapStateUpdater.buttonHandler();
         MapStateUpdater.updateVariables(dt);
+        Monster.update(dt);
         GridManager.loadDrawList();
         Inventory.compareItemToEquipment();
-        MapStateUpdater.buttonHandler();
         player.update(dt);
         if(MapStateUpdater.dtCollision>Game.frame/2) {
             if(!player.jumping)

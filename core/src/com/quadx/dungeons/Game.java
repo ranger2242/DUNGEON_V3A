@@ -51,7 +51,7 @@ enemy knock back
     public static boolean controllerMode =false;
     public static final int WIDTH = 1366;
     public static final int HEIGHT = 724;
-    public static final float frame = .01666666f;
+    public static final float frame = 1f/60f;
     private SpriteBatch spriteBatch;
     private static GameStateManager gameStateManager;
     private static final BitmapFont[] fonts = new BitmapFont[6];

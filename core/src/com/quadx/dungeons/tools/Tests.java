@@ -27,7 +27,7 @@ public class Tests {
     public static int runs = 100;
     public static float dtReload = 0;
     public static boolean allstop=      false;
-    public static boolean nospawn=      false;
+    public static boolean spawn =      true;
     public static boolean nodeath=      false;
     public static boolean fastreg=      false;
     public static boolean noLand=       false;
@@ -295,7 +295,7 @@ public class Tests {
         if (comm.get(0).equals("disable")) {
             if (comm.get(1).equals("m")) {
                 allstop = true;
-                nospawn = true;
+                spawn = false;
                 monsterList.clear();
                 outText = "Monsters disabled!";
             }
@@ -306,7 +306,7 @@ public class Tests {
         if (comm.get(0).equals("enable")) {
             if (comm.get(1).equals("m")) {
                 allstop = false;
-                nospawn = false;
+                spawn = true;
                 outText = "Monsters enabled!";
             }
             if(comm.get(1).equals("death")){
@@ -332,7 +332,7 @@ public class Tests {
             }
         }
         if (comm.get(0).equals("nospawn")) {
-            nospawn = true;
+            spawn = false;
             outText = "Monster Spawn Disabled!";
         }
 
