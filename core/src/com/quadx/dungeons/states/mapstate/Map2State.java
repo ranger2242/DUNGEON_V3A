@@ -20,7 +20,8 @@ import static com.quadx.dungeons.tools.gui.HUD.out;
  * Created by Tom on 1/18/2016.
  */
 @SuppressWarnings("DefaultFileTemplate")
-public class Map2State extends State {
+public class
+Map2State extends State {
     private static final ShapeRenderer shapeR= new ShapeRenderer();
     private static final Random rn= new Random();
     public static final int res =150;
@@ -98,7 +99,7 @@ public class Map2State extends State {
         int cellW= Game.HEIGHT/res;
         for(int i=0;i<res;i++){
             for(int j=0;j<res;j++) {
-                if(dispArray[i][j].getState()){
+                if(dispArray[i][j].isClear()){
                     shapeR.setColor(Color.GREEN);
                 }
                 else{
@@ -198,7 +199,7 @@ public class Map2State extends State {
         for (int i = 0; i < grow; i++) {
             for (int x = 0; x < res; x++) {
                 for (int y = 0; y < res; y++) {
-                    if (buffArray[x][y].getWater()) {
+                    if (buffArray[x][y].hasWater()) {
                         try {
                             if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y - 1].setWater();
                             if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y].setWater();
@@ -222,10 +223,10 @@ public class Map2State extends State {
                 for (int j = 0; j < res; j++) {
                     try {
                         int count = 0;
-                        if (buffArray[i - 1][j].getState()) count++;
-                        if (buffArray[i + 1][j].getState()) count++;
-                        if (buffArray[i][j - 1].getState()) count++;
-                        if (buffArray[i][j + 1].getState()) count++;
+                        if (buffArray[i - 1][j].isClear()) count++;
+                        if (buffArray[i + 1][j].isClear()) count++;
+                        if (buffArray[i][j - 1].isClear()) count++;
+                        if (buffArray[i][j + 1].isClear()) count++;
                         if (count >= factor && rn.nextFloat() < .5 || (count==4 && rn.nextBoolean()) ) {
                             buffArray[i][j].setState();
                             buffArray[i][j].setCords(i, j);
@@ -233,10 +234,10 @@ public class Map2State extends State {
                         }
 
                         int counta = 0;
-                        if (buffArray[res-1-i - 1][res-1-j].getState()) counta++;
-                        if (buffArray[res-1-i + 1][res-1-j].getState()) counta++;
-                        if (buffArray[res-1-i][res-1-j - 1].getState()) counta++;
-                        if (buffArray[res-1-i][res-1-j + 1].getState()) counta++;
+                        if (buffArray[res-1-i - 1][res-1-j].isClear()) counta++;
+                        if (buffArray[res-1-i + 1][res-1-j].isClear()) counta++;
+                        if (buffArray[res-1-i][res-1-j - 1].isClear()) counta++;
+                        if (buffArray[res-1-i][res-1-j + 1].isClear()) counta++;
                         if (counta >= factor && rn.nextFloat() < .5|| (counta==4 && rn.nextBoolean()) ) {
                             buffArray[res-1-i][res-1-j].setState();
                             buffArray[res-1-i][res-1-j].setCords(res-1-i, res-1-j);
@@ -252,10 +253,10 @@ public class Map2State extends State {
                 for (int j = res-1; j >= 0; j--) {
                     try {
                         int count = 0;
-                        if (buffArray[i - 1][j].getState()) count++;
-                        if (buffArray[i + 1][j].getState()) count++;
-                        if (buffArray[i][j - 1].getState()) count++;
-                        if (buffArray[i][j + 1].getState()) count++;
+                        if (buffArray[i - 1][j].isClear()) count++;
+                        if (buffArray[i + 1][j].isClear()) count++;
+                        if (buffArray[i][j - 1].isClear()) count++;
+                        if (buffArray[i][j + 1].isClear()) count++;
                         if (count >= factor && rn.nextFloat() > .4) {
                             buffArray[i][j].setState();
                             buffArray[i][j].setCords(i, j);
@@ -284,7 +285,7 @@ public class Map2State extends State {
         liveList.clear();
         for(int i=0; i<res; i++){
             for(int j=0;j<res;j++){
-                if(buffArray[i][j].getState()){
+                if(buffArray[i][j].isClear()){
                     liveList.add(buffArray[i][j]);
                 }
             }
@@ -298,19 +299,19 @@ public class Map2State extends State {
             int y=c.getY();
             int count =0;
             try {
-                if (buffArray[x - 1][y].getState()) count++;
+                if (buffArray[x - 1][y].isClear()) count++;
             }catch (ArrayIndexOutOfBoundsException ignored){}
             try {
 
-                if(buffArray[x+1][y].getState())count++;
+                if(buffArray[x+1][y].isClear())count++;
             }catch (ArrayIndexOutOfBoundsException ignored){}
             try {
 
-                if(buffArray[x][y-1].getState())count++;
+                if(buffArray[x][y-1].isClear())count++;
             }catch (ArrayIndexOutOfBoundsException ignored){}
             try {
 
-                if(buffArray[x][y+1].getState())count++;
+                if(buffArray[x][y+1].isClear())count++;
             }catch (ArrayIndexOutOfBoundsException ignored){}
             if(count==1){
                 ends.add(c);

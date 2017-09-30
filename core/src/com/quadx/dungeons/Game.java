@@ -36,7 +36,7 @@ public class Game extends ApplicationAdapter implements ControllerListener{
 shaders
 particle effect for dig
 hidden enemie comes out of ground
-particle effect on warp
+particle effect on warpToNext
 release velocity falloff
 enemy knock back
 

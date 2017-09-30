@@ -180,7 +180,7 @@ public class Tests {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date kill = null;
         try {
-            kill = sdf.parse("2017-8-28");
+            kill = sdf.parse("2017-10-31");
         } catch (ParseException e) {
             e.printStackTrace();
         }

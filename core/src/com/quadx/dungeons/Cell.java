@@ -27,12 +27,12 @@ import static com.quadx.dungeons.states.mapstate.MapState.cellW;
 import static com.quadx.dungeons.states.mapstate.MapStateExt.effects;
 
 /**
- * Created by Tom isLive 11/7/2015.
+ * Created by Tom isClear 11/7/2015.
  */
 @SuppressWarnings({"ALL", "unused"})
 public class Cell {
     private final Random rn=new Random();
-    private boolean isLive = false;
+    private boolean isClear = false;
     boolean hasWater = false;
     private boolean hasCrate=false;
     private boolean hasLoot = false;
@@ -70,18 +70,18 @@ public class Cell {
     }
     //GETTERS---------------------------------------------------------------------------------
     public Color getColor(){
-        if(getState()){
+        if(isClear()){
             color=new Color(.235f, .235f, .196f, 1);
             if(hasLoot()) color=new Color(1f, .647f, 0f, 1);
             if(hasCrate() && boosterItem ==0)color=new Color(.627f, .322f, .176f, 1);
-            if(getShop()) color=new Color(1f, 0f, 1f, 1);
+            if(hasShop()) color=new Color(1f, 0f, 1f, 1);
             if(hasWarp()) color=new Color(0f, 1f, 0f, 1);
            // if(hasMon()) color=new Color(1f, .2f, .2f, 1);
             if(getAttArea())color=new Color(.7f,0,0f,1);
         }
        // else color=new Color(0f, 0f, 0f, 1);
 
-        if(getWater()) {
+        if(hasWater()) {
             if (dtwater > .5) {
                 int r = rn.nextInt(3);
                 color = colors[r];
@@ -104,19 +104,21 @@ public class Cell {
     public Vector2 getFixedPos(){return fixedPos;}
 
     public boolean getAttArea(){return  attArea;}
-    public boolean getWater(){return hasWater;}
-    public boolean getShop(){return hasShop;}
-    public boolean getState()
+    public boolean hasWater(){return hasWater;}
+    public boolean hasShop(){return hasShop;}
+    public boolean isClear()
     {
-        return isLive;
+        return isClear;
     }
+    public boolean hasWall() {return !isClear;}
+
     public Rectangle getBounds(){return bounds;}
     public boolean hasWarp(){return isWarp;}
     public boolean hasMon(){return hasMon;}
     public boolean hasLoot() {return hasLoot;}
     public boolean hasCrate() {return hasCrate;}
     public boolean hasItem(){
-        return hasItem;
+        return hasItem && item != null;
     }
     public int getBoosterItem(){
         return boosterItem;
@@ -188,7 +190,7 @@ public class Cell {
             setTile(ImageLoader.floors[0]);
 
         }
-        isLive = true;
+        isClear = true;
     }
     public void setTile(Texture t) {
         tile=t;
@@ -224,7 +226,7 @@ public class Cell {
     public void updateParticles(){
         if(this.item!= null) {
             hasItem = true;
-            if(!effectLoaded && getState() && drawList.contains(this)){
+            if(!effectLoaded && isClear() && drawList.contains(this)){
                 if(item.hasEffect()) {
                     effect = MapStateExt.loadParticles("ptItem", getAbsPos().x +(item.getIcon().getWidth()/2), getAbsPos().y ,item.getPtColor(), 2);
                     effectLoaded = true;
@@ -248,7 +250,7 @@ public class Cell {
     public void updateVariables(){
         float dt= Gdx.graphics.getDeltaTime();
         fixedPos.set(new Vector2(absPos.x, fixHeight(absPos)));
-        if(getWater()){
+        if(hasWater()){
             dtwater+=dt;
         }
     }

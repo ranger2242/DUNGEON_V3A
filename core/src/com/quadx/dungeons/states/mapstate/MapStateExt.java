@@ -7,37 +7,41 @@ import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.attacks.Attack;
+import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
+import com.quadx.dungeons.states.ShopState;
 import com.quadx.dungeons.tools.FilePaths;
 
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.GridManager.dispArray;
 
 /**
  * Created by Tom on 1/29/2016.
  */
 @SuppressWarnings("DefaultFileTemplate")
-public class MapStateExt extends MapState{
+public class MapStateExt extends MapState {
     public static ArrayList<ParticleEffect> effects = new ArrayList<>();
+
     public static ParticleEffect loadParticles(String fname, float x, float y, Color c, int type) {
-        ParticleEffect e=loadParticles(fname,x,y,type);
-        e.getEmitters().first().getTint().setColors(new float[]{c.r,c.g,c.b});
+        ParticleEffect e = loadParticles(fname, x, y, type);
+        e.getEmitters().first().getTint().setColors(new float[]{c.r, c.g, c.b});
         return e;
     }
 
 
-        public static ParticleEffect loadParticles(String fname, float x, float y,int type){
+    public static ParticleEffect loadParticles(String fname, float x, float y, int type) {
         //type 1 for attacks
         //type 2 for field effects
         ParticleEffect effect;
         effect = new ParticleEffect();
         ParticleEmitter emitter;
-       // String s = "fla";
-        effect.load(Gdx.files.internal(FilePaths.getPath("particles\\"+fname)), Gdx.files.internal("particles"));
+        // String s = "fla";
+        effect.load(Gdx.files.internal(FilePaths.getPath("particles\\" + fname)), Gdx.files.internal("particles"));
 
-            emitter=effect.getEmitters().first();
-            ParticleEmitter.ScaledNumericValue spawnWidth = emitter.getSpawnWidth();
+        emitter = effect.getEmitters().first();
+        ParticleEmitter.ScaledNumericValue spawnWidth = emitter.getSpawnWidth();
         if (type == 1) {
 
             ParticleEmitter.ScaledNumericValue spawnHeight = emitter.getSpawnHeight();
@@ -91,19 +95,31 @@ public class MapStateExt extends MapState{
             angle.setHigh(ang);
             angle.setLow(ang);
         }
-            float r=cellW*(2f/3f);
-            effect.getEmitters().get(0).setPosition(x+(cellW/2), GridManager.fixHeight(new Vector2(x,y))+r);
-            effect.setPosition(x+(cellW/2),GridManager.fixHeight(new Vector2(x,y))+r);
+        float r = cellW * (2f / 3f);
+        effect.getEmitters().get(0).setPosition(x + (cellW / 2), GridManager.fixHeight(new Vector2(x, y)) + r);
+        effect.setPosition(x + (cellW / 2), GridManager.fixHeight(new Vector2(x, y)) + r);
 
         return effect;
     }
+
     public MapStateExt(GameStateManager gsm) {
         super(gsm);
     }
 
-    public static void addEffect(ParticleEffect e){
+    public static void addEffect(ParticleEffect e) {
         e.start();
         effects.add(e);
     }
 
+    public static void warpToNext(){
+            if (player.hasAP()) {
+            gsm.push(new AbilitySelectState(gsm));
+        }
+        player.floor++;
+        gm.initializeGrid();
+    }
+    public static void warpToShop() {
+        dispArray[(int)shop.x][(int)shop.y].setShop(false);
+        gsm.push(new ShopState(gsm));
+    }
 }

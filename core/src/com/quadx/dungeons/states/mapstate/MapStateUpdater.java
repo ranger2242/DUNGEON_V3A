@@ -2,26 +2,23 @@ package com.quadx.dungeons.states.mapstate;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.*;
 import com.quadx.dungeons.abilities.Warp;
-import com.quadx.dungeons.abilities.WaterBreath;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.AttackMod;
 import com.quadx.dungeons.attacks.Dash;
 import com.quadx.dungeons.attacks.Protect;
 import com.quadx.dungeons.commands.Command;
 import com.quadx.dungeons.monsters.Monster;
-import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.ShopState;
 import com.quadx.dungeons.tools.DebugTextInputListener;
+import com.quadx.dungeons.tools.Delta;
 import com.quadx.dungeons.tools.FilePaths;
 import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.gui.HUD;
-import com.quadx.dungeons.tools.gui.HoverText;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -38,11 +35,11 @@ import static com.quadx.dungeons.states.mapstate.MapStateRender.dtWaterEffect;
 public class MapStateUpdater extends MapState{
     static ArrayList<Integer> fpsList= new ArrayList<>();
 
-    private static float dtDig = 0;
+    private static Delta dDig = new Delta(2*Game.frame);
+
     private static float dtMap = 0;
     private static float dtShowStats =0;
     public static float endShake=0;
-    static float dtWater=0;
     static float dtCollision = 0;
     static float dtScrollAtt=0;
     static float dtFPS=0;
@@ -161,8 +158,7 @@ public class MapStateUpdater extends MapState{
             dtFPS += dt;
         }
         dtf+=dt;
-        dtDig+=dt;
-        dtWater+=dt;
+        //dtDig+=dt;
         dtWaterEffect+=dt;
         HUD.dtLootPopup +=dt;
 
@@ -172,12 +168,14 @@ public class MapStateUpdater extends MapState{
 
         if (dtClearHits <= .1)
             dtClearHits += dt;
+
         if ( Monster.dtRespawn <= 10f)
             Monster.dtRespawn += dt;
-        if (dtDig <= player.getMoveSpeed())
-            dtDig += dt;
+
+        dDig.update(dt);
         if (Inventory.dtItem <= Inventory.itemMinTime)
             Inventory.dtItem += dt;
+
         if (Attack.dtInfo <= .4)
             Attack.dtInfo += dt;
         if (dtStatPopup <= .4)
@@ -195,6 +193,7 @@ public class MapStateUpdater extends MapState{
         if (dtShowStats <= .2)
             dtShowStats += dt;
             dtShake+=dt;
+
         if(dtShake>endShake){
             shakeCam=false;
         }
@@ -278,52 +277,19 @@ public class MapStateUpdater extends MapState{
             Gdx.input.getTextInput(listener, "Command", "","");
         }
     }
+
     static void collisionHandler() {
         ArrayList<Cell> list = getSurroundingCells((int)player.getPos().x,(int)player.getPos().y,1);
+        list.removeIf(x-> !(x.hasItem() || x.hasWarp() || x.hasShop()));
         for(Cell c: list){
-            //check item
-            if(c.hasItem() && c.getItem()!=null){
-                c.getItem().colliion((int)c.getPos().x,(int)c.getPos().y);
+            if(c.hasItem()){
+                c.getItem().colliion(c.getPos());
             }
-            //check warp
             if (c.hasWarp()) {
-                if (player.getAbilityPoints() != 0) {
-                    gsm.push(new AbilitySelectState(gsm));
-                }
-                player.floor++;
-                gm.initializeGrid();
+                MapStateExt.warpToNext();
             }
-            //check shop
-            if (c.getShop()) {
-                dispArray[(int)c.getPos().x][(int)c.getPos().y].setShop(false);
-                gsm.push(new ShopState(gsm));
-            }
-        }
-        for (Cell c1 : drawList) {
-            int x = (int) c1.getPos().x;
-            int y = (int) c1.getPos().y;
-            Cell c = dispArray[x][y];
-            //grid collision---------------------------------------------------
-            if (Math.round(player.getPos().x) == x &&Math.round( player.getPos().y) == y) {
-                if (c.getWater()&& !player.hasAbility(WaterBreath.class)) {
-                    if (dtWater > .2f) {
-                        player.addHp(-40);
-                        dtWater = 0;
-                    }
-                }
-
-                if (!c.getState()) {
-                    int e = (int) Math.round((6.5 + player.getLevel()*5));
-                    if (player.getEnergy() > e) {
-                        player.dig();
-                        player.addEnergy(-e);
-                    }else{
-                        player.canMove=false;
-                        new HoverText("-!-",.5f, Color.YELLOW,player.getAbsPos().x+(player.getIcon().getWidth()/2),player.getAbsPos().y+player.getIcon().getHeight()+10,true);
-                    }
-                }else{
-                    player.canMove=true;
-                }
+            if (c.hasShop()) {
+                MapStateExt.warpToShop();
             }
         }
     }

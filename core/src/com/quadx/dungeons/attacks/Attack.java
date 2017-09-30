@@ -190,7 +190,7 @@ public class Attack {
                             break;
                         }
                     }
-                    switch (hitBoxShape){
+                    switch (hitBoxShape) {
                         case Circle:
                             player.setAttackCircle(calculateHitCircle());
                             break;

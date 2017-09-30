@@ -43,7 +43,7 @@ public class HeightMap{
     }
     public static void initColorList(int n){
         colors.clear();
-        float d=(3f/4f);
+        float d =(3f/4f);
         Color c = new Color(rn.nextFloat()*d,rn.nextFloat()*d,rn.nextFloat()*d,1);
         for (int i = 0; i < n + 3; i++) {
             float a = 1 * ((float) i / (float) n)*.7f;

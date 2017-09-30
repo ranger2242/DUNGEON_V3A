@@ -138,7 +138,8 @@ public class Item
             icon= ImageLoader.crate;
         }
     }
-    public void colliion(int x, int y) {
+    public void colliion(Vector2 v) {
+        int x=(int)v.x, y=(int)v.y;
         if (this.getClass().equals(EnergyPlus.class))
             player.useItem(new EnergyPlus());
         else if (this.getClass().equals(Potion.class))

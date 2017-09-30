@@ -92,7 +92,7 @@ public class GridManager {
         liveCount=0;
         for (int i = 0; i < res; i++) {
             for (int j = 0; j < res; j++) {
-                if (dispArray[i][j].getState()) {
+                if (dispArray[i][j].isClear()) {
                     liveCount++;
                 }
                 liveCellList.add(dispArray[i][j]);
@@ -121,7 +121,7 @@ public class GridManager {
                     if(i>=0 &&i<res && j>=0 &&j<res) {
                         c = dispArray[i][j];
                         c.updateVariables();
-                        if (!c.getState() || c.getWater()) {
+                        if (!c.isClear() || c.hasWater()) {
                             c = loadTiles(c);
 
                         }
@@ -155,7 +155,7 @@ public class GridManager {
             int point = rn.nextInt(liveCellList.size());
             Cell c = liveCellList.get(point);
             if(!Monster.isNearPlayer(c.getPos())) {
-                if (c.getState()) {
+                if (c.isClear()) {
                     Monster m = Monster.getNew();
                     m.setAbsPos(c.getAbsPos());
                     m.setPos(c.getPos());
@@ -280,7 +280,7 @@ public class GridManager {
     private void plotPlayer() {
         int index = rn.nextInt(liveCellList.size());
         Cell c = liveCellList.get(index);
-        while (!(!c.getWater() && c.getState())) {
+        while (!(!c.hasWater() && c.isClear())) {
             index = rn.nextInt(liveCellList.size());
             c = liveCellList.get(index);
         }
@@ -334,7 +334,7 @@ public class GridManager {
                     case 'a':{nx=x - i;     ny=y - 1 + j;   break;}
                 }*/
                 if (nx >= 0 && nx < res && ny >= 0 && ny < res) {
-                    if (!dispArray[nx][ny].getState()) {
+                    if (!dispArray[nx][ny].isClear()) {
                         dispArray[nx][ny].setState();
                     }
                 }
@@ -368,7 +368,7 @@ public class GridManager {
             if(isPlayer)r=3;
             else r=1;
             ArrayList<Cell> temp = getSurroundingCells(Math.round(x),Math.round( y), r);
-            temp.stream().filter(c -> !c.getState()).forEach(Cell::setState);
+            temp.stream().filter(c -> !c.isClear()).forEach(Cell::setState);
             temp.clear();
 
          /*   if (isPlayer) {//checks if players dig ability is active
@@ -403,10 +403,10 @@ public class GridManager {
                             WallPattern.p[ii][jj] = false;
                         } else {
 
-                            if (c.getWater()) {
-                                WallPattern.p[ii][jj] = !temp.get(count).getWater();
+                            if (c.hasWater()) {
+                                WallPattern.p[ii][jj] = !temp.get(count).hasWater();
                             } else {
-                                WallPattern.p[ii][jj] = temp.get(count).getState();
+                                WallPattern.p[ii][jj] = temp.get(count).isClear();
                             }
                             count++;
                         }
@@ -414,7 +414,7 @@ public class GridManager {
                 }
             }
             int a = 0;
-            if (c.getWater()) a = 1;
+            if (c.hasWater()) a = 1;
             Texture t1 = WallPattern.getTile(a);
             if (t1 != null && t != t1) {
                 c.setTile(t1);

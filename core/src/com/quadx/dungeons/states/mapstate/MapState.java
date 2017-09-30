@@ -90,6 +90,7 @@ public class MapState extends State implements ControllerListener {
         GridManager.loadDrawList();
         Inventory.compareItemToEquipment();
         MapStateUpdater.buttonHandler();
+        player.update(dt);
         if(MapStateUpdater.dtCollision>Game.frame/2) {
             if(!player.jumping)
             MapStateUpdater.collisionHandler();

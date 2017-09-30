@@ -7,7 +7,11 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.abilities.Ability;
 import com.quadx.dungeons.abilities.Investor;
-import com.quadx.dungeons.attacks.*;
+import com.quadx.dungeons.abilities.WaterBreath;
+import com.quadx.dungeons.attacks.Attack;
+import com.quadx.dungeons.attacks.AttackMod;
+import com.quadx.dungeons.attacks.Dash;
+import com.quadx.dungeons.attacks.Illusion;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.SpellBook;
@@ -24,6 +28,7 @@ import com.quadx.dungeons.tools.shapes.Triangle;
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.GridManager.res;
 import static com.quadx.dungeons.states.mapstate.MapState.*;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.fps;
@@ -37,6 +42,7 @@ import static com.quadx.dungeons.tools.gui.HUD.out;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class Player {
+    public static Delta dWater = new Delta(10*Game.frame);
 
     private final ArrayList<String> statsList = new ArrayList<>();
     public final ArrayList<Attack> attackList = new ArrayList<>();
@@ -147,7 +153,7 @@ public class Player {
         x= (int) v.x;
         y=(int) v.y;
     }
-    public void setAim(Direction.Facing f){//why wont this shit update
+    public void setAim(Direction.Facing f){
         facing=f;
     }
     public void setAttackBox(Rectangle r){
@@ -273,18 +279,19 @@ public class Player {
         killCount++;}
 
     //-----------------------------------------------GETTERS------------------------------------------------------------------
-    public boolean hasAbility(Class cls){
-        boolean b=false;
-        for(Ability a: player.getSecondaryAbilityList()){
-            if(a.getClass().equals(cls)){
-                 b=true;
-            }
-        }
-        return b;
+    public boolean haveAbility(Class cls) {
+        return secondaryAbilityList.stream().anyMatch(x -> x.getClass().equals(cls));
+    }
+    public boolean notHaveAbility(Class cls) {
+        return !haveAbility(cls);
     }
     public boolean isInvEmpty(){
         return invList.isEmpty();
     }
+    public boolean isOnTile(float x, float y){
+       return   player.getPos().x == x && player.getPos().y == y;
+    }
+
 
     public Rectangle getAttackBox() {
         //return new Rectangle(attackBox.x,,attackBox.width,attackBox.height);
@@ -566,7 +573,24 @@ public class Player {
           return (float) ((625*dtJump)- (927.5*Math.pow(dtJump,2)));
     }
     public void dig() {
-        gm.clearArea(x, y, true);
+        if(getStandingTile().hasWall()) {
+            int e = (int) Math.round((6.5 + level * 5));
+            if (energy > e) {
+                gm.clearArea(x, y, true);
+                addEnergy(-e);
+            } else {
+                canMove = false;
+                new HoverText("-!-", .5f, Color.YELLOW, player.getAbsPos().x + (player.getIcon().getWidth() / 2), player.getAbsPos().y + player.getIcon().getHeight() + 10, true);
+            }
+        }else
+            canMove=true;
+
+    }
+    public void swim(Delta dWater){
+        if (getStandingTile().hasWater && notHaveAbility(WaterBreath.class) && dWater.isDone()) {
+            player.addHp(-40);
+            dWater.reset();
+        }
     }
 
     private float regenGrowthFunction(int level, int stat,float reduce){
@@ -841,6 +865,18 @@ public class Player {
         }
 
         return dead;
+    }
+
+    public Cell getStandingTile() {
+        return dispArray[player.getX()][player.getY()];
+    }
+    public void update(float dt){
+        dWater.update(dt);
+        player.swim(dWater);
+        player.dig();
+    }
+    public boolean hasAP(){
+        return getAbilityPoints() != 0;
     }
 }
 

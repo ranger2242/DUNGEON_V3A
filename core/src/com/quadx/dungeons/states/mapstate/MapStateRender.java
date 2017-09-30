@@ -241,7 +241,7 @@ public class MapStateRender extends MapState {
         functions in glBatch
         textures
            items
-           warp
+           warpToNext
            animations
            player
            monsters
@@ -259,8 +259,8 @@ public class MapStateRender extends MapState {
         for (Cell c : drawList) {//cycle through draw list
             float[] f = c.getCorners().getVertices();
             if(!Tests.noLand) {
-                if(!c.getWater()) {
-                    if(!c.getState()) {
+                if(!c.hasWater()) {
+                    if(!c.isClear()) {
                         shapeR.setColor(new Color(.1f,.1f,.1f,1));
                         for(Triangle t: c.getTris()){
                             shapeR.triangle(t);
@@ -361,7 +361,7 @@ public class MapStateRender extends MapState {
         //shape renderer lines-------------------------------------------------
         shapeR.begin(ShapeRenderer.ShapeType.Line);
         for (Cell c : drawList) {
-            if (c.getState()) {
+            if (c.isClear()) {
                 //draw grid
                 shapeR.setColor(Color.GRAY);
                 shapeR.getColor().a=.3f;
@@ -384,9 +384,9 @@ public class MapStateRender extends MapState {
         for (Cell c : drawList) {
             //draw items
             Item item = c.getItem();
-            if (item != null && c.getState())
+            if (item != null && c.isClear())
                 sb.draw(item.getIcon(),c.getAbsPos().x,fixHeight(c.getAbsPos()));
-            //draw warp
+            //draw warpToNext
             if(c.hasWarp())
                 sb.draw(ImageLoader.warp,c.getFixedPos().x,c.getFixedPos().y);
         }
@@ -487,7 +487,7 @@ public class MapStateRender extends MapState {
         for (Cell c : drawList) {
             Vector2 v= c.getAbsPos();
             sb.draw(c.getTile(), v.x, v.y);
-            if (c.getItem() != null && c.getState()) {
+            if (c.getItem() != null && c.isClear()) {
                 if (c.getItem().getIcon()==null) {
                     Texture t=ImageLoader.crate;
                     sb.draw(t, v.x, v.y);
