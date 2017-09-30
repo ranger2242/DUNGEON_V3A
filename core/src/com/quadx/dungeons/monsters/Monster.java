@@ -21,6 +21,8 @@ import com.quadx.dungeons.tools.gui.Text;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.*;
@@ -34,6 +36,7 @@ import static javax.swing.JSplitPane.DIVIDER;
  */
 @SuppressWarnings("ALL")
 public class Monster {
+    public static ArrayList<Monster> mdrawList = new ArrayList<>();
     protected Texture[] icons = new Texture[4];
     protected Texture icon = null;
     protected Damage d = new Damage();
@@ -371,18 +374,21 @@ public class Monster {
         int side = sight * 2 * cellW;
         sights = new Vector3(px - (side / 2) + (cellW / 2), py - (side / 2) + (cellW / 2), side);
     }
-    void setMonOverlay(){
-        float width=80;
-        Vector2 hbarpos=new Vector2(absPos.x -(width/2)-2, absPos.y-(getIcon().getHeight()/2)-31 );
-        Vector2 hbarpos2=new Vector2(absPos.x -(width/2), absPos.y-(getIcon().getHeight()/2)-30 );
-        hbar= new Rectangle(hbarpos.x,fixHeight(hbarpos), width+4, 6);
-        hbar2= new Rectangle(hbarpos2.x,fixHeight(hbarpos2), (float) ((double)width * getPercentHP()), 4);
+
+    void setOverlay() {
+        float width = 80;
+        int x = (int) (absPos.x - (width / 2));
+        int y = (int) (absPos.y - (getIcon().getHeight() / 2));
+        Vector2 hbarpos = new Vector2(x - 2, y - 31);
+        Vector2 hbarpos2 = new Vector2(x, y - 30);
+        hbar = new Rectangle(hbarpos.x, fixHeight(hbarpos), width + 4, 6);
+        hbar2 = new Rectangle(hbarpos2.x, fixHeight(hbarpos2), (float) ((double) width * getPercentHP()), 4);
         texturePos.set(pos.x * cellW - icon.getWidth() / 4, pos.y * cellW - icon.getHeight() / 4);
         if (!(hp <= hpMax / 3)) lowhp = true;
         else lowhp = false;
         overlay.texts.clear();
-        Vector2 ne=new Vector2(absPos.x,absPos.y);
-        ne.add(0,-20);
+        Vector2 ne = new Vector2(absPos.x, absPos.y);
+        ne.add(0, -20);
         overlay.texts.add(new Text("LVL " + level, new Vector2(absPos.x - 22, GridManager.fixHeight(ne)), Color.GRAY, 1));
         if (isHit())
             overlay.texts.add(new Text("!", new Vector2(absPos.x - 22, GridManager.fixHeight(ne)), Color.GRAY, 1));
@@ -481,36 +487,8 @@ public class Monster {
             setHit();
     }
 
-    public void updateVariables(float dt) {
-        dChangeDirection.update(dt);
-        dAgro.update(dt);
-        if (invincable)
-            dInvincibility.update(dt);
-        velocity = (float) (6 + .0136 * speed + .000005 * Math.pow(speed, 2)) * (3f / 4f);
-        checkAgro();
-        setSights();
-        setMonOverlay();
-        checkForDamageToPlayer();
-        checkForDamageToDummies();
-        loadIcon();
+    static int count=0;
 
-        if (!Tests.allstop) {
-            move();
-            fixPosition();
-        }
-        //check collisions with other monsters
-        for (int j = monsterList.indexOf(this) + 1; j < monsterList.size(); j++) {
-            Monster m1 = monsterList.get(j);
-            if (m1.isDrawable())
-                if (getHitBox().overlaps(m1.getHitBox())) {
-                    float ang = (float) Math.toRadians(EMath.angle(getAbsPos(), m1.getAbsPos()));//dvs
-                    setAbsPos(getAbsPos().add((float) (10 * Math.cos(ang)), (float) (10 * Math.sin(ang))));
-                    m1.setAbsPos(m1.getAbsPos().add((float) (10 * Math.cos(ang + Math.toRadians(180))), (float) (10 * Math.sin(ang + Math.toRadians(180)))));
-                }
-        }
-        if (reindexMons)
-            setMonListIndex(monsterList.indexOf(this));
-    }
     void checkForDamageToDummies(){
         for(Illusion.Dummy d: Illusion.dummies) {
             if (getHitBox().overlaps(d.hitbox)) {
@@ -604,6 +582,21 @@ public class Monster {
         }
 
     }
+    public void fixMonsterCollisions(){
+        List<Monster> list= mdrawList.stream().filter(m-> !m.equals(this) && m.getHitBox().overlaps(getHitBox())).collect(Collectors.toList());
+        for (Monster m : list) {
+            float ang = (float) Math.toRadians(EMath.angle(getAbsPos(), m.getAbsPos())),
+                    x = 10 * (float) Math.cos(ang),
+                    y = 10 * (float) Math.sin(ang);
+            move2(x, y);
+            m.move2(-x, -y);
+        }
+    }
+
+
+    public void move2(float x, float y){
+        setAbsPos(getAbsPos().add(x,y));
+    }
     public void move(Vector2 vel) {
         try {
             Vector2 end = new Vector2(absPos.x + vel.x, absPos.y + vel.y);
@@ -678,4 +671,24 @@ public class Monster {
             out("CME Monsters");
         }
     }
+    public void updateVariables(float dt) {
+        dChangeDirection.update(dt);
+        dAgro.update(dt);
+        if (invincable)
+            dInvincibility.update(dt);
+
+        velocity = (float) (6 + .0136 * speed + .000005 * Math.pow(speed, 2)) * (3f / 4f);
+        checkAgro();
+        setSights();
+        setOverlay();
+        checkForDamageToPlayer();
+        checkForDamageToDummies();
+        loadIcon();
+        fixMonsterCollisions();
+        if (!Tests.allstop) {
+            move();
+            fixPosition();
+        }
+    }
+
 }

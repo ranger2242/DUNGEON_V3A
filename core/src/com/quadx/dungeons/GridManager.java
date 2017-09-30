@@ -108,8 +108,10 @@ public class GridManager {
         int endy = (int) ((viewY + Game.HEIGHT) / cell.y);
         int scale=200;
         Rectangle screen= new Rectangle(viewX-scale,viewY-scale,(viewX + Game.WIDTH)+scale,(viewY + Game.HEIGHT)+scale);
+        Monster.mdrawList.clear();
         for(Monster m : monsterList){
             if(m.getHitBox().overlaps(screen)){
+                Monster.mdrawList.add(m);
                 m.setDrawable(true);
             }else{
                 m.setDrawable(false);

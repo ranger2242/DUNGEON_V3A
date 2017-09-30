@@ -404,7 +404,7 @@ public class MapStateRender extends MapState {
 
         //spritebatch monster draw functions
         try {
-            for (Monster m : GridManager.monsterList) { // TODO fix this loop to run only monsters on screen
+            for (Monster m : Monster.mdrawList) { // TODO fix this loop to run only monsters on screen
                 if (m != null) {
                     //draw icon
                     sb.draw(m.getIcon(), m.getTexturePos().x,m.getTexturePos().y);
