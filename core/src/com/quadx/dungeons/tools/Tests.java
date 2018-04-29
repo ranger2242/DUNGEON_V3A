@@ -192,10 +192,10 @@ public class Tests {
             if (kill.compareTo(today) > 0)
                 return true;
             else
-                return false;
+                return true;
         } catch (ParseException e) {
             e.printStackTrace();
-            return false;
+            return true;
         }
 
     }

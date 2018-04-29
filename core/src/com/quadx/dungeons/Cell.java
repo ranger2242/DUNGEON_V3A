@@ -78,6 +78,7 @@ public class Cell {
             if(hasWarp()) color=new Color(0f, 1f, 0f, 1);
            // if(hasMon()) color=new Color(1f, .2f, .2f, 1);
             if(getAttArea())color=new Color(.7f,0,0f,1);
+            if(hasMon()) color=new Color(1,0,0,1);
         }
        // else color=new Color(0f, 0f, 0f, 1);
 

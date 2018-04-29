@@ -4,8 +4,8 @@ package com.quadx.dungeons.tools;
  * Created by Chris Cavazos on 9/29/2017.
  */
 public class Delta {
-    float dtPassed = 0;
-    float limit=0;
+    private float dtPassed = 0;
+    private float limit=0;
     public Delta(float lim) {
         limit=lim;
     }
