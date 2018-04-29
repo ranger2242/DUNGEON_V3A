@@ -104,9 +104,11 @@ public class Monster {
     protected int[] maxes = new int[4];
 
     protected static Delta dRespawn = new Delta(10);
-    protected static Delta dChangeDirection = new Delta(.5f);
-    protected static Delta dInvincibility = new Delta(Game.frame * 3);
+    protected Delta dChangeDirection = new Delta(.5f);
+    protected Delta dInvincibility = new Delta(Game.frame * 3);
     protected Delta dAgro = new Delta(rn.nextInt(200) + 15);
+
+    protected Elapsed eAgroTime = new Elapsed();
 
     protected float dtAnim = 0;
     protected float moveSpeedMin = .12f;
@@ -399,7 +401,7 @@ public class Monster {
 
     public void setHit() {
         if (!blind) {
-            out(monListIndex + " AGG");
+            eAgroTime = new Elapsed();
             hit = true;
         }
     }
@@ -681,56 +683,79 @@ public class Monster {
         setAbsPos(getAbsPos().add(x, y));
     }
 
-    public void move(Vector2 vel) {//actually moves the thing
-        try {
-            Vector2 end = new Vector2(absPos.x + vel.x, absPos.y + vel.y);
-            int gw = cellW * (res + 1);
-            if (end.x < 0)
-                end.x = getIcon().getWidth();
-            else if (end.x + getIcon().getWidth() > gw)
-                end.x = (gw) - getIcon().getWidth();
-            if (end.y < 0)
-                end.y = getIcon().getHeight();
-            else if (end.y + getIcon().getHeight() > gw)
-                end.y = (gw) - getIcon().getHeight();
-            Vector2 comp = Physics.getVxyComp(velocity, absPos, end);
-            int x = (int) (EMath.round(absPos.x / cellW));
-            int y = (int) (EMath.round(absPos.y / cellW));
-
-            Cell c = dispArray[x][y];
-            if (c.isClear() && (!c.hasMon() || (prevPos.x == x && prevPos.y == y))) {
-                setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
-            } else {
-                if (rn.nextFloat() < .05)
-                    MapState.gm.clearArea(x, y, false);
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-
+    double calcMoveSpeed(){
+        float max=20f;
+        double t=eAgroTime.getTime();
+        double s=speed;
+        if(state== AI.State.AGRO) {
+            if (t < max)
+                s= speed * (1 + t / max);
+            else
+                s= speed * 2;
         }
+        s/=5;
+        return s;
     }
 
-//AI ACTIONS-------------------------------------------------------------------------------------------
+    public void move(Vector2 vel) {//actually moves the thing
+        Vector2 end = new Vector2(absPos.x + vel.x, absPos.y + vel.y);
+        int gw = cellW * (res + 1);
+
+        if (end.x < 0)
+            end.x = getIcon().getWidth();
+        else if (end.x + getIcon().getWidth() > gw)
+            end.x = (gw) - getIcon().getWidth();
+
+        if (end.y < 0)
+            end.y = getIcon().getHeight();
+        else if (end.y + getIcon().getHeight() > gw)
+            end.y = (gw) - getIcon().getHeight();
+
+        Vector2 comp = Physics.getVxyComp(velocity, absPos, end);
+        comp.scl((float) calcMoveSpeed());
+
+        int x = (int) (EMath.round(absPos.x / cellW));
+        int y = (int) (EMath.round(absPos.y / cellW));
+
+        Cell c = dispArray[x][y];
+        if (c.isClear() && (!c.hasMon() || (prevPos.x == x && prevPos.y == y))) {
+            setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
+        } else {
+            if (rn.nextFloat() < .05)
+                MapState.gm.clearArea(x, y, false);
+        }
+
+    }
+
+    //AI ACTIONS-------------------------------------------------------------------------------------------
     void changeDirection() {
-        float dst= player.getPos().dst(getPos());
+
+        float dst = player.getPos().dst(getPos());
         if (dChangeDirection.isDone()) {
             facing = Direction.Facing.getRandom();
             dChangeDirection.reset();
         }
-        move(Direction.getVector(facing));
+        try {
+            move(Direction.getVector(facing));
+        } catch (ArrayIndexOutOfBoundsException e) { }
     }
+
     private void chasePlayer() {
         float angle;
-        boolean dir= player.getPos().dst(getPos())>res/2;
+        boolean dir = player.getPos().dst(getPos()) > res / 2;
         if (!Illusion.dummies.isEmpty()) {
             angle = (float) Math.toRadians(EMath.angle(absPos, Illusion.dummies.get(rn.nextInt(Illusion.dummies.size())).absPos) + 180);
         } else
             angle = (float) Math.toRadians(EMath.angle(absPos, player.getAbsPos()) + 180);
-        if(dir)
-            angle+=Math.PI;
+        if (dir)
+            angle += Math.PI;
         facing = Direction.getDirection(angle);
-        move(Direction.getVector(facing));
+        try {
+            move(Direction.getVector(facing));
+        } catch (ArrayIndexOutOfBoundsException e) { }
     }
-//-----------------------------------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------------------------------
     public void move() {//calculates move direction
         switch (state) {
             case INACTIVE:
@@ -781,6 +806,7 @@ public class Monster {
     public void updateVariables(float dt) {
         dChangeDirection.update(dt);
         dAgro.update(dt);
+        eAgroTime.update(dt);
         if (invincable)
             dInvincibility.update(dt);
 
