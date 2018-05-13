@@ -1,3 +1,18 @@
-5-22-16
-:Chris:
--change plotplayer to delete monsters within set range of player on map load
+COMPLETE===========================================================
+-tweaked player damage up
+-fixed monsters breaking on left and bottom edge
+-reordered debug attacks
+-state system for cells added
+-added simple stats mode
+-icons made for stat display
+-added player levelup animation
+-renabling particles on items
+
+WORKING ON==========================================================
+
+
+NEW BUGS============================================================
+-text color changes after buying in shop
+-corrupted player stats in highscorestate
+-shooting the left edge breaks hitbox placement
+-screen wrapping breaks occasionally

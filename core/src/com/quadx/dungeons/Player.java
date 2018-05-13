@@ -3,15 +3,14 @@ package com.quadx.dungeons;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.abilities.Ability;
 import com.quadx.dungeons.abilities.Investor;
 import com.quadx.dungeons.abilities.WaterBreath;
-import com.quadx.dungeons.attacks.Attack;
-import com.quadx.dungeons.attacks.AttackMod;
-import com.quadx.dungeons.attacks.Dash;
-import com.quadx.dungeons.attacks.Illusion;
+import com.quadx.dungeons.attacks.*;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.SpellBook;
@@ -20,7 +19,9 @@ import com.quadx.dungeons.physics.Body;
 import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
+import com.quadx.dungeons.states.mapstate.MapStateExt;
 import com.quadx.dungeons.tools.*;
+import com.quadx.dungeons.tools.gui.HUD;
 import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.shapes.Circle;
 import com.quadx.dungeons.tools.shapes.Line;
@@ -35,6 +36,7 @@ import static com.quadx.dungeons.GridManager.res;
 import static com.quadx.dungeons.states.mapstate.MapState.*;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.fps;
 import static com.quadx.dungeons.tools.ImageLoader.pl;
+import static com.quadx.dungeons.tools.ImageLoader.statIcons;
 import static com.quadx.dungeons.tools.Tests.fastreg;
 import static com.quadx.dungeons.tools.Tests.infiniteRegen;
 import static com.quadx.dungeons.tools.gui.HUD.out;
@@ -57,6 +59,8 @@ public class Player {
     private final Vector2 dest = new Vector2();
 
     private Texture[] icons = new Texture[4];
+
+    ParticleEffect lvlupEffect;
 
     public ArrayList<Line> attackChain = new ArrayList<>();
     private Rectangle attackBox = new Rectangle();
@@ -93,7 +97,9 @@ public class Player {
     public boolean wasHit = false;
     public boolean safe = false;
     public boolean jumping = false;
+    boolean simpleStats=true;
     boolean overrideControls = false;
+    boolean renderEffect=false;
 
     private float hpMax = barStatGrowthFunction(1);
     private float hp = barStatGrowthFunction(1);
@@ -521,18 +527,37 @@ public class Player {
 
         statsList.add(name);
         statsList.add("Level " + level);
-        statsList.add("AP:       " + abilityPoints);
-        statsList.add("HP " + (int) (hp * hpMult) + "/" + (int) hpMax + "+" + hpMod + ": " + getHpComp());
-        statsList.add("M " + (int) (mana * mMult) + "/" + (int) manaMax + " + " + manaMod + ": " + getMComp());
-        statsList.add("E " + (int) (energy * eMult) + "/" + (int) energyMax + " + " + eMod + ": " + getEComp());
-        statsList.add("STR:      " + str * strMult + " + " + strMod + ": " + getStrComp());
-        statsList.add("DEF:      " + def * defMult + " + " + defMod + ": " + getDefComp());
-        statsList.add("INT:      " + intel * intMult + " + " + intMod + ": " + getIntComp());
-        statsList.add("SPD:      " + spd * spdMult + " + " + spdMod + ": " + getSpdComp());
-        statsList.add("KILLS:    " + killCount);
-        statsList.add("GOLD:     " + gold);
-        statsList.add("EXP:      " + exp + "/" + expLimit);
-        statsList.add("D:        " + floor);
+
+        if(simpleStats){
+            statsList.add(": " + (int) hp     +"/" +   getHpComp());
+            statsList.add(": " + (int) mana   + "/" + getMComp() );
+            statsList.add(": " + (int) energy + "/" + getEComp() );
+            statsList.add(": " + getStrComp());
+            statsList.add(": " + getDefComp());
+            statsList.add(": " + getIntComp());
+            statsList.add(": " + getSpdComp());
+/*            statsList.add("HP : " + getHpComp()+"/" + (int) hpMax);
+            statsList.add("M  : " + getMComp()+ "/" + (int) manaMax);
+            statsList.add("E  : " + getEComp()+ "/" + (int) energyMax);
+            statsList.add("STR: " + getStrComp());
+            statsList.add("DEF: " + getDefComp());
+            statsList.add("INT: " + getIntComp());
+            statsList.add("SPD: " + getSpdComp());*/
+
+        }else {
+            statsList.add("HP   " + (int) (hp * hpMult) + "/" + (int) hpMax + " +" + hpMod + ": " + getHpComp());
+            statsList.add("M    " + (int) (mana * mMult) + "/" + (int) manaMax + " +" + manaMod + ": " + getMComp());
+            statsList.add("E    " + (int) (energy * eMult) + "/" + (int) energyMax + " +" + eMod + ": " + getEComp());
+            statsList.add("STR: " + (int) (str * strMult) + " +" + strMod + ": " + getStrComp());
+            statsList.add("DEF: " + (int) (def * defMult) + " +" + defMod + ": " + getDefComp());
+            statsList.add("INT: " + (int) (intel * intMult) + " +" + intMod + ": " + getIntComp());
+            statsList.add("SPD: " + (int) (spd * spdMult) + " +" + spdMod + ": " + getSpdComp());
+        }
+            statsList.add("AP:    " + abilityPoints);
+            statsList.add("KILLS: " + killCount);
+            statsList.add("GOLD:  " + (int) gold);
+            statsList.add("EXP:   " + exp + "/" + expLimit);
+            statsList.add("FLOOR: " + floor);
         return statsList;
     }
 
@@ -661,7 +686,7 @@ public class Player {
     }
 
     public void dig() {
-        if (getStandingTile().hasWall()) {
+        if (getStandingTile().isWall()) {
             int e = (int) Math.round((6.5 + level * 5));
             if (energy > e) {
                 gm.clearArea(x, y, true);
@@ -676,7 +701,7 @@ public class Player {
     }
 
     public void swim(Delta dWater) {
-        if (getStandingTile().hasWater && notHaveAbility(WaterBreath.class) && dWater.isDone()) {
+        if (getStandingTile().isWater() && notHaveAbility(WaterBreath.class) && dWater.isDone()) {
             player.addHp(-40);
             dWater.reset();
         }
@@ -907,6 +932,7 @@ public class Player {
 
         ability.onActivate();
         attackList.add(new Dash());
+
         fullHeal();
     }
 
@@ -924,6 +950,9 @@ public class Player {
             spd = spd + rn.nextInt(15);
             abilityPoints++;
             new HoverText("+1 Ability Point", .7f, Color.GREEN, absPos.x, absPos.y - 40, true);
+            lvlupEffect = MapStateExt.loadParticles("ptFlame",absPos);
+            renderEffect=true;
+            lvlupEffect.start();
         }
     }
 
@@ -986,6 +1015,8 @@ public class Player {
 
     public void update(float dt) {
         dWater.update(dt);
+        if(renderEffect)
+        lvlupEffect.update(dt);
         player.swim(dWater);
         player.dig();
     }
@@ -993,5 +1024,88 @@ public class Player {
     public boolean hasAP() {
         return getAbilityPoints() != 0;
     }
+
+    public void addAllAttacks() {
+        attackList.clear();
+        attackList.add(new Flame());
+        attackList.add(new Dash());
+        attackList.add(new Drain());
+        attackList.add(new Illusion());
+        attackList.add(new Lightning());
+        attackList.add(new Quake());
+        attackList.add(new Protect());
+        attackList.add(new Focus());
+        attackList.add(new Torment());
+        attackList.add(new Stab());
+    }
+
+    //RENDER METHODS------------------------------------------------
+    public void render(SpriteBatch sb){
+        renderEffect(sb);
+    }
+    public void renderStatList(SpriteBatch sb, Vector2 pos) {
+        Game.setFontSize(1);
+        Game.getFont().setColor(Color.WHITE);
+            Vector2[] v = HUD.generateStatListPos(/*new Vector2(viewX + 40, viewY + HEIGHT - 30)*/ pos);
+            ArrayList<String> stats = getStatsList();
+            for (int i = 0; i < stats.size(); i++) {
+                //draw all stat icons here
+                float x=v[i].x;
+                float y=v[i].y;
+                if( i>1 && i< statIcons.size())
+                    sb.draw(statIcons.get(i), x-16,y-14);
+                Game.font.draw(sb, stats.get(i),x , y);
+            }
+
+            ArrayList<String> a = player.getStatsList();
+        if (HUD.statsPos != null) {
+
+            for (int i = 0; i < a.size(); i++) {
+                if (Inventory.statCompare != null && i - 2 < Inventory.statCompare.length && i - 2 >= 0) {
+                    switch (Inventory.statCompare[i - 2]) {
+                        case 1: {
+                            Game.font.setColor(Color.BLUE);
+                            break;
+                        }
+                        case 2: {
+                            Game.font.setColor(Color.RED);
+                            break;
+                        }
+                        default: {
+                            Game.font.setColor(Color.WHITE);
+                            break;
+                        }
+                    }
+                } else {
+                    Game.font.setColor(Color.WHITE);
+                }
+                Game.getFont().draw(sb, a.get(i), v[i].x, v[i].y);
+            }
+
+        }
+
+    }
+    void renderEffect(SpriteBatch sb){
+        if(renderEffect){
+            lvlupEffect.draw(sb);
+            if(lvlupEffect.isComplete())
+                lvlupEffect.dispose();
+        }
+    }
+    //--------------------------------------------------------------
+
+    public boolean simpleStatsEnabled() {
+        return simpleStats;
+    }
+
+    public void toggleSimpleStats() {
+        simpleStats=!simpleStats;
+    }
+
+    public void forceLevelUp() {
+        exp+=expLimit;
+        checkLvlUp();
+    }
 }
+
 

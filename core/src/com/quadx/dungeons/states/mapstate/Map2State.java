@@ -89,7 +89,7 @@ Map2State extends State {
     public static void fillArray(){
         for(int i=0;i<res;i++){
             for(int j=0;j<res;j++){
-                Map2State.buffArray[i][j].setState();
+                Map2State.buffArray[i][j].setCleared();
             }
         }
         dispArray=buffArray;
@@ -124,7 +124,7 @@ Map2State extends State {
             for (int i = (r.x - r.w / 2); i < r.x + r.w / 2; i++) {
                 for (int j = (r.y - r.h / 2); j < r.y + r.h / 2; j++) {
                     try {
-                        buffArray[i][j].setState();
+                        buffArray[i][j].setCleared();
                         if (i == (r.x - r.w / 2) || i == (r.x + r.w / 2) - 1 || j == (r.y - r.h / 2) || j == (r.y + r.h / 2) - 1)
                             edges.add(buffArray[i][j]);
                         live.add(buffArray[i][j]);
@@ -170,13 +170,13 @@ Map2State extends State {
 
             for (int l = q; l < endpointX; l++) {
                 try {
-                    buffArray[l][w].setState();
+                    buffArray[l][w].setCleared();
                 } catch (Exception e) {
                 }
             }
             for (int z = w; z < endpointY; z++) {
                 try {
-                    buffArray[q][z].setState();
+                    buffArray[q][z].setCleared();
                 } catch (Exception e) {
                 }
             }
@@ -193,13 +193,13 @@ Map2State extends State {
         for (int i = 0; i < cycles; i++) {
             int x = rn.nextInt(res);
             int y = rn.nextInt(res);
-            buffArray[x][y].setState();
+            buffArray[x][y].setCleared();
             buffArray[x][y].setWater();
         }
         for (int i = 0; i < grow; i++) {
             for (int x = 0; x < res; x++) {
                 for (int y = 0; y < res; y++) {
-                    if (buffArray[x][y].hasWater()) {
+                    if (buffArray[x][y].isWater()) {
                         try {
                             if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y - 1].setWater();
                             if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y].setWater();
@@ -228,7 +228,7 @@ Map2State extends State {
                         if (buffArray[i][j - 1].isClear()) count++;
                         if (buffArray[i][j + 1].isClear()) count++;
                         if (count >= factor && rn.nextFloat() < .5 || (count==4 && rn.nextBoolean()) ) {
-                            buffArray[i][j].setState();
+                            buffArray[i][j].setCleared();
                             buffArray[i][j].setCords(i, j);
                             live.add(buffArray[i][j]);
                         }
@@ -239,7 +239,7 @@ Map2State extends State {
                         if (buffArray[res-1-i][res-1-j - 1].isClear()) counta++;
                         if (buffArray[res-1-i][res-1-j + 1].isClear()) counta++;
                         if (counta >= factor && rn.nextFloat() < .5|| (counta==4 && rn.nextBoolean()) ) {
-                            buffArray[res-1-i][res-1-j].setState();
+                            buffArray[res-1-i][res-1-j].setCleared();
                             buffArray[res-1-i][res-1-j].setCords(res-1-i, res-1-j);
                             live.add(buffArray[res-1-i][res-1-j]);
                         }
@@ -258,7 +258,7 @@ Map2State extends State {
                         if (buffArray[i][j - 1].isClear()) count++;
                         if (buffArray[i][j + 1].isClear()) count++;
                         if (count >= factor && rn.nextFloat() > .4) {
-                            buffArray[i][j].setState();
+                            buffArray[i][j].setCleared();
                             buffArray[i][j].setCords(i, j);
                             live.add(buffArray[i][j]);
                         }
@@ -274,7 +274,7 @@ Map2State extends State {
         for(int i=0; i<count;i++) {
             int xs = rn.nextInt(res);
             int ys = rn.nextInt(res);
-            buffArray[xs][ys].setState();
+            buffArray[xs][ys].setCleared();
             buffArray[xs][ys].setCords(xs, ys);
             endpointList.add(buffArray[xs][ys]);
             live.add(buffArray[xs][ys]);
@@ -340,16 +340,16 @@ Map2State extends State {
                 for (int j = 0; j < a; j++) {
                     try {
                         if(z) {
-                            buffArray[x][y + j].setState();
+                            buffArray[x][y + j].setCleared();
                             live.add(buffArray[x][y + j]);
                         }if(s) {
-                            buffArray[x][y - j].setState();
+                            buffArray[x][y - j].setCleared();
                             live.add(buffArray[x][y - j]);
                         }if(c) {
-                            buffArray[x - j][y].setState();
+                            buffArray[x - j][y].setCleared();
                             live.add(buffArray[x - j][y]);
                         }if(v){
-                            buffArray[x+j][y].setState();}
+                            buffArray[x+j][y].setCleared();}
                             live.add(buffArray[x+j][y]);
                     } catch (Exception e) {
                     }

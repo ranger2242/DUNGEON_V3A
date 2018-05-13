@@ -9,7 +9,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.*;
+import com.quadx.dungeons.Anim;
+import com.quadx.dungeons.Cell;
+import com.quadx.dungeons.Game;
+import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.abilities.Ability;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.Illusion;
@@ -126,47 +129,26 @@ public class MapStateRender extends MapState {
         shapeR.end();
 
     }
+    //---HUD SPRITEBATCH FUNCTIONS---------------------------------------
+    static void drawGameTime(SpriteBatch sb){
+        NumberFormat formatter = new DecimalFormat("#00.00");
+
+        double d=Double.valueOf(formatter.format( Double.valueOf(gameTime.getElapsed())));
+        time+=d;
+        time=Double.valueOf(formatter.format(time));
+        Game.getFont().draw(sb,"Game Time: "+(int)(time/60)+":"+Double.valueOf(formatter.format(time%60)),viewX-100+WIDTH/2,viewY+HEIGHT-30);
+        gameTime.end();
+        gameTime.start();
+    }
     static void drawHUDBatch(SpriteBatch sb){
         //spritebatch draw functions---------------------------------------------------
         sb.begin();
         Game.setFontSize(1);
+        drawGameTime(sb);
+
         //Draw player stats
         if(showStats) {
-
-            Game.setFontSize(1);
-            Game.font.setColor(Color.WHITE);
-            NumberFormat formatter = new DecimalFormat("#00.00");
-            gameTime.end();
-            double d=Double.valueOf(formatter.format( Double.valueOf(gameTime.getElapsed())));
-            time+=d;
-            time=Double.valueOf(formatter.format(time));
-            Game.getFont().draw(sb,"Game Time: "+(int)(time/60)+":"+Double.valueOf(formatter.format(time%60)),viewX-100+WIDTH/2,viewY+HEIGHT-30);
-           gameTime.start();
-            ArrayList<String> a = player.getStatsList();
-            if(HUD.statsPos!=null) {
-                Vector2[] v = HUD.statsPos;
-                for (int i = 0; i < a.size(); i++) {
-                    if (Inventory.statCompare != null && i - 3 < Inventory.statCompare.length && i - 3 >= 0) {
-                        switch (Inventory.statCompare[i - 3]) {
-                            case 1: {
-                                Game.font.setColor(Color.BLUE);
-                                break;
-                            }
-                            case 2: {
-                                Game.font.setColor(Color.RED);
-                                break;
-                            }
-                            default: {
-                                Game.font.setColor(Color.WHITE);
-                                break;
-                            }
-                        }
-                    } else {
-                        Game.font.setColor(Color.WHITE);
-                    }
-                    Game.getFont().draw(sb, a.get(i), v[i].x, v[i].y);
-                }
-            }
+            player.renderStatList(sb, new Vector2(viewX + 30, viewY +HEIGHT- 30));
         }
         //Draw score
         Game.getFont().setColor(Color.WHITE);
@@ -259,7 +241,7 @@ public class MapStateRender extends MapState {
         for (Cell c : drawList) {//cycle through draw list
             float[] f = c.getCorners().getVertices();
             if(!Tests.noLand) {
-                if(!c.hasWater()) {
+                if(!c.isWater()) {
                     if(!c.isClear()) {
                         shapeR.setColor(new Color(.1f,.1f,.1f,1));
                         for(Triangle t: c.getTris()){
@@ -387,7 +369,7 @@ public class MapStateRender extends MapState {
             if (item != null && c.isClear())
                 sb.draw(item.getIcon(),c.getAbsPos().x,fixHeight(c.getAbsPos()));
             //draw warpToNext
-            if(c.hasWarp())
+            if(c.isWarp())
                 sb.draw(ImageLoader.warp,c.getFixedPos().x,c.getFixedPos().y);
         }
         //draw animations
@@ -395,7 +377,9 @@ public class MapStateRender extends MapState {
             if(a.getTexture() != null)
                 sb.draw(a.getTexture(),a.getPos().x,fixHeight(a.getPos()));
         }
+        sbDrawParticleEffects(sb);
         //draw player
+        player.render(sb);
         Vector2 v = player.getTexturePos();
         sb.draw(player.getIcon(), v.x, v.y);
         for(Illusion.Dummy d:Illusion.dummies){
@@ -495,28 +479,26 @@ public class MapStateRender extends MapState {
                     sb.draw(c.getItem().getIcon(), v.x, v.y);
                 }
             }
-            if (c.hasWarp()) {
+            if (c.isWarp()) {
                 sb.draw(ImageLoader.warp, v.x, v.y);
             }
         }
         sb.end();
     }
     static void sbDrawParticleEffects(SpriteBatch sb){
-        ArrayList<Integer> rem= new ArrayList<>();
-        sb.begin();
+        ArrayList<Integer> remove= new ArrayList<>();
         for(ParticleEffect p: MapStateExt.effects){
             p.draw(sb);
             if(p.isComplete()){
-                rem.add(MapStateExt.effects.indexOf(p));
+                remove.add(MapStateExt.effects.indexOf(p));
             }
         }
-        sb.end();
-        Collections.sort(rem);
-       // Collections.reverse(rem);
+        Collections.sort(remove);
+       Collections.reverse(remove);
         for(int i=MapStateExt.effects.size()-1;i>=0;i--){
-            for(Integer r:rem){
+            for(Integer r:remove){
                 if(r==i){
-                 //   MapStateExt.effects.remove(i);
+                   MapStateExt.effects.remove(i);
                 }
             }
         }

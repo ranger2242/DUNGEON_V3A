@@ -2,14 +2,12 @@ package com.quadx.dungeons;
 
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.items.*;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.mapstate.Map2State;
-import com.quadx.dungeons.states.mapstate.MapStateExt;
 import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.Timer;
@@ -110,20 +108,42 @@ public class GridManager {
         Rectangle screen= new Rectangle(viewX-scale,viewY-scale,(viewX + Game.WIDTH)+scale,(viewY + Game.HEIGHT)+scale);
         Monster.mdrawList.clear();
         for(Monster m : monsterList){
-            if(m.getHitBox().overlaps(screen)){
                 Monster.mdrawList.add(m);
                 m.setDrawable(true);
-            }else{
-                m.setDrawable(false);
-            }
+                monsOnScreen.add(m);
         }
-        for (int i = x - 3; i < endx + 3; i++) {
-            for (int j = y - 3; j < endy + 3; j++) {
-                Cell c;
+/*        for(Cell[] a: dispArray){
+            for(Cell c: a){
+                c.updateVariables();
+                c.updateParticles();
+                drawList.add(c);
+            }
+        }*/
+
+        int ext=8;
+        for ( int i = x - ext; i < endx + ext; i++) {
+            for (int j = y - ext; j < endy +ext; j++) {
+                Cell c=dispArray[(i+res)%res][(j+res)%res];
+                c.updateVariables();
+                c.updateParticles();
+                drawList.add(c);
+
+
+
+
+
+
+
+
+
+
+                //old and broken
+
+               /* Cell c;
                     if(i>=0 &&i<res && j>=0 &&j<res) {
                         c = dispArray[i][j];
                         c.updateVariables();
-                        if (!c.isClear() || c.hasWater()) {
+                        if (!c.isClear() || c.isWater()) {
                             c = loadTiles(c);
 
                         }
@@ -135,7 +155,7 @@ public class GridManager {
                             monsOnScreen.add(c.getMonster());
                         }
                     }
-
+*/
             }
         }
     }
@@ -189,10 +209,10 @@ public class GridManager {
         monsterList.clear();
     }
     private void createMap() {
-        for(ParticleEffect e :MapStateExt.effects){
+/*        for(ParticleEffect e :MapStateExt.effects){
             e.dispose();
         }
-        MapStateExt.effects.clear();
+        MapStateExt.effects.clear();*/
         Map2State.updateVars();
         dispArray = Map2State.generateMap2();
         //splitMapDataToList();
@@ -202,7 +222,7 @@ public class GridManager {
     private void plotWarps() {
         int index = rn.nextInt(liveCellList.size());
         Cell c = liveCellList.get(index);
-        liveCellList.get(index).setState();
+        liveCellList.get(index).setCleared();
         int x = c.getX();
         int y = c.getY();
         warp.set(x, y);
@@ -212,7 +232,7 @@ public class GridManager {
         int index = rn.nextInt(liveCellList.size());
         Vector2 v=liveCellList.get(index).getPos();
         shop.set(v);
-        liveCellList.get(index).setState();
+        liveCellList.get(index).setCleared();
         liveCellList.get(index).setShop(true);
     }
     private void plotLoot() {
@@ -249,9 +269,11 @@ public class GridManager {
         }
         for (int i = 0; i < seeds; i++) {
             Item item = Item.generate();
-            if (!item.isEquip && !(item.getClass().equals(SpellBook.class) || item.getClass().equals(Gold.class)
-                    || item.getClass().equals(Potion.class) || item.getClass().equals(ManaPlus.class)
-                    || item.getClass().equals(EnergyPlus.class))) {
+            Class c =item.getClass();
+            boolean useItem = c.equals(Potion.class)
+                    || c.equals(ManaPlus.class)
+                    || c.equals(EnergyPlus.class);
+            if (!(item.isEquip || (c.equals(SpellBook.class) || c.equals(Gold.class)))) {
                 int seeds2 = rn.nextInt(8);
                 for (int j = 0; j < seeds2; j++) {
                     int x = (int) (points.get(i).x + (4 * rn.nextGaussian()));
@@ -261,6 +283,7 @@ public class GridManager {
                     dispArray[x][y].setItem(item);
                 }
             }
+
 
         }
 
@@ -283,7 +306,7 @@ public class GridManager {
     private void plotPlayer() {
         int index = rn.nextInt(liveCellList.size());
         Cell c = liveCellList.get(index);
-        while (!(!c.hasWater() && c.isClear())) {
+        while (!(!c.isWater() && c.isClear())) {
             index = rn.nextInt(liveCellList.size());
             c = liveCellList.get(index);
         }
@@ -338,7 +361,7 @@ public class GridManager {
                 }*/
                 if (nx >= 0 && nx < res && ny >= 0 && ny < res) {
                     if (!dispArray[nx][ny].isClear()) {
-                        dispArray[nx][ny].setState();
+                        dispArray[nx][ny].setCleared();
                     }
                 }
             }
@@ -371,7 +394,7 @@ public class GridManager {
             if(isPlayer)r=3;
             else r=1;
             ArrayList<Cell> temp = getSurroundingCells(Math.round(x),Math.round( y), r);
-            temp.stream().filter(c -> !c.isClear()).forEach(Cell::setState);
+            temp.stream().filter(c -> !c.isClear()).forEach(Cell::setCleared);
             temp.clear();
 
          /*   if (isPlayer) {//checks if players dig ability is active
@@ -406,8 +429,8 @@ public class GridManager {
                             WallPattern.p[ii][jj] = false;
                         } else {
 
-                            if (c.hasWater()) {
-                                WallPattern.p[ii][jj] = !temp.get(count).hasWater();
+                            if (c.isWater()) {
+                                WallPattern.p[ii][jj] = !temp.get(count).isWater();
                             } else {
                                 WallPattern.p[ii][jj] = temp.get(count).isClear();
                             }
@@ -417,7 +440,7 @@ public class GridManager {
                 }
             }
             int a = 0;
-            if (c.hasWater()) a = 1;
+            if (c.isWater()) a = 1;
             Texture t1 = WallPattern.getTile(a);
             if (t1 != null && t != t1) {
                 c.setTile(t1);

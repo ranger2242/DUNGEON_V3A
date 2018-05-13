@@ -599,7 +599,7 @@ public class Monster {
         if (Tests.spawn && dRespawn.isDone() && monsterList.size() < 120) {
             Monster m = Monster.getNew();
             int index = rn.nextInt(liveCellList.size());
-            if (!liveCellList.get(index).hasWater() && liveCellList.get(index).isClear()) {
+            if (!liveCellList.get(index).isWater() && liveCellList.get(index).isClear()) {
                 Cell c = liveCellList.get(index);
                 m.setCords(c.getX(), c.getY());
 
@@ -718,7 +718,7 @@ public class Monster {
         int y = (int) (EMath.round(absPos.y / cellW));
 
         Cell c = dispArray[x][y];
-        if (c.isClear() && (!c.hasMon() || (prevPos.x == x && prevPos.y == y))) {
+        if (c.isWater()||  c.isClear() && (!c.hasMon() || (prevPos.x == x && prevPos.y == y))) {
             setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
         } else {
             if (rn.nextFloat() < .05)

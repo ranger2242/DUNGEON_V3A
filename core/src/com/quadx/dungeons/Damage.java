@@ -24,7 +24,7 @@ public class Damage {
 
     public static int calcPlayerDamage(Attack att, Monster m){
         float a, b, c, d, e;
-        a = 0.06753f;
+        a = 0.24f;
         b = player.getIntComp();
         c = (float) m.getIntel();
         d = att.getPower();

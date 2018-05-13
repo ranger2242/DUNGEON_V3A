@@ -11,6 +11,7 @@ import com.quadx.dungeons.attacks.AttackMod;
 import com.quadx.dungeons.attacks.Dash;
 import com.quadx.dungeons.attacks.Protect;
 import com.quadx.dungeons.commands.Command;
+import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.ShopState;
@@ -36,18 +37,19 @@ public class MapStateUpdater extends MapState{
     static ArrayList<Integer> fpsList= new ArrayList<>();
 
     private static Delta dDig = new Delta(2*Game.frame);
+    private static Delta dStatToggle = new Delta(10*Game.frame);
 
     private static float dtMap = 0;
     private static float dtShowStats =0;
-    public static float endShake=0;
-    static float dtCollision = 0;
-    static float dtScrollAtt=0;
-    static float dtFPS=0;
+    private static float endShake=0;
+    private static float dtFPS=0;
+    private static float dtClearHits =0;
+    private static float dtShake=0;
+    private static float force=0;
     public static float dtf=0;
     public static float fps=0;
-    static float dtClearHits =0;
-    static float dtShake=0;
-    public static float force=0;
+    static float dtCollision = 0;
+    static float dtScrollAtt=0;
 
     static boolean displayFPS=true;
 
@@ -56,7 +58,109 @@ public class MapStateUpdater extends MapState{
         super(gsm);
     }
 
-    private static void updateCamPosition() {
+    private static void numButtonFunctions(int x){
+        if(Gdx.input.isKeyPressed(Input.Keys.TAB) &&Inventory.dtItem >.15){
+            Inventory.unequip(x);
+        }
+        else if(Gdx.input.isKeyPressed(Input.Keys.APOSTROPHE)) {
+            Attack.showDescription(x);
+        }else
+        Attack.pos = x;
+
+    }
+    public static void pause(){
+        pause=true;
+        cam.position.set(0, 0, 0);
+        gsm.push(new ShopState(gsm));
+    }
+    public static void shakeScreen(float time , float f){
+        force=f;
+        endShake=time;
+        shakeCam=true;
+        dtShake=0;
+    }
+
+    //update methods=============================================
+    static void updateVariables(float dt) {
+        //nothing before metrics load
+        Tests.processMetrics();
+        //update below this line-----------------------
+        updateTimers(dt);
+        updateAnims(dt);
+        updateParticleEffects(dt);
+        updateAttackEffects(dt);
+        updateCamPosition();
+        monsterCollisionHandler();
+        player.updateVariables(dt);
+        HUD.update();
+        MapStateRender.updateVariables(dt);
+
+    }
+    static void updateAttackEffects(float dt) {
+        AttackMod.updaterVariables(dt);
+        Protect.update(dt);
+        Dash.update(dt);
+    }
+    static void updateAnims(float dt){
+        try {
+            for (Anim a : Anim.anims) {
+                a.update();
+            }
+        } catch (ConcurrentModificationException e) {
+        }
+    }
+    static void updateParticleEffects(float dt){
+  /*      if (effectLoaded)
+             effect.update(Gdx.graphics.getDeltaTime());*/
+        for (ParticleEffect e : MapStateExt.effects) {
+            e.update(dt);
+        }
+    }
+    static void updateTimers(float dt){
+        dStatToggle.update(dt);
+        dDig.update(dt);
+        if (dtClearHits <= .1)
+            dtClearHits += dt;
+        if (Inventory.dtItem <= Inventory.itemMinTime)
+            Inventory.dtItem += dt;
+        if (Attack.dtInfo <= .4)
+            Attack.dtInfo += dt;
+        if (dtStatPopup <= .4)
+            dtStatPopup += dt;
+        if (dtMap <= .6)
+            dtMap += dt;
+        if (dtCollision <= Game.frame / 2)
+            dtCollision += dt;
+        if (dtScrollAtt <= .3)
+            dtScrollAtt += dt;
+        if ( Attack.dtAttack <= Attack.attackMintime)
+            Attack.dtAttack += dt;
+        if (Inventory.dtInvSwitch <= .3)
+            Inventory.dtInvSwitch += dt;
+        if (dtShowStats <= .2)
+            dtShowStats += dt;
+        dtShake+=dt;
+        if (dtFPS > .05) {
+            fps = 1 / Gdx.graphics.getDeltaTime();
+            fpsList.add((int) fps);
+            if (fpsList.size() > Tests.meterListMax) {
+                fpsList.remove(0);
+            }
+            dtFPS = 0;
+        } else {
+            dtFPS += dt;
+        }
+        dtf += dt;
+        dtWaterEffect += dt;
+        HUD.dtLootPopup += dt;
+        if (dtShake > endShake)
+            shakeCam = false;
+        if (Warp.isEnabled())
+            Warp.updateTimeCounter();
+
+
+    }
+    static void updateCamPosition() {
         Vector3 position = cam.position;
         player.fixPosition();
         float[] f = dispArray[(int) player.getPos().x][(int) player.getPos().y].getCorners().getVertices();
@@ -80,131 +184,8 @@ public class MapStateUpdater extends MapState{
         viewX = cam.position.x - cam.viewportWidth / 2;
         viewY = cam.position.y - cam.viewportHeight / 2;
     }
-    private static void numButtonFunctions(int x){
-        if(Gdx.input.isKeyPressed(Input.Keys.TAB) &&Inventory.dtItem >.15){
-            Inventory.unequip(x);
-        }
-        else if(Gdx.input.isKeyPressed(Input.Keys.APOSTROPHE)) {
-            Attack.showDescription(x);
-        }else
-        Attack.pos = x;
+    //===========================================================
 
-    }
-    public static void pause(){
-        pause=true;
-        cam.position.set(0, 0, 0);
-        gsm.push(new ShopState(gsm));
-    }
-    public static void shakeScreen(float time , float f){
-        force=f;
-        endShake=time;
-        shakeCam=true;
-        dtShake=0;
-    }
-    static void updateVariables(float dt) {
-        //nothing before metrics load
-        Tests.processMetrics();
-        //update below this line-----------------------
-        //reset inventorypos
-
-        try{
-        for(Anim a: Anim.anims){
-            a.update();
-        }}catch (ConcurrentModificationException e){}
-        for(ParticleEffect e:MapStateExt.effects){
-            e.update(dt);
-        }
-        AttackMod.updaterVariables(dt);
-
-        player.updateVariables(dt);
-        try {
-            for (Monster m : monsterList) {
-                Attack.fixPos();
-                Attack.HitBoxShape hbs = player.attackList.get(Attack.pos).getHitBoxShape();
-                if(hbs != null)
-                switch (hbs){
-
-                    case Circle:
-                        if ( player.getAttackCircle().overlaps(m.getHitBox())) {
-                            m.hitByAttack();
-                        }
-                        break;
-                    case Rect:
-                        if ( player.getAttackBox().overlaps(m.getHitBox())) {
-                            m.hitByAttack();
-                        }
-                        break;
-                    case Triangle:{
-                        if(player.getAttackTriangle().overlaps(m.getHitBox()))
-                        m.hitByAttack();
-                        break;
-                    }
-                }
-
-            }
-        } catch (ConcurrentModificationException e) {
-        }
-
-        MapStateRender.updateVariables(dt);
-        if (dtFPS > .05) {
-            fps = 1 / Gdx.graphics.getDeltaTime();
-            fpsList.add((int) fps);
-            if (fpsList.size() > Tests.meterListMax) {
-                fpsList.remove(0);
-            }
-            dtFPS = 0;
-        } else {
-            dtFPS += dt;
-        }
-        dtf+=dt;
-        //dtDig+=dt;
-        dtWaterEffect+=dt;
-        HUD.dtLootPopup +=dt;
-
-        //System.out.println(EMath.randomGaussianAverage(100,20)+"");
-        Protect.update(dt);
-        Dash.update(dt);
-
-        if (dtClearHits <= .1)
-            dtClearHits += dt;
-
-
-
-        dDig.update(dt);
-        if (Inventory.dtItem <= Inventory.itemMinTime)
-            Inventory.dtItem += dt;
-
-        if (Attack.dtInfo <= .4)
-            Attack.dtInfo += dt;
-        if (dtStatPopup <= .4)
-            dtStatPopup += dt;
-        if (dtMap <= .6)
-            dtMap += dt;
-        if (dtCollision <= Game.frame / 2)
-            dtCollision += dt;
-        if (dtScrollAtt <= .3)
-            dtScrollAtt += dt;
-        if ( Attack.dtAttack <= Attack.attackMintime)
-            Attack.dtAttack += dt;
-        if (Inventory.dtInvSwitch <= .3)
-            Inventory.dtInvSwitch += dt;
-        if (dtShowStats <= .2)
-            dtShowStats += dt;
-            dtShake+=dt;
-
-        if(dtShake>endShake){
-            shakeCam=false;
-        }
-        if (Warp.isEnabled()) {
-            Warp.updateTimeCounter();
-        }
-
-        if (effectLoaded)
-            effect.update(Gdx.graphics.getDeltaTime());
-        //put hud update positions here
-        updateCamPosition();
-        HUD.update();
-    }
     static void buttonHandler() {
         //keyboard functions--------------------------------------------------------
         for(Command c: commandList){
@@ -233,7 +214,14 @@ public class MapStateUpdater extends MapState{
         }
         if (Gdx.input.isKeyPressed(Input.Keys.NUM_8)) {
             numButtonFunctions(7);
-        }        if(Gdx.input.isKeyPressed(Input.Keys.B)){
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_9)) {
+            numButtonFunctions(8);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_0)) {
+            numButtonFunctions(9);
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.B)){
             player.jumping=true;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.ALT_RIGHT)) {
@@ -261,6 +249,18 @@ public class MapStateUpdater extends MapState{
         if(Gdx.input.isKeyPressed(Input.Keys.F4)) {
             gsm.push(new ShopState(gsm));
         }
+        if(Gdx.input.isKeyPressed(Input.Keys.F5)) {
+            if(dStatToggle.isDone()) {
+                player.toggleSimpleStats();
+                dStatToggle.reset();
+            }
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.F6)) {
+            if(dStatToggle.isDone()) {
+                player.forceLevelUp();
+                dStatToggle.reset();
+            }
+        }
         if(Gdx.input.isKeyPressed(Input.Keys.B)){
             player.jumping=true;
         }
@@ -275,19 +275,48 @@ public class MapStateUpdater extends MapState{
             Gdx.input.getTextInput(listener, "Command", "","");
         }
     }
-
+    static void monsterCollisionHandler() {
+        try {
+            for (Monster m : monsterList) {
+                Attack.fixPos();
+                Attack.HitBoxShape hbs = player.attackList.get(Attack.pos).getHitBoxShape();
+                if (hbs != null)
+                    switch (hbs) {
+                        case Circle:
+                            if (player.getAttackCircle().overlaps(m.getHitBox())) {
+                                m.hitByAttack();
+                            }
+                            break;
+                        case Rect:
+                            if (player.getAttackBox().overlaps(m.getHitBox())) {
+                                m.hitByAttack();
+                            }
+                            break;
+                        case Triangle: {
+                            if (player.getAttackTriangle().overlaps(m.getHitBox()))
+                                m.hitByAttack();
+                            break;
+                        }
+                    }
+            }
+        } catch (ConcurrentModificationException e) { }
+    }
     static void collisionHandler() {
         ArrayList<Cell> list = getSurroundingCells((int)player.getPos().x,(int)player.getPos().y,1);
-        list.removeIf(x-> !(x.hasItem() || x.hasWarp() || x.hasShop()));
+        list.removeIf(x-> !(x.hasItem() || x.isWarp() || x.isShop()));
         for(Cell c: list){
             if(c.hasItem()){
-                c.getItem().colliion(c.getPos());
+                HUD.out("ITEM");
+                Item item= c.getItem();
+                if(item != null)
+                item.colliion(c.getPos());
             }
-            if (c.hasWarp()) {
+            if (c.isWarp()) {
                 MapStateExt.warpToNext();
             }
-            if (c.hasShop()) {
+            if (c.isShop()) {
                 MapStateExt.warpToShop();
+                c.setCleared();
             }
         }
     }

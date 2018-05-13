@@ -4,7 +4,6 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -12,7 +11,6 @@ import com.quadx.dungeons.Cell;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.Inventory;
-import com.quadx.dungeons.attacks.Flame;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.monsters.Monster;
@@ -49,7 +47,7 @@ public class MapState extends State implements ControllerListener {
 
     public static Texture statPopup;
     public static GridManager gm;
-    static ParticleEffect effect;
+    //static ParticleEffect effect;
     public static final Random rn = new Random();
     public static boolean inGame=false;
     static boolean effectLoaded = false;
@@ -76,9 +74,8 @@ public class MapState extends State implements ControllerListener {
         debug();
     }
     public void debug() {
-        Tests.timeKill();
-        player.attackList.clear();
-        player.attackList.add(new Flame());
+        if(Tests.allAttacks)
+            player.addAllAttacks();
         //Tests.goldTest();
         //Tests.testEquipmentRates();
         //Tests.giveItems(50);
@@ -94,9 +91,8 @@ public class MapState extends State implements ControllerListener {
         Inventory.compareItemToEquipment();
         player.update(dt);
         if(MapStateUpdater.dtCollision>Game.frame/2) {
-            if(!player.jumping)
-            MapStateUpdater.collisionHandler();
         }
+        MapStateUpdater.collisionHandler();
         //MapStateUpdater.moveMonsters();
         player.checkIfDead(gsm);
         HUD.create();

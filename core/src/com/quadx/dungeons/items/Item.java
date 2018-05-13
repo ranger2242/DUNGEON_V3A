@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.tools.ImageLoader;
+import com.quadx.dungeons.tools.gui.HUD;
 
 import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
@@ -138,16 +139,23 @@ public class Item
             icon= ImageLoader.crate;
         }
     }
+
     public void colliion(Vector2 v) {
-        int x=(int)v.x, y=(int)v.y;
-        if (this.getClass().equals(EnergyPlus.class))
-            player.useItem(new EnergyPlus());
-        else if (this.getClass().equals(Potion.class))
-            player.useItem(new Potion());
-        else if (this.getClass().equals(ManaPlus.class))
-            player.useItem(new ManaPlus());
+        int x = (int) v.x,
+                y = (int) v.y;
+
+        Class c = this.getClass();
+        boolean a= c.equals(EnergyPlus.class) ||
+                c.equals(Potion.class) ||
+                c.equals(ManaPlus.class);
+        if(a){
+            HUD.out("USE ITEM");
+            player.useItem(this);
+        }
         else
             openCrate(this);
+
+
         player.resetBars();
         dispArray[x][y].setBoosterItem(-1);
         dispArray[x][y].setCrate(false);

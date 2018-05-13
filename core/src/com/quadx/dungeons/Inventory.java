@@ -76,7 +76,7 @@ public class Inventory {
                 int nx = (int) (pos.x + (rn.nextGaussian() * 2));
                 int ny = (int) (pos.y + (rn.nextGaussian() * 2));
                 Cell test = dispArray[nx][ny];
-                while (test.hasCrate() || !test.isClear() || test.hasLoot() || test.hasWarp() || test.hasWater()
+                while (test.hasCrate() || !test.isClear() || test.hasLoot() || test.isWarp() || test.isWater()
                         || (nx == pos.x && ny == pos.y)) {
                     nx = (int) (pos.x + (rn.nextGaussian() * 2));
                     ny = (int) (pos.y + (rn.nextGaussian() * 2));

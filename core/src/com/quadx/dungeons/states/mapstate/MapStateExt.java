@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.attacks.Attack;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.dispArray;
+import static com.quadx.dungeons.GridManager.fixHeight;
 
 /**
  * Created by Tom on 1/29/2016.
@@ -24,26 +26,39 @@ import static com.quadx.dungeons.GridManager.dispArray;
 public class MapStateExt extends MapState {
     public static ArrayList<ParticleEffect> effects = new ArrayList<>();
 
-    public static ParticleEffect loadParticles(String fname, float x, float y, Color c, int type) {
-        ParticleEffect e = loadParticles(fname, x, y, type);
+    public enum EffectType {
+        ATTACK, FIELD
+    }
+
+    public static ParticleEffect loadParticles(String fname, float x, float y, Color c, EffectType type) {
+        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("particles\\itemParticlePack.atlas"));
+        ParticleEffect e = loadParticles(fname, x, y, type,atlas);
         e.getEmitters().first().getTint().setColors(new float[]{c.r, c.g, c.b});
         return e;
     }
 
+    public static ParticleEffect loadParticles(String name, Vector2 pos) {
+        ParticleEffect effect = new ParticleEffect();
+        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("particles\\particlesPack.atlas"));
+        effect.load(Gdx.files.internal("particles\\" + name), atlas);
+        float y = fixHeight(pos);
+        effect.setPosition(pos.x, y);
+        effect.getEmitters().get(0).setPosition(pos.x, y);
+        return effect;
 
-    public static ParticleEffect loadParticles(String fname, float x, float y, int type) {
+    }
+
+    public static ParticleEffect loadParticles(String fname, float x, float y, EffectType type, TextureAtlas texture) {
         //type 1 for attacks
         //type 2 for field effects
         ParticleEffect effect;
         effect = new ParticleEffect();
         ParticleEmitter emitter;
-        // String s = "fla";
         effect.load(Gdx.files.internal(FilePaths.getPath("particles\\" + fname)), Gdx.files.internal("particles"));
 
         emitter = effect.getEmitters().first();
         ParticleEmitter.ScaledNumericValue spawnWidth = emitter.getSpawnWidth();
-        if (type == 1) {
-
+        if (type == EffectType.ATTACK) {
             ParticleEmitter.ScaledNumericValue spawnHeight = emitter.getSpawnHeight();
 
             ParticleEmitter.ScaledNumericValue angle = emitter.getAngle();
@@ -111,15 +126,16 @@ public class MapStateExt extends MapState {
         effects.add(e);
     }
 
-    public static void warpToNext(){
-            if (player.hasAP()) {
+    public static void warpToNext() {
+        if (player.hasAP()) {
             gsm.push(new AbilitySelectState(gsm));
         }
         player.floor++;
         gm.initializeGrid();
     }
+
     public static void warpToShop() {
-        dispArray[(int)shop.x][(int)shop.y].setShop(false);
+        dispArray[(int) shop.x][(int) shop.y].setShop(false);
         gsm.push(new ShopState(gsm));
     }
 }

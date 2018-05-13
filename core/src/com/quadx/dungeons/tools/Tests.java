@@ -26,8 +26,10 @@ public class Tests {
     public static int meterListMax = 50;
     public static int runs = 100;
     public static float dtReload = 0;
+    public static boolean allAttacks=      true;
+
     public static boolean allstop=      false;
-    public static boolean spawn =      true;
+    public static boolean spawn =      false;
     public static boolean nodeath=      false;
     public static boolean fastreg=      false;
     public static boolean noLand=       false;
@@ -35,8 +37,8 @@ public class Tests {
     public static boolean output=       true;
     public static boolean clearmap=     false;
     public static boolean infiniteRegen = false;
-
     static int testCount = 0;
+
     public static void goldTest(){
         int[] avgarr=new int[100];
         for(int i=1;i<=100;i++) {

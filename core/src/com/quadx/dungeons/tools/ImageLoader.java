@@ -11,7 +11,7 @@ import java.util.ArrayList;
  */
 public class ImageLoader {
    public static Texture[] pl=new Texture[4];
-
+    public static final ArrayList<Texture> statIcons = new ArrayList<>();
     public static final ArrayList<Texture> attacks = new ArrayList<>();
     public static final ArrayList<Texture> abilities = new ArrayList<>();
     public static final ArrayList<Texture> abilities2 = new ArrayList<>();
@@ -39,6 +39,7 @@ public class ImageLoader {
     public static final Texture warp=new Texture(FilePaths.getPath("images\\tiles\\icWarp.png"));
     public static Texture spellbook= new Texture(FilePaths.getPath("images\\icons\\items\\icSpellBook.png"));
 
+    String icons="images\\icons\\";
 
     public ImageLoader(){
         pl[0]= new Texture(Gdx.files.internal("images/icons/player/00.png"));
@@ -74,7 +75,27 @@ public class ImageLoader {
         loadMonsters();
         loadAbilities();
         loadEquip();
+        loadStatIcons();
     }
+
+    private void loadStatIcons() {
+        String stats=icons+"stats\\";
+        statIcons.add(null);
+        statIcons.add(null);
+
+        statIcons.add(new Texture(FilePaths.getPath(stats+"hpstaticon.png")));
+        statIcons.add(new Texture(FilePaths.getPath(stats+"manastaticon.png")));
+        statIcons.add(new Texture(FilePaths.getPath(stats+"energystaticon.png")));
+        statIcons.add(new Texture(FilePaths.getPath(stats+"strstaticon.png")));
+        statIcons.add(new Texture(FilePaths.getPath(stats+"defstaticon.png")));
+        statIcons.add(new Texture(FilePaths.getPath(stats+"intstaticon.png")));
+
+        statIcons.add(new Texture(FilePaths.getPath(stats+"spdstaticon.png")));
+
+
+
+    }
+
     private void loadEquip(){
         equipBasic[0]=new Texture(FilePaths.getPath("images\\icons\\items\\icArms.png"));
         equipBasic[1]=new Texture(FilePaths.getPath("images\\icons\\items\\icBoots.png"));

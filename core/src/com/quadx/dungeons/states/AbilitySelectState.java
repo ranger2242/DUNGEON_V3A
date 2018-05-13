@@ -7,13 +7,14 @@ import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Game;
-import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 import com.quadx.dungeons.abilities.*;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.FilePaths;
 import com.quadx.dungeons.tools.ImageLoader;
+import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 
 import java.util.ArrayList;
 
@@ -21,6 +22,7 @@ import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.states.MainMenuState.controller;
 import static com.quadx.dungeons.states.mapstate.MapState.viewX;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
+import static com.quadx.dungeons.tools.gui.Text.centerString;
 
 
 /**
@@ -39,6 +41,7 @@ public class AbilitySelectState extends State implements ControllerListener {
     private static Ability hovering=null;
     public static boolean pressed=false;
     private static float dtMove=0;
+    static boolean firstRun=true;
 
     public AbilitySelectState(GameStateManager gsm){
         super(gsm);
@@ -82,31 +85,38 @@ public class AbilitySelectState extends State implements ControllerListener {
         }
     }
     public static void selectAbiltiy(){
-        if(dtSel >.7f) {
-            if(MapState.inGame){
-                boolean found=false;
-                if(player.getAbility().getClass().equals(hovering.getClass())){
-                    player.getAbility().upgrade();
-                    found=true;
-                }
-                for(Ability a:player.secondaryAbilityList) {
-                    if (a.getClass().equals(hovering.getClass())) {
-                        a.upgrade();
-                        found=true;
+        if(firstRun){
+            firstRun=false;
+        }else {
+            if (dtSel > .7f) {
+                if (MapState.inGame) {
+                    boolean found = false;
+                    if (player.getAbility().getClass().equals(hovering.getClass())) {
+                        player.getAbility().upgrade();
+                        found = true;
                     }
-                }
-                if(!found){
-                    if(player.secondaryAbilityList.size()<player.maxSec){
-                        player.secondaryAbilityList.add(hovering);
-                        player.secondaryAbilityList.get(player.secondaryAbilityList.size()-1).onActivate();
+                    for (Ability a : player.secondaryAbilityList) {
+                        if (a.getClass().equals(hovering.getClass())) {
+                            a.upgrade();
+                            found = true;
+                        }
                     }
+                    if (!found) {
+                        if (player.secondaryAbilityList.size() < player.maxSec) {
+                            player.secondaryAbilityList.add(hovering);
+                            player.secondaryAbilityList.get(player.secondaryAbilityList.size() - 1).onActivate();
+                        }
+                    }
+                } else {
+                    pressed = true;
+                    player.setAbility(hovering);
+
                 }
-            }else {
-                pressed = true;
-                player.setAbility(hovering);
+                dtSel = 0;
+
+
+                exit();
             }
-            dtSel = 0;
-            exit();
         }
     }
     public static void exit(){
@@ -123,9 +133,8 @@ public class AbilitySelectState extends State implements ControllerListener {
             gsm.push(new MapState(gsm));}
     }
 
-    @Override
-    public void render(SpriteBatch sb) {
-        sb.begin();
+//RENDER FUNCTIONS
+    void drawIcons(SpriteBatch sb){
         Game.setFontSize(4);
         Game.getFont().setColor(Color.WHITE);
         if(!MapState.inGame) {
@@ -140,16 +149,8 @@ public class AbilitySelectState extends State implements ControllerListener {
                 sb.draw(ImageLoader.abilities2.get(i), viewX + i * 150 + Game.WIDTH / 2, viewY + (Game.HEIGHT * 2 / 3) - 100);
             }
         }
-        Game.setFontSize(2);
-        Game.getFont().setColor(Color.WHITE);
-
-        Game.getFont().draw(sb,"-PRIMARY-",viewX+titlex+100,viewY+HEIGHT-120);
-        Game.getFont().draw(sb,"-SECONDARY-",viewX+titlex+100,viewY+HEIGHT-270);
-        CharSequence cs="Enter:Select        Tab:Exit";
-        gl.setText(Game.getFont(),cs);
-
-        Game.getFont().draw(sb,"Enter:Select        Tab:Exit",viewX+(WIDTH/2)-(gl.width/2),viewY+30);
-
+    }
+    void drawSelector(SpriteBatch sb){
         if(posx<0)posx=0;
         if(posy<0)posy=0;
         if(posy>4)posy=4;
@@ -157,37 +158,66 @@ public class AbilitySelectState extends State implements ControllerListener {
             Game.getFont().draw(sb, "-", viewX + posx * 150 + Game.WIDTH / 2, viewY + Game.HEIGHT * 2 / 3 - (posy * 100));
         }
         else posx=ImageLoader.abilities.size()-1;
-        sb.end();
-        drawInfo(sb);
-        //draw player stats
-        sb.begin();
-        Game.setFontSize(1);
+
+    }
+    void drawText(SpriteBatch sb){
+        Game.setFontSize(2);
         Game.getFont().setColor(Color.WHITE);
-        ArrayList<String> stats = player.getStatsList();
-        for(int i=0;i<stats.size();i++){
-            Game.font.draw(sb, stats.get(i),viewX+30,viewY+HEIGHT-30-(20*i));
-        }
+
+        Game.getFont().draw(sb,"-PRIMARY-",viewX+titlex+100,viewY+HEIGHT-120);
+        Game.getFont().draw(sb,"-SECONDARY-",viewX+titlex+100,viewY+HEIGHT-270);
+
+        Game.getFont().draw(sb,"-UPGRADE AND BUY ABILITIES WITH AP-",viewX+(WIDTH/2)-(gl.width/2),viewY+Game.HEIGHT-80);
+
+        CharSequence cs="Enter:Select        Tab:Exit";
+        gl.setText(Game.getFont(),cs);
+
+        Game.getFont().draw(sb,"Enter:Select        Tab:Exit",viewX+(WIDTH/2)-(gl.width/2),viewY+30);
+    }
+
+    public void drawAbilityScreen(SpriteBatch sb){
+        sb.begin();
+        drawIcons(sb);
+        drawText(sb);
+        drawSelector(sb);
+        player.renderStatList(sb, new Vector2(viewX +30, viewY +HEIGHT- 30));
+        drawAbilityInfo(sb);
         sb.end();
     }
-    private void drawInfo(SpriteBatch sb){
-        ArrayList<Ability> temp=new ArrayList<>();
+    private void drawInstructions(SpriteBatch sb) {
+        sb.begin();
+        Game.getFont().draw(sb,"WIN",centerString("WIN"),HEIGHT/2);
+        sb.end();
+    }
+    @Override
+    public void render(SpriteBatch sb) {
+        if(firstRun)
+            drawInstructions(sb);
+        else
+           drawAbilityScreen(sb);
+    }
+
+
+
+    private void drawAbilityInfo(SpriteBatch sb){
+        ArrayList<Ability> abilities=new ArrayList<>();
         if(posy==0){
             if(MapState.inGame){
-                temp.add(player.getAbility());
+                abilities.add(player.getAbility());
             }else{
-                temp=abilityList;}
+                abilities=abilityList;}
         }
         if(posy==1){
-            temp=secondaryList;
+            abilities=secondaryList;
         }
-        sb.begin();
-        if(posx<temp.size()) {
-            for (int i = 0; i < temp.get(posx).details().size(); i++) {
-                Game.getFont().draw(sb, temp.get(posx).details().get(i), viewX + 30, viewY -100+ Game.HEIGHT * 2 / 3 - (i * 20));
-                hovering = temp.get(posx);
+        if(posx<abilities.size()) {
+            ArrayList<String> details= abilities.get(posx).details();
+            for (int i = 0; i < details.size(); i++) {
+                Game.getFont().draw(sb, details.get(i),
+                        viewX + 30, viewY -100+ Game.HEIGHT * 2 / 3 - (i * 20));
+                hovering = abilities.get(posx);
             }
         }
-        sb.end();
     }
     @Override
     public void dispose() {

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Player;
 import com.quadx.dungeons.tools.Score;
@@ -226,12 +227,15 @@ public class HighScoreState extends State {
             for(int i=0;i<list.size();i++){
                 Game.getFont().draw(sb,list.get(i),killerx,killery-30-((i+1)*20));
             }
-            for(int i=0;i<pfinal.getStatsList().size();i++){
+            pfinal.renderStatList(sb,new Vector2(viewX+(WIDTH/2)-100,viewY+(HEIGHT/2)-20));
+           /* for(int i=0;i<pfinal.getStatsList().size();i++){
                 try{
-                    Game.getFont().draw(sb,pfinal.getStatsList().get(i),viewX+(WIDTH/2)-100,viewY+(HEIGHT/2)-20-((i+1)*20));
+
+                    Game.getFont().draw(sb,pfinal.getStatsList().get(i),
+                            viewX+(WIDTH/2)-100,viewY+(HEIGHT/2)-20-((i+1)*20));
                 }catch (Exception e){}
 
-            }
+            }*/
             for(int i=0;i<pfinal.equipedList.size();i++){
                 try{
                     Game.getFont().draw(sb,pfinal.equipedList.get(i).getName(),viewX+((WIDTH/3)*2)+50,viewY+(HEIGHT/2)-35-((i+1)*30));

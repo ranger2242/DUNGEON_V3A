@@ -1,0 +1,90 @@
+///////////////////////////////////////////////////////////////////////////
+-------------------IMPORTANT-----------------------
+                 --Do before alpha test party--
+///////////////////////////////////////////////////////////////////////////
+
+Level up particle effect or animation
+
+Make multiplier to timers
+Add +AP hovertext
+Fix spawn near monsters
+Fix investor gold gen
+Fix mage and quick ability icons
+Pause game when lost focus and controller disconnect
+Clear item particles after rotate map
+Add timer to MapState
+Fix player control select screen
+Add way to change attacks on hotbar
+Kill per min broken
+Secondary ability costs
+Floor par
+Item hotkeys
+Weapon system
+Add invincibility item
+Illusion room with fake monsters
+Add regen bonus to equipment
+Add equipment list to shop state
+Add way to construct specific equipment
+Fix monster AI
+Use items from equipment screen
+Fix tileset problems
+Bonus room with no walls and time based exit.
+///////////////////////////////////////
+Tooltips
+///////////////////////////////////////
+-add tooltip to attack icons
+-add tooltip to equipment area icons
+-add tooltip to monsters to show stats
+///////////////////////////////////////
+
+///////////////////////////////////////
+Equipment
+///////////////////////////////////////
+-add icon border color to show rarity
+-consider more types of equipment
+///////////////////////////////////////
+
+///////////////////////////////////////
+Other
+///////////////////////////////////////
+-add more spells
+-add weapons
+-make world traps
+-finish status effects
+-add controls info screen
+-add more item
+-add handlers for different resolutions
+~~consider companions
+-add player abilities
+-searchable debris
+
+///////////////////////////////////////
+Abilities
+///////////////////////////////////////
+-water breathing
+-rough skin
+-reflect magic
+-short teleport
+-life steal
+-timestop
+-absorb
+-crit booster
+-agility
+-padded
+-terraform
+-lucky
+-barrier
+-sneak
+-focused vision
+
+////////////////////////////////////////////////////
+achievements
+/////////////////////////////////////////////////////
+x of mosters killed
+x of gold
+x of walls dug
+x of distance walked
+cleared x dungeons
+used x items
+played over x time
+stayed alive for x time

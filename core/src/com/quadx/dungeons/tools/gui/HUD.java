@@ -52,7 +52,6 @@ public class HUD {
         equipBoxes.clear();
         hud.texts.clear();
         hud.rects.clear();
-        statsPos= new Vector2[player.getStatsList().size()];
 
         //hud rects
         if (MapState.showStats) {
@@ -224,11 +223,18 @@ public class HUD {
             playerStatBars[1]=new Rectangle(pos.x, pos.y+15, pManaBar, h);
             playerStatBars[2]=new Rectangle(pos.x, pos.y, pEnergyBar, h);
     }
-    static void generateStatListPos(Vector2 pos){
+    static public Vector2[] generateStatListPos(Vector2 pos){
         //update player stat list pos
+        statsPos= new Vector2[player.getStatsList().size()];
+        int last=0;
         for(int i=0;i<player.getStatsList().size();i++){
-            statsPos[i]=new Vector2(pos.x,pos.y - (i * 20));
+            int space= 20;
+            if(i<2 || i>9)
+                space=10;
+            last+=space;
+            statsPos[i]=new Vector2(pos.x,pos.y - last);
         }
+        return statsPos;
     }
     public static Vector2[] getStatPos(){
         return statsPos;
