@@ -15,7 +15,6 @@ import com.quadx.dungeons.attacks.Illusion;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.physics.Body;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 import com.quadx.dungeons.tools.*;
 import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.gui.InfoOverlay;
@@ -105,7 +104,7 @@ public class Monster {
 
     protected static Delta dRespawn = new Delta(10);
     protected Delta dChangeDirection = new Delta(.5f);
-    protected Delta dInvincibility = new Delta(Game.frame * 3);
+    protected Delta dInvincibility = new Delta(Game.ft * 3);
     protected Delta dAgro = new Delta(rn.nextInt(200) + 15);
 
     protected Elapsed eAgroTime = new Elapsed();
@@ -251,7 +250,7 @@ public class Monster {
             d = Damage.monsterMagicDamage(this);
             player.addHp(-d);
             //player.setHp(player.getHp() - d);//apply damage
-            MapStateUpdater.shakeScreen(.5f, 5);
+            MapState.camController.shakeScreen(20f, 5);
             player.setDest(absPos);
             new HoverText("-" + d, 1, new Color(1f, .2f, .2f, 1f), player.getAbsPos().x, player.getAbsPos().y, true);
             hit = true;

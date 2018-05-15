@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.ControlState;
 import com.quadx.dungeons.states.MainMenuState;
+import com.quadx.dungeons.states.ShopState;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.Direction;
 import com.quadx.dungeons.tools.controllers.Xbox360Pad;
@@ -41,6 +42,9 @@ public class DownComm extends Command {
             }
             if(cls.equals(ControlState.class)){
                 ControlState.selector.downSelection();
+            }
+            if(cls.equals(ShopState.class)){
+                player.addShopInvOffset(1);
             }
         }
     }

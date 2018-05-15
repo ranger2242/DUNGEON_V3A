@@ -29,7 +29,7 @@ public class Tests {
     public static boolean allAttacks=      true;
 
     public static boolean allstop=      false;
-    public static boolean spawn =      false;
+    public static boolean spawn =      true;
     public static boolean nodeath=      false;
     public static boolean fastreg=      false;
     public static boolean noLand=       false;

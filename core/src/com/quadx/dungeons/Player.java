@@ -3,6 +3,7 @@ package com.quadx.dungeons;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -30,6 +31,7 @@ import javafx.util.Pair;
 
 import java.util.ArrayList;
 
+import static com.quadx.dungeons.Game.ft;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.GridManager.res;
@@ -46,7 +48,9 @@ import static com.quadx.dungeons.tools.gui.HUD.out;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class Player {
-    public static Delta dWater = new Delta(10 * Game.frame);
+    private static Delta dWater = new Delta(10 * ft);
+    private Delta dShopInvScroll = new Delta(10*ft);
+
 
     private final ArrayList<String> statsList = new ArrayList<>();
     public final ArrayList<Attack> attackList = new ArrayList<>();
@@ -89,9 +93,11 @@ public class Player {
     private int str = 15;
     private int expLimit = 0;
     private int abilityPoints = 0;
+    private int shopInvPos=0;
     public int maxSec = 2;
     public int level = 1;
     public int floor = 1;
+
 
     public boolean canMove = false;
     public boolean wasHit = false;
@@ -1013,13 +1019,6 @@ public class Player {
         else return new Cell();
     }
 
-    public void update(float dt) {
-        dWater.update(dt);
-        if(renderEffect)
-        lvlupEffect.update(dt);
-        player.swim(dWater);
-        player.dig();
-    }
 
     public boolean hasAP() {
         return getAbilityPoints() != 0;
@@ -1037,6 +1036,19 @@ public class Player {
         attackList.add(new Focus());
         attackList.add(new Torment());
         attackList.add(new Stab());
+    }
+
+    //UPDATE METHODS------------------------------------------------
+    public void updateMapState(float dt) {
+        dWater.update(dt);
+        if (renderEffect)
+            lvlupEffect.update(dt);
+        player.swim(dWater);
+        player.dig();
+    }
+    public void updateShopState(float dt){
+        dShopInvScroll.update(dt);
+
     }
 
     //RENDER METHODS------------------------------------------------
@@ -1092,6 +1104,39 @@ public class Player {
                 lvlupEffect.dispose();
         }
     }
+
+    public void renderShopInventory(SpriteBatch sb) {
+        BitmapFont font = Game.getFont();
+        float size = invList.size();
+        float end = size >= 8 ? 8 : size;
+        for (int i = 0; i < end; i++) {
+            float x = scrx(2f / 3f);
+            float y = scry(.8f - (i * .1f));
+
+
+            float ind = (i + shopInvPos);
+            if (ind < 0) {
+                ind = size - 1;
+                shopInvPos = (int) (size - 1);
+            } else {
+                ind %= size;
+                shopInvPos %= size;
+            }
+            ArrayList<Item> itemStack = invList.get((int) ind);
+            Item item = itemStack.get(0);
+            String qty = "x" + itemStack.size();
+            String name = (i + 1) + ". " + item.getName();
+            String debug = (1 + (int) ind) + "/" + (int) size;
+
+
+            font.draw(sb, name, x, y);
+            font.draw(sb, qty, scrx(9f / 10f), y);
+            font.draw(sb, debug, x, y - 20);
+            sb.draw(item.getIcon(), x, y + 10);
+        }
+        float per = shopInvPos / size;
+        font.draw(sb, "|", scrx(.95f), scry(.8f - (.79f * per)));
+    }
     //--------------------------------------------------------------
 
     public boolean simpleStatsEnabled() {
@@ -1105,6 +1150,13 @@ public class Player {
     public void forceLevelUp() {
         exp+=expLimit;
         checkLvlUp();
+    }
+
+    public void addShopInvOffset(int i) {
+        if(dShopInvScroll.isDone()) {
+            shopInvPos += i;
+            dShopInvScroll.reset();
+        }
     }
 }
 

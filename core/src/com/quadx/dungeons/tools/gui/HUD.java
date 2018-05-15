@@ -15,8 +15,8 @@ import com.quadx.dungeons.tools.ImageLoader;
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.*;
+import static com.quadx.dungeons.states.State.view;
 import static com.quadx.dungeons.states.mapstate.Map2State.res;
-import static com.quadx.dungeons.states.mapstate.MapState.viewX;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
 
 /**
@@ -55,11 +55,11 @@ public class HUD {
 
         //hud rects
         if (MapState.showStats) {
-            hud.rects.add(new Rectangle(viewX, viewY + HEIGHT - 300, 300, 300));
+            hud.rects.add(new Rectangle(view.x, viewY + HEIGHT - 300, 300, 300));
         }
-        hud.rects.add(new Rectangle(viewX, viewY, WIDTH, 207));
+        hud.rects.add(new Rectangle(view.x, viewY, WIDTH, 207));
         //player score
-        int x= (int) ((viewX +20));
+        int x= (int) ((view.x +20));
         String score="SCORE: " + player.getPoints() + "";
         hud.texts.add(new Text(score, new Vector2(x, (viewY + 200)), Color.GRAY, 1));
         String scoreH;
@@ -77,17 +77,17 @@ public class HUD {
     }
 
     public static void update() {
-        int x = (int) viewX;
+        int x = (int) view.x;
         int y = (int) viewY;
         int w = WIDTH;
         int h = HEIGHT;
         equipPos = new Vector2(new Vector2((x + (w / 3) + 35), y + 130));
         minimapPos = new Vector2(x + w - ((res * 2) + 20), y + 20);
         attackBarPos = new Vector2(x + 20, y + 30);
-        inventoryPos = new Vector2((viewX + (WIDTH / 2)), viewY + 130);
-        fpsGridPos.set((int) (viewX + (Game.WIDTH * 2 / 3)), viewY + 20);
-        statListPos = new Vector2(viewX + 30, viewY + HEIGHT - 30);
-        playerStatBarPos= new Vector2(viewX+20,viewY+145);
+        inventoryPos = new Vector2((view.x + (WIDTH / 2)), viewY + 130);
+        fpsGridPos.set((int) (view.x + (Game.WIDTH * 2 / 3)), viewY + 20);
+        statListPos = new Vector2(view.x + 30, viewY + HEIGHT - 30);
+        playerStatBarPos= new Vector2(view.x+20,viewY+145);
     }
     public static void out(String s){
         if(output != null) {
@@ -186,7 +186,7 @@ public class HUD {
 
     }
     static void generateEquipmentUI(Vector2 pos){
-        //update equipboxes positions
+        //updateMapState equipboxes positions
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 4; j++) {
                 equipBoxes.add(new Rectangle(pos.x + (j * 36), pos.y + (i * 36) - 20, 32, 32));
@@ -224,7 +224,7 @@ public class HUD {
             playerStatBars[2]=new Rectangle(pos.x, pos.y, pEnergyBar, h);
     }
     static public Vector2[] generateStatListPos(Vector2 pos){
-        //update player stat list pos
+        //updateMapState player stat list pos
         statsPos= new Vector2[player.getStatsList().size()];
         int last=0;
         for(int i=0;i<player.getStatsList().size();i++){

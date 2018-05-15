@@ -22,6 +22,7 @@ import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.controllers.Controllers;
 import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 import com.quadx.dungeons.tools.gui.HUD;
+import com.quadx.dungeons.tools.gui.CamController;
 import com.quadx.dungeons.tools.shapes.Circle;
 
 import java.util.ArrayList;
@@ -37,30 +38,34 @@ import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtScrollAtt;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class MapState extends State implements ControllerListener {
-    static final boolean debug=true;
-    public static boolean noLerp=false;
-    public static boolean pause=false;
+
+    static final ArrayList<Cell> hitList = new ArrayList<>();
+
+    static final boolean debug = true;
+    public static boolean pause = false;
+    public static boolean showStats = true;
+    public static boolean inGame = false;
+    static boolean effectLoaded = false;
+
+    static final String DIVIDER = "_________________________";
+
+    public static int cellW = 30;
+    static int altNumPressed = 1;
+
+    public static float dtStatPopup = 0;
+
+
+    public static Vector2 cell = new Vector2(cellW, cellW * (2f / 3f));
+    public static Vector2 warp = new Vector2();
+    public static Vector2 shop = new Vector2();
+
 
     static ShapeRendererExt shapeR = new ShapeRendererExt();
-    static final ArrayList<Cell> hitList=new ArrayList<>();
-    public static boolean showStats=true;
-
     public static Texture statPopup;
     public static GridManager gm;
-    //static ParticleEffect effect;
     public static final Random rn = new Random();
-    public static boolean inGame=false;
-    static boolean effectLoaded = false;
-    static final String DIVIDER= "_________________________";
-    public static int cellW=30;
-    public static Vector2 cell = new Vector2(cellW,cellW*(2f/3f));
-    public static Vector2 warp=new Vector2();
-    public static Vector2 shop=new Vector2();
-    public static float dtStatPopup=0;
-    public static float viewX;
-    public static float viewY;
-    static int altNumPressed=1;
-    public static Circle circle = new Circle(new Vector2(cell.x*GridManager.res/2,cell.y*GridManager.res/2),200);
+    public static Circle circle = new Circle(new Vector2(cell.x * GridManager.res / 2, cell.y * GridManager.res / 2), 200);
+    public static CamController camController = new CamController();
 
 
     public MapState(GameStateManager gsm) {
@@ -78,7 +83,7 @@ public class MapState extends State implements ControllerListener {
             player.addAllAttacks();
         //Tests.goldTest();
         //Tests.testEquipmentRates();
-        //Tests.giveItems(50);
+        Tests.giveItems(100);
         //Tests.testsMonsterStats();
     }
     public void handleInput() {
@@ -89,8 +94,8 @@ public class MapState extends State implements ControllerListener {
         Monster.update(dt);
         GridManager.loadDrawList();
         Inventory.compareItemToEquipment();
-        player.update(dt);
-        if(MapStateUpdater.dtCollision>Game.frame/2) {
+        player.updateMapState(dt);
+        if(MapStateUpdater.dtCollision>Game.ft /2) {
         }
         MapStateUpdater.collisionHandler();
         //MapStateUpdater.moveMonsters();
@@ -146,6 +151,7 @@ public class MapState extends State implements ControllerListener {
             }
         }
     }
+
     //-----------------------------------------------------------------------------------------
     //Controller Interface
     public void connected(Controller controller) {

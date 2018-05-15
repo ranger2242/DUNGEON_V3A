@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.states.ControlState;
 import com.quadx.dungeons.tools.ShapeRendererExt;
 
-import static com.quadx.dungeons.Game.frame;
+import static com.quadx.dungeons.Game.ft;
 
 /**
  * Created by Chris Cavazos on 7/10/2017.
@@ -28,7 +28,7 @@ public class Selector {
     }
 
     public void flipState(Class c){
-        if(dtChange>=frame*10) {
+        if(dtChange>= ft *10) {
             if (c.equals(ControlState.class)) {
 
                 setActive(!isActive());
@@ -80,7 +80,7 @@ public class Selector {
     }
 
     public void setPos(int pos) {
-        if(dtChange>frame*6) {
+        if(dtChange> ft *6) {
             this.pos = pos;
             setPosInBounds();
             calculateBox();

@@ -20,8 +20,6 @@ import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.states.MainMenuState.controller;
-import static com.quadx.dungeons.states.mapstate.MapState.viewX;
-import static com.quadx.dungeons.states.mapstate.MapState.viewY;
 import static com.quadx.dungeons.tools.gui.Text.centerString;
 
 
@@ -138,15 +136,15 @@ public class AbilitySelectState extends State implements ControllerListener {
         Game.setFontSize(4);
         Game.getFont().setColor(Color.WHITE);
         if(!MapState.inGame) {
-            Game.getFont().draw(sb, "~~Select Ability~~", viewX + titlex, viewY + titley);
+            Game.getFont().draw(sb, "~~Select Ability~~", view.x + titlex, viewY + titley);
             for(int i = 0; i<abilityList.size(); i++){
-                sb.draw(ImageLoader.abilities.get(i),viewX+ i*150+Game.WIDTH/2,viewY+ Game.HEIGHT*2/3);
+                sb.draw(ImageLoader.abilities.get(i),view.x+ i*150+Game.WIDTH/2,viewY+ Game.HEIGHT*2/3);
             }
         }else{
-            Game.getFont().draw(sb, "~~Upgrade Ability~~", viewX + titlex, viewY + titley);
-            sb.draw(ImageLoader.abilities.get(player.getAbilityMod()), viewX + Game.WIDTH / 2, viewY + (Game.HEIGHT * 2 / 3));
+            Game.getFont().draw(sb, "~~Upgrade Ability~~", view.x + titlex, viewY + titley);
+            sb.draw(ImageLoader.abilities.get(player.getAbilityMod()), view.x + Game.WIDTH / 2, viewY + (Game.HEIGHT * 2 / 3));
             for (int i = 0; i < secondaryList.size(); i++) {
-                sb.draw(ImageLoader.abilities2.get(i), viewX + i * 150 + Game.WIDTH / 2, viewY + (Game.HEIGHT * 2 / 3) - 100);
+                sb.draw(ImageLoader.abilities2.get(i), view.x + i * 150 + Game.WIDTH / 2, viewY + (Game.HEIGHT * 2 / 3) - 100);
             }
         }
     }
@@ -155,7 +153,7 @@ public class AbilitySelectState extends State implements ControllerListener {
         if(posy<0)posy=0;
         if(posy>4)posy=4;
         if(posx<ImageLoader.abilities.size()) {
-            Game.getFont().draw(sb, "-", viewX + posx * 150 + Game.WIDTH / 2, viewY + Game.HEIGHT * 2 / 3 - (posy * 100));
+            Game.getFont().draw(sb, "-", view.x + posx * 150 + Game.WIDTH / 2, viewY + Game.HEIGHT * 2 / 3 - (posy * 100));
         }
         else posx=ImageLoader.abilities.size()-1;
 
@@ -164,15 +162,15 @@ public class AbilitySelectState extends State implements ControllerListener {
         Game.setFontSize(2);
         Game.getFont().setColor(Color.WHITE);
 
-        Game.getFont().draw(sb,"-PRIMARY-",viewX+titlex+100,viewY+HEIGHT-120);
-        Game.getFont().draw(sb,"-SECONDARY-",viewX+titlex+100,viewY+HEIGHT-270);
+        Game.getFont().draw(sb,"-PRIMARY-",view.x+titlex+100,viewY+HEIGHT-120);
+        Game.getFont().draw(sb,"-SECONDARY-",view.x+titlex+100,viewY+HEIGHT-270);
 
-        Game.getFont().draw(sb,"-UPGRADE AND BUY ABILITIES WITH AP-",viewX+(WIDTH/2)-(gl.width/2),viewY+Game.HEIGHT-80);
+        Game.getFont().draw(sb,"-UPGRADE AND BUY ABILITIES WITH AP-",view.x+(WIDTH/2)-(gl.width/2),viewY+Game.HEIGHT-80);
 
         CharSequence cs="Enter:Select        Tab:Exit";
         gl.setText(Game.getFont(),cs);
 
-        Game.getFont().draw(sb,"Enter:Select        Tab:Exit",viewX+(WIDTH/2)-(gl.width/2),viewY+30);
+        Game.getFont().draw(sb,"Enter:Select        Tab:Exit",view.x+(WIDTH/2)-(gl.width/2),viewY+30);
     }
 
     public void drawAbilityScreen(SpriteBatch sb){
@@ -180,7 +178,7 @@ public class AbilitySelectState extends State implements ControllerListener {
         drawIcons(sb);
         drawText(sb);
         drawSelector(sb);
-        player.renderStatList(sb, new Vector2(viewX +30, viewY +HEIGHT- 30));
+        player.renderStatList(sb, new Vector2(view.x +30, viewY +HEIGHT- 30));
         drawAbilityInfo(sb);
         sb.end();
     }
@@ -214,7 +212,7 @@ public class AbilitySelectState extends State implements ControllerListener {
             ArrayList<String> details= abilities.get(posx).details();
             for (int i = 0; i < details.size(); i++) {
                 Game.getFont().draw(sb, details.get(i),
-                        viewX + 30, viewY -100+ Game.HEIGHT * 2 / 3 - (i * 20));
+                        view.x + 30, viewY -100+ Game.HEIGHT * 2 / 3 - (i * 20));
                 hovering = abilities.get(posx);
             }
         }

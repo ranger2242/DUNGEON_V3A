@@ -5,7 +5,7 @@ package com.quadx.dungeons.tools;
  */
 public class Delta {
     private float dtPassed = 0;
-    private float limit=0;
+    private float limit;
     public Delta(float lim) {
         limit=lim;
     }

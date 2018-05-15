@@ -3,8 +3,10 @@ package com.quadx.dungeons.states.mapstate;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.math.Vector3;
-import com.quadx.dungeons.*;
+import com.quadx.dungeons.Anim;
+import com.quadx.dungeons.Cell;
+import com.quadx.dungeons.Game;
+import com.quadx.dungeons.Inventory;
 import com.quadx.dungeons.abilities.Warp;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.AttackMod;
@@ -24,7 +26,8 @@ import com.quadx.dungeons.tools.gui.HUD;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 
-import static com.quadx.dungeons.Game.*;
+import static com.quadx.dungeons.Game.commandList;
+import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.*;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.dtWaterEffect;
 
@@ -36,16 +39,13 @@ import static com.quadx.dungeons.states.mapstate.MapStateRender.dtWaterEffect;
 public class MapStateUpdater extends MapState{
     static ArrayList<Integer> fpsList= new ArrayList<>();
 
-    private static Delta dDig = new Delta(2*Game.frame);
-    private static Delta dStatToggle = new Delta(10*Game.frame);
+    private static Delta dDig = new Delta(2*Game.ft);
+    private static Delta dStatToggle = new Delta(10*Game.ft);
 
     private static float dtMap = 0;
     private static float dtShowStats =0;
-    private static float endShake=0;
     private static float dtFPS=0;
     private static float dtClearHits =0;
-    private static float dtShake=0;
-    private static float force=0;
     public static float dtf=0;
     public static float fps=0;
     static float dtCollision = 0;
@@ -73,23 +73,18 @@ public class MapStateUpdater extends MapState{
         cam.position.set(0, 0, 0);
         gsm.push(new ShopState(gsm));
     }
-    public static void shakeScreen(float time , float f){
-        force=f;
-        endShake=time;
-        shakeCam=true;
-        dtShake=0;
-    }
 
-    //update methods=============================================
+
+    //updateMapState methods=============================================
     static void updateVariables(float dt) {
         //nothing before metrics load
         Tests.processMetrics();
-        //update below this line-----------------------
+        //updateMapState below this line-----------------------
         updateTimers(dt);
         updateAnims(dt);
         updateParticleEffects(dt);
         updateAttackEffects(dt);
-        updateCamPosition();
+        camController.update(dt, cam);
         monsterCollisionHandler();
         player.updateVariables(dt);
         HUD.update();
@@ -111,7 +106,7 @@ public class MapStateUpdater extends MapState{
     }
     static void updateParticleEffects(float dt){
   /*      if (effectLoaded)
-             effect.update(Gdx.graphics.getDeltaTime());*/
+             effect.updateMapState(Gdx.graphics.getDeltaTime());*/
         for (ParticleEffect e : MapStateExt.effects) {
             e.update(dt);
         }
@@ -129,7 +124,7 @@ public class MapStateUpdater extends MapState{
             dtStatPopup += dt;
         if (dtMap <= .6)
             dtMap += dt;
-        if (dtCollision <= Game.frame / 2)
+        if (dtCollision <= Game.ft / 2)
             dtCollision += dt;
         if (dtScrollAtt <= .3)
             dtScrollAtt += dt;
@@ -139,7 +134,6 @@ public class MapStateUpdater extends MapState{
             Inventory.dtInvSwitch += dt;
         if (dtShowStats <= .2)
             dtShowStats += dt;
-        dtShake+=dt;
         if (dtFPS > .05) {
             fps = 1 / Gdx.graphics.getDeltaTime();
             fpsList.add((int) fps);
@@ -153,37 +147,31 @@ public class MapStateUpdater extends MapState{
         dtf += dt;
         dtWaterEffect += dt;
         HUD.dtLootPopup += dt;
-        if (dtShake > endShake)
-            shakeCam = false;
+
         if (Warp.isEnabled())
             Warp.updateTimeCounter();
 
 
     }
-    static void updateCamPosition() {
+/*     void updateCamPosition() {
         Vector3 position = cam.position;
         player.fixPosition();
         float[] f = dispArray[(int) player.getPos().x][(int) player.getPos().y].getCorners().getVertices();
-        Vector3 v = new Vector3(f[8], f[9], 0);
-        if(!noLerp) {
-            if (shakeCam) {
-                v.add((float) (force * rn.nextGaussian()), (float) (force * rn.nextGaussian()), 0);
-                position.lerp(v, .5f);
-
-            } else {
-
-                position.lerp(v, .2f);
-            }
-        }else{
+        Vector3 disp = new Vector3(f[8], f[9], 0);
+        if(snapCam) {
             position.set(player.getAbsPos().x,GridManager.fixHeight(player.getAbsPos()),0);
-            noLerp=false;
+            snapCam =false;
+        }else{
+            disp.add(camController.camDisplacement());
+            float alpha = camController.isShaking()? .5f:.2f;
+            position.lerp(disp,alpha);
         }
 
         cam.position.set(position);
-        cam.update();
+        cam.updateMapState();
         viewX = cam.position.x - cam.viewportWidth / 2;
         viewY = cam.position.y - cam.viewportHeight / 2;
-    }
+    }*/
     //===========================================================
 
     static void buttonHandler() {

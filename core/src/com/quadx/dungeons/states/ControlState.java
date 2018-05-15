@@ -19,8 +19,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.*;
-import static com.quadx.dungeons.states.mapstate.MapState.viewX;
-import static com.quadx.dungeons.states.mapstate.MapState.viewY;
 import static com.quadx.dungeons.tools.gui.Text.strWidth;
 
 /**
@@ -89,8 +87,8 @@ public class ControlState extends State implements InputProcessor {
         Game.setFontSize(2);
         Game.getFont().setColor(Color.WHITE);
         //Draw Titles
-        Game.getFont().draw(sb,key.text,viewX+key.x,viewY+ key.y);
-        Game.getFont().draw(sb,act.text,viewX+act.x,viewY+ act.y);
+        Game.getFont().draw(sb,key.text,view.x+key.x,viewY+ key.y);
+        Game.getFont().draw(sb,act.text,view.x+act.x,viewY+ act.y);
 
         Game.setFontSize(3);
         for(int i=0;i<commandList.size();i++) {
@@ -128,8 +126,8 @@ public class ControlState extends State implements InputProcessor {
         float[] s = fitLineToWord(t.text);
         float x=t.x;
         float y=t.y;
-        sr.line(viewX + x + s[0], viewY +y+ s[1] , viewX + x + s[2], viewY + y+ s[3]);
-        sr.line(viewX + x + s[4], viewY +y+ s[5] , viewX + x + s[6], viewY + y+ s[7]);
+        sr.line(view.x + x + s[0], viewY +y+ s[1] , view.x + x + s[2], viewY + y+ s[3]);
+        sr.line(view.x + x + s[4], viewY +y+ s[5] , view.x + x + s[6], viewY + y+ s[7]);
     }
 
     public void dispose() {

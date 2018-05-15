@@ -22,8 +22,6 @@ import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.*;
-import static com.quadx.dungeons.states.mapstate.MapState.viewX;
-import static com.quadx.dungeons.states.mapstate.MapState.viewY;
 import static com.quadx.dungeons.tools.gui.Text.centerString;
 import static com.quadx.dungeons.tools.gui.Text.strWidth;
 
@@ -57,7 +55,7 @@ public class MainMenuState extends State implements ControllerListener {
         effect.load(Gdx.files.internal(FilePaths.getPath("particles\\pt" + s)), Gdx.files.internal("particles"));
         emitter = effect.findEmitter("fire");
         emitter.setContinuous(true);
-        effect.setPosition(viewX+ Game.WIDTH/2,viewY+ 0);
+        effect.setPosition(view.x+ Game.WIDTH/2,viewY+ 0);
     }
     void initController(){
         if(Controllers.getControllers().size>0) {
@@ -138,13 +136,13 @@ public class MainMenuState extends State implements ControllerListener {
         drawTitle(sb);
         drawOptions(sb);
         sb.begin();
-        sb.draw(title,viewX+(WIDTH/2)-(title.getWidth()/2),viewY+HEIGHT- title.getHeight()-30);
+        sb.draw(title,view.x+(WIDTH/2)-(title.getWidth()/2),viewY+HEIGHT- title.getHeight()-30);
         if(!Tests.timeKill()) {
 
             String s = "DEMO TIME EXPIRED";
             Game.setFontSize(4);
             Game.getFont().setColor(Color.WHITE);
-            Game.getFont().draw(sb, s, viewX + WIDTH / 2 - strWidth(s) / 2, viewY + HEIGHT / 2);
+            Game.getFont().draw(sb, s, view.x + WIDTH / 2 - strWidth(s) / 2, viewY + HEIGHT / 2);
         }
         sb.end();
     }

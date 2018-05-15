@@ -1,4 +1,5 @@
 COMPLETE===========================================================
+BUILD 2018.0000001
 -tweaked player damage up
 -fixed monsters breaking on left and bottom edge
 -reordered debug attacks
@@ -8,11 +9,23 @@ COMPLETE===========================================================
 -added player levelup animation
 -renabling particles on items
 
-WORKING ON==========================================================
+BUILD 2018.0000002
+-text color changes after buying in shop
+-item icon in inventory defaults to box after selling
+-refactoring out all shake screen properties to its own class for
+reuse in other states
+-refactored viewX and viewY into Vector2 view
+-made scrx and scry methods in State to make placing stuff on
+screen easier
+-item scrolling in shop
 
+WORKING ON==========================================================
+-shake screen on invalid input in shop state
 
 NEW BUGS============================================================
--text color changes after buying in shop
+-items in shop inventory default to boxes after sell
+
+OLD BUGS============================================================
 -corrupted player stats in highscorestate
 -shooting the left edge breaks hitbox placement
 -screen wrapping breaks occasionally

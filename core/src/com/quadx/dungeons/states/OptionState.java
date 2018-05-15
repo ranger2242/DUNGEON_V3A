@@ -6,13 +6,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Game;
-import com.quadx.dungeons.states.mapstate.MapState;
 
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.HEIGHT;
-import static com.quadx.dungeons.states.mapstate.MapState.viewX;
-import static com.quadx.dungeons.states.mapstate.MapState.viewY;
 
 /**
  * Created by Tom on 12/30/2015.
@@ -30,8 +27,9 @@ public class OptionState extends State{
         resolutions.add(new Vector2(800,600));
         resolutions.add(new Vector2(1366,760));
         cam.position.set(0,0,0);
-        viewX=cam.position.x;
-        MapState.viewY=cam.position.y;
+ /*       viewX=cam.position.x;
+        MapState.viewY=cam.position.y;*/
+        State.updateView(new Vector2(cam.position.x,cam.position.y));
         cam.setToOrtho(false);
         addOptions();
     }
@@ -60,9 +58,9 @@ public class OptionState extends State{
         sb.begin();
         for(int i=0;i<options.size();i++){
             if(i!=options.size()-1) {
-                Game.getFont().draw(sb, options.get(i) + " : " + lockAim, viewX + 30, viewY + HEIGHT - 30);
+                Game.getFont().draw(sb, options.get(i) + " : " + lockAim, view.x + 30, viewY + HEIGHT - 30);
             }else{
-                Game.getFont().draw(sb, options.get(i), viewX + 30, viewY + HEIGHT - 30);
+                Game.getFont().draw(sb, options.get(i), view.x + 30, viewY + HEIGHT - 30);
             }
 
         }

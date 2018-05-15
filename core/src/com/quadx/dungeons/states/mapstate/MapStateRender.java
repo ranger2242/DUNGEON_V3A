@@ -99,7 +99,7 @@ public class MapStateRender extends MapState {
         else
             shapeR.setColor(1,0,0,(1-((float)player.getHp()/(float)player.getHpMax()))/2.8f);
 
-        shapeR.rect(viewX,viewY,WIDTH,HEIGHT);
+        shapeR.rect(view.x,viewY,WIDTH,HEIGHT);
         shapeR.end();
         Gdx.gl.glDisable(GL_BLEND);
         // end transparency------------------------------------------------------------
@@ -136,7 +136,7 @@ public class MapStateRender extends MapState {
         double d=Double.valueOf(formatter.format( Double.valueOf(gameTime.getElapsed())));
         time+=d;
         time=Double.valueOf(formatter.format(time));
-        Game.getFont().draw(sb,"Game Time: "+(int)(time/60)+":"+Double.valueOf(formatter.format(time%60)),viewX-100+WIDTH/2,viewY+HEIGHT-30);
+        Game.getFont().draw(sb,"Game Time: "+(int)(time/60)+":"+Double.valueOf(formatter.format(time%60)),view.x-100+WIDTH/2,viewY+HEIGHT-30);
         gameTime.end();
         gameTime.start();
     }
@@ -148,7 +148,7 @@ public class MapStateRender extends MapState {
 
         //Draw player stats
         if(showStats) {
-            player.renderStatList(sb, new Vector2(viewX + 30, viewY +HEIGHT- 30));
+            player.renderStatList(sb, new Vector2(view.x + 30, viewY +HEIGHT- 30));
         }
         //Draw score
         Game.getFont().setColor(Color.WHITE);
@@ -168,7 +168,7 @@ public class MapStateRender extends MapState {
             Game.font.setColor(Color.WHITE);
             for (int i = 0; i < 10; i++) {
                 try {
-                    Game.getFont().draw(sb, HUD.output.get(i), viewX+(2*WIDTH/3) - 30, viewY + HEIGHT - (i * 20)-30);
+                    Game.getFont().draw(sb, HUD.output.get(i), view.x+(2*WIDTH/3) - 30, viewY + HEIGHT - (i * 20)-30);
                 } catch (IndexOutOfBoundsException|NullPointerException ignored) {
                 }
             }
@@ -585,7 +585,7 @@ public class MapStateRender extends MapState {
 
         if(blink){shapeR.setColor(Color.BLUE);}
         else if(!blink){shapeR.setColor(Color.WHITE);}
-        if(dtBlink>Game.frame*4){
+        if(dtBlink>Game.ft *4){
             blink=!blink;
             blradius++;
             dtBlink=0;

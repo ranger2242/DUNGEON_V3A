@@ -11,13 +11,12 @@ import com.quadx.dungeons.commands.Command;
 import com.quadx.dungeons.items.*;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.states.mapstate.MapState;
+import com.quadx.dungeons.tools.gui.CamController;
 import com.quadx.dungeons.tools.gui.Title;
 
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.*;
-import static com.quadx.dungeons.states.mapstate.MapState.viewX;
-import static com.quadx.dungeons.states.mapstate.MapState.viewY;
 import static com.quadx.dungeons.tools.gui.Text.strWidth;
 
 /**
@@ -30,15 +29,15 @@ public class ShopState extends State {
     private static float dtBuy=0;
     private float dtSold=0;
     private float dtScroll=0;
-    int invoffset=0;
     private boolean dispSold = false;
     private static final ShapeRenderer shapeR=new ShapeRenderer();
     private static final ArrayList<Item> shopInv = new ArrayList<>();
+    CamController camController = new CamController();
 
     public ShopState(GameStateManager gsm){
         super(gsm);
         cam.setToOrtho(false, WIDTH, HEIGHT);
-        cam.position.set(viewX+ WIDTH/2,viewY+ HEIGHT/2,0);
+        cam.position.set(view.x+ WIDTH/2,viewY+ HEIGHT/2,0);
         if(!MapState.pause)
         genShopInv();
         Gdx.gl.glClearColor(0,0,0,1);
@@ -52,71 +51,53 @@ public class ShopState extends State {
             c.execute();
         }
         //keyboard functions--------------------------------------------------------
-
-        if (dtScroll > .1f) {
-
-            if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
-                if (invoffset > 0) {
-                    invoffset--;
-                }
-                dtScroll = 0;
-
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-                if (invoffset + 9 < player.invList.size()) {
-                    invoffset++;
-                }
-                dtScroll = 0;
-            }
-        }
         if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) numberButtonHandler(0);
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) numberButtonHandler(1);
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_3)) numberButtonHandler(2);
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_4)) numberButtonHandler(3);
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_5)) numberButtonHandler(4);
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_6)) numberButtonHandler(5);
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_7)) numberButtonHandler(6);
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_8)) numberButtonHandler(7);
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_9)) numberButtonHandler(8);
+        else if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) numberButtonHandler(1);
+        else if (Gdx.input.isKeyPressed(Input.Keys.NUM_3)) numberButtonHandler(2);
+        else if (Gdx.input.isKeyPressed(Input.Keys.NUM_4)) numberButtonHandler(3);
+        else if (Gdx.input.isKeyPressed(Input.Keys.NUM_5)) numberButtonHandler(4);
+        else if (Gdx.input.isKeyPressed(Input.Keys.NUM_6)) numberButtonHandler(5);
+        else if (Gdx.input.isKeyPressed(Input.Keys.NUM_7)) numberButtonHandler(6);
+        else if (Gdx.input.isKeyPressed(Input.Keys.NUM_8)) numberButtonHandler(7);
+        else if (Gdx.input.isKeyPressed(Input.Keys.NUM_9)) numberButtonHandler(8);
+        else if(Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)
+                && !Gdx.input.isKeyPressed(Input.Keys.MINUS))
+            camController.shakeScreen(20,100);
     }
     private void numberButtonHandler(int i){
-        if(!MapState.pause && Gdx.input.isKeyPressed(Input.Keys.MINUS) && dtBuy>.3){
-                if(i>=0) {
-                        try {
-                            try {
-                                Item item = player.invList.get(i).get(0);
-                                if(item.isEquip)
-                                    item.loadIcon(item.getType());
-                                else
-                                    item.loadIcon(item.getName());
-                                player.invList.get(i).remove(0);
-                                soldItemCost= (int) (item.getCost()*.75);
-                                Game.player.setGold((float) (Game.player.getGold()+soldItemCost));
-                                dispSold=true;
-                                dtBuy=0;
-                                if(player.invList.get(i).isEmpty()){
-                                    player.invList.remove(i);
-                                }
-                            } catch (IndexOutOfBoundsException e) {
-                            }
-                        } catch (NullPointerException e) {
-                        }
-                    }
-
-        }
-        if(i<shopInv.size() && dtBuy>.3 && Game.player.getGold()>=shopInv.get(i).getCost()){
-            Game.player.setGold(Game.player.getGold()-shopInv.get(i).getCost());
+        boolean minus = Gdx.input.isKeyPressed(Input.Keys.MINUS);
+        if (!MapState.pause && minus && dtBuy > .3) {
+            if (i < player.invList.size()) {
+                Item item = player.invList.get(i).get(0);
+                if (item.isEquip)
+                    item.loadIcon(item.getType());
+                else
+                    item.loadIcon(item.getName());
+                player.invList.get(i).remove(0);
+                soldItemCost = (int) (item.getCost() * .75);
+                Game.player.setGold((float) (Game.player.getGold() + soldItemCost));
+                dispSold = true;
+                dtBuy = 0;
+                if (player.invList.get(i).isEmpty()) {
+                    player.invList.remove(i);
+                }
+            }
+        } else if (!minus && i < shopInv.size() && dtBuy > .3 && Game.player.getGold() >= shopInv.get(i).getCost()) {
+            Game.player.setGold(Game.player.getGold() - shopInv.get(i).getCost());
             Game.player.addItemToInventory(shopInv.get(i));
-            if(i>=6) shopInv.remove(i);
-            dtBuy=0;
+            if (i >= 6) shopInv.remove(i);
+            dtBuy = 0;
         }
+
     }
     public void update(float dt) {
         handleInput();
+        player.updateShopState(dt);
         dtBuy+=dt;
         dtScroll+=dt;
-        if(dispSold) dtSold+=dt;
+        if(dispSold)
+            dtSold+=dt;
+        camController.update(dt,cam);
         cam.update();
     }
     public void render(SpriteBatch sb) {
@@ -130,22 +111,24 @@ public class ShopState extends State {
         GlyphLayout gl = new GlyphLayout();
         CharSequence cs="(TAB) EXIT";
         gl.setText(Game.getFont(),cs);
-        Game.getFont().draw(sb,"(TAB) EXIT",viewX+(WIDTH/2)-gl.width/2,viewY+70);
+        Game.getFont().draw(sb,"(TAB) EXIT",view.x+(WIDTH/2)-gl.width/2,viewY+70);
         sb.end();
 
         shapeR.begin(ShapeRenderer.ShapeType.Line);
         shapeR.setColor(1,0,0,1);
-        shapeR.rect(viewX+40,viewY+40, WIDTH-80, HEIGHT-80);
+        shapeR.rect(view.x+40,viewY+40, WIDTH-80, HEIGHT-80);
         shapeR.end();
     }
     private void drawPlayerInv(SpriteBatch sb){
         sb.begin();
-        Game.getFont().draw(sb,"EQUIPMENT",viewX +(WIDTH/3)+100,viewY+ HEIGHT-50);
-        Game.getFont().draw(sb,"INVENTORY",viewX +(2*WIDTH/3),viewY+ HEIGHT-50);
+        Game.setFontSize(1);
+        Game.getFont().setColor(Color.WHITE);
+        Game.getFont().draw(sb,"EQUIPMENT",view.x +(WIDTH/3)+100,view.y+ HEIGHT-50);
+        Game.getFont().draw(sb,"INVENTORY",view.x +(2*WIDTH/3),view.y+ HEIGHT-50);
 
-        Game.getFont().draw(sb,"G "+ Game.player.getGold(),viewX+(3*WIDTH/4),viewY+ HEIGHT-50);
+        Game.getFont().draw(sb,"G "+ Game.player.getGold(),view.x+(3*WIDTH/4),viewY+ HEIGHT-50);
         if(dtSold<.5 && dispSold){
-            Game.getFont().draw(sb,"+"+soldItemCost,viewX+ WIDTH-150,viewY+ HEIGHT-50);
+            Game.getFont().draw(sb,"+"+soldItemCost,view.x+ WIDTH-150,viewY+ HEIGHT-50);
         }
         else{
             dtSold=0;
@@ -153,27 +136,20 @@ public class ShopState extends State {
         }
         int yoff=-120;
         //player inventory
-        for(int i = 0; i< 9; i++) {
-            try {
-                ArrayList<Item> al = Game.player.invList.get(i+invoffset);
-                Game.getFont().draw(sb, (i + 1) + ". " + al.get(0).getName(), viewX +(2*WIDTH/3), viewY + HEIGHT - (i * 60)+yoff);
-                Game.getFont().draw(sb, "x" + al.size(), viewX + WIDTH - 100, viewY + HEIGHT  - (i * 60)+yoff-20);
-                sb.draw( al.get(0).getIcon(),viewX +(2*WIDTH/3), viewY + HEIGHT - (i * 60)+yoff+10);
-            }catch (IndexOutOfBoundsException e){}
-        }
+        player.renderShopInventory(sb);
         //equipment
         for(int i=0;i<player.equipedList.size();i++){
             Equipment e= player.equipedList.get(i);
-            Game.getFont().draw(sb, "# "+e.getName(), viewX +(WIDTH/3)+100, viewY + HEIGHT - (i * 60)+yoff);
-            sb.draw(e.getIcon(),viewX +(WIDTH/3)+100, viewY + HEIGHT - (i * 60)+yoff+10);
+            Game.getFont().draw(sb, "# "+e.getName(), view.x +(WIDTH/3)+100, viewY + HEIGHT - (i * 60)+yoff);
+            sb.draw(e.getIcon(),view.x +(WIDTH/3)+100, viewY + HEIGHT - (i * 60)+yoff+10);
         }
         //shop inv
-        Game.getFont().draw(sb,"SHOP",viewX+ 70,viewY+ HEIGHT-50);
+        Game.getFont().draw(sb,"SHOP",view.x+ 70,viewY+ HEIGHT-50);
         for(int i=0;i<shopInv.size();i++){
             Item item=shopInv.get(i);
-            Game.getFont().draw(sb,(i+1)+". "+item.getName(),viewX+70,viewY+ HEIGHT-(i*60)+yoff);
-            Game.getFont().draw(sb,item.getCost()+"G",viewX+(WIDTH/4),viewY+ HEIGHT-(i*60)+yoff-20);
-            sb.draw( item.getIcon(),viewX+70, viewY + HEIGHT- (i * 60)+yoff+10);
+            Game.getFont().draw(sb,(i+1)+". "+item.getName(),view.x+70,viewY+ HEIGHT-(i*60)+yoff);
+            Game.getFont().draw(sb,item.getCost()+"G",view.x+(WIDTH/4),viewY+ HEIGHT-(i*60)+yoff-20);
+            sb.draw( item.getIcon(),view.x+70, viewY + HEIGHT- (i * 60)+yoff+10);
 
         }
         sb.end();
@@ -183,8 +159,8 @@ public class ShopState extends State {
         titleLine(new Title("INVENTORY",(2*WIDTH/3), HEIGHT-50));
         titleLine(new Title("EQUIPMENT",(WIDTH/3)+100, HEIGHT-50));
         shapeR.setColor(Color.GRAY);
-        shapeR.line(viewX+(2*WIDTH/3)-20,viewY+100,viewX+(2*WIDTH/3)-20,viewY+HEIGHT-100);
-        shapeR.line(viewX+(WIDTH/3)+100-20,viewY+100,viewX+(WIDTH/3)+100-20,viewY+HEIGHT-100);
+        shapeR.line(view.x+(2*WIDTH/3)-20,viewY+100,view.x+(2*WIDTH/3)-20,viewY+HEIGHT-100);
+        shapeR.line(view.x+(WIDTH/3)+100-20,viewY+100,view.x+(WIDTH/3)+100-20,viewY+HEIGHT-100);
 
         shapeR.end();
     }
@@ -207,8 +183,8 @@ public class ShopState extends State {
         float[] s = fitLineToWord(t.text);
         float x=t.x;
         float y=t.y;
-        shapeR.line(viewX + x + s[0], viewY +y+ s[1] , viewX + x + s[2], viewY + y+ s[3]);
-        shapeR.line(viewX + x + s[4], viewY +y+ s[5] , viewX + x + s[6], viewY + y+ s[7]);
+        shapeR.line(view.x + x + s[0], viewY +y+ s[1] , view.x + x + s[2], viewY + y+ s[3]);
+        shapeR.line(view.x + x + s[4], viewY +y+ s[5] , view.x + x + s[6], viewY + y+ s[7]);
     }
     private void genShopInv(){
         shopInv.clear();

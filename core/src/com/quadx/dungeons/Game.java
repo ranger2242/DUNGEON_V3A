@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.commands.*;
 import com.quadx.dungeons.items.equipment.EquipSets;
@@ -27,39 +28,35 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.Random;
 
 
 @SuppressWarnings("UnusedParameters")
-public class Game extends ApplicationAdapter implements ControllerListener{
-/*
-shaders
-particle effect for dig
-hidden enemie comes out of ground
-particle effect on warpToNext
-release velocity falloff
-enemy knock back
+public class Game extends ApplicationAdapter implements ControllerListener {
 
- */
-    public static boolean disableGfx=true;
+    public static ArrayList<Command> commandList = new ArrayList<>();
+
+    private static final BitmapFont[] fonts = new BitmapFont[6];
     public static BitmapFont font;
     public static BitmapFont fontA;
 
-    public static Player player= new Player();
-    public static EquipSets equipSets;
-    public static ArrayList<Command> commandList=new ArrayList<>();
-    public static boolean controllerMode =false;
+    public static Player player = new Player();
+
+    public static final float ft = 1f / 60f;
     public static final int WIDTH = 1366;
     public static final int HEIGHT = 724;
-    public static final float frame = 1f/60f;
-    private SpriteBatch spriteBatch;
+    public static boolean controllerMode = false;
+
+    public static Vector2 scr = new Vector2(WIDTH,HEIGHT);
+
     private static GameStateManager gameStateManager;
-    private static final BitmapFont[] fonts = new BitmapFont[6];
     private static BitmapFont[] fontsA = new BitmapFont[6];
+    public static EquipSets equipSets;
+    public static Random rn = new Random();
+    private SpriteBatch spriteBatch;
 
-    public static boolean shakeCam=false;
 
-    static void addCommand(){
+    static void addCommand() {
         commandList.clear();
         commandList.add(new UpComm());
         commandList.add(new DownComm());
@@ -83,47 +80,53 @@ enemy knock back
         commandList.add(new BackComm());
         commandList.add(new ConfirmComm());
     }
+
     @Override
-    public void create () {
+    public void create() {
         FilePaths.checkOS();
-        ImageLoader il=new ImageLoader();
-        equipSets= new EquipSets();
-        WallPattern wp=new WallPattern();
+        ImageLoader il = new ImageLoader();
+        equipSets = new EquipSets();
+        WallPattern wp = new WallPattern();
         Gdx.graphics.setVSync(true);
         addCommand();
         Xbox360Pad.addNames();
-        fonts[0]=createFont(8);
-        fonts[1]=createFont(10);
-        fonts[2]=createFont(12);
-        fonts[3]=createFont(14);
-        fonts[4]=createFont(16);
-        fonts[5]=createFont(20);
-        fontsA=fonts;
+        fonts[0] = createFont(8);
+        fonts[1] = createFont(10);
+        fonts[2] = createFont(12);
+        fonts[3] = createFont(14);
+        fonts[4] = createFont(16);
+        fonts[5] = createFont(20);
+        fontsA = fonts;
         initFile();
-        gameStateManager=new GameStateManager();
-        Gdx.graphics.setWindowedMode(WIDTH,HEIGHT);
+        gameStateManager = new GameStateManager();
+        Gdx.graphics.setWindowedMode(WIDTH, HEIGHT);
         setFontSize(5);
         spriteBatch = new SpriteBatch();
         gameStateManager.push(new MainMenuState(gameStateManager));
     }
+
     @Override
-    public void render () {
+    public void render() {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         gameStateManager.update(Gdx.graphics.getDeltaTime());
         gameStateManager.render(spriteBatch);
     }
-    public static BitmapFont getFont(){
+
+    public static BitmapFont getFont() {
 
         return font;
     }
-    public static BitmapFont getFontA(){
+
+    public static BitmapFont getFontA() {
 
         return fontA;
     }
-    public static void console(String s){
+
+    public static void console(String s) {
         System.out.println(s);
     }
+
     public static void printLOG(Exception e) {
 		/*
 		sw=new StringWriter();
@@ -131,54 +134,55 @@ enemy knock back
 		e.printStackTrace(pw2);
 		pw.append(sw.toString()+"\n");*/
     }
-    public static void setFontSize(int x){
-        font=fonts[x];
-        fontA=fontsA[x];
+
+    public static void setFontSize(int x) {
+        font = fonts[x];
+        fontA = fontsA[x];
 
     }
 
-    private void initFile(){
+    private void initFile() {
 
         try {
-            FileReader file2= new FileReader("controls.txt");
+            FileReader file2 = new FileReader("controls.txt");
             BufferedReader bf2 = new BufferedReader(file2);
-            String s2=bf2.readLine();
-            String[] sp= s2.split(" ");
-            for(int i=0;i<sp.length;i++) {
-               commandList.get(i).changeKey(Integer.parseInt(sp[i]));
+            String s2 = bf2.readLine();
+            String[] sp = s2.split(" ");
+            for (int i = 0; i < sp.length; i++) {
+                commandList.get(i).changeKey(Integer.parseInt(sp[i]));
             }
 
 
-            FileReader file= new FileReader("scores.txt");
+            FileReader file = new FileReader("scores.txt");
             BufferedReader bf = new BufferedReader(file);
             String s;
-            while((s=bf.readLine()) != null) {
+            while ((s = bf.readLine()) != null) {
                 if (!s.equals("")) {
                     List<String> split = Arrays.asList(s.split(","));
                     HighScoreState.addScore(new Score(split.get(0), split.get(1), split.get(2), split.get(3), split.get(4)));
                 }
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
-    private static BitmapFont createFont(int x){
-        BitmapFont temp=new BitmapFont();
+
+    private static BitmapFont createFont(int x) {
+        BitmapFont temp = new BitmapFont();
 
         try {
-            FreeTypeFontGenerator generator= new FreeTypeFontGenerator(Gdx.files.internal(FilePaths.getPath("fonts\\prstart.ttf")));
-            FreeTypeFontGenerator.FreeTypeFontParameter parameter= new FreeTypeFontGenerator.FreeTypeFontParameter();
+            FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(FilePaths.getPath("fonts\\prstart.ttf")));
+            FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
             parameter.size = x;
             temp = generator.generateFont(parameter);
             //console("Font Generated");
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return temp;
     }
+
     @Override
     public void connected(Controller controller) {
 

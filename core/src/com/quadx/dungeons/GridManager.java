@@ -53,7 +53,7 @@ public class GridManager {
 
     public static void rotateMap(boolean left){
         if(MapStateUpdater.dtf>.15) {
-            noLerp=true;
+            camController.setSnapCam(true);
             Matrix<Integer> rotator = new Matrix<>(Integer.class);
             dispArray = rotator.rotateMatrix(dispArray, res, left);
             player.setPos(rotateCords(left,player.getPos()));
@@ -100,12 +100,12 @@ public class GridManager {
     public static void loadDrawList() {
         drawList.clear();
         monsOnScreen.clear();
-        int x = (int) (viewX / cell.x);
-        int y = (int) (viewY/ cell.y);
-        int endx = (int) ((viewX + Game.WIDTH) / cell.x);
-        int endy = (int) ((viewY + Game.HEIGHT) / cell.y);
+        int x = (int) (view.x / cell.x);
+        int y = (int) (view.y/ cell.y);
+        int endx = (int) ((view.x + Game.WIDTH) / cell.x);
+        int endy = (int) ((view.y + Game.HEIGHT) / cell.y);
         int scale=200;
-        Rectangle screen= new Rectangle(viewX-scale,viewY-scale,(viewX + Game.WIDTH)+scale,(viewY + Game.HEIGHT)+scale);
+        Rectangle screen= new Rectangle(view.x-scale,view.y-scale,(view.x + Game.WIDTH)+scale,(view.y + Game.HEIGHT)+scale);
         Monster.mdrawList.clear();
         for(Monster m : monsterList){
                 Monster.mdrawList.add(m);

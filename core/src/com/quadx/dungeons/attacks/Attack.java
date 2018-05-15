@@ -47,7 +47,7 @@ public class Attack {
     private final int[] usesCheck = {80, 300, 550, 750, 1000};
     private Texture icon;
     public static float dtInfo = 0;
-    public static final float attackMintime = Game.frame*3;
+    public static final float attackMintime = Game.ft *3;
     public static int pos =0;
     String description = "s";
     public static float dtAttack = 0;
