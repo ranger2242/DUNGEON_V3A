@@ -123,7 +123,10 @@ public class GridManager {
         int ext=8;
         for ( int i = x - ext; i < endx + ext; i++) {
             for (int j = y - ext; j < endy +ext; j++) {
-                Cell c=dispArray[(i+res)%res][(j+res)%res];
+                int p= Math.abs((i+res))%res;
+                int q= Math.abs((j+res))%res;
+
+                Cell c=dispArray[p][q];
                 c.updateVariables();
                 c.updateParticles();
                 drawList.add(c);

@@ -20,26 +20,27 @@ public class CamController {
     private boolean shakeCam = false;
     boolean snapCam = false;
 
+    Delta dLockTime = new Delta( 15*60*ft);
 
     private Delta dShake;
 
-    public CamController(){
-        dShake=new Delta(0*ft);
+    public CamController() {
+        dShake = new Delta(0 * ft);
 
     }
 
     public void shakeScreen(float time, float f) {
-        dShake=new Delta(time*ft);
+        dShake = new Delta(time * ft);
         force = f;
         shakeCam = true;
     }
 
-    public Vector3 camDisplacement() {
-        if(shakeCam){
-            float x=(float) (force * rn.nextGaussian()),
-            y=(float) (force * rn.nextGaussian());
-            return new Vector3(x,y,0);
-        }else
+    private Vector3 camDisplacement() {
+        if (shakeCam) {
+            float x = (float) (force * rn.nextGaussian()),
+                    y = (float) (force * rn.nextGaussian());
+            return new Vector3(x, y, 0);
+        } else
             return new Vector3();
     }
 
@@ -48,28 +49,36 @@ public class CamController {
         player.fixPosition();
         float[] f = dispArray[(int) player.getPos().x][(int) player.getPos().y].getCorners().getVertices();
         Vector3 disp = new Vector3(f[8], f[9], 0);
-        if(snapCam) {
-            position.set(player.getAbsPos().x, GridManager.fixHeight(player.getAbsPos()),0);
-            snapCam =false;
-        }else{
+        if (snapCam) {
+            position.set(player.getAbsPos().x, GridManager.fixHeight(player.getAbsPos()), 0);
+            snapCam = false;
+        } else {
             disp.add(camDisplacement());
-            float alpha = isShaking()? .5f:.2f;
-            position.lerp(disp,alpha);
+            float alpha = isShaking() ? force/12f : .2f;
+            position.lerp(disp, alpha);
         }
 
         cam.position.set(position);
         cam.update();
         float x = cam.position.x - cam.viewportWidth / 2;
         float y = cam.position.y - cam.viewportHeight / 2;
-        State.updateView(new Vector2(x,y));
+        State.updateView(new Vector2(x, y));
     }
 
-    public void update(float dt, OrthographicCamera cam){
-        if(shakeCam)
+    public void update(float dt, OrthographicCamera cam) {
+        if (shakeCam) {
             dShake.update(dt);
-        if(dShake.isDone()){
-            shakeCam=false;
+            dLockTime.update(dt);
         }
+        if (dShake.isDone()) {
+            shakeCam = false;
+        }
+        if(dLockTime.isDone()){
+            shakeCam=false;
+            snapCam=true;
+            dLockTime.reset();
+        }
+
         updateCamPos(cam);
     }
 

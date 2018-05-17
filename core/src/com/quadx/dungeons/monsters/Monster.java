@@ -240,19 +240,17 @@ public class Monster {
                 && player.getPos().y > this.getY() - this.getSight() && player.getPos().y < this.getY() + this.getSight();
     }
 
-    public boolean checkForDamageToPlayer() {
+    public boolean collisionWithPlayer() {
         boolean hit = false;
         if (getHitBox().overlaps(player.getHitBox()) && !player.wasHit && !player.jumping) {
             player.wasHit = true;
-            //    if ((x == px && y == py) || (x + 1 == px && y == py) || (x - 1 == px && y == py)    //check surrounding tiles for player
-            //             || (x == px && y + 1 == py) || (x == px && y - 1 == py)) {                  //hurt if found
-            int d;
-            d = Damage.monsterMagicDamage(this);
+            int d = Damage.monsterMagicDamage(this);
             player.addHp(-d);
-            //player.setHp(player.getHp() - d);//apply damage
-            MapState.camController.shakeScreen(20f, 5);
             player.setDest(absPos);
+            MapState.shakeScreen = true;
+
             new HoverText("-" + d, 1, new Color(1f, .2f, .2f, 1f), player.getAbsPos().x, player.getAbsPos().y, true);
+
             hit = true;
             StatManager.killer = this;
         }
@@ -813,7 +811,7 @@ public class Monster {
         checkAgro();
         setSights();
         setOverlay();
-        checkForDamageToPlayer();
+        collisionWithPlayer();
         checkForDamageToDummies();
         loadIcon();
         fixMonsterCollisions();

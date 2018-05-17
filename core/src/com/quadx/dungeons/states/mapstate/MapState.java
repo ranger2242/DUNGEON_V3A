@@ -33,9 +33,6 @@ import static com.quadx.dungeons.states.mapstate.MapStateRender.renderLayers;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtScrollAtt;
 
 
-/**
- * Created by Brent on 6/26/2015.
- */
 @SuppressWarnings("DefaultFileTemplate")
 public class MapState extends State implements ControllerListener {
 
@@ -66,6 +63,7 @@ public class MapState extends State implements ControllerListener {
     public static final Random rn = new Random();
     public static Circle circle = new Circle(new Vector2(cell.x * GridManager.res / 2, cell.y * GridManager.res / 2), 200);
     public static CamController camController = new CamController();
+    public static boolean shakeScreen = false;
 
 
     public MapState(GameStateManager gsm) {
@@ -83,7 +81,7 @@ public class MapState extends State implements ControllerListener {
             player.addAllAttacks();
         //Tests.goldTest();
         //Tests.testEquipmentRates();
-        Tests.giveItems(100);
+        //Tests.giveItems(100);
         //Tests.testsMonsterStats();
     }
     public void handleInput() {

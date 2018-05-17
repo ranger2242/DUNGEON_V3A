@@ -3,13 +3,10 @@
                  --Do before alpha test party--
 ///////////////////////////////////////////////////////////////////////////
 
-Level up particle effect or animation
-
-Make multiplier to timers
-Add +AP hovertext
-Fix spawn near monsters
 Fix investor gold gen
 Fix mage and quick ability icons
+
+
 Pause game when lost focus and controller disconnect
 Clear item particles after rotate map
 Add timer to MapState

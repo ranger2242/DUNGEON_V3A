@@ -32,6 +32,7 @@ import javafx.util.Pair;
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.ft;
+import static com.quadx.dungeons.Game.multiplier;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.GridManager.res;
@@ -421,7 +422,19 @@ public class Player {
     }
 
     public int getPoints() {
-        return (int) (((int) gold * 10) + (str * 100) + (def * 100) + (spd * 100) + (level * 2000) + (intel * 100) + (hpMax * 10) + (manaMax * 10) + (energyMax * 10) + (floor * 1000) + (killCount * 200));
+        return (int) ((int) (
+                (gold * 10)
+                        + (getStrComp() * 100)
+                        + (getDefComp() * 100)
+                        + (getSpdComp() * 100)
+                        + (getIntComp() * 100)
+                        + (level * 2000)
+                        + (hpMax * 10)
+                        + (manaMax * 10)
+                        + (energyMax * 10)
+                        + (floor * 1000)
+                        + (killCount * 200)
+        ) * multiplier);
     }
 
     public int getAbilityMod() {
@@ -1111,7 +1124,7 @@ public class Player {
         float end = size >= 8 ? 8 : size;
         for (int i = 0; i < end; i++) {
             float x = scrx(2f / 3f);
-            float y = scry(.8f - (i * .1f));
+            float y = scry(.85f - (i * .1f));
 
 
             float ind = (i + shopInvPos);
@@ -1126,16 +1139,23 @@ public class Player {
             Item item = itemStack.get(0);
             String qty = "x" + itemStack.size();
             String name = (i + 1) + ". " + item.getName();
-            String debug = (1 + (int) ind) + "/" + (int) size;
+            String debug = (1 + (int) ind) + "/" + (int) size+" SELL:"+item.getSellPrice();
 
 
             font.draw(sb, name, x, y);
             font.draw(sb, qty, scrx(9f / 10f), y);
             font.draw(sb, debug, x, y - 20);
+            //font.draw(sb, "_________________________________", x, y - 22);
+
+
             sb.draw(item.getIcon(), x, y + 10);
         }
         float per = shopInvPos / size;
-        font.draw(sb, "|", scrx(.95f), scry(.8f - (.79f * per)));
+        font.draw(sb, "_", scrx(.95f), scry(.86f));
+
+        font.draw(sb, "|", scrx(.95f), scry(.85f - (.79f * per)));
+        font.draw(sb, "_", scrx(.95f), scry(.85f- (.79f*((size-1)/size))));
+
     }
     //--------------------------------------------------------------
 

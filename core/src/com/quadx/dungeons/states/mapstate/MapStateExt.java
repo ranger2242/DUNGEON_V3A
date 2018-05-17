@@ -126,8 +126,9 @@ public class MapStateExt extends MapState {
         effects.add(e);
     }
 
-    public static void warpToNext() {
-        if (player.hasAP()) {
+    public static void warpToNext(boolean abilityState) {
+        resetRoomVars();
+        if (player.hasAP() && abilityState) {
             gsm.push(new AbilitySelectState(gsm));
         }
         player.floor++;
@@ -137,5 +138,17 @@ public class MapStateExt extends MapState {
     public static void warpToShop() {
         dispArray[(int) shop.x][(int) shop.y].setShop(false);
         gsm.push(new ShopState(gsm));
+    }
+
+    static void resetRoomVars(){
+        removeParticles();
+
+    }
+
+    static void removeParticles(){
+        for(ParticleEffect e : effects){
+            e.dispose();
+        }
+        effects.clear();
     }
 }

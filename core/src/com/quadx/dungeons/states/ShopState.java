@@ -3,6 +3,7 @@ package com.quadx.dungeons.states;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -11,6 +12,7 @@ import com.quadx.dungeons.commands.Command;
 import com.quadx.dungeons.items.*;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.states.mapstate.MapState;
+import com.quadx.dungeons.tools.Delta;
 import com.quadx.dungeons.tools.gui.CamController;
 import com.quadx.dungeons.tools.gui.Title;
 
@@ -30,9 +32,12 @@ public class ShopState extends State {
     private float dtSold=0;
     private float dtScroll=0;
     private boolean dispSold = false;
+    private boolean drawError=false;
     private static final ShapeRenderer shapeR=new ShapeRenderer();
     private static final ArrayList<Item> shopInv = new ArrayList<>();
     CamController camController = new CamController();
+    Delta dError = new Delta(72*ft);
+
 
     public ShopState(GameStateManager gsm){
         super(gsm);
@@ -61,8 +66,12 @@ public class ShopState extends State {
         else if (Gdx.input.isKeyPressed(Input.Keys.NUM_8)) numberButtonHandler(7);
         else if (Gdx.input.isKeyPressed(Input.Keys.NUM_9)) numberButtonHandler(8);
         else if(Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)
-                && !Gdx.input.isKeyPressed(Input.Keys.MINUS))
-            camController.shakeScreen(20,100);
+                && !(Gdx.input.isKeyPressed(Input.Keys.MINUS)
+                    ||Gdx.input.isKeyPressed(commandList.get(0).getButtonK())
+                ||Gdx.input.isKeyPressed(commandList.get(1).getButtonK()))) {
+            camController.shakeScreen(5, 25);
+            drawError=true;
+        }
     }
     private void numberButtonHandler(int i){
         boolean minus = Gdx.input.isKeyPressed(Input.Keys.MINUS);
@@ -74,7 +83,7 @@ public class ShopState extends State {
                 else
                     item.loadIcon(item.getName());
                 player.invList.get(i).remove(0);
-                soldItemCost = (int) (item.getCost() * .75);
+                soldItemCost = item.getSellPrice();
                 Game.player.setGold((float) (Game.player.getGold() + soldItemCost));
                 dispSold = true;
                 dtBuy = 0;
@@ -82,7 +91,8 @@ public class ShopState extends State {
                     player.invList.remove(i);
                 }
             }
-        } else if (!minus && i < shopInv.size() && dtBuy > .3 && Game.player.getGold() >= shopInv.get(i).getCost()) {
+        } else if (!minus && i < shopInv.size() && dtBuy > .3
+                && Game.player.getGold() >= shopInv.get(i).getCost()) {
             Game.player.setGold(Game.player.getGold() - shopInv.get(i).getCost());
             Game.player.addItemToInventory(shopInv.get(i));
             if (i >= 6) shopInv.remove(i);
@@ -93,6 +103,13 @@ public class ShopState extends State {
     public void update(float dt) {
         handleInput();
         player.updateShopState(dt);
+        if(drawError){
+            dError.update(dt);
+            if(dError.isDone()){
+                drawError=false;
+                dError.reset();
+            }
+        }
         dtBuy+=dt;
         dtScroll+=dt;
         if(dispSold)
@@ -101,15 +118,28 @@ public class ShopState extends State {
         cam.update();
     }
     public void render(SpriteBatch sb) {
+        GlyphLayout gl = new GlyphLayout();
+        CharSequence cs;
+
         sb.setProjectionMatrix(cam.combined);
         shapeR.setProjectionMatrix(cam.combined);
-
+        BitmapFont font = Game.getFont();
+        sb.begin();
+        Game.setFontSize(5);
+        font=Game.getFont();
+        font.setColor(Color.RED);
+        cs= "--INVALID INPUT--";
+        gl.setText(font,cs);
+        float f= gl.width/scr.x;
+        if(drawError) {
+            font.draw(sb, cs, scrx(.5f-(f/2)), scry(.5f));
+        }
+        sb.end();
         if(!MapState.pause)
         drawPlayerInv(sb);
 
         sb.begin();
-        GlyphLayout gl = new GlyphLayout();
-        CharSequence cs="(TAB) EXIT";
+         cs="(TAB) EXIT";
         gl.setText(Game.getFont(),cs);
         Game.getFont().draw(sb,"(TAB) EXIT",view.x+(WIDTH/2)-gl.width/2,viewY+70);
         sb.end();

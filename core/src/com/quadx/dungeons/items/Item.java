@@ -172,5 +172,8 @@ public class Item
         return true;
         else return false;
     }
+    public int getSellPrice(){
+        return (int) (cost*.75f);
+    }
 
 }

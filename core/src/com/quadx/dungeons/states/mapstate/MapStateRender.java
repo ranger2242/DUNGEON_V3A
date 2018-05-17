@@ -133,12 +133,18 @@ public class MapStateRender extends MapState {
     static void drawGameTime(SpriteBatch sb){
         NumberFormat formatter = new DecimalFormat("#00.00");
 
-        double d=Double.valueOf(formatter.format( Double.valueOf(gameTime.getElapsed())));
+        double d=gameTime.getElapsedD();//Double.valueOf(formatter.format( Double.valueOf(gameTime.getElapsed())));
         time+=d;
-        time=Double.valueOf(formatter.format(time));
-        Game.getFont().draw(sb,"Game Time: "+(int)(time/60)+":"+Double.valueOf(formatter.format(time%60)),view.x-100+WIDTH/2,viewY+HEIGHT-30);
+       // time=Double.valueOf(formatter.format(time));
+        String t="Game Time: "+(int)(time/60)+":"+Double.valueOf(formatter.format(time%60));
+        multiplier= (float) (1+ (.1*(int) (gameTime.getElapsedD()/30f)));
+        String t2=gameTime.runtime();
+        String t3="MULT:"+multiplier;
+        Game.getFont().draw(sb,t2,view.x-100+WIDTH/2,viewY+HEIGHT-30);
+        Game.getFont().draw(sb,t3,view.x-100+WIDTH/2,viewY+HEIGHT-40);
+
         gameTime.end();
-        gameTime.start();
+        //gameTime.start();
     }
     static void drawHUDBatch(SpriteBatch sb){
         //spritebatch draw functions---------------------------------------------------
@@ -168,7 +174,7 @@ public class MapStateRender extends MapState {
             Game.font.setColor(Color.WHITE);
             for (int i = 0; i < 10; i++) {
                 try {
-                    Game.getFont().draw(sb, HUD.output.get(i), view.x+(2*WIDTH/3) - 30, viewY + HEIGHT - (i * 20)-30);
+                    Game.getFont().draw(sb, HUD.output.get(i), scrx(2f/3f), viewY + HEIGHT - (i * 20)-30);
                 } catch (IndexOutOfBoundsException|NullPointerException ignored) {
                 }
             }

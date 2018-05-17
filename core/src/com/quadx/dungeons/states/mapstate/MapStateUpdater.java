@@ -89,7 +89,10 @@ public class MapStateUpdater extends MapState{
         player.updateVariables(dt);
         HUD.update();
         MapStateRender.updateVariables(dt);
-
+        if (shakeScreen){
+            camController.shakeScreen(20f, 5);
+            shakeScreen = false;
+        }
     }
     static void updateAttackEffects(float dt) {
         AttackMod.updaterVariables(dt);
@@ -220,7 +223,7 @@ public class MapStateUpdater extends MapState{
         }
         if (Gdx.input.isKeyPressed(Input.Keys.F1) && debug) {//reload map
             if (dtMap > .6) {
-                gm.initializeGrid();
+                MapStateExt.warpToNext(false);
                 dtMap = 0;
             }
         }
@@ -300,7 +303,7 @@ public class MapStateUpdater extends MapState{
                 item.colliion(c.getPos());
             }
             if (c.isWarp()) {
-                MapStateExt.warpToNext();
+                MapStateExt.warpToNext(true);
             }
             if (c.isShop()) {
                 MapStateExt.warpToShop();

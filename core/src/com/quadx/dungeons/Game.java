@@ -46,6 +46,7 @@ public class Game extends ApplicationAdapter implements ControllerListener {
     public static final int WIDTH = 1366;
     public static final int HEIGHT = 724;
     public static boolean controllerMode = false;
+    public static float multiplier =1;
 
     public static Vector2 scr = new Vector2(WIDTH,HEIGHT);
 

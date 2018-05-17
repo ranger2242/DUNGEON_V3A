@@ -1,31 +1,26 @@
 COMPLETE===========================================================
-BUILD 2018.0000001
--tweaked player damage up
--fixed monsters breaking on left and bottom edge
--reordered debug attacks
--state system for cells added
--added simple stats mode
--icons made for stat display
--added player levelup animation
--renabling particles on items
-
-BUILD 2018.0000002
--text color changes after buying in shop
--item icon in inventory defaults to box after selling
--refactoring out all shake screen properties to its own class for
-reuse in other states
--refactored viewX and viewY into Vector2 view
--made scrx and scry methods in State to make placing stuff on
-screen easier
--item scrolling in shop
+BUILD 2018.0000003
+-shake cam force not working fixed
+-shake screen and draw text on invalid input in shop state
+-fixed game timer
+-added score multiplier based on game time
+-fixed invalid input position and color
+-limited glitch effect by dTime on shop and pause state
+- (fixed) particle effects not being removed properly after room change
 
 WORKING ON==========================================================
--shake screen on invalid input in shop state
 
-NEW BUGS============================================================
--items in shop inventory default to boxes after sell
 
-OLD BUGS============================================================
+LOW PRIORITY=======================================================
+-add multipliers next to stats that are affected on ability select screen
+-make harder
+-drop spellbook when max attack bar is exceed
+
+BUGS============================================================
 -corrupted player stats in highscorestate
 -shooting the left edge breaks hitbox placement
+-hitbox doesnt always show on screen
 -screen wrapping breaks occasionally
+-items in shop inventory default to boxes after sell
+
+
