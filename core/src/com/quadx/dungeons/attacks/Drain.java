@@ -7,7 +7,7 @@ import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.shapes.Triangle;
 
 import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.GridManager.fixHeight;
+import static com.quadx.dungeons.GridManager.fixY;
 import static com.quadx.dungeons.states.mapstate.MapState.cell;
 
 /**
@@ -38,7 +38,7 @@ public class Drain extends Attack {
         new HoverText("+"+d,1, Color.GREEN,player.getAbsPos().x,player.getAbsPos().y+50,false);
     }
 
-    public Triangle calculateHitTri() {
+    public Triangle getHitTri() {
         float[] p = new float[6];
         float base = 4;
         float height = 7;
@@ -87,9 +87,9 @@ public class Drain extends Attack {
 
                 break;
         }
-        p[1] = fixHeight(new Vector2(p[0], p[1]));
-        p[3] = fixHeight(new Vector2(p[2], p[3]));
-        p[5] = fixHeight(new Vector2(p[4], p[5]));
+        p[1] = fixY(new Vector2(p[0], p[1]));
+        p[3] = fixY(new Vector2(p[2], p[3]));
+        p[5] = fixY(new Vector2(p[4], p[5]));
         return new Triangle(p);
     }
 }

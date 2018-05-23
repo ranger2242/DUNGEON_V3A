@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 
-import static com.quadx.dungeons.GridManager.fixHeight;
+import static com.quadx.dungeons.GridManager.fixY;
 
 /**
  * Created by Chris Cavazos on 2/4/2017.
@@ -39,9 +39,9 @@ public class Line {
         Vector2 a=new Vector2(points[0],points[1]),
                 b=new Vector2(points[2],points[3]),
                 c=new Vector2(points[4],points[5]);
-        a.set(a.x,fixHeight(a));
-        b.set(b.x,fixHeight(b));
-        c.set(c.x,fixHeight(c));
+        a.set(a.x, fixY(a));
+        b.set(b.x, fixY(b));
+        c.set(c.x, fixY(c));
 
         triLines.add(new Line(a,b));
         triLines.add(new Line(b,c));
@@ -54,10 +54,10 @@ public class Line {
                 b=new Vector2(r.x,r.y+r.height),
                 c=new Vector2(r.x+r.width,r.y+r.height),
                 d=new Vector2(r.x+r.width,r.y);
-        a.set(a.x,fixHeight(a));
-        b.set(b.x,fixHeight(b));
-        c.set(c.x,fixHeight(c));
-        d.set(d.x,fixHeight(d));
+        a.set(a.x, fixY(a));
+        b.set(b.x, fixY(b));
+        c.set(c.x, fixY(c));
+        d.set(d.x, fixY(d));
 
         rect.add(new Line(a,b));
         rect.add(new Line(b,c));

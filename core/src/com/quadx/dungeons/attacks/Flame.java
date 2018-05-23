@@ -28,7 +28,7 @@ public class Flame extends Attack {
     }
 
 
-    public Rectangle calculateHitBox() {
+    public Rectangle getHitBox() {
         return new ForwardRectHitBox().getShape(this);
     }
 }

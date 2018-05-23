@@ -53,7 +53,7 @@ public class Quick extends Ability {
         player.setxMoveSpeed(.8);
         player.setxSpeed(1.3);
         player.setxManaRegen(1.1);
-        player.addItemToInventory(equipSets.ref[3].get(0));
+        player.pickupItem(equipSets.ref[3].get(0));
 
     }
 
@@ -63,7 +63,7 @@ public class Quick extends Ability {
         player.setxSpeed(1.5);
         player.setxHpRegen(1.2);
         //player.setxEnergyRegen(1.2);
-        player.addItemToInventory(equipSets.ref[3].get(3));
+        player.pickupItem(equipSets.ref[3].get(3));
     }
 
     @Override
@@ -72,7 +72,7 @@ public class Quick extends Ability {
         player.setxManaRegen(1.3);
         player.setxMoveSpeed(.5);
         player.setxSpeed(1.6);
-        player.addItemToInventory(equipSets.ref[3].get(2));
+        player.pickupItem(equipSets.ref[3].get(2));
     }
 
     @Override
@@ -82,7 +82,7 @@ public class Quick extends Ability {
         player.setxHpMax(1.6);
         player.setxManaRegen(1.4);
         //player.setxEnergyRegen(1.4);
-        player.addItemToInventory(equipSets.ref[3].get(1));
+        player.pickupItem(equipSets.ref[3].get(1));
         player.maxSec=3;
     }
 

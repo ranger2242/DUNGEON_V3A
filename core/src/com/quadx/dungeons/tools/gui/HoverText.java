@@ -9,7 +9,7 @@ import com.quadx.dungeons.Game;
 
 import java.util.ArrayList;
 
-import static com.quadx.dungeons.GridManager.fixHeight;
+import static com.quadx.dungeons.GridManager.fixY;
 import static com.quadx.dungeons.GridManager.setInBounds;
 import static com.quadx.dungeons.states.MainMenuState.gl;
 
@@ -33,6 +33,10 @@ public class HoverText {
     private boolean cycle;
     private float time;
     BitmapFont font;
+
+    public HoverText(String s, float t, Color c, Vector2 pos, boolean flash) {
+        this(s,t,c,pos.x,pos.y,flash);
+    }
 
     public HoverText(String s, float t, Color c, float x1, float y1, boolean flash){
         Game.setFontSize(2);
@@ -100,7 +104,7 @@ public class HoverText {
         if (active) {
             if (dtHov < 1.2) {
                 font.setColor(color);
-                font.draw(sb, text, px,fixHeight(new Vector2(px,py)));
+                font.draw(sb, text, px, fixY(new Vector2(px,py)));
             }
         }
 //        font.getColor().a=1;

@@ -13,17 +13,17 @@ import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.ManaPlus;
 import com.quadx.dungeons.items.Potion;
 import com.quadx.dungeons.monsters.Monster;
-import com.quadx.dungeons.states.mapstate.MapStateExt;
+import com.quadx.dungeons.states.mapstate.ParticleHandler;
 import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.shapes.Triangle;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.quadx.dungeons.GridManager.fixHeight;
+import static com.quadx.dungeons.GridManager.fixY;
 import static com.quadx.dungeons.states.mapstate.MapState.cell;
 import static com.quadx.dungeons.states.mapstate.MapState.cellW;
-import static com.quadx.dungeons.states.mapstate.MapStateExt.effects;
+import static com.quadx.dungeons.states.mapstate.ParticleHandler.effects;
 
 /**
  * Created by Tom isClear 11/7/2015.
@@ -249,7 +249,7 @@ public class Cell {
         y = b;
         pos = new Vector2(a, b);
         absPos = new Vector2(a * cellW, b * cellW);
-        bounds = new Rectangle(absPos.x, fixHeight(absPos), cell.x, cell.y);
+        bounds = new Rectangle(absPos.x, fixY(absPos), cell.x, cell.y);
     }
 
     public void setShop(boolean set) {
@@ -308,8 +308,8 @@ public class Cell {
         this.item = item;
         hasItem=true;
         if (item != null) {
-            this.item.setTexturePos(new Vector2(absPos.x, GridManager.fixHeight(absPos)));
-            this.item.setHitBox(new Rectangle(absPos.x, GridManager.fixHeight(absPos), item.getIcon().getWidth(), item.getIcon().getHeight()));
+            this.item.setTexturePos(new Vector2(absPos.x, GridManager.fixY(absPos)));
+            this.item.setHitBox(new Rectangle(absPos.x, GridManager.fixY(absPos), item.getIcon().getWidth(), item.getIcon().getHeight()));
         }
     }
 
@@ -336,10 +336,10 @@ public class Cell {
                 if (item.hasEffect()) {
                     float x=getAbsPos().x - (item.getIcon().getWidth() / 2);
                     float y=getAbsPos().y;
-                    effect = MapStateExt.loadParticles("ptItem", x, y, item.getPtColor(), MapStateExt.EffectType.FIELD);
+                    effect = ParticleHandler.loadParticles("ptItem", x, y, item.getPtColor(), ParticleHandler.EffectType.FIELD);
                     effectLoaded = true;
                    // if(effect!=null)
-                    MapStateExt.addEffect(effect);
+                    ParticleHandler.addEffect(effect);
                 }
            }
         } else {
@@ -358,7 +358,7 @@ public class Cell {
 
     public void updateVariables() {
         float dt = Gdx.graphics.getDeltaTime();
-        fixedPos.set(new Vector2(absPos.x, fixHeight(absPos)));
+        fixedPos.set(new Vector2(absPos.x, fixY(absPos)));
         if (isWater()) {
             dtwater += dt;
         }

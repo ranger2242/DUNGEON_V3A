@@ -1,11 +1,11 @@
-package com.quadx.dungeons.tools;
+package com.quadx.dungeons.tools.timers;
 
 /**
  * Created by Chris Cavazos on 9/29/2017.
  */
 public class Delta {
-    private float dtPassed = 0;
-    private float limit;
+    protected float dtPassed = 0;
+    protected float limit;
     public Delta(float lim) {
         limit=lim;
     }

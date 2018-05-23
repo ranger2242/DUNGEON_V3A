@@ -1,23 +1,24 @@
 COMPLETE===========================================================
-BUILD 2018.0000004
--changed Flame and Stab hitbox to use ForwardRectHitBox
--fixed ability levelup issue
--fixed Inventory.scroll items and discard
--TONS of Refactoring bits
--add multipliers next to stats that are affected on ability select screen
---make file that inputs all the Ability detail text
--complete refactor of Anim class
--fix drop animation on hold key
+BUILD 2018.0000005
+-added F7 as clear Monsters in MapState
+-fixed knockback angle and velocity
+-refactored buttonhandler in MapstateUpdater and added DebugKeys class
+-refactored MapStateExt into ParticleHandler
+-refactor dissolved MapStateUpdater
+-Added Oscillator class as sub of Delta
 
 WORKING ON==========================================================
 -fixing compiler warnings
 
+--corrupted player stats in highscorestate
+
+-equipment icons not loading on pickup
 
 LOW PRIORITY=======================================================
 -drop spellbook when max attack bar is exceed
+-fix controller support
 
 BUGS============================================================
--corrupted player stats in highscorestate
 -shooting the left edge breaks hitbox placement
 -hitbox doesnt always show on screen
 -screen wrapping breaks occasionally

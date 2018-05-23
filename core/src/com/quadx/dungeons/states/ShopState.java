@@ -12,7 +12,7 @@ import com.quadx.dungeons.commands.Command;
 import com.quadx.dungeons.items.*;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.tools.Delta;
+import com.quadx.dungeons.tools.timers.Delta;
 import com.quadx.dungeons.tools.ShapeRendererExt;
 import com.quadx.dungeons.tools.gui.Title;
 
@@ -93,7 +93,7 @@ public class ShopState extends State {
         } else if (!minus && i < shopInv.size() && dtBuy > .3
                 && Game.player.getGold() >= shopInv.get(i).getCost()) {
             Game.player.setGold(Game.player.getGold() - shopInv.get(i).getCost());
-            Game.player.addItemToInventory(shopInv.get(i));
+            Game.player.pickupItem(shopInv.get(i));
             if (i >= 6) shopInv.remove(i);
             dtBuy = 0;
         }

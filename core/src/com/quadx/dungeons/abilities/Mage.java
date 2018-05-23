@@ -53,7 +53,7 @@ public class Mage extends Ability {
         player.setxManaRegen(1.2);
         player.setxDefense(1.1);
         player.setxIntel(1.2);
-        player.addItemToInventory(equipSets.ref[2].get(1));
+        player.pickupItem(equipSets.ref[2].get(1));
     }
 
     @Override
@@ -61,7 +61,7 @@ public class Mage extends Ability {
         player.setxIntel(1.3);
         player.setxHpRegen(1.1);
         player.setxMoveSpeed(.7);
-        player.addItemToInventory(equipSets.ref[2].get(2));
+        player.pickupItem(equipSets.ref[2].get(2));
     }
 
     @Override
@@ -70,7 +70,7 @@ public class Mage extends Ability {
         player.setxSpeed(1.3);
         player.setxIntel(1.5);
         player.setxHpRegen(1.3);
-        player.addItemToInventory(equipSets.ref[2].get(6));
+        player.pickupItem(equipSets.ref[2].get(6));
     }
 
     @Override
@@ -79,7 +79,7 @@ public class Mage extends Ability {
         player.setxIntel(1.7);
         player.setxSpeed(1.3);
         player.setxDefense(1.1);
-        player.addItemToInventory(equipSets.ref[2].get(3));
+        player.pickupItem(equipSets.ref[2].get(3));
         player.maxSec=3;
 
     }

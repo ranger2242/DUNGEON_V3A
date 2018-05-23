@@ -31,7 +31,7 @@ public class Dash extends Attack {
     public void runAttackMod() {
         active=true;
     }
-    public static void update(float dt){
+    public static void updateSelf(float dt){
         if(active){
             dtDash+=dt;
             //player.setAttackBox(calculateHitBox());
@@ -42,7 +42,7 @@ public class Dash extends Attack {
         }
     }
 
-    public Rectangle calculateHitBox() {
+    public Rectangle getHitBox() {
         active=true;
         Rectangle rect=player.getHitBox();
         int h=player.getIcon().getHeight()/2;

@@ -11,6 +11,7 @@ import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.State;
 import com.quadx.dungeons.states.mapstate.MapState;
+import com.quadx.dungeons.tools.timers.Delta;
 import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.ShapeRendererExt;
 
@@ -42,6 +43,7 @@ public class HUD {
     public static float dtLootPopup=0;
     public static Texture lootPopup;
 
+    public static Delta dPopup = new Delta(20*ft);
 
     public static ArrayList<Rectangle> equipBoxes= new ArrayList<>();
     public static Rectangle[] playerStatBars=new Rectangle[3];
@@ -84,7 +86,6 @@ public class HUD {
         int x = (int) view.x;
         int y = (int) viewY;
         int w = WIDTH;
-        int h = HEIGHT;
         equipPos = new Vector2(new Vector2((x + (w / 3) + 35), y + 130));
         minimapPos = new Vector2(x + w - ((res * 2) + 20), y + 20);
         attackBarPos = new Vector2(x + 20, y + 30);
@@ -92,6 +93,8 @@ public class HUD {
         fpsGridPos.set((int) (view.x + (Game.WIDTH * 2 / 3)), viewY + 20);
         statListPos = new Vector2(view.x + 30, viewY + HEIGHT - 30);
         playerStatBarPos= new Vector2(view.x+20,viewY+145);
+        create();
+
     }
     public static void out(String s){
         if(output != null) {
@@ -267,7 +270,7 @@ public class HUD {
             out("");
     }
     public static void setLootPopup(Texture t){
-        dtLootPopup = 0;
+        dPopup.reset();
         lootPopup = t;
     }
 

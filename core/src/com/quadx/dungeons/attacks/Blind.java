@@ -29,7 +29,7 @@ public class Blind extends Attack {
         setIcon( ImageLoader.attacks.get(0));
 
     }
-    public Circle calculateHitCircle(){
-        return new Circle(new Vector2(player.getAbsPos().x+(player.getIcon().getWidth()/2), GridManager.fixHeight(player.getAbsPos())) ,200);
+    public Circle getHitCircle(){
+        return new Circle(new Vector2(player.getAbsPos().x+(player.getIcon().getWidth()/2), GridManager.fixY(player.getAbsPos())) ,200);
     }
 }

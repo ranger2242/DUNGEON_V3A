@@ -9,9 +9,9 @@ import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.states.State;
 import com.quadx.dungeons.states.mapstate.Map2State;
-import com.quadx.dungeons.states.mapstate.MapStateUpdater;
+import com.quadx.dungeons.tools.timers.Delta;
 import com.quadx.dungeons.tools.Tests;
-import com.quadx.dungeons.tools.Timer;
+import com.quadx.dungeons.tools.timers.Timer;
 import com.quadx.dungeons.tools.WallPattern;
 import com.quadx.dungeons.tools.heightmap.HeightMap;
 import com.quadx.dungeons.tools.heightmap.Matrix;
@@ -19,6 +19,7 @@ import com.quadx.dungeons.tools.heightmap.Matrix;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.quadx.dungeons.Game.ft;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.states.mapstate.MapState.*;
 import static com.quadx.dungeons.tools.ImageLoader.a;
@@ -37,10 +38,16 @@ public class GridManager {
     public static final int res =150;
     private static Timer mapLoadTime;
 
+    static Delta dRotate = new Delta(10*ft);
+
     public GridManager(){
         initializeGrid();
     }
 
+    public static void update(float dt){
+        dRotate.update(dt);
+        loadDrawList();
+    }
 
     @SuppressWarnings("SuspiciousNameCombination")
     private static Vector2 rotateCords(boolean left, Vector2 pos){
@@ -55,25 +62,28 @@ public class GridManager {
         return v;
     }
 
-    public static void rotateMap(boolean left){
-        if(MapStateUpdater.dtf>.15) {
+    public static void rotateMap(boolean left) {
+        if (dRotate.isDone()) {
             State.camController.setSnapCam(true);
             Matrix<Integer> rotator = new Matrix<>(Integer.class);
             dispArray = rotator.rotateMatrix(dispArray, res, left);
-            player.setPos(rotateCords(left,player.pos()));
-            warp.set ( rotateCords(left,warp));
-            shop.set(rotateCords(left,shop));
-            player.setAbsPos(new Vector2(player.pos().x*cellW,player.pos().y*cellW));
-            for(Monster m:monsterList){
-                m.setPos(rotateCords(left,m.getPos()));
-                m.setAbsPos(new Vector2(m.getPos().x*cellW,m.getPos().y*cellW));
+            player.setPos(rotateCords(left, player.pos()));
+            warp.set(rotateCords(left, warp));
+            shop.set(rotateCords(left, shop));
+            player.setAbsPos(new Vector2(player.pos().x * cellW, player.pos().y * cellW));
+            for (Monster m : monsterList) {
+                m.setPos(rotateCords(left, m.getPos()));
+                m.setAbsPos(new Vector2(m.getPos().x * cellW, m.getPos().y * cellW));
             }
             hm.calcCorners(dispArray);
             hm.getCells();
             loadLiveCells();
             loadDrawList();
-            MapStateUpdater.dtf=0;
+            dRotate.reset();
         }
+    }
+    public static ArrayList<Cell> getSurroundingCells(Vector2 pos, int i) {
+        return getSurroundingCells((int)pos.x,(int)pos.y,i);
     }
     public static ArrayList<Cell> getSurroundingCells(int x, int y, int r){
         ArrayList<Cell> list=new ArrayList<>();
@@ -163,8 +173,11 @@ public class GridManager {
         Monster.reindexMons=true;
     }
 
+    public static Vector2 fixYv(Vector2 v){//get vector in absolute pos
+        return new Vector2(v.x, fixY(v));
+    }
 
-    public static float fixHeight(Vector2 v){//get vector in absolute pos
+    public static float fixY(Vector2 v){//get vector in absolute pos
         int gx=Math.round(v.x/cellW);//find grid pos
         int gy=Math.round(v.y/cellW);
         float pery=(v.y-(gy*cellW))/cellW;
@@ -433,4 +446,7 @@ public class GridManager {
         return c;
     }
 
+    public void clearArea(Vector2 pos, boolean b) {
+        clearArea(pos.x,pos.y,b);
+    }
 }

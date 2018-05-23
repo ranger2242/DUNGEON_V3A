@@ -7,62 +7,55 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.quadx.dungeons.Cell;
+import com.quadx.dungeons.Anim;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.Inventory;
-import com.quadx.dungeons.items.Gold;
-import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.abilities.Ability;
+import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.monsters.Monster;
+import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
+import com.quadx.dungeons.states.ShopState;
 import com.quadx.dungeons.states.State;
 import com.quadx.dungeons.tools.ShapeRendererExt;
 import com.quadx.dungeons.tools.StatManager;
 import com.quadx.dungeons.tools.Tests;
+import com.quadx.dungeons.tools.buttons.ButtonHandler;
+import com.quadx.dungeons.tools.buttons.MapStateButtonHandler;
 import com.quadx.dungeons.tools.controllers.Controllers;
 import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 import com.quadx.dungeons.tools.gui.HUD;
-import com.quadx.dungeons.tools.shapes.Circle;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.renderLayers;
-import static com.quadx.dungeons.states.mapstate.MapStateUpdater.dtScrollAtt;
+import static com.quadx.dungeons.states.mapstate.MapStateRender.updateHoverTextTime;
 
 
 @SuppressWarnings("DefaultFileTemplate")
 public class MapState extends State implements ControllerListener {
 
-    static final ArrayList<Cell> hitList = new ArrayList<>();
-
-    static final boolean debug = true;
+    public static final boolean debug = true;
     public static boolean pause = false;
     public static boolean showStats = true;
     public static boolean inGame = false;
-    static boolean effectLoaded = false;
-
-    static final String DIVIDER = "_________________________";
 
     public static int cellW = 30;
     static int altNumPressed = 1;
-
-    public static float dtStatPopup = 0;
-
 
     public static Vector2 cell = new Vector2(cellW, cellW * (2f / 3f));
     public static Vector2 warp = new Vector2();
     public static Vector2 shop = new Vector2();
 
 
-    static ShapeRendererExt shapeR = new ShapeRendererExt();
+    static ShapeRendererExt sr = new ShapeRendererExt();
     public static Texture statPopup;
     public static GridManager gm;
     public static final Random rn = new Random();
-    public static Circle circle = new Circle(new Vector2(cell.x * GridManager.res / 2, cell.y * GridManager.res / 2), 200);
-    public static boolean shakeScreen = false;
-
+    static ButtonHandler buttons=new MapStateButtonHandler();
 
     public MapState(GameStateManager gsm) {
         super(gsm);
@@ -74,61 +67,64 @@ public class MapState extends State implements ControllerListener {
         cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT);
         debug();
     }
+
+    public static void warpToNext(boolean abilityState) {
+        ParticleHandler.removeParticles();
+        if (player.hasAP() && abilityState) {
+            gsm.push(new AbilitySelectState(gsm));
+        }
+        player.floor++;
+        gm.initializeGrid();
+    }
+
+    public static void warpToShop() {
+        dispArray[(int) shop.x][(int) shop.y].setShop(false);
+        gsm.push(new ShopState(gsm));
+    }
+
+    public static void pause() {
+        pause = true;
+        cam.position.set(0, 0, 0);
+        gsm.push(new ShopState(gsm));
+    }
+
     private void debug() {
         if(Tests.allAttacks)
             player.addAllAttacks();
         //Tests.goldTest();
         //Tests.testEquipmentRates();
-        Tests.giveItems(100);
+        //Tests.giveItems(100);
         //Tests.testsMonsterStats();
     }
     public void handleInput() {
     }
     public void update(float dt) {
-        MapStateUpdater.buttonHandler();
-        MapStateUpdater.updateVariables(dt);
+        //nothing before Tests load
+        Tests.update(dt);
+        buttons.update(dt);
+        Anim.update(dt);
+        Attack.update(dt);
+        Ability.update(dt);
+        Inventory.update(dt);
+        ParticleHandler.update(dt);
         Monster.update(dt);
-        GridManager.loadDrawList();
-        Inventory.compareItemToEquipment();
-        player.updateMapState(dt);
-        MapStateUpdater.collisionHandler();
-        player.checkIfDead(gsm);
-        HUD.create();
+        player.update(dt,getClass());
+        camController.update(dt, cam);
+        GridManager.update(dt);
+        HUD.update();
+        MapStateRender.updateVariables(dt);
+        updateHoverTextTime();
+
     }
     public void render(SpriteBatch sb) {
-
         renderLayers(sb);
     }
     public void dispose() {
     }
 
-    public static void openCrate(Item item) {
-        if (item.isGold()) {
-            Gold g = (Gold) item;
-            player.addGold(g);
-        } else {
-            if (item.isEquip) {
-                item.loadIcon(item.getType());
-            } else if (item.getIcon() == null)
-                item.loadIcon(item.getName());
 
-            if (!item.isGold()) {
-                boolean a = false;
-                if (player.isInvEmpty()) {
-                    a = true;
-                }
-                player.addItemToInventory(item);
-                if (a) Inventory.pos = 0;
-            } else {
-                player.lastItem = new Gold();
-            }
 
-        }
-        HUD.setLootPopup(item.getIcon());
-        StatManager.totalItems++;
-    }
-
-    public static void scrollAttacks(boolean right){
+/*    public static void scrollAttacks(boolean right){
         if (dtScrollAtt > .3) {
             if (right) {
                 if (Inventory.pos < player.invList.size() - 1)
@@ -142,7 +138,7 @@ public class MapState extends State implements ControllerListener {
                 Inventory.dtInvSwitch = 0;
             }
         }
-    }
+    }*/
 
     //-----------------------------------------------------------------------------------------
     //Controller Interface

@@ -54,7 +54,7 @@ public class Investor extends Ability {
             player.setxManaRegen(1.1);
         player.setxMoveSpeed(.85);
         player.setxAttack(1.1);
-        player.addItemToInventory(equipSets.ref[1].get(7));
+        player.pickupItem(equipSets.ref[1].get(7));
 
     }
 
@@ -64,7 +64,7 @@ public class Investor extends Ability {
         //.setxEnergyRegen(2);
         player.setxAttack(1.2);
         player.setxIntel(1.2);
-        player.addItemToInventory(equipSets.ref[1].get(0));
+        player.pickupItem(equipSets.ref[1].get(0));
 
     }
 
@@ -74,7 +74,7 @@ public class Investor extends Ability {
         player.setxIntel(1.2);
         player.setxAttack(1.25);
         player.setxSpeed(1.2);
-        player.addItemToInventory(equipSets.ref[1].get(2));
+        player.pickupItem(equipSets.ref[1].get(2));
     }
 
     @Override
@@ -83,7 +83,7 @@ public class Investor extends Ability {
         player.setxManaRegen(1.4);
         player.setxSpeed(1.5);
         player.setxAttack(1.6);
-        player.addItemToInventory(equipSets.ref[1].get(3));
+        player.pickupItem(equipSets.ref[1].get(3));
         player.maxSec=3;
     }
 

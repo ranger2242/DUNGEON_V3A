@@ -6,7 +6,7 @@ import com.quadx.dungeons.commands.cellcommands.AddItemToCellComm;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
-import com.quadx.dungeons.tools.Delta;
+import com.quadx.dungeons.tools.timers.Delta;
 
 import java.util.ArrayList;
 
@@ -19,11 +19,17 @@ import static com.quadx.dungeons.GridManager.*;
  */
 public class Inventory {
     public static float dtItem = 0;
-    public static float dtInvSwitch = 0;
     static Delta dUseTime= new Delta(10*ft);
+    static Delta dInvSwitch = new Delta(20*ft);
     public static int pos =0;
     public static int[] statCompare=null;
 
+    public static void update(float dt){
+        dUseTime.update(dt);
+        dInvSwitch.update(dt);
+
+        compareItemToEquipment();
+    }
 
     public static void selectItemFromInventory() {
         if (dUseTime.isDone() && player.invList.size() > 0) {            //check if cooldown is over
@@ -47,13 +53,13 @@ public class Inventory {
     }
 
     public static void scrollItems(boolean right) {
-        if ((dtInvSwitch > .3)) {
+        if (dInvSwitch.isDone()) {
             if (right) {
                 pos++;
             } else {
                 pos--;
             }
-            dtInvSwitch = 0;
+            dInvSwitch.reset();
             pos=setInBoundsW(pos,player.invList.size());
         }
     }
@@ -62,9 +68,7 @@ public class Inventory {
     static int discardPos(float ref){
         return (int) (ref + (rn.nextGaussian() * 6));
     }
-    public static void update(float dt){
-        dUseTime.update(dt);
-    }
+
 
     public static void discard(Vector2 pos, boolean isPlayer, Monster m) {
         Item item = isPlayer ?
@@ -130,7 +134,7 @@ public class Inventory {
         if(x<player.equipedList.size()) {
             Equipment e = player.equipedList.get(x);
             player.equipedList.remove(x);
-            player.addItemToInventory(e);
+            player.pickupItem(e);
             dtItem =0;
         }
     }

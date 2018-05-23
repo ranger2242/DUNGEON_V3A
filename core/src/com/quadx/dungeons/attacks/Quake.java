@@ -29,7 +29,7 @@ public class Quake extends Attack {
         hitBoxShape=HitBoxShape.Rect;
         setIcon(ImageLoader.attacks.get(9));
     }
-    public Rectangle calculateHitBox(){
+    public Rectangle getHitBox(){
         Vector2 view = State.getView();
 
         return new Rectangle(view.x,viewY,view.x+WIDTH,viewY+HEIGHT);

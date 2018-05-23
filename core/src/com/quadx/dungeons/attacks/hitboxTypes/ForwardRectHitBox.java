@@ -6,7 +6,7 @@ import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.tools.Direction;
 
 import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.GridManager.fixHeight;
+import static com.quadx.dungeons.GridManager.fixY;
 import static com.quadx.dungeons.states.mapstate.MapState.cell;
 
 /**
@@ -72,6 +72,6 @@ public class ForwardRectHitBox {
                 y = abs.y - (h / 2) + (ic.y / 2);
                 break;
         }
-        return new com.badlogic.gdx.math.Rectangle(x, fixHeight(new Vector2(x, y)), w, h);
+        return new com.badlogic.gdx.math.Rectangle(x, fixY(new Vector2(x, y)), w, h);
     }
 }

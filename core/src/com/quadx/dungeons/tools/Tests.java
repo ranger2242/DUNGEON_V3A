@@ -1,16 +1,22 @@
 package com.quadx.dungeons.tools;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.*;
 import com.quadx.dungeons.states.mapstate.Map2State;
+import com.quadx.dungeons.tools.timers.Delta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.badlogic.gdx.graphics.Color.BLACK;
 import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.GridManager.monsterList;
 import static com.quadx.dungeons.states.mapstate.MapState.gm;
@@ -20,6 +26,7 @@ import static com.quadx.dungeons.tools.gui.HUD.out;
  * Created by Chris Cavazos on 7/10/2016.
  */
 public class Tests {
+    static ArrayList<Integer> fpsList = new ArrayList<>();
     public static ArrayList<Double> mapLoadTimes = new ArrayList<>();
     public static ArrayList<Double> memUsageList = new ArrayList<>();
     public static long currentMemUsage = 0;
@@ -28,7 +35,7 @@ public class Tests {
     public static float dtReload = 0;
     public static boolean allAttacks=       true;
     public static boolean allstop=          false;
-    public static boolean spawn =           false;
+    public static boolean spawn =           true;
     public static boolean nodeath=          false;
     public static boolean fastreg=          false;
     public static boolean noLand=           false;
@@ -36,7 +43,72 @@ public class Tests {
     public static boolean output=           true;
     public static boolean clearmap=         false;
     public static boolean infiniteRegen =   false;
+    public static boolean displayFPS =      true;
+
+    static float fps = 0;
     static int testCount = 0;
+    static Delta dFPS = new Delta( 3*ft);
+
+    public static void update(float dt){
+        processMetrics();
+        updateFPSCounter(dt);
+    }
+    static void updateFPSCounter(float dt){
+        dFPS.update(dt);
+        if (dFPS.isDone()) {
+            fps = 1 / dt;
+            Tests.updateFPSList(fps);
+            dFPS.reset();
+        }
+    }
+    public static void drawFPSModule(SpriteBatch sb, ShapeRendererExt sr, Vector2 pos){
+        //fps meter module
+        if(displayFPS) { //TODO optomize this to draw faster
+            //DRAW FPS meter
+            sr.begin(ShapeRenderer.ShapeType.Filled);
+            sr.setColor(BLACK);
+            sr.rect(pos.x, pos.y, 100, 100);
+            sr.end();
+            sr.begin(ShapeRenderer.ShapeType.Line);
+            sr.setColor(Color.WHITE);
+            sr.rect(pos.x, pos.y, 100, 100);
+            sr.line(pos.x, pos.y, pos.x + 100, pos.y);
+
+            sr.setColor(Color.GREEN);
+            int prev = 0;
+            for (int i = 0; i < fpsList.size(); i++) {
+                sr.line(pos.x + (i * 2), pos.y + prev, pos.x + ((i + 1) * 2), pos.y + fpsList.get(i));
+                prev = fpsList.get(i);
+            }
+            double prev1=0;
+            for (int i = 0; i < Tests.memUsageList.size(); i++) {
+                sr.setColor(Color.PURPLE);
+                sr.line(pos.x + (i * 2), (float) (pos.y +100* prev1), pos.x + ((i + 1) * 2), (float) (pos.y + 100*Tests.memUsageList.get(i)));
+                prev1 = Tests.memUsageList.get(i);
+            }
+            sr.end();
+            //draw fps counter
+            sb.begin();
+            if(displayFPS){
+                Game.setFontSize(1);
+                Game.getFont().setColor(Color.WHITE);
+                Game.getFont().draw(sb, (int) fps + " FPS", pos.x+2, pos.y + 80);
+                double x=0;
+                try {
+                    x= Tests.memUsageList.get(Tests.memUsageList.size() - 1);
+                }catch(Exception ignored){}
+                Game.getFont().draw(sb, (int) Tests.currentMemUsage + "MB "+Math.floor(x*100)+"%" , pos.x+2, pos.y + 95);
+            }
+            sb.end();
+        }
+    }
+
+    public static void updateFPSList(float fps){
+        fpsList.add((int) fps);
+        if (fpsList.size() > meterListMax) {
+            fpsList.remove(0);
+        }
+    }
 
     public static void goldTest(){
         int[] avgarr=new int[100];
@@ -62,7 +134,7 @@ public class Tests {
     }
     public static void giveItems(int x) {
         for (int i = 0; i < x; i++) {
-            player.addItemToInventory(Item.generateNoGold());
+            player.pickupItem(Item.generateNoGold());
         }
     }
 
@@ -235,7 +307,7 @@ public class Tests {
                     int a=Integer.parseInt(comm.get(3));
                     try {
                         for(Equipment e:equipSets.ref[a])
-                        player.addItemToInventory(e);
+                        player.pickupItem(e);
                         outText="Added set "+a;
                     }catch (Exception ignored){
                     }

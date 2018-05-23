@@ -26,3 +26,13 @@ BUILD 2018.0000003
 -fixed invalid input position and color
 -limited glitch effect by dTime on shop and pause state
 - (fixed) particle effects not being removed properly after room change
+
+BUILD 2018.0000004
+-changed Flame and Stab hitbox to use ForwardRectHitBox
+-fixed ability levelup issue
+-fixed Inventory.scroll items and discard
+-TONS of Refactoring bits
+-add multipliers next to stats that are affected on ability select screen
+--make file that inputs all the Ability detail text
+-complete refactor of Anim class
+-fix drop animation on hold key

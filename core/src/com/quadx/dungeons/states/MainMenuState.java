@@ -121,7 +121,7 @@ public class MainMenuState extends State implements ControllerListener {
             dtCursor = 0;
             handleInput();
         }
-//        effect.update(dt);
+//        effect.updateSelf(dt);
     }
     @Override
     public void dispose() {

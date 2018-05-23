@@ -50,7 +50,7 @@ public class Tank extends Ability {
     public void l2() {
         player.setxDefense(1.2);
         player.setxMoveSpeed(.9);
-        player.addItemToInventory(equipSets.ref[0].get(0));
+        player.pickupItem(equipSets.ref[0].get(0));
     }
 
     @Override
@@ -58,7 +58,7 @@ public class Tank extends Ability {
         player.setxDefense(1.3);
         player.setxAttack(1.1);
         player.setxMoveSpeed(.8);
-        player.addItemToInventory(equipSets.ref[0].get(1));
+        player.pickupItem(equipSets.ref[0].get(1));
     }
 
     @Override
@@ -66,7 +66,7 @@ public class Tank extends Ability {
         player.setxDefense(1.3);
         player.setxAttack(1.1);
         player.setxMoveSpeed(.8);
-        player.addItemToInventory(equipSets.ref[0].get(2));
+        player.pickupItem(equipSets.ref[0].get(2));
 
     }
 
@@ -78,7 +78,7 @@ public class Tank extends Ability {
         player.setxHpRegen(1.5);
         player.setxMoveSpeed(.9);
         player.maxSec=3;
-        player.addItemToInventory(equipSets.ref[0].get(3));
+        player.pickupItem(equipSets.ref[0].get(3));
 
     }
 

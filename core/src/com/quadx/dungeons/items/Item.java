@@ -15,7 +15,6 @@ import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.GridManager.rn;
-import static com.quadx.dungeons.states.mapstate.MapState.openCrate;
 import static com.quadx.dungeons.tools.gui.HUD.out;
 
 public class Item
@@ -153,7 +152,7 @@ public class Item
             player.useItem(this);
         }
         else
-            openCrate(this);
+            player.pickupItem(this);
 
 
         player.resetBars();
@@ -176,4 +175,10 @@ public class Item
         return (int) (cost*.75f);
     }
 
+    public void loadIcon() {
+        if(isEquip)
+            loadIcon(name);
+        if(icon==null)
+            loadIcon(name);
+    }
 }

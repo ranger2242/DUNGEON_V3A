@@ -28,9 +28,10 @@ import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.gui.InfoOverlay;
 import com.quadx.dungeons.tools.gui.Text;
 import com.quadx.dungeons.tools.heightmap.HeightMap;
-import com.quadx.dungeons.tools.shapes.Circle;
 import com.quadx.dungeons.tools.shapes.Line;
 import com.quadx.dungeons.tools.shapes.Triangle;
+import com.quadx.dungeons.tools.timers.Delta;
+import com.quadx.dungeons.tools.timers.Oscillator;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -44,7 +45,6 @@ import static com.badlogic.gdx.graphics.Color.WHITE;
 import static com.badlogic.gdx.graphics.GL20.GL_BLEND;
 import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.GridManager.*;
-import static com.quadx.dungeons.states.mapstate.MapStateUpdater.*;
 import static com.quadx.dungeons.tools.StatManager.gameTime;
 
 
@@ -53,26 +53,23 @@ import static com.quadx.dungeons.tools.StatManager.gameTime;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class MapStateRender extends MapState {
-    public static boolean showCircle=false;
-    private static boolean blink=false;
-    private static boolean blinkp=false;
-    private static float dtBlink =0;
-    private static float dtBlinkP =0;
-    private static float dtCircle=1f;
-    public static float dtWaterEffect=0;
-    private static int blradius=0;
+    private static int playerCircleRadius =0;
     public static ArrayList<Rectangle> monAgroBoxes= new ArrayList<>();
     public static double time=0;
+
+    static Oscillator oBlink1 = new Oscillator(20*ft);
+    static Oscillator oBlink2 = new Oscillator(4*ft);
+    static Delta dGrow = new Delta(5*ft);
 
 
     static void renderLayers(SpriteBatch sb) {
         Gdx.gl.glClearColor(0,0,0,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        shapeR.setProjectionMatrix(cam.combined);
+        sr.setProjectionMatrix(cam.combined);
         sb.setProjectionMatrix(cam.combined);
         drawGameLayer(sb);
         drawHUDLayer(sb);
-        drawFPSModule(sb, HUD.fpsGridPos);
+        Tests.drawFPSModule(sb,sr, HUD.fpsGridPos);
         drawMiniMapModule(HUD.minimapPos);
         srDrawAttackSelectors();
     }
@@ -87,45 +84,57 @@ public class MapStateRender extends MapState {
         //enable transparency
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        shapeR.begin(ShapeRenderer.ShapeType.Filled);
+        sr.begin(ShapeRenderer.ShapeType.Filled);
+
+        //Knockback
+        sr.setColor(WHITE);
+
+        Vector2 c=new Vector2(
+                view.x+ scr.x/2,
+                view.y+scr.y/2);
+        Vector2 e=new Vector2(
+                c.x+player.kba.x,
+                c.y+player.kba.y);
+        sr.line(c, e);
+
         //draw hud rectangles
         for(Rectangle r: HUD.getInfoOverlay().rects){
-            shapeR.setColor(.1f, .1f, .1f, .7f);
-            shapeR.rect(r);
+            sr.setColor(.1f, .1f, .1f, .7f);
+            sr.rect(r);
         }
         if(Protect.active)
-        shapeR.setColor(0,0,1,1/3f);
+        sr.setColor(0,0,1,1/3f);
         else
-            shapeR.setColor(1,0,0,(1-(player.getHp() / player.getHpMax()))/2.8f);
+            sr.setColor(1,0,0,(1-(player.getHp() / player.getHpMax()))/2.8f);
 
-        shapeR.rect(view.x,viewY,WIDTH,HEIGHT);
-        shapeR.end();
+        sr.rect(view.x,viewY,WIDTH,HEIGHT);
+        sr.end();
         Gdx.gl.glDisable(GL_BLEND);
         // end transparency------------------------------------------------------------
-        shapeR.begin(ShapeRenderer.ShapeType.Filled);
+        sr.begin(ShapeRenderer.ShapeType.Filled);
         //draw player stat bars
-        shapeR.setColor(0f, 1f, 0f, 1);
+        sr.setColor(0f, 1f, 0f, 1);
         try {
             Rectangle[] bars = HUD.playerStatBars;
             if (player.getHp() < player.getHpMax() / 2) {
-                shapeR.setColor(1f, 0f, 0f, 1);
+                sr.setColor(1f, 0f, 0f, 1);
             }
-            shapeR.rect(bars[0]);
-            shapeR.setColor(0f, 0f, 1f, 1);
-            shapeR.rect(bars[1]);
-            shapeR.setColor(1f, 1f, 0, 1);
-            shapeR.rect(bars[2]);
+            sr.rect(bars[0]);
+            sr.setColor(0f, 0f, 1f, 1);
+            sr.rect(bars[1]);
+            sr.setColor(1f, 1f, 0, 1);
+            sr.rect(bars[2]);
         }catch (NullPointerException ignored){}
-        shapeR.end();
+        sr.end();
 
 
         //line draw functions---------------------------------------------------
-        shapeR.begin(ShapeRenderer.ShapeType.Line);
-        shapeR.setColor(Color.GRAY);
+        sr.begin(ShapeRenderer.ShapeType.Line);
+        sr.setColor(Color.GRAY);
         //draw equipment slots
         for(Rectangle r: HUD.equipBoxes)
-            shapeR.rect(r);
-        shapeR.end();
+            sr.rect(r);
+        sr.end();
 
     }
     //---HUD SPRITEBATCH FUNCTIONS---------------------------------------
@@ -180,11 +189,11 @@ public class MapStateRender extends MapState {
         }
         //draw loot popup
         try {
-        if (HUD.dtLootPopup < .4) {
+        if (HUD.dPopup.isDone()) {
                 Vector2 v=new Vector2(player.getAbsPos());
                 v.y+=40+player.getIcon().getHeight();
                 v.x+=(player.getIcon().getWidth()/2);
-                sb.draw(HUD.lootPopup,  v.x, GridManager.fixHeight(v));
+                sb.draw(HUD.lootPopup,  v.x, GridManager.fixY(v));
             }
         } catch (NullPointerException ignored) {}
         //draw ability icon
@@ -240,71 +249,55 @@ public class MapStateRender extends MapState {
     }
     static void drawGLShapes(){
         //shape renderer filled------------------------------------
-        shapeR.setAutoShapeType(true);
-        shapeR.begin();
-        shapeR.set(ShapeRenderer.ShapeType.Filled);
+        sr.setAutoShapeType(true);
+        sr.begin();
+        sr.set(ShapeRenderer.ShapeType.Filled);
         for (Cell c : drawList) {//cycle through draw list
             float[] f = c.getCorners().getVertices();
             if(!Tests.noLand) {
                 if(!c.isWater()) {
                     if(!c.isClear()) {
-                        shapeR.setColor(new Color(.1f,.1f,.1f,1));
+                        sr.setColor(new Color(.1f,.1f,.1f,1));
                         for(Triangle t: c.getTris()){
-                            shapeR.triangle(t);
+                            sr.triangle(t);
                         }
                     }
                     else {
                         //draw land shaded
-                        shapeR.setColor(HeightMap.getColors().get(Math.round(f[10])));
+                        sr.setColor(HeightMap.getColors().get(Math.round(f[10])));
                         for(Triangle t: c.getTris()){
-                            shapeR.triangle(t);
+                            sr.triangle(t);
                         }
                     }
                 }
                 else {
                     //draw water
-                    shapeR.setColor(c.getColor());
+                    sr.setColor(c.getColor());
                     for(Triangle t: c.getTris()){
-                        shapeR.triangle(t);
+                        sr.triangle(t);
                     }
                 }
             }
         }
         //draw player
-        if ((blinkp || !player.wasHit) && GridManager.isInBounds(player.pos())) {
+        if ((oBlink2.getVal() || !player.wasHit) && GridManager.isInBounds(player.pos())) {
             //draw player shadow
             ArrayList<Triangle> tris = dispArray[(int) player.pos().x][(int) player.pos().y].getTris();
-            shapeR.setColor(Color.DARK_GRAY);
+            sr.setColor(Color.DARK_GRAY);
             for (Triangle t : tris) {
-                shapeR.triangle(t);
+                sr.triangle(t);
             }
-            //draw player str box
-            shapeR.setColor(Color.RED);
-            try {
-                Attack.HitBoxShape hbs = player.attackList.get(Attack.pos).getHitBoxShape();
-                if (hbs != null)
-                    switch (hbs) {
-
-                        case Circle:
-                            Circle c = player.getAttackCircle();
-                            shapeR.circle(c.center.x, c.center.y, c.radius);
-                            break;
-                        case Rect:
-                            shapeR.rect(player.getAttackBox());
-                            break;
-                        case Triangle:
-                            shapeR.triangle(player.getAttackTriangle());
-                            break;
-                    }
-            }catch (IndexOutOfBoundsException ignored){}
+            //draw player attack box
+            sr.setColor(Color.RED);
+            player.renderAttackbox(sr);
             //draw player hitbox
             if (Tests.showhitbox) {
-                shapeR.setColor(Color.BLUE);
-                shapeR.rect(player.getHitBox());
+                sr.setColor(Color.BLUE);
+                sr.rect(player.getHitBox());
             }
         }
         try {
-            //monster list shapeR functions
+            //monster list sr functions
             monAgroBoxes.clear();
             for (Monster m : GridManager.monsterList) { // TODO fix this loop to run only monsters on screen
                 if (m != null) {
@@ -312,55 +305,55 @@ public class MapStateRender extends MapState {
                         // add agro box to transparent draw queue
                         monAgroBoxes.add(m.getAgroBox());
                         //draw monster hitbox
-                        shapeR.setColor(Color.RED);
-                        shapeR.rect(m.getHitBox());
+                        sr.setColor(Color.RED);
+                        sr.rect(m.getHitBox());
                     }
                     //draw healthbars
-                    shapeR.setColor(Color.DARK_GRAY);
-                    shapeR.rect(m.getHbar());
+                    sr.setColor(Color.DARK_GRAY);
+                    sr.rect(m.getHbar());
                     if(m.isLowHP())
-                        shapeR.setColor(Color.GREEN);
+                        sr.setColor(Color.GREEN);
                     else
-                        shapeR.setColor(Color.RED);
-                    shapeR.rect(m.getHbar2());
+                        sr.setColor(Color.RED);
+                    sr.rect(m.getHbar2());
                 }
             }
         }catch (ConcurrentModificationException ignored){}
-        //shapeR.circle(MapState.circle.center.x,MapState.circle.center.y,MapState.circle.radius);
-        shapeR.end();
+        //sr.circle(MapState.circle.center.x,MapState.circle.center.y,MapState.circle.radius);
+        sr.end();
 
         //draw transparent things---------------------------------------------------------------
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        shapeR.begin(ShapeRenderer.ShapeType.Filled);
+        sr.begin(ShapeRenderer.ShapeType.Filled);
         if(Tests.showhitbox) {
             //draw monster aggro box
             for (Rectangle rec : monAgroBoxes) {
                 try {
-                    shapeR.setColor(1, 0, 0, .2f);
-                    shapeR.rect(rec);
+                    sr.setColor(1, 0, 0, .2f);
+                    sr.rect(rec);
                 } catch (NullPointerException ignored) {
                 }
             }
         }
-        shapeR.end();
+        sr.end();
 
         //shape renderer lines-------------------------------------------------
-        shapeR.begin(ShapeRenderer.ShapeType.Line);
+        sr.begin(ShapeRenderer.ShapeType.Line);
         for (Cell c : drawList) {
             if (c.isClear()) {
                 //draw grid
-                shapeR.setColor(Color.GRAY);
-                shapeR.getColor().a=.3f;
-                shapeR.polygon(Arrays.copyOf(c.getCorners().getVertices(),8));
+                sr.setColor(Color.GRAY);
+                sr.getColor().a=.3f;
+                sr.polygon(Arrays.copyOf(c.getCorners().getVertices(),8));
             }
         }
         ArrayList<Line> lines = player.getAttackChain();
          for(Line l:lines){
-             shapeR.setColor(WHITE);
-            shapeR.line(l);
+             sr.setColor(WHITE);
+            sr.line(l);
         }
-        shapeR.end();
+        sr.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
 
@@ -372,7 +365,7 @@ public class MapStateRender extends MapState {
             //draw items
             Item item = c.getItem();
             if (item != null && c.isClear())
-                sb.draw(item.getIcon(),c.getAbsPos().x,fixHeight(c.getAbsPos()));
+                sb.draw(item.getIcon(),c.getAbsPos().x, fixY(c.getAbsPos()));
             //draw warpToNext
             if(c.isWarp())
                 sb.draw(ImageLoader.warp,c.getFixedPos().x,c.getFixedPos().y);
@@ -387,7 +380,7 @@ public class MapStateRender extends MapState {
         Vector2 v = player.getTexturePos();
         sb.draw(player.getIcon(), v.x, v.y);
         for(Illusion.Dummy d:Illusion.dummies){
-            sb.draw(d.icon,d.absPos.x,fixHeight(d.absPos));
+            sb.draw(d.icon,d.absPos.x, fixY(d.absPos));
         }
 
         //spritebatch monster draw functions
@@ -399,7 +392,7 @@ public class MapStateRender extends MapState {
                     //draw monster texts
                     for(Text t: m.getInfoOverlay().texts) {
                         Game.setFontSize(t.size);
-                        Game.getFont().draw(sb,t.text,m.getAbsPos().x,fixHeight(m.getAbsPos())-40);
+                        Game.getFont().draw(sb,t.text,m.getAbsPos().x, fixY(m.getAbsPos())-40);
                     }
                 }
             }
@@ -414,60 +407,20 @@ public class MapStateRender extends MapState {
         sb.end();//end drawing--------------------------------------------------------------------------------
     }
     ////Modules----------------------------------------------------------
-    static void drawFPSModule(SpriteBatch sb,Vector2 pos){
-        //fps meter module
-        if(displayFPS) { //TODO optomize this to draw faster
-            //DRAW FPS meter
-            shapeR.begin(ShapeRenderer.ShapeType.Filled);
-            shapeR.setColor(BLACK);
-            shapeR.rect(pos.x, pos.y, 100, 100);
-            shapeR.end();
-            shapeR.begin(ShapeRenderer.ShapeType.Line);
-            shapeR.setColor(Color.WHITE);
-            shapeR.rect(pos.x, pos.y, 100, 100);
-            shapeR.line(pos.x, pos.y, pos.x + 100, pos.y);
 
-            shapeR.setColor(Color.GREEN);
-            int prev = 0;
-            for (int i = 0; i < fpsList.size(); i++) {
-                shapeR.line(pos.x + (i * 2), pos.y + prev, pos.x + ((i + 1) * 2), pos.y + fpsList.get(i));
-                prev = fpsList.get(i);
-            }
-            double prev1=0;
-            for (int i = 0; i < Tests.memUsageList.size(); i++) {
-                shapeR.setColor(Color.PURPLE);
-                shapeR.line(pos.x + (i * 2), (float) (pos.y +100* prev1), pos.x + ((i + 1) * 2), (float) (pos.y + 100*Tests.memUsageList.get(i)));
-                prev1 = Tests.memUsageList.get(i);
-            }
-            shapeR.end();
-            //draw fps counter
-            sb.begin();
-            if(displayFPS){
-                Game.setFontSize(1);
-                Game.getFont().setColor(Color.WHITE);
-                Game.getFont().draw(sb, (int) fps + " FPS", pos.x+2, pos.y + 80);
-                double x=0;
-                try {
-                    x= Tests.memUsageList.get(Tests.memUsageList.size() - 1);
-                }catch(Exception ignored){}
-                Game.getFont().draw(sb, (int) Tests.currentMemUsage + "MB "+Math.floor(x*100)+"%" , pos.x+2, pos.y + 95);
-            }
-            sb.end();
-        }
-    }
     private static void drawMiniMapModule(Vector2 pos){
         float r=res*2;
-        shapeR.begin(ShapeRenderer.ShapeType.Filled);
-        shapeR.setColor(BLACK);
-        shapeR.rect(pos.x,pos.y, r, r);
-        shapeR.end();
+        sr.begin(ShapeRenderer.ShapeType.Filled);
+        sr.setColor(BLACK);
+        sr.rect(pos.x,pos.y, r, r);
+        sr.end();
 
         drawGrid(pos);
 
-        shapeR.begin(ShapeRenderer.ShapeType.Line);
-        shapeR.setColor(Color.WHITE);
-        shapeR.rect(pos.x,pos.y, r, r);
-        shapeR.end();
+        sr.begin(ShapeRenderer.ShapeType.Line);
+        sr.setColor(Color.WHITE);
+        sr.rect(pos.x,pos.y, r, r);
+        sr.end();
     }
     //OLD RENDERING------------------------------------------------------
     private static void sbDrawTiles(SpriteBatch sb) {
@@ -491,72 +444,66 @@ public class MapStateRender extends MapState {
     }
     static void sbDrawParticleEffects(SpriteBatch sb){
         ArrayList<Integer> remove= new ArrayList<>();
-        for(ParticleEffect p: MapStateExt.effects){
+        for(ParticleEffect p: ParticleHandler.effects){
             p.draw(sb);
             if(p.isComplete()){
-                remove.add(MapStateExt.effects.indexOf(p));
+                remove.add(ParticleHandler.effects.indexOf(p));
             }
         }
         Collections.sort(remove);
        Collections.reverse(remove);
-        for(int i=MapStateExt.effects.size()-1;i>=0;i--){
+        for(int i = ParticleHandler.effects.size()-1; i>=0; i--){
             for(Integer r:remove){
                 if(r==i){
-                   MapStateExt.effects.remove(i);
+                   ParticleHandler.effects.remove(i);
                 }
             }
         }
     }
     private static void srDrawAttackSelectors(){
-        shapeR.begin(ShapeRenderer.ShapeType.Filled);
+        sr.begin(ShapeRenderer.ShapeType.Filled);
         int xoffset = (int) HUD.attackBarPos.x;
         for (int i = 0; i < player.attackList.size(); i++) {
 
             int x = xoffset + (i * 52);
             if (i == altNumPressed) {
-                shapeR.setColor(Color.BLUE);
-                shapeR.rect(x,viewY + 86,10,10);
+                sr.setColor(Color.BLUE);
+                sr.rect(x,viewY + 86,10,10);
             }
             if (i == Attack.pos) {
-                shapeR.setColor(Color.RED);
-                shapeR.rect(x+38,viewY + 86,10,10);
+                sr.setColor(Color.RED);
+                sr.rect(x+38,viewY + 86,10,10);
             }
         }
-        shapeR.end();
+        sr.end();
     }
     //OTHER----------------------------------------------------------------
     public MapStateRender(GameStateManager gsm) {
         super(gsm);
     }
     static void updateVariables(float dt){
-        dtBlink+=dt;
-        updateHoverTextTime();
-        dtBlinkP+=dt;
-        if(dtBlinkP>.1f){
-            blinkp=!blinkp;
-            dtBlinkP=0;
-        }
-        if(showCircle && dtCircle>0){
-            dtCircle-=dt;
-        }
-        else{
-            dtCircle=1f;
-            showCircle=false;
+        dGrow.update(dt);
+        oBlink1.update(dt);
+        oBlink2.update(dt);
+
+        if(dGrow.isDone()) {
+            playerCircleRadius++;
+            dGrow.reset();
         }
     }
-    private static void updateHoverTextTime(){
+    static void updateHoverTextTime(){
         try {
             HoverText.texts.forEach(HoverText::updateDT);
         }catch (ConcurrentModificationException ignored){}
     }
     public static void drawCircle(int x, int y, float r, Color c){
-        shapeR.begin(ShapeRenderer.ShapeType.Line);
-        shapeR.setColor(c);
-        shapeR.circle(x, y,r);
-        shapeR.end();
+        sr.begin(ShapeRenderer.ShapeType.Line);
+        sr.setColor(c);
+        sr.circle(x, y,r);
+        sr.end();
     }
     private static void drawGrid(Vector2 pos) {
-        shapeR.begin(ShapeRenderer.ShapeType.Filled);
+        sr.begin(ShapeRenderer.ShapeType.Filled);
         Vector2 mapshop = new Vector2((pos.x + shop.x * 2), (pos.y + shop.y * 2));
         Vector2 mapwarp = new Vector2((pos.x + warp.x * 2), (pos.y + warp.y * 2));
         Vector2 mapplay = new Vector2(pos.x + player.pos().x * 2, pos.y + player.pos().y * 2);
@@ -564,39 +511,40 @@ public class MapStateRender extends MapState {
             int x = c.getX();
             int y = c.getY();
             if (c.getColor() != null) {
-                shapeR.setColor(c.getColor());
+                sr.setColor(c.getColor());
                 if (c.getItem() != null && !c.getItem().getClass().equals(Gold.class))
-                    shapeR.setColor(Color.SKY);
+                    sr.setColor(Color.SKY);
                 if (player.pos().x == x &&player.pos().y == y) {
-                    if (blink)
-                        shapeR.setColor(0, 0, 1, 1);
+                    if (oBlink1.getVal())
+                        sr.setColor(0, 0, 1, 1);
                     else
-                        shapeR.setColor(1, 1, 1, 1);
+                        sr.setColor(1, 1, 1, 1);
                 }
                 float xa = pos.x + x * 2;
                 float ya = pos.y + y * 2;
-                shapeR.rect(xa, ya, 2, 2);
+                sr.rect(xa, ya, 2, 2);
             }
 
         }
 
-        shapeR.end();
-        shapeR.begin(ShapeRenderer.ShapeType.Line);
-        shapeR.setColor(Color.GREEN);
-        shapeR.circle(mapwarp.x+1,mapwarp.y+1,9);
-        shapeR.setColor(Color.MAGENTA);
-        shapeR.circle(mapshop.x+1,mapshop.y+1,9);
+        sr.end();
+        sr.begin(ShapeRenderer.ShapeType.Line);
+        sr.setColor(Color.GREEN);
+        sr.circle(mapwarp.x+1,mapwarp.y+1,9);
+        sr.setColor(Color.MAGENTA);
+        sr.circle(mapshop.x+1,mapshop.y+1,9);
 
-        if(blink){shapeR.setColor(Color.BLUE);}
-        else if(!blink){shapeR.setColor(Color.WHITE);}
-        if(dtBlink>Game.ft *4){
-            blink=!blink;
-            blradius++;
-            dtBlink=0;
-        }
-        shapeR.circle(mapplay.x+1,mapplay.y+1,blradius);
-        if(blradius>9)blradius=0;
-        shapeR.end();
+        if(oBlink1.getVal()){
+            sr.setColor(Color.CYAN);}
+        else{
+            sr.setColor(Color.WHITE);}
+
+
+
+        sr.circle(mapplay.x+1,mapplay.y+1, playerCircleRadius);
+        playerCircleRadius = setInBoundsW(playerCircleRadius,10);
+
+        sr.end();
 
     }
 

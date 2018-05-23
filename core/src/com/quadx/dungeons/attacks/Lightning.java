@@ -32,7 +32,7 @@ public class Lightning extends Attack {
         range=0;
         setIcon(ImageLoader.attacks.get(12));
     }
-    ArrayList<Line> calculateHitChain(){
+    ArrayList<Line> getHitChainList(){
         ArrayList<Line> edges=new ArrayList<>();
         ArrayList<Monster> hit=new ArrayList<>();
         try{
@@ -40,7 +40,7 @@ public class Lightning extends Attack {
             if(player.pos().dst(m.getPos())<10){
                 hit.add(m);
                 edges.add(new Line(player.getFixPos(), m.getFixPos()));
-                m.hitByAttack();
+                m.takeDamage();
             }
         }}catch (ConcurrentModificationException ignored){}
         try{
@@ -48,7 +48,7 @@ public class Lightning extends Attack {
             for(Monster m1:monsterList) {
                 if (!m.equals(m1) && m.getPos().dst(m1.getPos()) < 10) {
                     edges.add(new Line(m.getFixPos(),m1.getFixPos()));
-                    m1.hitByAttack();
+                    m1.takeDamage();
                 }
             }
         }}catch (ConcurrentModificationException ignored){}

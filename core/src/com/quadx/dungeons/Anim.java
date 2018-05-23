@@ -5,13 +5,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.commands.Command;
 import com.quadx.dungeons.commands.cellcommands.AddItemToCellComm;
-import com.quadx.dungeons.tools.Delta;
+import com.quadx.dungeons.tools.timers.Delta;
 import com.quadx.dungeons.tools.EMath;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
 import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.GridManager.fixHeight;
+import static com.quadx.dungeons.GridManager.fixY;
 
 /**
  * Created by range_000 on 1/10/2017.
@@ -35,7 +36,16 @@ public class Anim {
 
     public void render(SpriteBatch sb) {
         if(texture != null)
-            sb.draw(texture,pos.x,fixHeight(pos));
+            sb.draw(texture,pos.x, fixY(pos));
+    }
+
+    public static void update(float dt) {
+        try {
+            for (Anim a : anims) {
+                a.updateSelf(dt);
+            }
+        } catch (ConcurrentModificationException ignored) {
+        }
     }
 
     enum Type{
@@ -58,7 +68,7 @@ public class Anim {
     void updatePosition(){
         float dx = Math.abs(EMath.dx(pos, dest));
         float dy = Math.abs(EMath.dy(pos, dest));
-        Vector2 velcomp = Physics.getVxyComp(vel, pos, dest);
+        Vector2 velcomp = Physics.getVector(vel, pos, dest);
 
         pos.x = dx < vel ? dest.x : pos.x + velcomp.x;
         pos.y = dy < vel ? dest.y : pos.y + velcomp.y;
@@ -80,7 +90,7 @@ public class Anim {
 
     }
 
-    public void update(float dt) {
+    public void updateSelf(float dt) {
         updatePosition();
         checkEndConditions(dt);
 

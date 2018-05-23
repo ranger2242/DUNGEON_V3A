@@ -1,4 +1,4 @@
-package com.quadx.dungeons.tools;
+package com.quadx.dungeons.tools.timers;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;

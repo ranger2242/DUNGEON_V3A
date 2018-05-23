@@ -33,7 +33,7 @@ public class Protect extends Attack {
         active =true;
 
     }
-    public static void update(float dt){
+    public static void updateSelf(float dt){
         if(active){
             dtProt+=dt;
 

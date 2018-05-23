@@ -8,7 +8,7 @@ import com.quadx.dungeons.Cell;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.State;
-import com.quadx.dungeons.tools.Timer;
+import com.quadx.dungeons.tools.timers.Timer;
 
 import java.util.ArrayList;
 import java.util.Random;

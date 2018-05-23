@@ -8,23 +8,26 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.attacks.Attack;
-import com.quadx.dungeons.states.AbilitySelectState;
-import com.quadx.dungeons.states.GameStateManager;
-import com.quadx.dungeons.states.ShopState;
 import com.quadx.dungeons.tools.FilePaths;
 
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.GridManager.dispArray;
-import static com.quadx.dungeons.GridManager.fixHeight;
+import static com.quadx.dungeons.GridManager.fixY;
+import static com.quadx.dungeons.states.mapstate.MapState.cellW;
 
 /**
  * Created by Tom on 1/29/2016.
  */
 @SuppressWarnings("DefaultFileTemplate")
-public class MapStateExt extends MapState {
+public class ParticleHandler {
     public static ArrayList<ParticleEffect> effects = new ArrayList<>();
+
+    static void update(float dt) {
+        for (ParticleEffect e : effects) {
+            e.update(dt);
+        }
+    }
 
     public enum EffectType {
         ATTACK, FIELD
@@ -41,7 +44,7 @@ public class MapStateExt extends MapState {
         ParticleEffect effect = new ParticleEffect();
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("particles\\particlesPack.atlas"));
         effect.load(Gdx.files.internal("particles\\" + name), atlas);
-        float y = fixHeight(pos);
+        float y = fixY(pos);
         effect.setPosition(pos.x, y);
         effect.getEmitters().get(0).setPosition(pos.x, y);
         return effect;
@@ -111,38 +114,18 @@ public class MapStateExt extends MapState {
             angle.setLow(ang);
         }
         float r = cellW * (2f / 3f);
-        effect.getEmitters().get(0).setPosition(x + (cellW / 2), GridManager.fixHeight(new Vector2(x, y)) + r);
-        effect.setPosition(x + (cellW / 2), GridManager.fixHeight(new Vector2(x, y)) + r);
+        effect.getEmitters().get(0).setPosition(x + (cellW / 2), GridManager.fixY(new Vector2(x, y)) + r);
+        effect.setPosition(x + (cellW / 2), GridManager.fixY(new Vector2(x, y)) + r);
 
         return effect;
     }
 
-    public MapStateExt(GameStateManager gsm) {
-        super(gsm);
+    public ParticleHandler() {
     }
 
     public static void addEffect(ParticleEffect e) {
         e.start();
         effects.add(e);
-    }
-
-    public static void warpToNext(boolean abilityState) {
-        resetRoomVars();
-        if (player.hasAP() && abilityState) {
-            gsm.push(new AbilitySelectState(gsm));
-        }
-        player.floor++;
-        gm.initializeGrid();
-    }
-
-    public static void warpToShop() {
-        dispArray[(int) shop.x][(int) shop.y].setShop(false);
-        gsm.push(new ShopState(gsm));
-    }
-
-    static void resetRoomVars(){
-        removeParticles();
-
     }
 
     static void removeParticles(){

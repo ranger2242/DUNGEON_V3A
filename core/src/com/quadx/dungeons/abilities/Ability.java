@@ -28,6 +28,11 @@ public abstract class Ability {
     Ability() {
     }
 
+    public static void update(float dt){
+        if (Warp.isEnabled())
+            Warp.updateTimeCounter();
+    }
+
     public void setDetails(ArrayList<String> d) {
         details.clear();
         details.addAll(d);

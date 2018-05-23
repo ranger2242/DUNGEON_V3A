@@ -17,7 +17,7 @@ import static com.quadx.dungeons.Game.scr;
 public abstract class State {
     public static OrthographicCamera cam;
     private Vector3 mouse;
-    protected static GameStateManager gsm;
+    public static GameStateManager gsm;
     public static float viewX;
     public static float viewY;
     protected static Vector2 view = new Vector2();
@@ -53,5 +53,9 @@ public abstract class State {
     }
     public static float scry(float percent){
         return view.y+(scr.y*percent);
+    }
+
+    public static void shake() {
+        camController.shakeScreen(20f, 5);
     }
 }

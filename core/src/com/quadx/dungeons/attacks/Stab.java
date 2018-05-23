@@ -26,7 +26,7 @@ public class Stab extends Attack {
         description="Stabs the opponent.";
         setIcon(ImageLoader.attacks.get(10));
     }
-    public  Rectangle calculateHitBox() {
+    public  Rectangle getHitBox() {
         return new ForwardRectHitBox().getShape(this);
     }
 }

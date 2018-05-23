@@ -94,7 +94,6 @@ public class AttackMod {
             }
 
         }
-        MapState.dtStatPopup=0;
 
     }
     public static void resetAttacks(){

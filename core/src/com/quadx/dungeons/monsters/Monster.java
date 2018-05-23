@@ -14,11 +14,13 @@ import com.quadx.dungeons.attacks.Blind;
 import com.quadx.dungeons.attacks.Illusion;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.physics.Body;
+import com.quadx.dungeons.states.State;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.*;
 import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.gui.InfoOverlay;
 import com.quadx.dungeons.tools.gui.Text;
+import com.quadx.dungeons.tools.timers.Delta;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
@@ -186,13 +188,13 @@ public class Monster {
                 w = getIcon().getWidth(),
                 h = getIcon().getHeight();
 
-        return new Rectangle(x - (w / 2), GridManager.fixHeight(new Vector2(x, y)) - (h / 2), w, h);
+        return new Rectangle(x - (w / 2), GridManager.fixY(new Vector2(x, y)) - (h / 2), w, h);
     }
 
     public Rectangle getAgroBox() {
         float rx = (getSight() * cell.x);
         float ry = (getSight() * cell.y);
-        return new Rectangle(absPos.x - rx, fixHeight(new Vector2(absPos.x - rx, absPos.y - ry)), rx * 2, ry * 2);
+        return new Rectangle(absPos.x - rx, fixY(new Vector2(absPos.x - rx, absPos.y - ry)), rx * 2, ry * 2);
 
 //        return new Rectangle(absPos.x-r,absPos.y-r,r*2,r*2);
     }
@@ -206,11 +208,11 @@ public class Monster {
     }
 
     public Vector2 getFixPos() {
-        return new Vector2(absPos.x,fixHeight(absPos));
+        return new Vector2(absPos.x, fixY(absPos));
     }
 
     public Vector2 getTexturePos() {
-        texturePos.set(getAbsPos().x - (getIcon().getWidth()) / 2, GridManager.fixHeight(getAbsPos()) - (getIcon().getHeight()) / 2);
+        texturePos.set(getAbsPos().x - (getIcon().getWidth()) / 2, GridManager.fixY(getAbsPos()) - (getIcon().getHeight()) / 2);
 
         return texturePos;
     }
@@ -250,10 +252,10 @@ public class Monster {
             player.wasHit = true;
             int d = Damage.monsterMagicDamage(this);
             player.addHp(-d);
-            player.setDest(absPos);
-            MapState.shakeScreen = true;
-
-            new HoverText("-" + d, 1, new Color(1f, .2f, .2f, 1f), player.getAbsPos().x, player.getAbsPos().y, true);
+            player.setKnockBackDest(absPos);
+            State.shake();
+            Color c = new Color(1f, .2f, .2f, 1f);
+            new HoverText("-" + d, 1, c, player.getAbsPos(), true);
 
             hit = true;
             StatManager.killer = this;
@@ -439,23 +441,23 @@ public class Monster {
         sights = new Vector3(px - (side / 2) + (cellW / 2), py - (side / 2) + (cellW / 2), side);
     }
 
-    void setOverlay() {
+    void setHUDOverlay() {
         float width = 80;
         int x = (int) (absPos.x - (width / 2));
         int y = (int) (absPos.y - (getIcon().getHeight() / 2));
         Vector2 hbarpos = new Vector2(x - 2, y - 31);
         Vector2 hbarpos2 = new Vector2(x, y - 30);
-        hbar = new Rectangle(hbarpos.x, fixHeight(hbarpos), width + 4, 6);
-        hbar2 = new Rectangle(hbarpos2.x, fixHeight(hbarpos2), (float) ((double) width * getPercentHP()), 4);
+        hbar = new Rectangle(hbarpos.x, fixY(hbarpos), width + 4, 6);
+        hbar2 = new Rectangle(hbarpos2.x, fixY(hbarpos2), (float) ((double) width * getPercentHP()), 4);
         texturePos.set(pos.x * cellW - icon.getWidth() / 4, pos.y * cellW - icon.getHeight() / 4);
         if (!(hp <= hpMax / 3)) lowhp = true;
         else lowhp = false;
         overlay.texts.clear();
         Vector2 ne = new Vector2(absPos.x, absPos.y);
         ne.add(0, -20);
-        overlay.texts.add(new Text("LVL " + level, new Vector2(absPos.x - 22, GridManager.fixHeight(ne)), Color.GRAY, 1));
+        overlay.texts.add(new Text("LVL " + level, new Vector2(absPos.x - 22, GridManager.fixY(ne)), Color.GRAY, 1));
         if (isHit())
-            overlay.texts.add(new Text("!", new Vector2(absPos.x - 22, GridManager.fixHeight(ne)), Color.GRAY, 1));
+            overlay.texts.add(new Text("!", new Vector2(absPos.x - 22, GridManager.fixY(ne)), Color.GRAY, 1));
     }
 
     //OTHER----------------------------------------------------------------------------------
@@ -563,7 +565,7 @@ public class Monster {
 
     static int count = 0;
 
-    void checkForDamageToDummies() {
+    void collisionWithDummies() {
         for (Illusion.Dummy d : Illusion.dummies) {
             if (getHitBox().overlaps(d.hitbox)) {
                 int damage;
@@ -581,7 +583,7 @@ public class Monster {
 
     }
 
-    public void hitByAttack() {
+    public void takeDamage() {
         player.getAttack().runAttackMod();
         hit = true;
         Attack attack = player.attackList.get(Attack.pos);
@@ -668,7 +670,7 @@ public class Monster {
 
     }
 
-    public void fixMonsterCollisions() {
+    public void collisionWithMonsters() {
         List<Monster> list = mdrawList.stream().filter(m -> !m.equals(this) && m.getHitBox().overlaps(getHitBox())).collect(Collectors.toList());
         for (Monster m : list) {
             float ang = (float) Math.toRadians(EMath.angle(getAbsPos(), m.getAbsPos())),
@@ -684,17 +686,17 @@ public class Monster {
         setAbsPos(getAbsPos().add(x, y));
     }
 
-    double calcMoveSpeed(){
-        float max=20f;
-        double t=eAgroTime.getTime();
-        double s=speed;
-        if(state== AI.State.AGRO) {
+    double calcMoveSpeed() {
+        float max = 20f;
+        double t = eAgroTime.getTime();
+        double s = speed;
+        if (state == AI.State.AGRO) {
             if (t < max)
-                s= speed * (1 + t / max);
+                s = speed * (1 + t / max);
             else
-                s= speed * 2;
+                s = speed * 2;
         }
-        s/=5;
+        s /= 5;
         return s;
     }
 
@@ -712,14 +714,14 @@ public class Monster {
         else if (end.y + getIcon().getHeight() > gw)
             end.y = (gw) - getIcon().getHeight();
 
-        Vector2 comp = Physics.getVxyComp(velocity, absPos, end);
+        Vector2 comp = Physics.getVector(velocity, absPos, end);
         comp.scl((float) calcMoveSpeed());
 
         int x = (int) (EMath.round(absPos.x / cellW));
         int y = (int) (EMath.round(absPos.y / cellW));
 
         Cell c = dispArray[x][y];
-        if (c.isWater()||  c.isClear() && (!c.hasMon() || (prevPos.x == x && prevPos.y == y))) {
+        if (c.isWater() || c.isClear() && (!c.hasMon() || (prevPos.x == x && prevPos.y == y))) {
             setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
         } else {
             if (rn.nextFloat() < .05)
@@ -728,35 +730,6 @@ public class Monster {
 
     }
 
-    //AI ACTIONS-------------------------------------------------------------------------------------------
-    void changeDirection() {
-
-        float dst = player.pos().dst(getPos());
-        if (dChangeDirection.isDone()) {
-            facing = Direction.Facing.getRandom();
-            dChangeDirection.reset();
-        }
-        try {
-            move(Direction.getVector(facing));
-        } catch (ArrayIndexOutOfBoundsException e) { }
-    }
-
-    private void chasePlayer() {
-        float angle;
-        boolean dir = player.pos().dst(getPos()) > res / 2;
-        if (!Illusion.dummies.isEmpty()) {
-            angle = (float) Math.toRadians(EMath.angle(absPos, Illusion.dummies.get(rn.nextInt(Illusion.dummies.size())).absPos) + 180);
-        } else
-            angle = (float) Math.toRadians(EMath.angle(absPos, player.getAbsPos()) + 180);
-        if (dir)
-            angle += Math.PI;
-        facing = Direction.getDirection(angle);
-        try {
-            move(Direction.getVector(facing));
-        } catch (ArrayIndexOutOfBoundsException e) { }
-    }
-
-    //-----------------------------------------------------------------------------------------------------
     public void move() {//calculates move direction
         switch (state) {
             case INACTIVE:
@@ -787,11 +760,45 @@ public class Monster {
         return prevPos.x != pos.x || prevPos.y != pos.y;
     }
 
-
     public double getPower() {
         return power;
     }
 
+    public void setState(AI.State state) {
+        this.state = state;
+    }
+
+    //AI ACTIONS-------------------------------------------------------------------------------------------
+    void changeDirection() {
+
+        float dst = player.pos().dst(getPos());
+        if (dChangeDirection.isDone()) {
+            facing = Direction.Facing.getRandom();
+            dChangeDirection.reset();
+        }
+        try {
+            move(Direction.getVector(facing));
+        } catch (ArrayIndexOutOfBoundsException e) {
+        }
+    }
+
+    private void chasePlayer() {
+        float angle;
+        boolean dir = player.pos().dst(getPos()) > res / 2;
+        if (!Illusion.dummies.isEmpty()) {
+            angle = (float) Math.toRadians(EMath.angle(absPos, Illusion.dummies.get(rn.nextInt(Illusion.dummies.size())).absPos) + 180);
+        } else
+            angle = (float) Math.toRadians(EMath.angle(absPos, player.getAbsPos()) + 180);
+        if (dir)
+            angle += Math.PI;
+        facing = Direction.getDirection(angle);
+        try {
+            move(Direction.getVector(facing));
+        } catch (ArrayIndexOutOfBoundsException e) {
+        }
+    }
+
+    //UPDATE------------------------------------------------------
     public static void update(float dt) {
         dRespawn.update(dt);
         spawn();
@@ -814,19 +821,18 @@ public class Monster {
         velocity = (float) (6 + .0136 * speed + .000005 * Math.pow(speed, 2)) * (3f / 4f);
         checkAgro();
         setSights();
-        setOverlay();
+        setHUDOverlay();
         collisionWithPlayer();
-        checkForDamageToDummies();
-        loadIcon();
-        fixMonsterCollisions();
+        collisionWithDummies();
+        collisionWithMonsters();
         if (!Tests.allstop) {
             state = AI.State.determine(this);
             move();
             fixPosition();
         }
-    }
+        loadIcon();
 
-    public void setState(AI.State state) {
-        this.state = state;
     }
+    //------------------------------------------------------------
+
 }

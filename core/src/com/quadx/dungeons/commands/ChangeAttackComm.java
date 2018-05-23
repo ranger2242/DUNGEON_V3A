@@ -23,9 +23,9 @@ public class ChangeAttackComm extends Command {
         if(pressed()) {
             if(cls.equals(MapState.class)) {
                 if(Inventory.dtItem>.1)
-                Attack.pos++;
+                Attack.incPos();
                 if(Attack.pos>=player.attackList.size())
-                    Attack.pos=0;
+                    Attack.changePos(0);
                 Inventory.dtItem=0;
             }
         }
