@@ -1,6 +1,5 @@
 package com.quadx.dungeons.attacks;
 
-import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.shapes.Line;
@@ -9,7 +8,6 @@ import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 
 import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.GridManager.fixHeight;
 import static com.quadx.dungeons.GridManager.monsterList;
 
 /**
@@ -39,24 +37,21 @@ public class Lightning extends Attack {
         ArrayList<Monster> hit=new ArrayList<>();
         try{
         for(Monster m:monsterList){
-            if(player.getPos().dst(m.getPos())<10){
+            if(player.pos().dst(m.getPos())<10){
                 hit.add(m);
-                edges.add(new Line(new Vector2(player.getAbsPos().x,fixHeight(player.getAbsPos())),new Vector2(m.getAbsPos().x,fixHeight(m.getAbsPos()))));
+                edges.add(new Line(player.getFixPos(), m.getFixPos()));
                 m.hitByAttack();
             }
-        }}catch (ConcurrentModificationException c){}
+        }}catch (ConcurrentModificationException ignored){}
         try{
         for(Monster m:hit){
             for(Monster m1:monsterList) {
                 if (!m.equals(m1) && m.getPos().dst(m1.getPos()) < 10) {
-                   // hit.add(m1);
-                    edges.add(new Line(new Vector2(m.getAbsPos().x,fixHeight(m.getAbsPos())),new Vector2(m1.getAbsPos().x,fixHeight(m1.getAbsPos()))));
+                    edges.add(new Line(m.getFixPos(),m1.getFixPos()));
                     m1.hitByAttack();
-
                 }
             }
-            //hit.remove(0);
-        }}catch (ConcurrentModificationException c){}
+        }}catch (ConcurrentModificationException ignored){}
         return edges;
     }
 }

@@ -23,24 +23,24 @@ public class Score {
     }
 
     public String toString(){
-        String s=name;
+        StringBuilder s= new StringBuilder(name);
         while (s.length()<20){
-            s+=" ";
+            s.append(" ");
         }
-        s+=score;
+        s.append(score);
         while (s.length()<35){
-            s+=" ";
+            s.append(" ");
         }
-        s+=gold+"G";
+        s.append(gold).append("G");
         while (s.length()<55){
-            s+=" ";
+            s.append(" ");
         }
-        s+=ability;
+        s.append(ability);
         while (s.length()<80){
-            s+=" ";
+            s.append(" ");
         }
-        s+=kills+" KILLS";
-        return s;
+        s.append(kills).append(" KILLS");
+        return s.toString();
     }
     public String getSaveFormat(){
         return name+","+score+","+gold+","+ability+","+kills;

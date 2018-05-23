@@ -19,8 +19,8 @@ public class DropComm extends Command {
     @Override
     public void execute() {
         if(pressed()){
-            if(cls.equals(MapState.class));
-                Inventory.discard(player.getPos(),true,null);
+            if(cls.equals(MapState.class))
+                Inventory.discard(player.pos(),true,null);
         }
     }
 }

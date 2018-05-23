@@ -7,9 +7,9 @@ import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.*;
 import com.quadx.dungeons.states.mapstate.Map2State;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.GridManager.monsterList;
@@ -26,17 +26,16 @@ public class Tests {
     public static int meterListMax = 50;
     public static int runs = 100;
     public static float dtReload = 0;
-    public static boolean allAttacks=      true;
-
-    public static boolean allstop=      false;
-    public static boolean spawn =      true;
-    public static boolean nodeath=      false;
-    public static boolean fastreg=      false;
-    public static boolean noLand=       false;
-    public static boolean showhitbox=   false;
-    public static boolean output=       true;
-    public static boolean clearmap=     false;
-    public static boolean infiniteRegen = false;
+    public static boolean allAttacks=       true;
+    public static boolean allstop=          false;
+    public static boolean spawn =           false;
+    public static boolean nodeath=          false;
+    public static boolean fastreg=          false;
+    public static boolean noLand=           false;
+    public static boolean showhitbox=       false;
+    public static boolean output=           true;
+    public static boolean clearmap=         false;
+    public static boolean infiniteRegen =   false;
     static int testCount = 0;
 
     public static void goldTest(){
@@ -84,7 +83,7 @@ public class Tests {
         mons.add(new Porygon());
 
         for(Monster m:mons){
-            String out="";
+            String out;
             String name= m.getName();
             ArrayList<Integer> hp = new ArrayList<>();
             ArrayList<Integer> str = new ArrayList<>();
@@ -170,6 +169,7 @@ public class Tests {
     }
 
     public static void calcAvgMapLoadTime() {
+
         double total = 0;
         for (Double i : mapLoadTimes) {
             total += i;
@@ -179,6 +179,9 @@ public class Tests {
     }
 
     public static boolean timeKill() {
+        //returns true to allow play
+        //ONLY ENABLE WHEN GIVNING OUT TEST COPIES
+        /*
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date kill = null;
         try {
@@ -188,7 +191,7 @@ public class Tests {
         }
         Calendar cal = Calendar.getInstance();
         String d = sdf.format(cal.getTime());
-        Date today = null;
+        Date today;
         try {
             today = sdf.parse(d);
             if (kill.compareTo(today) > 0)
@@ -198,8 +201,8 @@ public class Tests {
         } catch (ParseException e) {
             e.printStackTrace();
             return true;
-        }
-
+        }*/
+        return true;
     }
 
     public static void parseCommand(String text) {
@@ -234,7 +237,7 @@ public class Tests {
                         for(Equipment e:equipSets.ref[a])
                         player.addItemToInventory(e);
                         outText="Added set "+a;
-                    }catch (Exception e){
+                    }catch (Exception ignored){
                     }
                 }
             }

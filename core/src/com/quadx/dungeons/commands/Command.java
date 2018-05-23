@@ -165,14 +165,14 @@ public abstract class Command {
         return false;
     }
     public String print(){
-        String s="  "+name;
+        StringBuilder s= new StringBuilder("  " + name);
         while (s.length()<70)
-            s+=" ";
+            s.append(" ");
         if(!controllerMode)
-            s+= Input.Keys.toString(keyboard);
+            s.append(Input.Keys.toString(keyboard));
         if(controllerMode)
-            s+=contButtonName;
+            s.append(contButtonName);
 
-        return s;
+        return s.toString();
     }
 }

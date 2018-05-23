@@ -2,7 +2,6 @@ package com.quadx.dungeons.tools.gui;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Game;
@@ -17,12 +16,11 @@ public class InfoOverlay {
     public ArrayList<Texture> textures = new ArrayList<>();
     public ArrayList<Rectangle> rects = new ArrayList<>();
     public ArrayList<Vector2> texturePos=new ArrayList<>();
-    public void draw(SpriteBatch sb, ShapeRenderer sr){
-        try {
+    public void draw(SpriteBatch sb){
             for (int i = 0; i < textures.size(); i++) {
-                sb.draw(textures.get(i), texturePos.get(i).x, texturePos.get(i).y);
+                Vector2 v=texturePos.get(i);
+                sb.draw(textures.get(i), v.x, v.y);
             }
-        }catch (NullPointerException e){}
 
         for (Text t : texts) {
                 Game.getFont().draw(sb, t.text, t.pos.x, t.pos.y);

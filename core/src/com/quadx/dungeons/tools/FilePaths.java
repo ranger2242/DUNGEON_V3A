@@ -16,11 +16,11 @@ public class FilePaths {
                    s1[i]='/';
             }
         }
-        String r="";
-        for(int i=0;i<s1.length;i++){
-            r+=s1[i];
+        StringBuilder r= new StringBuilder();
+        for (char aS1 : s1) {
+            r.append(aS1);
         }
-        return r;
+        return r.toString();
     }
 
     public static int checkOS() {

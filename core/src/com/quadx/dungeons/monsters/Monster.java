@@ -205,6 +205,10 @@ public class Monster {
         return absPos;
     }
 
+    public Vector2 getFixPos() {
+        return new Vector2(absPos.x,fixHeight(absPos));
+    }
+
     public Vector2 getTexturePos() {
         texturePos.set(getAbsPos().x - (getIcon().getWidth()) / 2, GridManager.fixHeight(getAbsPos()) - (getIcon().getHeight()) / 2);
 
@@ -236,8 +240,8 @@ public class Monster {
     }
 
     public boolean PlayerInSight() {
-        return player.getPos().x > this.getX() - this.getSight() && player.getPos().x < this.getX() + this.getSight()
-                && player.getPos().y > this.getY() - this.getSight() && player.getPos().y < this.getY() + this.getSight();
+        return player.pos().x > this.getX() - this.getSight() && player.pos().x < this.getX() + this.getSight()
+                && player.pos().y > this.getY() - this.getSight() && player.pos().y < this.getY() + this.getSight();
     }
 
     public boolean collisionWithPlayer() {
@@ -589,7 +593,7 @@ public class Monster {
     }
 
     public static boolean isNearPlayer(Vector2 pos) {
-        return EMath.pathag(player.getPos(), pos) < 10;
+        return EMath.pathag(player.pos(), pos) < 10;
     }
 
     public static void spawn() {
@@ -727,7 +731,7 @@ public class Monster {
     //AI ACTIONS-------------------------------------------------------------------------------------------
     void changeDirection() {
 
-        float dst = player.getPos().dst(getPos());
+        float dst = player.pos().dst(getPos());
         if (dChangeDirection.isDone()) {
             facing = Direction.Facing.getRandom();
             dChangeDirection.reset();
@@ -739,7 +743,7 @@ public class Monster {
 
     private void chasePlayer() {
         float angle;
-        boolean dir = player.getPos().dst(getPos()) > res / 2;
+        boolean dir = player.pos().dst(getPos()) > res / 2;
         if (!Illusion.dummies.isEmpty()) {
             angle = (float) Math.toRadians(EMath.angle(absPos, Illusion.dummies.get(rn.nextInt(Illusion.dummies.size())).absPos) + 180);
         } else

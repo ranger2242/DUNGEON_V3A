@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.commands.Command;
+import com.quadx.dungeons.tools.gui.CamController;
 
 import static com.quadx.dungeons.Game.commandList;
 import static com.quadx.dungeons.Game.scr;
@@ -19,7 +20,8 @@ public abstract class State {
     protected static GameStateManager gsm;
     public static float viewX;
     public static float viewY;
-    public static Vector2 view = new Vector2();
+    protected static Vector2 view = new Vector2();
+    public static CamController camController = new CamController();
 
 
     protected State(GameStateManager gsm){
@@ -28,12 +30,17 @@ public abstract class State {
         cam.setToOrtho(true);
         mouse = new Vector3();
     }
+
+    public static Vector2 getView() {
+        return view;
+    }
+
     void handleInput(){
         for(Command c: commandList){
             c.execute();
         }
     }
-    public static void updateView(Vector2 v){
+    public static void setView(Vector2 v){
         view.set(v);
         viewX=v.x;
         viewY=v.y;

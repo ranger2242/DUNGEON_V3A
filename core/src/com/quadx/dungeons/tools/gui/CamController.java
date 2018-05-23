@@ -18,9 +18,9 @@ import static com.quadx.dungeons.states.mapstate.MapState.rn;
 public class CamController {
     private float force = 0;
     private boolean shakeCam = false;
-    boolean snapCam = false;
+    private boolean snapCam = false;
 
-    Delta dLockTime = new Delta( 15*60*ft);
+    private Delta dLockTime = new Delta( 15*60*ft);
 
     private Delta dShake;
 
@@ -44,10 +44,10 @@ public class CamController {
             return new Vector3();
     }
 
-    void updateCamPos(OrthographicCamera cam) {
+    private void updateCamPos(OrthographicCamera cam) {
         Vector3 position = cam.position;
         player.fixPosition();
-        float[] f = dispArray[(int) player.getPos().x][(int) player.getPos().y].getCorners().getVertices();
+        float[] f = dispArray[(int) player.pos().x][(int) player.pos().y].getCorners().getVertices();
         Vector3 disp = new Vector3(f[8], f[9], 0);
         if (snapCam) {
             position.set(player.getAbsPos().x, GridManager.fixHeight(player.getAbsPos()), 0);
@@ -62,7 +62,7 @@ public class CamController {
         cam.update();
         float x = cam.position.x - cam.viewportWidth / 2;
         float y = cam.position.y - cam.viewportHeight / 2;
-        State.updateView(new Vector2(x, y));
+        State.setView(new Vector2(x, y));
     }
 
     public void update(float dt, OrthographicCamera cam) {
@@ -82,7 +82,7 @@ public class CamController {
         updateCamPos(cam);
     }
 
-    public boolean isShaking() {
+    private boolean isShaking() {
         return shakeCam;
     }
 

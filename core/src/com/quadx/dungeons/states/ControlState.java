@@ -19,17 +19,17 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.*;
-import static com.quadx.dungeons.tools.gui.Text.strWidth;
+import static com.quadx.dungeons.tools.gui.HUD.titleLine;
 
 /**
  * Created by Tom on 12/30/2015.
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class ControlState extends State implements InputProcessor {
-    float dtInputBuffer=0;
-    ShapeRendererExt sr= new ShapeRendererExt();
-    Title key=new Title("KEY",WIDTH*3/4-10,HEIGHT-10);
-    Title act=new Title("ACTION",30+10,HEIGHT-10);
+    private float dtInputBuffer=0;
+    private ShapeRendererExt sr= new ShapeRendererExt();
+    private Title key=new Title("KEY",WIDTH*3/4-10,HEIGHT-10);
+    private Title act=new Title("ACTION",30+10,HEIGHT-10);
 
     private final ArrayList<String> controlList = new ArrayList<>();
     public static Selector selector=null;
@@ -43,14 +43,14 @@ public class ControlState extends State implements InputProcessor {
 
     }
 
-    void defaultControls(){
+    private void defaultControls(){
         String s2 ="51 47 29 32 19 20 21 22 57 45 33 129 130 62 35 31 60 52 131 61 66 ";
         String[] sp = s2.split(" ");
         for (int i = 0; i < sp.length; i++) {
             commandList.get(i).changeKey(Integer.parseInt(sp[i]));
         }
     }
-    public static void exit(){
+    private static void exit(){
         selector.disableSelection();
         try {
             PrintWriter pw = new PrintWriter("controls.txt");
@@ -102,37 +102,19 @@ public class ControlState extends State implements InputProcessor {
         sr.begin(ShapeRenderer.ShapeType.Line);
         sr.setColor(Color.RED);
 
-        titleLine(key);
-        titleLine(act);
+        titleLine(sr, key);
+        titleLine(sr, act);
 
         sr.end();
     }
-    float[] fitLineToWord(String s){
-        //x1,y1,x2,y2
-        float[] arr=new float[8];
-        arr[0]= -10;
-        arr[1]=-15;
-        arr[2]=strWidth(s)+20;
-        arr[3]=-15;
-        arr[4]= -10;
-        arr[5]=-12;
-        arr[6]=strWidth(s)+35;
-        arr[7]=-12;
-        return arr;
-    }
+
     //---------------------------------------------------------
 // Render
-    void titleLine(Title t){
-        float[] s = fitLineToWord(t.text);
-        float x=t.x;
-        float y=t.y;
-        sr.line(view.x + x + s[0], viewY +y+ s[1] , view.x + x + s[2], viewY + y+ s[3]);
-        sr.line(view.x + x + s[4], viewY +y+ s[5] , view.x + x + s[6], viewY + y+ s[7]);
-    }
+
 
     public void dispose() {
     }
-    public void changeKey(int key){
+    private void changeKey(int key){
         if(selector.isActive()){
             commandList.get(selector.getPos()).changeKey(key);
             Game.console(key+"");

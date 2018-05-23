@@ -103,12 +103,7 @@ public class AttackMod {
         dtTorment=0;
     }
     static void torment(){
-        if(dtTorment<30){
 
-        }
-        else{
-
-        }
     }
 
 }

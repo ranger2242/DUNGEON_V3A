@@ -16,11 +16,11 @@ import static com.quadx.dungeons.Game.HEIGHT;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class OptionState extends State{
-    public static boolean lockAim=false;
-    ShapeRenderer sr = new ShapeRenderer();
-    ArrayList<String> options = new ArrayList<>();
-    ArrayList<Vector2> resolutions= new ArrayList<>();
-    int respos=0;
+    private static boolean lockAim=false;
+    private ShapeRenderer sr = new ShapeRenderer();
+    private ArrayList<String> options = new ArrayList<>();
+    private ArrayList<Vector2> resolutions= new ArrayList<>();
+    private int respos=0;
 
     public OptionState(GameStateManager gsm) {
         super(gsm);
@@ -29,11 +29,11 @@ public class OptionState extends State{
         cam.position.set(0,0,0);
  /*       viewX=cam.position.x;
         MapState.viewY=cam.position.y;*/
-        State.updateView(new Vector2(cam.position.x,cam.position.y));
+        State.setView(new Vector2(cam.position.x,cam.position.y));
         cam.setToOrtho(false);
         addOptions();
     }
-    void addOptions(){
+    private void addOptions(){
         options.add("RESOLUTION");
         options.add("Exit");
     }

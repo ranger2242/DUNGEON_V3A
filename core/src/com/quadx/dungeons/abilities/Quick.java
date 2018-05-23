@@ -4,10 +4,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.attacks.Drain;
-import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.ImageLoader;
-
-import java.util.ArrayList;
+import com.quadx.dungeons.tools.gui.HoverText;
 
 import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
@@ -20,8 +18,6 @@ public class Quick extends Ability {
     public Quick(){
         name="Quick";
         icon= ImageLoader.abilities.get(4);
-        details();
-
     }
     @Override
     public Texture getIcon(){
@@ -37,7 +33,7 @@ public class Quick extends Ability {
 
     @Override
     public int getMod() {
-        return 4;
+        return 3;
     }
 
     @Override
@@ -90,56 +86,7 @@ public class Quick extends Ability {
         player.maxSec=3;
     }
 
-    public  ArrayList<String> details() {
-        output.clear();
-        output.add("-"+name+" "+(level+1) +"-");
-        switch (this.level+1){
-            case 1:{
-                output.add("1.7x Move Speed");
-                output.add("2x SPD");
-                output.add("1.5x E Regen");
-                output.add("1.5x M Regen");
-                output.add("0.75x DEF");
-                output.add("0.75x INT");
-                output.add("");
-                output.add("");
-                output.add("");
 
-                break;
-            }case 2:{
-                output.add("1.3x SPD");
-                output.add("1.1x M Regen");
-                output.add("1.2x Move Speed");
-                output.add(equipSets.ref[3].get(0).getName());
-                break;
-            }case 3:{
-                output.add("1.3x Move Speed");
-                output.add("1.5x SPD");
-                output.add("1.2x HP Regen");
-                output.add("1.2x E Regen");
-                output.add(equipSets.ref[3].get(3).getName());
-                break;
-            }case 4:{
-                output.add("1.4x HP Regen");
-                output.add("1.3x M Regen");
-                output.add("2x Move Speed");
-                output.add("1.6x SPD");
-                output.add(equipSets.ref[3].get(2).getName());
-                break;
-            }case 5:{
-                output.add("2x SPD");
-                output.add("1.6x Move Speed");
-                output.add("1.6x HP");
-                output.add("1.4x M Regen");
-                output.add("1.4x E Regen");
-                output.add(equipSets.ref[3].get(1).getName());
-                break;
-            }
-        }
-        if(level<5)
-            output.add("Upgrade cost: "+upCost[level]+" AP");
-        return output;
-    }
 
     @Override
     public String getName() {

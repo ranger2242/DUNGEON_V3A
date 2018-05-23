@@ -1,6 +1,7 @@
 package com.quadx.dungeons.attacks;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.states.State;
 import com.quadx.dungeons.tools.ImageLoader;
 
@@ -29,6 +30,8 @@ public class Quake extends Attack {
         setIcon(ImageLoader.attacks.get(9));
     }
     public Rectangle calculateHitBox(){
-        return new Rectangle(State.view.x,viewY,State.view.x+WIDTH,viewY+HEIGHT);
+        Vector2 view = State.getView();
+
+        return new Rectangle(view.x,viewY,view.x+WIDTH,viewY+HEIGHT);
     }
 }

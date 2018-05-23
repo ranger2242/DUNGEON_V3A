@@ -62,12 +62,13 @@ public class WaterBreath extends Ability {
 
     @Override
     public ArrayList<String> details() {
-        output.clear();
-        output.add("-"+name+" "+(level+1) +"-");
+        return new ArrayList<>();
+        /*details.clear();
+        details.add("-"+name+" "+(level+1) +"-");
         switch (this.level+1){
             case 1:{
-                output.add("Breathe under water.");
-                output.add("Limited breath");
+                details.add("Breathe under water.");
+                details.add("Limited breath");
                 break;
             }case 2:{
                 break;
@@ -82,6 +83,6 @@ public class WaterBreath extends Ability {
             }
         }
         if(level<2)
-            output.add("Upgrade cost: "+upCost[level+1]+" AP");
-        return output;    }
+            details.add("Upgrade cost: "+upCost[level+1]+" AP");
+        return details;   */ }
 }

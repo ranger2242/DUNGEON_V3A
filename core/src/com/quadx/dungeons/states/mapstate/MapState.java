@@ -22,7 +22,6 @@ import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.controllers.Controllers;
 import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 import com.quadx.dungeons.tools.gui.HUD;
-import com.quadx.dungeons.tools.gui.CamController;
 import com.quadx.dungeons.tools.shapes.Circle;
 
 import java.util.ArrayList;
@@ -62,7 +61,6 @@ public class MapState extends State implements ControllerListener {
     public static GridManager gm;
     public static final Random rn = new Random();
     public static Circle circle = new Circle(new Vector2(cell.x * GridManager.res / 2, cell.y * GridManager.res / 2), 200);
-    public static CamController camController = new CamController();
     public static boolean shakeScreen = false;
 
 
@@ -76,12 +74,12 @@ public class MapState extends State implements ControllerListener {
         cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT);
         debug();
     }
-    public void debug() {
+    private void debug() {
         if(Tests.allAttacks)
             player.addAllAttacks();
         //Tests.goldTest();
         //Tests.testEquipmentRates();
-        //Tests.giveItems(100);
+        Tests.giveItems(100);
         //Tests.testsMonsterStats();
     }
     public void handleInput() {
@@ -93,10 +91,7 @@ public class MapState extends State implements ControllerListener {
         GridManager.loadDrawList();
         Inventory.compareItemToEquipment();
         player.updateMapState(dt);
-        if(MapStateUpdater.dtCollision>Game.ft /2) {
-        }
         MapStateUpdater.collisionHandler();
-        //MapStateUpdater.moveMonsters();
         player.checkIfDead(gsm);
         HUD.create();
     }
@@ -112,23 +107,22 @@ public class MapState extends State implements ControllerListener {
             Gold g = (Gold) item;
             player.addGold(g);
         } else {
-            if (item != null) {
-                if (item.isEquip) {
-                    item.loadIcon(item.getType());
-                } else if (item.getIcon() == null)
-                    item.loadIcon(item.getName());
+            if (item.isEquip) {
+                item.loadIcon(item.getType());
+            } else if (item.getIcon() == null)
+                item.loadIcon(item.getName());
 
-                if (!item.isGold()) {
-                    boolean a = false;
-                    if (player.isInvEmpty()) {
-                        a = true;
-                    }
-                    player.addItemToInventory(item);
-                    if (a) Inventory.pos = 0;
-                } else {
-                    player.lastItem = new Gold();
+            if (!item.isGold()) {
+                boolean a = false;
+                if (player.isInvEmpty()) {
+                    a = true;
                 }
+                player.addItemToInventory(item);
+                if (a) Inventory.pos = 0;
+            } else {
+                player.lastItem = new Gold();
             }
+
         }
         HUD.setLootPopup(item.getIcon());
         StatManager.totalItems++;

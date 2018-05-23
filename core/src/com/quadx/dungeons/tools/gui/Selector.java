@@ -15,13 +15,13 @@ import static com.quadx.dungeons.Game.ft;
 public class Selector {
     float dtChange=0;
     boolean active= false;
-    int pos=0;
-    int max=0;
-    int inc =0;
-    Vector2 origin = new Vector2(0,0);
-    Vector2 dimm= new Vector2(0,0);
-    Rectangle shape=new Rectangle();
-    Color color = Color.WHITE;
+    int pos;
+    int max;
+    int inc;
+    Vector2 origin;
+    Vector2 dimm;
+    Rectangle shape;
+    Color color;
 
     public boolean isActive() {
         return active;

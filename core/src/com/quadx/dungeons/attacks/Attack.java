@@ -52,7 +52,7 @@ public class Attack {
     String description = "s";
     public static float dtAttack = 0;
 
-    public void checkLvlUp() {
+    private void checkLvlUp() {
         if (level <= 4)
             if (uses > usesCheck[level]) {
                 level++;
@@ -71,10 +71,10 @@ public class Attack {
     public Rectangle calculateHitBox() {
         return new Rectangle();
     }
-    public Circle calculateHitCircle(){
+    Circle calculateHitCircle(){
         return new Circle();
     }
-    public Triangle calculateHitTri(){return new Triangle();}
+    Triangle calculateHitTri(){return new Triangle();}
     ArrayList<Line> calculateHitChain(){return new ArrayList<>();}
 
     public void runAttackMod(){}
@@ -89,14 +89,16 @@ public class Attack {
         return name;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public String getDescription() {
         return description;
     }
-
+    @SuppressWarnings("WeakerAccess")
     public String getPowerArr() {
         return Arrays.toString(powerA);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public String getCostArr() {
         return Arrays.toString(costA);
     }
@@ -133,9 +135,8 @@ public class Attack {
         return range;
     }
 
-    public void setUses() {
+    private void setUses() {
         uses++;
-        checkLvlUp();
     }
 
     void setIcon(Texture t) {
@@ -157,7 +158,7 @@ public class Attack {
         }
     }
 
-    public boolean canUse() {
+    private boolean canUse() {
         switch (getType()) {
             case 1: {
                 return player.getEnergy() >= getCost();
@@ -208,6 +209,7 @@ public class Attack {
                             break;
                     }
                     setUses();
+                    checkLvlUp();
                 }
 
             } else

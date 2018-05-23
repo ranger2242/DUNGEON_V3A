@@ -17,3 +17,12 @@ reuse in other states
 -made scrx and scry methods in State to make placing stuff on
 screen easier
 -item scrolling in shop
+
+BUILD 2018.0000003
+-shake cam force not working fixed
+-shake screen and draw text on invalid input in shop state
+-fixed game timer
+-added score multiplier based on game time
+-fixed invalid input position and color
+-limited glitch effect by dTime on shop and pause state
+- (fixed) particle effects not being removed properly after room change

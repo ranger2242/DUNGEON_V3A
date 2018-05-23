@@ -11,8 +11,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.quadx.dungeons.abilities.*;
 import com.quadx.dungeons.commands.*;
 import com.quadx.dungeons.items.equipment.EquipSets;
+import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.MainMenuState;
@@ -38,7 +40,6 @@ public class Game extends ApplicationAdapter implements ControllerListener {
 
     private static final BitmapFont[] fonts = new BitmapFont[6];
     public static BitmapFont font;
-    public static BitmapFont fontA;
 
     public static Player player = new Player();
 
@@ -57,7 +58,7 @@ public class Game extends ApplicationAdapter implements ControllerListener {
     private SpriteBatch spriteBatch;
 
 
-    static void addCommand() {
+    private static void addCommand() {
         commandList.clear();
         commandList.add(new UpComm());
         commandList.add(new DownComm());
@@ -119,10 +120,7 @@ public class Game extends ApplicationAdapter implements ControllerListener {
         return font;
     }
 
-    public static BitmapFont getFontA() {
 
-        return fontA;
-    }
 
     public static void console(String s) {
         System.out.println(s);
@@ -138,7 +136,6 @@ public class Game extends ApplicationAdapter implements ControllerListener {
 
     public static void setFontSize(int x) {
         font = fonts[x];
-        fontA = fontsA[x];
 
     }
 
@@ -163,6 +160,43 @@ public class Game extends ApplicationAdapter implements ControllerListener {
                     HighScoreState.addScore(new Score(split.get(0), split.get(1), split.get(2), split.get(3), split.get(4)));
                 }
             }
+            FileReader file3 = new FileReader("data\\abilityDetails.csv");
+            BufferedReader bf3 = new BufferedReader(file3);
+            String s3;
+
+            //LOAD ABILITY DESCRIPTIONS
+            //name, description
+            //hpmax,hpreg,Mmax,Mreg,Emax,Ereg,att,def,int,spd
+            ArrayList<String> det = new ArrayList<>();
+            ArrayList<Ability> abs= new ArrayList<>();
+            Tank tank = new Tank();
+            Investor inv = new Investor();
+            Mage mage = new Mage();
+            Quick quick = new Quick();
+
+            int cnt=0;
+            for (int i=0;(s3 = bf3.readLine()) != null; i++) {
+
+                List<String> split = Arrays.asList(s3.split(","));
+                if(i %6==0){
+                    det.addAll(split);
+                }else{
+                    det.add(s3);
+                }
+
+                abs.add(tank);
+                abs.add(inv);
+                abs.add(mage);
+                abs.add(quick);
+                if(i %6==5) {
+                    abs.get(cnt).setDetails(det);
+                    det.clear();
+                    cnt++;
+                }
+            }
+
+            AbilitySelectState.setAbilityList(abs);
+
         } catch (IOException e) {
             e.printStackTrace();
         }

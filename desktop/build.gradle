@@ -4,7 +4,7 @@ apply plugin: "java"
 sourceSets.main.java.srcDirs = [ "src/" ]
 
 project.ext.mainClassName = "com.mygdx.game.desktop.DesktopLauncher"
-project.ext.assetsDir = new File("../core/assets");
+project.ext.assetsDir = new File("../core/assets")
 
 task run(dependsOn: classes, type: JavaExec) {
     main = project.mainClassName
@@ -18,7 +18,7 @@ task dist(type: Jar) {
     from files(sourceSets.main.output.classesDir)
     from files(sourceSets.main.output.resourcesDir)
     from {configurations.compile.collect {zipTree(it)}}
-    from files(project.assetsDir);
+    from files(project.assetsDir)
  
     manifest {
         attributes 'Main-Class': project.mainClassName
@@ -38,7 +38,7 @@ task afterEclipseImport(description: "Post processing after project generation",
   doLast {
     def classpath = new XmlParser().parse(file(".classpath"))
       //noinspection GroovyResultOfObjectAllocationIgnored
-      new Node(classpath, "classpathentry", [ kind: 'src', path: 'assets' ]);
+      new Node(classpath, "classpathentry", [ kind: 'src', path: 'assets' ])
     def writer = new FileWriter(file(".classpath"))
     def printer = new XmlNodePrinter(new PrintWriter(writer))
     printer.setPreserveWhitespace(true)

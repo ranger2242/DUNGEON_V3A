@@ -318,6 +318,17 @@ public class Cell {
         commandQueue.add(c);
     }
 
+    public Command getNextComm(){
+        if(!commandQueue.isEmpty()) {
+            Command c= commandQueue.get(0);
+            commandQueue.remove(0);
+            return c;
+        }else{
+            return null;
+        }
+
+    }
+
     public void updateParticles() {
         if (this.item != null) {
             hasItem = true;
@@ -356,6 +367,10 @@ public class Cell {
     public void clearMonster() {
         monster = null;
         hasMon = false;
+    }
+
+    public boolean canPlaceItem() {
+        return !(hasCrate() || !isClear() || hasLoot() || isWarp() || isWater() || hasItem());
     }
 
     enum State {

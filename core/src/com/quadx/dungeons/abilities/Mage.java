@@ -4,10 +4,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.attacks.Flame;
-import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.ImageLoader;
-
-import java.util.ArrayList;
+import com.quadx.dungeons.tools.gui.HoverText;
 
 import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
@@ -20,7 +18,6 @@ public class Mage extends Ability {
     public Mage(){
         name="Mage";
         icon=  ImageLoader.abilities.get(3);
-        details();
 
     }
     @Override
@@ -38,7 +35,7 @@ public class Mage extends Ability {
 
     @Override
     public int getMod() {
-        return 3;
+        return 2;
     }
 
     @Override
@@ -87,49 +84,7 @@ public class Mage extends Ability {
 
     }
 
-    public ArrayList<String> details() {
-        output.clear();
-        output.add("-"+name+" "+(level+1) +"-");
-        switch (this.level+1){
-            case 1:{
-                output.add("2x M");
-                output.add("2x M Regen");
-                output.add("0.5x E");
-                output.add("2x INT");
-                break;
-            }case 2:{
-                output.add("1.2x M Regen");
-                output.add("1.1x DEF");
-                output.add("1.2x INT");
-                output.add(equipSets.ref[2].get(1).getName());
-                break;
-            }case 3:{
-                output.add("1.3x Move Speed");
-                output.add("1.1x HP Regen");
-                output.add("1.3x INT");
-                output.add(equipSets.ref[2].get(2).getName());
-                break;
-            }case 4:{
-                output.add("1.3x DEF");
-                output.add("1.3x SPD");
-                output.add("1.5x INT");
-                output.add("1.3x HP Regen");
-                output.add(equipSets.ref[2].get(6).getName());
 
-                break;
-            }case 5:{
-                output.add("1.5x M Regen");
-                output.add("1.7x INT");
-                output.add("1.1x DEF");
-                output.add("1.3x SPD");
-                output.add(equipSets.ref[2].get(3).getName());
-                break;
-            }
-        }
-        if(level<5)
-            output.add("Upgrade cost: "+upCost[level]+" AP");
-        return output;
-    }
 
     @Override
     public String getName() {

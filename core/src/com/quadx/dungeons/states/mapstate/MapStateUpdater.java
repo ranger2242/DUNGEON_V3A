@@ -80,6 +80,8 @@ public class MapStateUpdater extends MapState{
         //nothing before metrics load
         Tests.processMetrics();
         //updateMapState below this line-----------------------
+        Inventory.update(dt);
+
         updateTimers(dt);
         updateAnims(dt);
         updateParticleEffects(dt);
@@ -102,9 +104,9 @@ public class MapStateUpdater extends MapState{
     static void updateAnims(float dt){
         try {
             for (Anim a : Anim.anims) {
-                a.update();
+                a.update(dt);
             }
-        } catch (ConcurrentModificationException e) {
+        } catch (ConcurrentModificationException ignored) {
         }
     }
     static void updateParticleEffects(float dt){
@@ -117,10 +119,10 @@ public class MapStateUpdater extends MapState{
     static void updateTimers(float dt){
         dStatToggle.update(dt);
         dDig.update(dt);
+
         if (dtClearHits <= .1)
             dtClearHits += dt;
-        if (Inventory.dtItem <= Inventory.itemMinTime)
-            Inventory.dtItem += dt;
+
         if (Attack.dtInfo <= .4)
             Attack.dtInfo += dt;
         if (dtStatPopup <= .4)
@@ -159,7 +161,7 @@ public class MapStateUpdater extends MapState{
 /*     void updateCamPosition() {
         Vector3 position = cam.position;
         player.fixPosition();
-        float[] f = dispArray[(int) player.getPos().x][(int) player.getPos().y].getCorners().getVertices();
+        float[] f = dispArray[(int) player.pos().x][(int) player.pos().y].getCorners().getVertices();
         Vector3 disp = new Vector3(f[8], f[9], 0);
         if(snapCam) {
             position.set(player.getAbsPos().x,GridManager.fixHeight(player.getAbsPos()),0);
@@ -214,8 +216,6 @@ public class MapStateUpdater extends MapState{
         }
         if(Gdx.input.isKeyPressed(Input.Keys.B)){
             player.jumping=true;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.ALT_RIGHT)) {
         }
         if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)) {
             rotateMap(false);
@@ -290,10 +290,10 @@ public class MapStateUpdater extends MapState{
                         }
                     }
             }
-        } catch (ConcurrentModificationException e) { }
+        } catch (ConcurrentModificationException ignored) { }
     }
     static void collisionHandler() {
-        ArrayList<Cell> list = getSurroundingCells((int)player.getPos().x,(int)player.getPos().y,1);
+        ArrayList<Cell> list = getSurroundingCells((int)player.pos().x,(int)player.pos().y,1);
         list.removeIf(x-> !(x.hasItem() || x.isWarp() || x.isShop()));
         for(Cell c: list){
             if(c.hasItem()){

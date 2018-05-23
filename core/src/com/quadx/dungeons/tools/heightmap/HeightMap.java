@@ -33,7 +33,7 @@ public class HeightMap{
     static ArrayList<Color> colors = new ArrayList<>();
     Vector2 centerCamPos = new Vector2(Game.WIDTH / 2, Game.HEIGHT / 2);
     Vector2 playerpos=new Vector2(100,100);
-    Cell[][] cells=null;
+    Cell[][] cells;
     static int maxHeight=0;
 
     public HeightMap(Cell[][] g) {
@@ -75,7 +75,7 @@ public class HeightMap{
         maxHeight = 0;
         for (int i = 0; i < res; i++) {
             for (int j = 0; j < res; j++) {
-                if(grid[i][j]>maxHeight)maxHeight= (int) grid[i][j];
+                if(grid[i][j]>maxHeight)maxHeight=  grid[i][j];
 
             }
         }

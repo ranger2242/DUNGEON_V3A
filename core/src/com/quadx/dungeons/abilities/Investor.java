@@ -8,8 +8,6 @@ import com.quadx.dungeons.attacks.Blind;
 import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.gui.HoverText;
 
-import java.util.ArrayList;
-
 import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
 
@@ -23,7 +21,6 @@ public class Investor extends Ability {
     public Investor(){
         icon=  ImageLoader.abilities.get(1);
         name="Investor";
-        details();
     }
 
     @Override
@@ -40,7 +37,7 @@ public class Investor extends Ability {
 
     @Override
     public int getMod() {
-        return 5;
+        return 1;
     }
 
     @Override
@@ -88,51 +85,6 @@ public class Investor extends Ability {
         player.setxAttack(1.6);
         player.addItemToInventory(equipSets.ref[1].get(3));
         player.maxSec=3;
-    }
-
-    public ArrayList<String> details() {
-        output.clear();
-        output.add("-"+name+" "+(level+1) +"-");
-        switch (this.level+1){
-            case 1:{
-                output.add("x2 HP Regen");
-                output.add("x2 E Regen");
-                output.add("Generate Money");
-                break;
-            }case 2:{
-                output.add("1.1x Mana Regen");
-                output.add("1.15x Move Speed");
-                output.add("1.1x ATT");
-                output.add(equipSets.ref[1].get(0).getName());
-                break;
-            }case 3:{
-                output.add("1.25x Move Speed");
-                output.add("2x E Regen  ");
-                output.add("1.2x ATT");
-                output.add("1.2x INT");
-                output.add(equipSets.ref[1].get(2).getName());
-                break;
-            }case 4:{
-                output.add("1.3x DEF");
-                output.add("1.2x INT");
-                output.add("1.25x ATT");
-                output.add("1.2x SPD");
-                output.add(equipSets.ref[1].get(2).getName());
-                break;
-            }case 5:{
-                output.add("1.5x HP Regen");
-                output.add("1.4x M Regen");
-                output.add("1.5x SPD");
-                output.add("1.6x ATT");
-                output.add(equipSets.ref[1].get(3).getName());
-                output.add("Unlock Investor Special");
-                output.add("Unlock Extra Ability Slot");
-                break;
-            }
-        }
-        if(level<5)
-            output.add("Upgrade cost: "+upCost[level]+" AP");
-        return output;
     }
 
     @Override

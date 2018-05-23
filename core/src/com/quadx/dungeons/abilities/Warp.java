@@ -84,13 +84,13 @@ public class Warp extends Ability {
     }
 
     public ArrayList<String> details() {
-        //ArrayList<String> output=new ArrayList<>();
-        output.clear();
-        output.add("-WARP-");
-        output.add("Warp 10 spaces forward on demand.");
-        output.add("Cost 10E");
-        output.add("Cooldown 4s");
-        return output;
+        //ArrayList<String> details=new ArrayList<>();
+        details.clear();
+        details.add("-WARP-");
+        details.add("Warp 10 spaces forward on demand.");
+        details.add("Cost 10E");
+        details.add("Cooldown 4s");
+        return details;
     }
 
     @Override

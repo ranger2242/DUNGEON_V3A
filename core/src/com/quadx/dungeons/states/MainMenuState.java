@@ -35,8 +35,8 @@ public class MainMenuState extends State implements ControllerListener {
     private final ArrayList<String> options=new ArrayList<>();
     private static ParticleEffect effect;
     private static int selector=0;
-    private int titlePosY=0;
-    private int optionsPosY =0;
+    private int titlePosY;
+    private int optionsPosY;
     private float dtCursor = 0;
     private Texture title = new Texture(FilePaths.getPath("images\\title.png"));
     public MainMenuState(GameStateManager gsm) {
@@ -57,14 +57,14 @@ public class MainMenuState extends State implements ControllerListener {
         emitter.setContinuous(true);
         effect.setPosition(view.x+ Game.WIDTH/2,viewY+ 0);
     }
-    void initController(){
+    private void initController(){
         if(Controllers.getControllers().size>0) {
             controller = Controllers.getControllers().first();
             controller.addListener(this);
             controllerMode =true;
         }
     }
-    void addOptionsToList(){
+    private void addOptionsToList(){
         if(!MapState.inGame)
             options.add("Start");
         else

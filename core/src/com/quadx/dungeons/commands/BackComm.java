@@ -19,10 +19,6 @@ public class BackComm extends Command {
             if (cls.equals(AbilitySelectState.class)) {
                 AbilitySelectState.exit();
             }
-            if (cls.equals(ControlState.class)) {
-                //if(!ControlState.selector.isActive())
-               // ControlState.exit();
-            }
             if(cls.equals(HighScoreState.class)){
                 HighScoreState.exit();
             }

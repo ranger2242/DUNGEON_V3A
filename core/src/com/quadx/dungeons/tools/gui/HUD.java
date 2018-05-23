@@ -9,15 +9,17 @@ import com.quadx.dungeons.Inventory;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.states.HighScoreState;
+import com.quadx.dungeons.states.State;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.ImageLoader;
+import com.quadx.dungeons.tools.ShapeRendererExt;
 
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.*;
-import static com.quadx.dungeons.states.State.view;
-import static com.quadx.dungeons.states.mapstate.Map2State.res;
+import static com.quadx.dungeons.GridManager.res;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
+import static com.quadx.dungeons.tools.gui.Text.fitLineToWord;
 
 /**
  * Created by Chris Cavazos on 1/25/2017.
@@ -53,22 +55,23 @@ public class HUD {
         hud.texts.clear();
         hud.rects.clear();
 
+        Vector2 view = State.getView();
         //hud rects
         if (MapState.showStats) {
-            hud.rects.add(new Rectangle(view.x, viewY + HEIGHT - 300, 300, 300));
+            hud.rects.add(new Rectangle(view.x, view.y + HEIGHT - 300, 300, 300));
         }
-        hud.rects.add(new Rectangle(view.x, viewY, WIDTH, 207));
+        hud.rects.add(new Rectangle(view.x, view.y, WIDTH, 207));
         //player score
         int x= (int) ((view.x +20));
         String score="SCORE: " + player.getPoints() + "";
-        hud.texts.add(new Text(score, new Vector2(x, (viewY + 200)), Color.GRAY, 1));
+        hud.texts.add(new Text(score, new Vector2(x, (view.y + 200)), Color.GRAY, 1));
         String scoreH;
         try {
             scoreH="HIGH SCORE: " + HighScoreState.scores.get(0).getScore();
         }catch (IndexOutOfBoundsException | NullPointerException ex){
             scoreH="HIGH SCORE: 000000";
         }
-        hud.texts.add(new Text(scoreH, new Vector2(x+(Game.WIDTH/4)-100, (viewY + 200)), Color.GRAY, 1));
+        hud.texts.add(new Text(scoreH, new Vector2(x+(Game.WIDTH/4)-100, (view.y + 200)), Color.GRAY, 1));
         generateAttackBarUI(attackBarPos);
         generateInventoryUI(inventoryPos);
         generateEquipmentUI(equipPos);
@@ -77,6 +80,7 @@ public class HUD {
     }
 
     public static void update() {
+        Vector2 view = State.getView();
         int x = (int) view.x;
         int y = (int) viewY;
         int w = WIDTH;
@@ -95,6 +99,17 @@ public class HUD {
             if (output.size() > 10) output.remove(0);
         }
     }
+
+    public static void titleLine(ShapeRendererExt shapeR,Title t){
+        Vector2 view = State.getView();
+
+        float[] s = fitLineToWord(t.text);
+        float x=t.x;
+        float y=t.y;
+        shapeR.line(view.x + x + s[0], viewY +y+ s[1] , view.x + x + s[2], viewY + y+ s[3]);
+        shapeR.line(view.x + x + s[4], viewY +y+ s[5] , view.x + x + s[6], viewY + y+ s[7]);
+    }
+
     static void generateAttackBarUI(Vector2 pos){
         attackBarHud.clear();
         for (int i = 0; i < player.attackList.size(); i++) {
@@ -213,15 +228,16 @@ public class HUD {
         }
         invOverlay.add(equipOverlay);
     }
-    static void generatePlayerStatBars(Vector2 pos){
-            float h=10;
-            float barMax = (WIDTH/3)-10;
-            float pHPBar = ((float) player.getHp() / (float) player.getHpMax()) * barMax;
-            float pManaBar = ((float)player.getMana() / (float)player.getManaMax()) * barMax;
-            float pEnergyBar=((float)player.getEnergy()/(float)player.getEnergyMax())*barMax;
-            playerStatBars[0]=new Rectangle(pos.x,pos.y+30 , pHPBar, h);
-            playerStatBars[1]=new Rectangle(pos.x, pos.y+15, pManaBar, h);
-            playerStatBars[2]=new Rectangle(pos.x, pos.y, pEnergyBar, h);
+
+    static void generatePlayerStatBars(Vector2 pos) {
+        float h = 10;
+        float barMax = (WIDTH / 3) - 10;
+        float pHPBar = ( player.getHp() /  player.getHpMax()) * barMax;
+        float pManaBar = ( player.getMana() /  player.getManaMax()) * barMax;
+        float pEnergyBar = ( player.getEnergy() /  player.getEnergyMax()) * barMax;
+        playerStatBars[0] = new Rectangle(pos.x, pos.y + 30, pHPBar, h);
+        playerStatBars[1] = new Rectangle(pos.x, pos.y + 15, pManaBar, h);
+        playerStatBars[2] = new Rectangle(pos.x, pos.y, pEnergyBar, h);
     }
     static public Vector2[] generateStatListPos(Vector2 pos){
         //updateMapState player stat list pos

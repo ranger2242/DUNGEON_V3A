@@ -78,9 +78,9 @@ public class Noise {
      * Dump out as a CSV
      */
     public void printAsCSV() {
-        for(int i = 0;i < grid_.length;i++) {
-            for(int j = 0;j < grid_[0].length;j++) {
-                System.out.print(grid_[i][j]);
+        for (float[] aGrid_ : grid_) {
+            for (int j = 0; j < grid_[0].length; j++) {
+                System.out.print(aGrid_[j]);
                 System.out.print(",");
             }
             System.out.println();

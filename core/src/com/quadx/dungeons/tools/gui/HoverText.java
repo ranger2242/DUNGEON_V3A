@@ -10,6 +10,7 @@ import com.quadx.dungeons.Game;
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.GridManager.fixHeight;
+import static com.quadx.dungeons.GridManager.setInBounds;
 import static com.quadx.dungeons.states.MainMenuState.gl;
 
 /**
@@ -19,7 +20,7 @@ public class HoverText {
     public static ArrayList<HoverText> texts = new ArrayList<>();
     private Color color;
     private final String text;
-    private boolean active=false;
+    private boolean active;
     private final int x;
     private final int y;
     private int px=0;
@@ -57,12 +58,11 @@ public class HoverText {
         if (!texts.isEmpty()) {
             index = new boolean[texts.size()];
             texts.stream().filter(h -> !h.isActive()).forEach(h -> index[texts.indexOf(h)] = true);
+
             for (int i = texts.size() - 1; i >= 0; i--) {
-                try {
-                    if (index[i]) {
-                        texts.remove(i);
-                    }
-                } catch (ArrayIndexOutOfBoundsException e) {
+                i = setInBounds(i, index.length);
+                if (index[i]) {
+                    texts.remove(i);
                 }
             }
             while (HoverText.texts.size() > 10) HoverText.texts.remove(0);

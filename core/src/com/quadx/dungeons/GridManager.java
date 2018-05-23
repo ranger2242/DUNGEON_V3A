@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.items.*;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
+import com.quadx.dungeons.states.State;
 import com.quadx.dungeons.states.mapstate.Map2State;
 import com.quadx.dungeons.states.mapstate.MapStateUpdater;
 import com.quadx.dungeons.tools.Tests;
@@ -28,18 +29,21 @@ public class GridManager {
     public static final ArrayList<Cell> liveCellList = new ArrayList<>();
     public static final ArrayList<Cell> drawList = new ArrayList<>();
     public static final ArrayList<Monster> monsterList = new ArrayList<>();
-    public static ArrayList<Monster> monsOnScreen = new ArrayList<>();
-    public static HeightMap hm;
+    private static ArrayList<Monster> monsOnScreen = new ArrayList<>();
+    private static HeightMap hm;
 
     private static int liveCount=0;
     public static Cell[][] dispArray;
-    public static final int res = Map2State.res;
-    public static Timer mapLoadTime;
+    public static final int res =150;
+    private static Timer mapLoadTime;
 
     public GridManager(){
         initializeGrid();
     }
-    static Vector2 rotateCords(boolean left,Vector2 pos){
+
+
+    @SuppressWarnings("SuspiciousNameCombination")
+    private static Vector2 rotateCords(boolean left, Vector2 pos){
         Vector2 v=new Vector2();
         if(left){
             v.x=res-pos.y-1;
@@ -53,13 +57,13 @@ public class GridManager {
 
     public static void rotateMap(boolean left){
         if(MapStateUpdater.dtf>.15) {
-            camController.setSnapCam(true);
+            State.camController.setSnapCam(true);
             Matrix<Integer> rotator = new Matrix<>(Integer.class);
             dispArray = rotator.rotateMatrix(dispArray, res, left);
-            player.setPos(rotateCords(left,player.getPos()));
+            player.setPos(rotateCords(left,player.pos()));
             warp.set ( rotateCords(left,warp));
             shop.set(rotateCords(left,shop));
-            player.setAbsPos(new Vector2(player.getPos().x*cellW,player.getPos().y*cellW));
+            player.setAbsPos(new Vector2(player.pos().x*cellW,player.pos().y*cellW));
             for(Monster m:monsterList){
                 m.setPos(rotateCords(left,m.getPos()));
                 m.setAbsPos(new Vector2(m.getPos().x*cellW,m.getPos().y*cellW));
@@ -99,7 +103,7 @@ public class GridManager {
     }
     public static void loadDrawList() {
         drawList.clear();
-        monsOnScreen.clear();
+        Vector2 view = State.getView();
         int x = (int) (view.x / cell.x);
         int y = (int) (view.y/ cell.y);
         int endx = (int) ((view.x + Game.WIDTH) / cell.x);
@@ -110,15 +114,7 @@ public class GridManager {
         for(Monster m : monsterList){
                 Monster.mdrawList.add(m);
                 m.setDrawable(true);
-                monsOnScreen.add(m);
         }
-/*        for(Cell[] a: dispArray){
-            for(Cell c: a){
-                c.updateVariables();
-                c.updateParticles();
-                drawList.add(c);
-            }
-        }*/
 
         int ext=8;
         for ( int i = x - ext; i < endx + ext; i++) {
@@ -130,35 +126,6 @@ public class GridManager {
                 c.updateVariables();
                 c.updateParticles();
                 drawList.add(c);
-
-
-
-
-
-
-
-
-
-
-                //old and broken
-
-               /* Cell c;
-                    if(i>=0 &&i<res && j>=0 &&j<res) {
-                        c = dispArray[i][j];
-                        c.updateVariables();
-                        if (!c.isClear() || c.isWater()) {
-                            c = loadTiles(c);
-
-                        }
-                        drawList.add(c);
-                        //load particle effects
-                        c.updateParticles();
-                        //check for monster
-                        if (c.getMonster() != null) {
-                            monsOnScreen.add(c.getMonster());
-                        }
-                    }
-*/
             }
         }
     }
@@ -171,7 +138,7 @@ public class GridManager {
             }
         }
     }
-    public static void plotMonsters() {
+    private static void plotMonsters() {
         if (player.getFloor() == 1)
             splitMapDataToList();
         int temp = rn.nextInt(40)+20;//calculate number of monsters
@@ -216,7 +183,6 @@ public class GridManager {
             e.dispose();
         }
         MapStateExt.effects.clear();*/
-        Map2State.updateVars();
         dispArray = Map2State.generateMap2();
         //splitMapDataToList();
         loadLiveCells();
@@ -256,11 +222,23 @@ public class GridManager {
             }
         }
     }
-    public static int setInBounds(int x){
-        if(x<0)return 0;
-        else if(x>res-1) return  res-1;
-        else return x;
+
+    public static int setInBoundsW(int ind, int bound) {
+        if (ind < 0) return bound - 1;
+        else if (ind > bound - 1) return 0;
+        else return ind;
     }
+
+    public static int setInBounds(int ind) {
+        return setInBounds(ind, res);
+    }
+
+    public static int setInBounds(int ind, int bound) {
+        if (ind < 0) return 0;
+        else if (ind > bound - 1) return (bound - 1);
+        else return  ind;
+    }
+
     public static boolean isInBounds(Vector2 v){
         return (int)v.x>=0 &&(int)v.y>=0 && (int)v.x<res &&(int)v.y<res;
     }

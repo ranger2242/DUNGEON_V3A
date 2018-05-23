@@ -13,7 +13,7 @@ import static com.quadx.dungeons.tools.gui.HUD.out;
  * Created by Chris Cavazos on 5/27/2016.
  */
 public class DigPlus extends Ability {
-    //protected static ArrayList<String> output=new ArrayList<>();
+    //protected static ArrayList<String> details=new ArrayList<>();
     public DigPlus() {
         icon= loadIcon("images/icons/abilities/icDigPlus.png");
         details();
@@ -64,11 +64,11 @@ public class DigPlus extends Ability {
     }
 
     public ArrayList<String> details() {
-        output.clear();
-        output.add("- DIG+ -");
-        output.add("Extended dig in forward direction");
+        details.clear();
+        details.add("- DIG+ -");
+        details.add("Extended dig in forward direction");
 
-        return output;
+        return details;
     }
 
     @Override

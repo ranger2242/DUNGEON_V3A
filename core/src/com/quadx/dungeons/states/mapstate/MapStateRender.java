@@ -44,7 +44,6 @@ import static com.badlogic.gdx.graphics.Color.WHITE;
 import static com.badlogic.gdx.graphics.GL20.GL_BLEND;
 import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.GridManager.*;
-import static com.quadx.dungeons.states.mapstate.Map2State.res;
 import static com.quadx.dungeons.states.mapstate.MapStateUpdater.*;
 import static com.quadx.dungeons.tools.StatManager.gameTime;
 
@@ -97,7 +96,7 @@ public class MapStateRender extends MapState {
         if(Protect.active)
         shapeR.setColor(0,0,1,1/3f);
         else
-            shapeR.setColor(1,0,0,(1-((float)player.getHp()/(float)player.getHpMax()))/2.8f);
+            shapeR.setColor(1,0,0,(1-(player.getHp() / player.getHpMax()))/2.8f);
 
         shapeR.rect(view.x,viewY,WIDTH,HEIGHT);
         shapeR.end();
@@ -116,7 +115,7 @@ public class MapStateRender extends MapState {
             shapeR.rect(bars[1]);
             shapeR.setColor(1f, 1f, 0, 1);
             shapeR.rect(bars[2]);
-        }catch (NullPointerException e){}
+        }catch (NullPointerException ignored){}
         shapeR.end();
 
 
@@ -164,11 +163,11 @@ public class MapStateRender extends MapState {
         //draw str menu
         ArrayList<InfoOverlay> list = HUD.getAttackBarOverlay();
         for(InfoOverlay io :list){
-            io.draw(sb,shapeR);
+            io.draw(sb);
         }
         //draw inventory
-        HUD.getInvOverlay().draw(sb,shapeR);
-        //draw output messages
+        HUD.getInvOverlay().draw(sb);
+        //draw details messages
         if(Tests.output) {
             Game.setFontSize(1);
             Game.font.setColor(Color.WHITE);
@@ -272,9 +271,9 @@ public class MapStateRender extends MapState {
             }
         }
         //draw player
-        if ((blinkp || !player.wasHit) && GridManager.isInBounds(player.getPos())) {
+        if ((blinkp || !player.wasHit) && GridManager.isInBounds(player.pos())) {
             //draw player shadow
-            ArrayList<Triangle> tris = dispArray[(int) player.getPos().x][(int) player.getPos().y].getTris();
+            ArrayList<Triangle> tris = dispArray[(int) player.pos().x][(int) player.pos().y].getTris();
             shapeR.setColor(Color.DARK_GRAY);
             for (Triangle t : tris) {
                 shapeR.triangle(t);
@@ -297,7 +296,7 @@ public class MapStateRender extends MapState {
                             shapeR.triangle(player.getAttackTriangle());
                             break;
                     }
-            }catch (IndexOutOfBoundsException e){}
+            }catch (IndexOutOfBoundsException ignored){}
             //draw player hitbox
             if (Tests.showhitbox) {
                 shapeR.setColor(Color.BLUE);
@@ -326,7 +325,7 @@ public class MapStateRender extends MapState {
                     shapeR.rect(m.getHbar2());
                 }
             }
-        }catch (ConcurrentModificationException e){}
+        }catch (ConcurrentModificationException ignored){}
         //shapeR.circle(MapState.circle.center.x,MapState.circle.center.y,MapState.circle.radius);
         shapeR.end();
 
@@ -340,7 +339,7 @@ public class MapStateRender extends MapState {
                 try {
                     shapeR.setColor(1, 0, 0, .2f);
                     shapeR.rect(rec);
-                } catch (NullPointerException e) {
+                } catch (NullPointerException ignored) {
                 }
             }
         }
@@ -380,8 +379,7 @@ public class MapStateRender extends MapState {
         }
         //draw animations
         for(Anim a: Anim.anims){
-            if(a.getTexture() != null)
-                sb.draw(a.getTexture(),a.getPos().x,fixHeight(a.getPos()));
+            a.render(sb);
         }
         sbDrawParticleEffects(sb);
         //draw player
@@ -405,13 +403,13 @@ public class MapStateRender extends MapState {
                     }
                 }
             }
-        } catch (ConcurrentModificationException e) {}
+        } catch (ConcurrentModificationException ignored) {}
         //draw hover texts
         try {
             for (HoverText h : HoverText.texts)
                 h.draw(sb);
             Game.getFont().getColor().a=1;
-        }catch (ConcurrentModificationException e){}
+        }catch (ConcurrentModificationException ignored){}
 
         sb.end();//end drawing--------------------------------------------------------------------------------
     }
@@ -451,7 +449,7 @@ public class MapStateRender extends MapState {
                 double x=0;
                 try {
                     x= Tests.memUsageList.get(Tests.memUsageList.size() - 1);
-                }catch(Exception e){}
+                }catch(Exception ignored){}
                 Game.getFont().draw(sb, (int) Tests.currentMemUsage + "MB "+Math.floor(x*100)+"%" , pos.x+2, pos.y + 95);
             }
             sb.end();
@@ -549,7 +547,7 @@ public class MapStateRender extends MapState {
     private static void updateHoverTextTime(){
         try {
             HoverText.texts.forEach(HoverText::updateDT);
-        }catch (ConcurrentModificationException e){}
+        }catch (ConcurrentModificationException ignored){}
     }
     public static void drawCircle(int x, int y, float r, Color c){
         shapeR.begin(ShapeRenderer.ShapeType.Line);
@@ -561,7 +559,7 @@ public class MapStateRender extends MapState {
         shapeR.begin(ShapeRenderer.ShapeType.Filled);
         Vector2 mapshop = new Vector2((pos.x + shop.x * 2), (pos.y + shop.y * 2));
         Vector2 mapwarp = new Vector2((pos.x + warp.x * 2), (pos.y + warp.y * 2));
-        Vector2 mapplay = new Vector2(pos.x + player.getPos().x * 2, pos.y + player.getY() * 2);
+        Vector2 mapplay = new Vector2(pos.x + player.pos().x * 2, pos.y + player.pos().y * 2);
         for (Cell c : GridManager.liveCellList) {
             int x = c.getX();
             int y = c.getY();
@@ -569,7 +567,7 @@ public class MapStateRender extends MapState {
                 shapeR.setColor(c.getColor());
                 if (c.getItem() != null && !c.getItem().getClass().equals(Gold.class))
                     shapeR.setColor(Color.SKY);
-                if (player.getPos().x == x &&player.getPos().y == y) {
+                if (player.pos().x == x &&player.pos().y == y) {
                     if (blink)
                         shapeR.setColor(0, 0, 1, 1);
                     else

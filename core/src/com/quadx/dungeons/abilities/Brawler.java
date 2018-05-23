@@ -2,10 +2,8 @@ package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.ImageLoader;
-
-import java.util.ArrayList;
+import com.quadx.dungeons.tools.gui.HoverText;
 
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.tools.gui.HUD.out;
@@ -15,7 +13,7 @@ import static com.quadx.dungeons.tools.gui.HUD.out;
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class Brawler extends Ability {
-    //protected static ArrayList<String> output=new ArrayList<>();
+    //protected static ArrayList<String> details=new ArrayList<>();
 
     public Brawler(){
         icon= ImageLoader.abilities.get(4);
@@ -47,7 +45,7 @@ public class Brawler extends Ability {
 
     @Override
     public int getMod() {
-        return 2;
+        return 4;
     }
 
     @Override
@@ -75,16 +73,6 @@ public class Brawler extends Ability {
 
     }
 
-    public ArrayList<String> details() {
-        //ArrayList<String> output=new ArrayList<>();
-        output.clear();
-        output.add("-BRAWLER-");
-        output.add("E Max x2");
-        output.add("E Regen x2");
-        output.add("M Max x0.5");
-        output.add("E DMG x1.2");
-        return output;
-    }
 
     @Override
     public String getName() {

@@ -26,7 +26,7 @@ public class Gold extends Item{
         gold = (int) Math.abs((( 50) *lvl)*rn.nextGaussian());
         if (gold < 0) gold = 1;
         icon= ImageLoader.gold[0];
-        value= (int) (gold);
+        value= (gold);
 
     }
     public int getValue(){

@@ -47,7 +47,7 @@ public class Damage {
         c = (float) m.getPower();
         d = (float) m.getLevel();
 
-        damage = (int) (Math.round(((c*d)+(b*8))/(a)));
+        damage =(Math.round(((c*d)+(b*8))/(a)));
         if (damage < 0) //checks for negative damage
             damage = defaultDamage;
         if (rn.nextFloat() < .1) {

@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Player;
 import com.quadx.dungeons.tools.Score;
+import com.quadx.dungeons.tools.ShapeRendererExt;
 import com.quadx.dungeons.tools.StatManager;
 import com.quadx.dungeons.tools.gui.Title;
 
@@ -20,8 +21,8 @@ import static com.quadx.dungeons.Game.HEIGHT;
 import static com.quadx.dungeons.Game.WIDTH;
 import static com.quadx.dungeons.tools.StatManager.pScore;
 import static com.quadx.dungeons.tools.StatManager.stats;
+import static com.quadx.dungeons.tools.gui.HUD.titleLine;
 import static com.quadx.dungeons.tools.gui.Text.centerString;
-import static com.quadx.dungeons.tools.gui.Text.strWidth;
 
 /**
  * Created by Chris Cavazos on 5/29/2016.
@@ -30,17 +31,17 @@ public class HighScoreState extends State {
     public static Player pfinal= new Player();
     public static Score fin=new Score();
     public static final ArrayList<Score> scores= new ArrayList<>();
-    ShapeRenderer sr=new ShapeRenderer();
+    private ShapeRendererExt sr=new ShapeRendererExt();
     private final Score[] highscores=new Score[10];
-    ArrayList<Double> list;
-    boolean blink=true;
-    float dtBlink=0;
-    static boolean drawOther=false;
-    Title hscore;
-    Title roundStat;
-    Title killby;
-    Title plStat;
-    Title equip;
+    private ArrayList<Double> finalStatList;
+    private boolean blink=true;
+    private float dtBlink=0;
+    private static boolean drawPlayerStats =false;
+    private Title hscore;
+    private Title roundStat;
+    private Title killby;
+    private Title plStat;
+    private Title equip;
 
     public HighScoreState(GameStateManager gsm) {
         super(gsm);
@@ -50,12 +51,12 @@ public class HighScoreState extends State {
         plStat=new Title("PLAYER STATS",(WIDTH/2)-100,HEIGHT/2);
         equip=new Title("EQUIPMENT",(WIDTH/3)*2,HEIGHT/2);
 
-        list= StatManager.getFinalStats();
+        finalStatList = StatManager.getFinalStats();
         cam.setToOrtho(false);
         cam.position.set(0,0,0);
     /*    viewX=cam.position.x;
         viewY=cam.position.y;*/
-        State.updateView(new Vector2(cam.position.x,cam.position.y));
+        State.setView(new Vector2(cam.position.x,cam.position.y));
         for(int j=0;j<10;j++) {
             int pos = 0;
             int high = 0;
@@ -66,7 +67,7 @@ public class HighScoreState extends State {
                         high = score;
                         pos = i;
                     }
-                }catch(NullPointerException e){}
+                }catch(NullPointerException ignored){}
             }
 
             try {
@@ -81,7 +82,7 @@ public class HighScoreState extends State {
             PrintWriter pw = new PrintWriter("scores.txt");
             for(Score s: highscores){
                 try {pw.println(s.getSaveFormat());}
-                catch (NullPointerException e){}
+                catch (NullPointerException ignored){}
             }
             pw.close();
         } catch (IOException e) {
@@ -90,7 +91,7 @@ public class HighScoreState extends State {
     }
     public static void exit(){
         pfinal=null;
-        drawOther=false;
+        drawPlayerStats =false;
         gsm.clear();
         gsm.push(new MainMenuState(gsm));
     }
@@ -106,29 +107,11 @@ public class HighScoreState extends State {
     public static void addScore(Score s){
         scores.add(s);
     }
-    float[] fitLineToWord(String s){
-        //x1,y1,x2,y2
-        float[] arr=new float[8];
-        arr[0]= -10;
-        arr[1]=-15;
-        arr[2]=strWidth(s)+20;
-        arr[3]=-15;
-        arr[4]= -10;
-        arr[5]=-12;
-        arr[6]=strWidth(s)+35;
-        arr[7]=-12;
-        return arr;
-    }
+
 //---------------------------------------------------------
 // Render
-    void titleLine(Title t){
-        float[] s = fitLineToWord(t.text);
-        float x=t.x;
-        float y=t.y;
-        sr.line(view.x + x + s[0], viewY +y+ s[1] , view.x + x + s[2], viewY + y+ s[3]);
-        sr.line(view.x + x + s[4], viewY +y+ s[5] , view.x + x + s[6], viewY + y+ s[7]);
-    }
-    void drawLines(){
+
+    private void drawLines(){
         float w= WIDTH;
         float hw=w/2;
         float qw=w/4;
@@ -141,14 +124,14 @@ public class HighScoreState extends State {
         sr.line(view.x + qw - 10, viewY + hh - 30, view.x + qw - 10, viewY + 30);
         sr.end();
     }
-    void drawTitles(SpriteBatch sb){
+    private void drawTitles(SpriteBatch sb){
         sb.begin();
         Game.setFontSize(2);
         Game.getFont().setColor(Color.WHITE);
         //Draw Titles
         Game.getFont().draw(sb,hscore.text,view.x+hscore.x,viewY+ hscore.y);
         Game.getFont().draw(sb,roundStat.text,view.x+roundStat.x,viewY+ roundStat.y);
-        if(drawOther){
+        if(drawPlayerStats){
             Game.getFont().draw(sb,killby.text,killby.x,killby.y);
             Game.getFont().draw(sb,plStat.text,view.x+plStat.x,viewY+plStat.y);
             Game.getFont().draw(sb,equip.text,view.x+equip.x,viewY+equip.y);
@@ -157,12 +140,12 @@ public class HighScoreState extends State {
         sr.begin(ShapeRenderer.ShapeType.Line);
         sr.setColor(Color.RED);
 
-        titleLine(hscore);
-        titleLine(roundStat);
-        if(drawOther){
-            titleLine(killby);
-            titleLine(plStat);
-            titleLine(equip);
+        titleLine(sr, hscore);
+        titleLine(sr, roundStat);
+        if(drawPlayerStats){
+            titleLine(sr, killby);
+            titleLine(sr, plStat);
+            titleLine(sr, equip);
         }
         sr.end();
     }
@@ -191,7 +174,7 @@ public class HighScoreState extends State {
                 } catch (NullPointerException e) {
                     Game.getFont().setColor(Color.WHITE);
                 }
-                String s="";
+                String s;
                 if(i==9){
                     s = (i + 1) + ": " + highscores[i].toString();
                 }
@@ -214,13 +197,13 @@ public class HighScoreState extends State {
         }
 
         for(int i=0;i< stats.size();i++){
-            Game.getFont().draw(sb,stats.get(i)+list.get(i).toString(),view.x+30,viewY+(HEIGHT/2)-30-((i+1)*24));
+            Game.getFont().draw(sb,stats.get(i)+ finalStatList.get(i).toString(),view.x+30,viewY+(HEIGHT/2)-30-((i+1)*24));
         }
         try {
 
             StatManager.killer.setFront(2);
             ArrayList<String> list = StatManager.killer.getStatsList();
-            drawOther=true;
+            drawPlayerStats =true;
 
             sb.draw(StatManager.killer.getIcon(),killerx,viewY+100);
             for(int i=0;i<list.size();i++){
@@ -239,10 +222,10 @@ public class HighScoreState extends State {
                 try{
                     Game.getFont().draw(sb,pfinal.equipedList.get(i).getName(),view.x+((WIDTH/3)*2)+50,viewY+(HEIGHT/2)-35-((i+1)*30));
                     sb.draw(pfinal.equipedList.get(i).getIcon(),view.x+((WIDTH/3)*2),viewY+(HEIGHT/2)-55-((i+1)*30));
-                }catch (Exception e){}
+                }catch (Exception ignored){}
 
             }
-        }catch (Exception e){}
+        }catch (Exception ignored){}
         if(blink) {
             Game.getFont().setColor(Color.RED);
             Game.getFont().draw(sb, "TAB : EXIT", centerString("TAB : EXIT"), viewY + 30);

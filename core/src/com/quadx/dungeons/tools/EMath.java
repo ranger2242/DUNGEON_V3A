@@ -85,8 +85,8 @@ public class EMath {
     }
     public static float average(float[] f){
         float sum=0;
-        for(int i=0;i<f.length;i++){
-            sum+= f[i];
+        for (float aF : f) {
+            sum += aF;
         }
         return sum/f.length;
     }

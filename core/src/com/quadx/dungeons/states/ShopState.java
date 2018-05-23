@@ -13,13 +13,13 @@ import com.quadx.dungeons.items.*;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.Delta;
-import com.quadx.dungeons.tools.gui.CamController;
+import com.quadx.dungeons.tools.ShapeRendererExt;
 import com.quadx.dungeons.tools.gui.Title;
 
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.Game.*;
-import static com.quadx.dungeons.tools.gui.Text.strWidth;
+import static com.quadx.dungeons.tools.gui.HUD.titleLine;
 
 /**
  * Created by Tom on 12/24/2015.
@@ -33,10 +33,9 @@ public class ShopState extends State {
     private float dtScroll=0;
     private boolean dispSold = false;
     private boolean drawError=false;
-    private static final ShapeRenderer shapeR=new ShapeRenderer();
+    private static final ShapeRendererExt shapeR=new ShapeRendererExt();
     private static final ArrayList<Item> shopInv = new ArrayList<>();
-    CamController camController = new CamController();
-    Delta dError = new Delta(72*ft);
+    private Delta dError = new Delta(72*ft);
 
 
     public ShopState(GameStateManager gsm){
@@ -51,7 +50,7 @@ public class ShopState extends State {
         MapState.pause=false;
         gsm.pop();
     }
-    protected void handleInput() {
+    void handleInput() {
         for(Command c: commandList){
             c.execute();
         }
@@ -123,7 +122,7 @@ public class ShopState extends State {
 
         sb.setProjectionMatrix(cam.combined);
         shapeR.setProjectionMatrix(cam.combined);
-        BitmapFont font = Game.getFont();
+        BitmapFont font;
         sb.begin();
         Game.setFontSize(5);
         font=Game.getFont();
@@ -185,37 +184,18 @@ public class ShopState extends State {
         sb.end();
         shapeR.begin(ShapeRenderer.ShapeType.Line);
         shapeR.setColor(Color.RED);
-        titleLine(new Title("SHOP", 70, HEIGHT-50));
-        titleLine(new Title("INVENTORY",(2*WIDTH/3), HEIGHT-50));
-        titleLine(new Title("EQUIPMENT",(WIDTH/3)+100, HEIGHT-50));
+        titleLine(shapeR, new Title("SHOP", 70, HEIGHT-50));
+        titleLine(shapeR,new Title("INVENTORY",(2*WIDTH/3), HEIGHT-50));
+        titleLine(shapeR,new Title("EQUIPMENT",(WIDTH/3)+100, HEIGHT-50));
         shapeR.setColor(Color.GRAY);
         shapeR.line(view.x+(2*WIDTH/3)-20,viewY+100,view.x+(2*WIDTH/3)-20,viewY+HEIGHT-100);
         shapeR.line(view.x+(WIDTH/3)+100-20,viewY+100,view.x+(WIDTH/3)+100-20,viewY+HEIGHT-100);
 
         shapeR.end();
     }
-    float[] fitLineToWord(String s){
-        //x1,y1,x2,y2
-        float[] arr=new float[8];
-        arr[0]= -10;
-        arr[1]=-15;
-        arr[2]=strWidth(s)+20;
-        arr[3]=-15;
-        arr[4]= -10;
-        arr[5]=-12;
-        arr[6]=strWidth(s)+35;
-        arr[7]=-12;
-        return arr;
-    }
+
     //---------------------------------------------------------
 // Render
-    void titleLine(Title t){
-        float[] s = fitLineToWord(t.text);
-        float x=t.x;
-        float y=t.y;
-        shapeR.line(view.x + x + s[0], viewY +y+ s[1] , view.x + x + s[2], viewY + y+ s[3]);
-        shapeR.line(view.x + x + s[4], viewY +y+ s[5] , view.x + x + s[6], viewY + y+ s[7]);
-    }
     private void genShopInv(){
         shopInv.clear();
         shopInv.add(new Potion());

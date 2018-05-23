@@ -12,10 +12,10 @@ import static com.quadx.dungeons.states.MainMenuState.gl;
  * Created by range_000 on 1/5/2017.
  */
 public class Text {
-    public int size =1;
-    public Color c=Color.GRAY;
-    public Vector2 pos= new Vector2();
-    public String text = "";
+    public int size;
+    public Color c;
+    public Vector2 pos;
+    public String text;
 
     public Text(String s,Vector2 v,Color c, int size){
         text=s;
@@ -29,7 +29,20 @@ public class Text {
         return gl.width;
     }
     public static float centerString(String s){
-        return (State.view.x+WIDTH/2)- (strWidth(s)/2);
+        return (State.getView().x+WIDTH/2)- (strWidth(s)/2);
     }
 
+    public static float[] fitLineToWord(String s){
+        //x1,y1,x2,y2
+        float[] arr=new float[8];
+        arr[0]= -10;
+        arr[1]=-15;
+        arr[2]=strWidth(s)+20;
+        arr[3]=-15;
+        arr[4]= -10;
+        arr[5]=-12;
+        arr[6]=strWidth(s)+35;
+        arr[7]=-12;
+        return arr;
+    }
 }
