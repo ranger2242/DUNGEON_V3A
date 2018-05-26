@@ -1,4 +1,4 @@
-package com.quadx.dungeons.items;
+package com.quadx.dungeons.items.modItems;
 
 import com.quadx.dungeons.tools.ImageLoader;
 
@@ -8,7 +8,7 @@ import static com.quadx.dungeons.Game.player;
  * Created by Tom on 11/19/2015.
  */
 @SuppressWarnings("DefaultFileTemplate")
-public class Potion extends Item {
+public class Potion extends ModItem {
     public Potion  (){
         name="Potion+";
         int size= (int) (3*((double)player.getHpMax()/(double)500));
@@ -27,5 +27,10 @@ public class Potion extends Item {
             hpmod=1000;
             cost=2250;
         }
+    }
+
+    @Override
+    public int[] runMod() {
+        return new int[]{hpmod,0,0,0,0,0,0};
     }
 }

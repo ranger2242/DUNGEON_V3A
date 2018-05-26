@@ -20,6 +20,8 @@ import com.quadx.dungeons.attacks.Protect;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.monsters.Monster;
+import com.quadx.dungeons.shapes1_5.Line;
+import com.quadx.dungeons.shapes1_5.Triangle;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.Tests;
@@ -28,10 +30,9 @@ import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.gui.InfoOverlay;
 import com.quadx.dungeons.tools.gui.Text;
 import com.quadx.dungeons.tools.heightmap.HeightMap;
-import com.quadx.dungeons.tools.shapes.Line;
-import com.quadx.dungeons.tools.shapes.Triangle;
 import com.quadx.dungeons.tools.timers.Delta;
 import com.quadx.dungeons.tools.timers.Oscillator;
+import com.quadx.dungeons.tools.timers.Time;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -57,9 +58,9 @@ public class MapStateRender extends MapState {
     public static ArrayList<Rectangle> monAgroBoxes= new ArrayList<>();
     public static double time=0;
 
-    static Oscillator oBlink1 = new Oscillator(20*ft);
-    static Oscillator oBlink2 = new Oscillator(4*ft);
-    static Delta dGrow = new Delta(5*ft);
+    static Oscillator oBlink1 = new Oscillator(20* Time.ft);
+    static Oscillator oBlink2 = new Oscillator(4* Time.ft);
+    static Delta dGrow = new Delta(5* Time.ft);
 
 
     static void renderLayers(SpriteBatch sb) {
@@ -190,7 +191,7 @@ public class MapStateRender extends MapState {
         //draw loot popup
         try {
         if (HUD.dPopup.isDone()) {
-                Vector2 v=new Vector2(player.getAbsPos());
+                Vector2 v=new Vector2(player.abs());
                 v.y+=40+player.getIcon().getHeight();
                 v.x+=(player.getIcon().getWidth()/2);
                 sb.draw(HUD.lootPopup,  v.x, GridManager.fixY(v));
@@ -241,7 +242,7 @@ public class MapStateRender extends MapState {
            animations
            player
            monsters
-         texts
+         textQueue
             mon stats
             hovertexts
         */
@@ -365,10 +366,10 @@ public class MapStateRender extends MapState {
             //draw items
             Item item = c.getItem();
             if (item != null && c.isClear())
-                sb.draw(item.getIcon(),c.getAbsPos().x, fixY(c.getAbsPos()));
+                sb.draw(item.getIcon(),c.abs().x, fixY(c.abs()));
             //draw warpToNext
             if(c.isWarp())
-                sb.draw(ImageLoader.warp,c.getFixedPos().x,c.getFixedPos().y);
+                sb.draw(ImageLoader.warp,c.fixed().x,c.fixed().y);
         }
         //draw animations
         for(Anim a: Anim.anims){
@@ -389,21 +390,17 @@ public class MapStateRender extends MapState {
                 if (m != null) {
                     //draw icon
                     sb.draw(m.getIcon(), m.getTexturePos().x,m.getTexturePos().y);
-                    //draw monster texts
+                    //draw monster textQueue
                     for(Text t: m.getInfoOverlay().texts) {
                         Game.setFontSize(t.size);
-                        Game.getFont().draw(sb,t.text,m.getAbsPos().x, fixY(m.getAbsPos())-40);
+                        Game.getFont().draw(sb,t.text,m.abs().x, fixY(m.abs())-40);
                     }
                 }
             }
         } catch (ConcurrentModificationException ignored) {}
-        //draw hover texts
-        try {
-            for (HoverText h : HoverText.texts)
-                h.draw(sb);
-            Game.getFont().getColor().a=1;
-        }catch (ConcurrentModificationException ignored){}
-
+        //draw hover textQueue
+        HoverText.render(sb);
+        Game.resetFont();
         sb.end();//end drawing--------------------------------------------------------------------------------
     }
     ////Modules----------------------------------------------------------
@@ -426,7 +423,7 @@ public class MapStateRender extends MapState {
     private static void sbDrawTiles(SpriteBatch sb) {
         sb.begin();
         for (Cell c : drawList) {
-            Vector2 v= c.getAbsPos();
+            Vector2 v= c.abs();
             sb.draw(c.getTile(), v.x, v.y);
             if (c.getItem() != null && c.isClear()) {
                 if (c.getItem().getIcon()==null) {
@@ -491,11 +488,7 @@ public class MapStateRender extends MapState {
             dGrow.reset();
         }
     }
-    static void updateHoverTextTime(){
-        try {
-            HoverText.texts.forEach(HoverText::updateDT);
-        }catch (ConcurrentModificationException ignored){}
-    }
+
     public static void drawCircle(int x, int y, float r, Color c){
         sr.begin(ShapeRenderer.ShapeType.Line);
         sr.setColor(c);
@@ -542,7 +535,7 @@ public class MapStateRender extends MapState {
 
 
         sr.circle(mapplay.x+1,mapplay.y+1, playerCircleRadius);
-        playerCircleRadius = setInBoundsW(playerCircleRadius,10);
+        playerCircleRadius = boundW(playerCircleRadius,10);
 
         sr.end();
 

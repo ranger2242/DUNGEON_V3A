@@ -15,7 +15,7 @@ import static com.quadx.dungeons.states.mapstate.MapState.viewY;
 public class Quake extends Attack {
     public Quake(){
         costGold=35000;
-        type=1;
+        type=CostType.Energy;
         int a= (int) (player.getEnergyMax()/2);
         powerA = new int[]{80,90,110,130,150};
         costA =new int[]{50,90,110,150,190};
@@ -29,6 +29,12 @@ public class Quake extends Attack {
         hitBoxShape=HitBoxShape.Rect;
         setIcon(ImageLoader.attacks.get(9));
     }
+
+    @Override
+    public void runAttackMod() {
+
+    }
+
     public Rectangle getHitBox(){
         Vector2 view = State.getView();
 

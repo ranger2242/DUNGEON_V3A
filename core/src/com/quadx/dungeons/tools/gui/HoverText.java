@@ -1,121 +1,106 @@
 package com.quadx.dungeons.tools.gui;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Game;
+import com.quadx.dungeons.GridManager;
+import com.quadx.dungeons.tools.timers.Delta;
+import com.quadx.dungeons.tools.timers.Oscillator;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
-import static com.quadx.dungeons.GridManager.fixY;
-import static com.quadx.dungeons.GridManager.setInBounds;
-import static com.quadx.dungeons.states.MainMenuState.gl;
+import static com.quadx.dungeons.tools.timers.Time.SECOND;
+import static com.quadx.dungeons.tools.timers.Time.ft;
 
 /**
  * Created by Chris Cavazos on 5/28/2016.
  */
 public class HoverText {
-    public static ArrayList<HoverText> texts = new ArrayList<>();
-    private Color color;
-    private final String text;
+    private static ArrayList<HoverText> textQueue = new ArrayList<>();
     private boolean active;
-    private final int x;
-    private final int y;
-    private int px=0;
-    private int py=0;
-    private int ymod;
-    private float dtHov;
-    private float dtFlash;
-    protected float alpha=1;
-    private final boolean flash;
-    private boolean cycle;
-    private float time;
-    BitmapFont font;
+    private boolean flash;
+    private float ymod;
 
-    public HoverText(String s, float t, Color c, Vector2 pos, boolean flash) {
-        this(s,t,c,pos.x,pos.y,flash);
+    private String text;
+    private Vector2 pos;
+    private Color color;
+    private Delta dHover;
+    private static BitmapFont font;
+    private Oscillator blink = new Oscillator(6 * ft);
+
+    public HoverText(String s, float t, Color c, Vector2 fixed, boolean flash) {
+        this.flash = flash;
+        active = true;
+        text = s;
+        dHover = new Delta(t);
+        color = new Color(c);
+        this.pos = new Vector2(fixed);
+        //out("Text:" + fixed.toString());
+        textQueue.add(this);
+        if(textQueue.size()>10)
+            remove(0);
+    }
+    public HoverText(String s, Color c, Vector2 fixed, boolean b) {
+        this(s,1.5f*SECOND,c,fixed,b);
     }
 
-    public HoverText(String s, float t, Color c, float x1, float y1, boolean flash){
+
+    private static void filterTexts(){
+        int size = textQueue.size();
+        for (int i = size - 1; i >= 0; i--) {//remove dead
+            if (!textQueue.get(i).isActive())
+                remove(i);
+        }
+
+        while (size > 10)// remove excess
+            remove(0);
+
+    }
+    private static void remove(int i){
+        if(i<textQueue.size())
+        textQueue.remove(i);
+    }
+    public static void render(SpriteBatch sb) {
         Game.setFontSize(2);
-        font= Game.getFont();
-        active=true;
-        time=t;
-        text=s;
-        color=c;
-        x= Math.round(x1);
-        y=Math.round(y1);
-        this.flash=flash;
-        if(flash){
-            dtFlash=0;
-            cycle=true;
-        }
-        texts.add(this);
-    }
-    public void updateDT() {
-        dtHov += Gdx.graphics.getDeltaTime();
-        if (flash) dtFlash += Gdx.graphics.getDeltaTime();
-        //delete inactive hoverText
-        boolean[] index;
-        if (!texts.isEmpty()) {
-            index = new boolean[texts.size()];
-            texts.stream().filter(h -> !h.isActive()).forEach(h -> index[texts.indexOf(h)] = true);
-
-            for (int i = texts.size() - 1; i >= 0; i--) {
-                i = setInBounds(i, index.length);
-                if (index[i]) {
-                    texts.remove(i);
-                }
-            }
-            while (HoverText.texts.size() > 10) HoverText.texts.remove(0);
-            Game.setFontSize(1);
-            if (active) {
-                float time = 1.2f;
-                if (dtHov < time) {
-                    Game.setFontSize(3);
-                    CharSequence cs = text;
-                    gl.setText(Game.getFont(), cs);
-                    alpha= (float) -(Math.pow(Math.E,5*((dtHov/time)-1f)+1));
-                    if (dtFlash > .1) {
-                        if (cycle) {
-                            font.setColor(Color.WHITE);
-                        } else font.setColor(color);
-                        cycle = !cycle;
-                        dtFlash = 0;
-                    }
-                    font.setColor(color);
-                    font.getColor().a=alpha;
-                    px = (int) (x - (gl.width / 2));
-                    py = y + ymod;
-
-                    ymod++;
-                } else {
-                    dtHov = 0;
-                    ymod = 0;
-                    active = false;
-                }
-
-            }
+        font = Game.getFont();
+        try {
+            for (HoverText h : textQueue)
+                h.renderSelf(sb);
+        } catch (ConcurrentModificationException ignored) {
         }
     }
-    public void draw(SpriteBatch sb) {
-        if (active) {
-            if (dtHov < 1.2) {
-                font.setColor(color);
-                font.draw(sb, text, px, fixY(new Vector2(px,py)));
-            }
-        }
-//        font.getColor().a=1;
-
-
+    public static void update(float dt) {
+        textQueue.forEach(h -> h.updateSelf(dt));
+        filterTexts();
     }
-    public boolean isActive() {
+
+    private void updateSelf(float dt) {
+        dHover.update(dt);
+        pos.add(0, ymod += .15f);
+        if (flash)
+            blink.update(dt);
+        active = !dHover.isDone();
+    }
+    private void renderSelf(SpriteBatch sb) {
+        setColor();
+
+        font.draw(sb, text, pos.x, pos.y);
+    }
+    private void setColor() {
+        float x = dHover.percent();
+        float a = (float) (-x * Math.pow(Math.E, (x - 1))) + 1;
+        a = GridManager.bound(a, 1);
+        Color c;
+        c=blink.getVal()? new Color(Color.WHITE) : color;
+        c.a = a;
+        font.setColor(c);
+    }
+    private boolean isActive() {
         return active;
     }
 
-    public float getTime() {
-        return time;
-    }
+
 }

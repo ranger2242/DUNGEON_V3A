@@ -5,14 +5,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.commands.Command;
 import com.quadx.dungeons.commands.cellcommands.AddItemToCellComm;
+import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.shapes1_5.EMath;
 import com.quadx.dungeons.tools.timers.Delta;
-import com.quadx.dungeons.tools.EMath;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 
 import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.GridManager.fixY;
 
 /**
  * Created by range_000 on 1/10/2017.
@@ -30,13 +30,15 @@ public class Anim {
     private boolean timerOn;
     private boolean end = false;
 
-    public void setCell(Cell cell) {
+    public void setCell(Cell cell, Item item) {
         this.cell = cell;
+        this.cell.addCommand(new AddItemToCellComm(item, cell));
+
     }
 
     public void render(SpriteBatch sb) {
         if(texture != null)
-            sb.draw(texture,pos.x, fixY(pos));
+            sb.draw(texture,pos.x, pos.y);
     }
 
     public static void update(float dt) {
@@ -53,11 +55,11 @@ public class Anim {
     }
 
 
-    Anim(Texture t, Vector2 p, Vector2 d, float v, Type f) {
+    Anim(Texture t, Vector2 fixedStart, Vector2 fixedEnd, float v, Type f) {
         texture = t;
-        pos = new Vector2(p);
+        pos = new Vector2(fixedStart);
         vel = v;
-        dest =new Vector2(d);
+        dest =new Vector2(fixedEnd);
         flag = f;
         dEnd = new Delta(0);
         timerOn = false;
@@ -93,7 +95,6 @@ public class Anim {
     public void updateSelf(float dt) {
         updatePosition();
         checkEndConditions(dt);
-
         if(end)
             handleEndAnim();
     }

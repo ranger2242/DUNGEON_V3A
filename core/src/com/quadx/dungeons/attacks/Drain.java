@@ -2,9 +2,9 @@ package com.quadx.dungeons.attacks;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.quadx.dungeons.shapes1_5.Triangle;
 import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.gui.HoverText;
-import com.quadx.dungeons.tools.shapes.Triangle;
 
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.fixY;
@@ -17,25 +17,25 @@ import static com.quadx.dungeons.states.mapstate.MapState.cell;
 public class Drain extends Attack {
     public Drain() {
         costGold = 6045;
-        type = 2;
+        type = CostType.Mana;
         powerA = new int[]{25, 35, 45, 50, 70};
         //costA =new int[]{15,25,35,50,60};
         costA = new int[]{0, 0, 0, 0, 0};
         hitBoxShape = HitBoxShape.Triangle;
         name = "Drain";
-        power = powerA[level];
-        cost = costA[level];
         mod = 1;
         spread = 1;
         range = 10;
         description = "Heals user the same amount as damage done to opponent.";
+        loadArray();
         setIcon(ImageLoader.attacks.get(1));
 
     }
     public void runAttackMod(){
         int d=power/4;
         player.addHp(d);
-        new HoverText("+"+d,1, Color.GREEN,player.getAbsPos().x,player.getAbsPos().y+50,false);
+        new HoverText("+"+d,Color.GREEN ,player.fixed(),false);
+
     }
 
     public Triangle getHitTri() {
@@ -45,8 +45,8 @@ public class Drain extends Attack {
         float h = player.getIcon().getHeight() / 2;
         float w = player.getIcon().getWidth() / 2;
 
-        float cx = player.getAbsPos().x,
-                cy = player.getAbsPos().y;
+        float cx = player.abs().x,
+                cy = player.abs().y;
         switch (player.facing) {
             case North:
             case Northwest:

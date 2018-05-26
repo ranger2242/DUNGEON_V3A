@@ -9,14 +9,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.commands.Command;
-import com.quadx.dungeons.items.*;
+import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.items.Shop;
 import com.quadx.dungeons.items.equipment.Equipment;
+import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.tools.timers.Delta;
-import com.quadx.dungeons.tools.ShapeRendererExt;
 import com.quadx.dungeons.tools.gui.Title;
-
-import java.util.ArrayList;
+import com.quadx.dungeons.tools.timers.Delta;
+import com.quadx.dungeons.tools.timers.Time;
 
 import static com.quadx.dungeons.Game.*;
 import static com.quadx.dungeons.tools.gui.HUD.titleLine;
@@ -34,8 +34,8 @@ public class ShopState extends State {
     private boolean dispSold = false;
     private boolean drawError=false;
     private static final ShapeRendererExt shapeR=new ShapeRendererExt();
-    private static final ArrayList<Item> shopInv = new ArrayList<>();
-    private Delta dError = new Delta(72*ft);
+    private Delta dError = new Delta(72* Time.ft);
+    Shop shop;
 
 
     public ShopState(GameStateManager gsm){
@@ -43,7 +43,7 @@ public class ShopState extends State {
         cam.setToOrtho(false, WIDTH, HEIGHT);
         cam.position.set(view.x+ WIDTH/2,viewY+ HEIGHT/2,0);
         if(!MapState.pause)
-        genShopInv();
+        shop= new Shop(player);
         Gdx.gl.glClearColor(0,0,0,1);
     }
     public static void exit(){
@@ -74,41 +74,24 @@ public class ShopState extends State {
     }
     private void numberButtonHandler(int i){
         boolean minus = Gdx.input.isKeyPressed(Input.Keys.MINUS);
-        if (!MapState.pause && minus && dtBuy > .3) {
-            if (i < player.invList.size()) {
-                Item item = player.invList.get(i).get(0);
-                if (item.isEquip)
-                    item.loadIcon(item.getType());
-                else
-                    item.loadIcon(item.getName());
-                player.invList.get(i).remove(0);
-                soldItemCost = item.getSellPrice();
-                Game.player.setGold((float) (Game.player.getGold() + soldItemCost));
+        if(dtBuy > .3 &&!MapState.pause) {
+            if (minus) {
+                soldItemCost = shop.sellItem(i);
                 dispSold = true;
-                dtBuy = 0;
-                if (player.invList.get(i).isEmpty()) {
-                    player.invList.remove(i);
-                }
+
+            } else {
+                shop.buyItem(i);
+
             }
-        } else if (!minus && i < shopInv.size() && dtBuy > .3
-                && Game.player.getGold() >= shopInv.get(i).getCost()) {
-            Game.player.setGold(Game.player.getGold() - shopInv.get(i).getCost());
-            Game.player.pickupItem(shopInv.get(i));
-            if (i >= 6) shopInv.remove(i);
             dtBuy = 0;
         }
+
 
     }
     public void update(float dt) {
         handleInput();
         player.updateShopState(dt);
-        if(drawError){
-            dError.update(dt);
-            if(dError.isDone()){
-                drawError=false;
-                dError.reset();
-            }
-        }
+        drawError= dError.triggerUpdate(dt,drawError);
         dtBuy+=dt;
         dtScroll+=dt;
         if(dispSold)
@@ -155,7 +138,7 @@ public class ShopState extends State {
         Game.getFont().draw(sb,"EQUIPMENT",view.x +(WIDTH/3)+100,view.y+ HEIGHT-50);
         Game.getFont().draw(sb,"INVENTORY",view.x +(2*WIDTH/3),view.y+ HEIGHT-50);
 
-        Game.getFont().draw(sb,"G "+ Game.player.getGold(),view.x+(3*WIDTH/4),viewY+ HEIGHT-50);
+        Game.getFont().draw(sb,"G "+ player.getGold(),view.x+(3*WIDTH/4),viewY+ HEIGHT-50);
         if(dtSold<.5 && dispSold){
             Game.getFont().draw(sb,"+"+soldItemCost,view.x+ WIDTH-150,viewY+ HEIGHT-50);
         }
@@ -167,15 +150,15 @@ public class ShopState extends State {
         //player inventory
         player.renderShopInventory(sb);
         //equipment
-        for(int i=0;i<player.equipedList.size();i++){
-            Equipment e= player.equipedList.get(i);
+        for(int i=0;i<player.inv.getEquiped().size();i++){
+            Equipment e= player.inv.getEquiped().get(i);
             Game.getFont().draw(sb, "# "+e.getName(), view.x +(WIDTH/3)+100, viewY + HEIGHT - (i * 60)+yoff);
             sb.draw(e.getIcon(),view.x +(WIDTH/3)+100, viewY + HEIGHT - (i * 60)+yoff+10);
         }
         //shop inv
         Game.getFont().draw(sb,"SHOP",view.x+ 70,viewY+ HEIGHT-50);
-        for(int i=0;i<shopInv.size();i++){
-            Item item=shopInv.get(i);
+        for(int i=0;i<shop.invSize();i++){
+            Item item=shop.getItem(i);
             Game.getFont().draw(sb,(i+1)+". "+item.getName(),view.x+70,viewY+ HEIGHT-(i*60)+yoff);
             Game.getFont().draw(sb,item.getCost()+"G",view.x+(WIDTH/4),viewY+ HEIGHT-(i*60)+yoff-20);
             sb.draw( item.getIcon(),view.x+70, viewY + HEIGHT- (i * 60)+yoff+10);
@@ -196,22 +179,7 @@ public class ShopState extends State {
 
     //---------------------------------------------------------
 // Render
-    private void genShopInv(){
-        shopInv.clear();
-        shopInv.add(new Potion());
-        shopInv.add(new ManaPlus());
-        shopInv.add(new StrengthPlus());
-        shopInv.add(new DefPlus());
-        shopInv.add(new IntPlus());
-        shopInv.add(new SpeedPlus());
-        Equipment e=Equipment.generateEquipment();
-        shopInv.add(e);
-        e=Equipment.generateEquipment();
-        shopInv.add(e);
-        SpellBook s = new SpellBook();
-        shopInv.add(s);
 
-    }
     public void dispose() {
 
     }

@@ -1,7 +1,9 @@
 package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.quadx.dungeons.tools.gui.HoverText;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -60,6 +62,10 @@ public abstract class Ability {
     public abstract void l4();
 
     public abstract void l5();
+
+    public void hoverName(){
+        new HoverText(name.toUpperCase()+"!", Color.WHITE, player.fixed(),false);
+    }
 
     public static void updateTimeCounter() {
         timeCounter += Gdx.graphics.getDeltaTime();

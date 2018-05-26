@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.commands.Command;
-import com.quadx.dungeons.tools.ShapeRendererExt;
+import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
 import com.quadx.dungeons.tools.gui.Selector;
 import com.quadx.dungeons.tools.gui.Text;
 import com.quadx.dungeons.tools.gui.Title;

@@ -11,7 +11,7 @@ import com.quadx.dungeons.tools.ImageLoader;
 public class Stab extends Attack {
     public Stab(){
         costGold=2000;
-        type=1;
+        type=CostType.Energy;
         powerA = new int[]{70,85,95,115,145};
         costA =new int[]{8,16,32,64,100};
         //costA =new int[]{0,0,0,0,0};
@@ -24,8 +24,15 @@ public class Stab extends Attack {
         range=7;
         hitBoxShape =HitBoxShape.Rect;
         description="Stabs the opponent.";
+        loadArray();
         setIcon(ImageLoader.attacks.get(10));
     }
+
+    @Override
+    public void runAttackMod() {
+
+    }
+
     public  Rectangle getHitBox() {
         return new ForwardRectHitBox().getShape(this);
     }

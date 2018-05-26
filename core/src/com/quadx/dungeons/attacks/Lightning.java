@@ -1,8 +1,8 @@
 package com.quadx.dungeons.attacks;
 
 import com.quadx.dungeons.monsters.Monster;
+import com.quadx.dungeons.shapes1_5.Line;
 import com.quadx.dungeons.tools.ImageLoader;
-import com.quadx.dungeons.tools.shapes.Line;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -16,7 +16,7 @@ import static com.quadx.dungeons.GridManager.monsterList;
 public class Lightning extends Attack {
     public Lightning(){
         costGold=30000;
-        type=2;
+        type=CostType.Mana;
         hitBoxShape =HitBoxShape.Chain;
         int a=0;
         powerA = new int[]{50,75,100,130,150};
@@ -30,24 +30,31 @@ public class Lightning extends Attack {
         description="Summons lightning.";
         spread=0;
         range=0;
+        loadArray();
         setIcon(ImageLoader.attacks.get(12));
     }
-    ArrayList<Line> getHitChainList(){
+
+    @Override
+    public void runAttackMod() {
+
+    }
+
+    public ArrayList<Line> getHitChainList(){
         ArrayList<Line> edges=new ArrayList<>();
         ArrayList<Monster> hit=new ArrayList<>();
         try{
         for(Monster m:monsterList){
-            if(player.pos().dst(m.getPos())<10){
+            if(player.pos().dst(m.pos())<10){
                 hit.add(m);
-                edges.add(new Line(player.getFixPos(), m.getFixPos()));
+                edges.add(new Line(player.getFixPos(), m.fixed()));
                 m.takeDamage();
             }
         }}catch (ConcurrentModificationException ignored){}
         try{
         for(Monster m:hit){
             for(Monster m1:monsterList) {
-                if (!m.equals(m1) && m.getPos().dst(m1.getPos()) < 10) {
-                    edges.add(new Line(m.getFixPos(),m1.getFixPos()));
+                if (!m.equals(m1) && m.pos().dst(m1.pos()) < 10) {
+                    edges.add(new Line(m.fixed(),m1.fixed()));
                     m1.takeDamage();
                 }
             }

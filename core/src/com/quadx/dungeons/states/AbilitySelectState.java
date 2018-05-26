@@ -11,12 +11,13 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Game;
-import com.quadx.dungeons.abilities.*;
+import com.quadx.dungeons.abilities.Ability;
+import com.quadx.dungeons.abilities.WaterBreath;
+import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.FilePaths;
 import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.MyTextInputListener;
-import com.quadx.dungeons.tools.ShapeRendererExt;
 import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 import com.quadx.dungeons.tools.gui.HUD;
 

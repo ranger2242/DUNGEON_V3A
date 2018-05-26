@@ -9,8 +9,10 @@ import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.*;
+import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
 import com.quadx.dungeons.states.mapstate.Map2State;
 import com.quadx.dungeons.tools.timers.Delta;
+import com.quadx.dungeons.tools.timers.Time;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +49,7 @@ public class Tests {
 
     static float fps = 0;
     static int testCount = 0;
-    static Delta dFPS = new Delta( 3*ft);
+    static Delta dFPS = new Delta( 3* Time.ft);
 
     public static void update(float dt){
         processMetrics();

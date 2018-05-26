@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -43,7 +44,6 @@ public class Game extends ApplicationAdapter implements ControllerListener {
 
     public static Player player = new Player();
 
-    public static final float ft = 1f / 60f;
     public static final int WIDTH = 1366;
     public static final int HEIGHT = 724;
     public static boolean controllerMode = false;
@@ -261,5 +261,12 @@ public class Game extends ApplicationAdapter implements ControllerListener {
     @Override
     public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
         return false;
+    }
+
+    public static void resetFont() {
+        for(BitmapFont f: fonts){
+            Color c= new Color(1,1,1,1);
+            f.setColor(c);
+        }
     }
 }

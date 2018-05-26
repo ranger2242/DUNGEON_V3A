@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.quadx.dungeons.Cell;
 import com.quadx.dungeons.Game;
+import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.State;
 import com.quadx.dungeons.tools.timers.Timer;
@@ -13,7 +14,7 @@ import com.quadx.dungeons.tools.timers.Timer;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.quadx.dungeons.GridManager.setInBounds;
+import static com.quadx.dungeons.GridManager.bound;
 import static com.quadx.dungeons.tools.gui.HUD.out;
 
 
@@ -103,8 +104,8 @@ Map2State extends State {
 
             for (int i = x1; i < x2; i++) {
                 for (int j = y1; j < y2; j++) {
-                    int x = setInBounds(i),
-                            y = setInBounds(j);
+                    int x = GridManager.bound(i),
+                            y = GridManager.bound(j);
                     buffArray[x][y].setCleared();
                     live.add(buffArray[x][y]);
                 }
@@ -149,13 +150,13 @@ Map2State extends State {
             }
 
             for (int l = x1; l < x2; l++) {
-                int x=setInBounds(l),
-                        y=setInBounds(y1);
+                int x= GridManager.bound(l),
+                        y= GridManager.bound(y1);
                 buffArray[x][y].setCleared();
             }
             for (int z = y1; z < y2; z++) {
-                int x=setInBounds(x1),
-                        y=setInBounds(z);
+                int x= GridManager.bound(x1),
+                        y= GridManager.bound(z);
                 buffArray[x][y].setCleared();
             }
         }
@@ -182,21 +183,21 @@ Map2State extends State {
             int x = rn.nextInt(res);
             int y = rn.nextInt(res);
             buffArray[x][y].setCleared();
-            buffArray[x][y].setWater();
+            buffArray[x][y].setWater(true);
         }
         for (int i = 0; i < grow; i++) {
             for (int x = 0; x < res; x++) {
                 for (int y = 0; y < res; y++) {
                     if (buffArray[x][y].isWater()) {
                         try {
-                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y - 1].setWater();
-                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y].setWater();
-                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y + 1].setWater();
-                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x][y + 1].setWater();
-                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x + 1][y + 1].setWater();
-                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x + 1][y].setWater();
-                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x + 1][y - 1].setWater();
-                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x][y - 1].setWater();
+                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y - 1].setWater(true);
+                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y].setWater(true);
+                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y + 1].setWater(true);
+                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x][y + 1].setWater(true);
+                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x + 1][y + 1].setWater(true);
+                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x + 1][y].setWater(true);
+                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x + 1][y - 1].setWater(true);
+                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x][y - 1].setWater(true);
                         } catch (ArrayIndexOutOfBoundsException ignored) {
                         }
 

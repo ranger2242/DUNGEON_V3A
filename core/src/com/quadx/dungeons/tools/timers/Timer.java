@@ -7,7 +7,7 @@ import java.text.NumberFormat;
  * Created by Chris Cavazos on 7/17/2016.
  */
 public class Timer {
-    NumberFormat formatter = new DecimalFormat("#0.00");
+    NumberFormat formatter = new DecimalFormat("#0.000");
     protected long start=0;
     protected long end=0;
     protected String name="";

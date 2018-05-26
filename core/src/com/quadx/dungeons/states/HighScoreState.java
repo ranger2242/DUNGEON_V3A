@@ -7,8 +7,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Player;
+import com.quadx.dungeons.items.equipment.Equipment;
+import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
 import com.quadx.dungeons.tools.Score;
-import com.quadx.dungeons.tools.ShapeRendererExt;
 import com.quadx.dungeons.tools.StatManager;
 import com.quadx.dungeons.tools.gui.Title;
 
@@ -149,12 +150,13 @@ public class HighScoreState extends State {
         }
         sr.end();
     }
+
     public void render(SpriteBatch sb) {
-        Gdx.gl.glClearColor(1,0,0,1);
+        Gdx.gl.glClearColor(1, 0, 0, 1);
         sr.setProjectionMatrix(cam.combined);
         sb.setProjectionMatrix(cam.combined);
         drawLines();
-        float killerx=view.x+(WIDTH/4);
+        float killerx = view.x + (WIDTH / 4);
         float killery = viewY + (HEIGHT / 2);
         drawTitles(sb);
         sb.begin();
@@ -175,10 +177,9 @@ public class HighScoreState extends State {
                     Game.getFont().setColor(Color.WHITE);
                 }
                 String s;
-                if(i==9){
+                if (i == 9) {
                     s = (i + 1) + ": " + highscores[i].toString();
-                }
-                else{
+                } else {
                     s = (i + 1) + ":  " + highscores[i].toString();
 
                 }
@@ -196,20 +197,20 @@ public class HighScoreState extends State {
             Game.getFont().setColor(Color.WHITE);
         }
 
-        for(int i=0;i< stats.size();i++){
-            Game.getFont().draw(sb,stats.get(i)+ finalStatList.get(i).toString(),view.x+30,viewY+(HEIGHT/2)-30-((i+1)*24));
+        for (int i = 0; i < stats.size(); i++) {
+            Game.getFont().draw(sb, stats.get(i) + finalStatList.get(i).toString(), view.x + 30, viewY + (HEIGHT / 2) - 30 - ((i + 1) * 24));
         }
         try {
 
             StatManager.killer.setFront(2);
             ArrayList<String> list = StatManager.killer.getStatsList();
-            drawPlayerStats =true;
+            drawPlayerStats = true;
 
-            sb.draw(StatManager.killer.getIcon(),killerx,viewY+100);
-            for(int i=0;i<list.size();i++){
-                Game.getFont().draw(sb,list.get(i),killerx,killery-30-((i+1)*20));
+            sb.draw(StatManager.killer.getIcon(), killerx, viewY + 100);
+            for (int i = 0; i < list.size(); i++) {
+                Game.getFont().draw(sb, list.get(i), killerx, killery - 30 - ((i + 1) * 20));
             }
-            pfinal.renderStatList(sb,new Vector2(view.x+(WIDTH/2)-100,viewY+(HEIGHT/2)-20));
+            pfinal.renderStatList(sb, new Vector2(view.x + (WIDTH / 2) - 100, viewY + (HEIGHT / 2) - 20));
            /* for(int i=0;i<pfinal.getStatsList().size();i++){
                 try{
 
@@ -218,15 +219,21 @@ public class HighScoreState extends State {
                 }catch (Exception e){}
 
             }*/
-            for(int i=0;i<pfinal.equipedList.size();i++){
-                try{
-                    Game.getFont().draw(sb,pfinal.equipedList.get(i).getName(),view.x+((WIDTH/3)*2)+50,viewY+(HEIGHT/2)-35-((i+1)*30));
-                    sb.draw(pfinal.equipedList.get(i).getIcon(),view.x+((WIDTH/3)*2),viewY+(HEIGHT/2)-55-((i+1)*30));
-                }catch (Exception ignored){}
+            int end = pfinal.inv.getEquiped().size();
+            for (int i = 0; i < end; i++) {
+                try {
+                    Equipment e = pfinal.inv.getEquiped().get(i);
+                    float x = view.x + ((WIDTH / 3) * 2);
+                    float y = viewY + (HEIGHT / 2) - 35 - ((i + 1) * 30);
+                    Game.getFont().draw(sb, e.getName(), x + 50, y);
+                    sb.draw(e.getIcon(), x, y);
+                } catch (Exception ignored) {
+                }
 
             }
-        }catch (Exception ignored){}
-        if(blink) {
+        } catch (Exception ignored) {
+        }
+        if (blink) {
             Game.getFont().setColor(Color.RED);
             Game.getFont().draw(sb, "TAB : EXIT", centerString("TAB : EXIT"), viewY + 30);
 

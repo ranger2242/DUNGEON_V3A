@@ -62,7 +62,7 @@ public class AttackMod {
                 break;
             }
             case 6: {//PROTECT
-                player.safe=true;
+                player.protect =true;
                 out(player.getName()+" is protected from damage!");
                 break;
             }

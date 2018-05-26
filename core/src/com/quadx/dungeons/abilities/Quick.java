@@ -1,11 +1,9 @@
 package com.quadx.dungeons.abilities;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.attacks.Drain;
 import com.quadx.dungeons.tools.ImageLoader;
-import com.quadx.dungeons.tools.gui.HoverText;
 
 import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
@@ -27,7 +25,7 @@ public class Quick extends Ability {
 
     public  void onActivate() {
         player.setAbilityMod(3);
-        new HoverText("QUICK!",1.5f, Color.WHITE, Game.player.getAbsPos().x,Game.player.getAbsPos().y,false);
+        hoverName();
         l1();
     }
 

@@ -8,19 +8,22 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.commands.Command;
-import com.quadx.dungeons.items.EnergyPlus;
+import com.quadx.dungeons.items.modItems.EnergyPlus;
 import com.quadx.dungeons.items.Item;
-import com.quadx.dungeons.items.ManaPlus;
-import com.quadx.dungeons.items.Potion;
+import com.quadx.dungeons.items.modItems.ManaPlus;
+import com.quadx.dungeons.items.modItems.Potion;
 import com.quadx.dungeons.monsters.Monster;
+import com.quadx.dungeons.shapes1_5.EMath;
+import com.quadx.dungeons.shapes1_5.Triangle;
 import com.quadx.dungeons.states.mapstate.ParticleHandler;
 import com.quadx.dungeons.tools.ImageLoader;
-import com.quadx.dungeons.tools.shapes.Triangle;
 
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.fixY;
+import static com.quadx.dungeons.GridManager.monsterList;
 import static com.quadx.dungeons.states.mapstate.MapState.cell;
 import static com.quadx.dungeons.states.mapstate.MapState.cellW;
 import static com.quadx.dungeons.states.mapstate.ParticleHandler.effects;
@@ -121,15 +124,15 @@ public class Cell {
         return monster;
     }
 
-    public Vector2 getPos() {
+    public Vector2 pos() {
         return pos;
     }
 
-    public Vector2 getAbsPos() {
+    public Vector2 abs() {
         return absPos;
     }
 
-    public Vector2 getFixedPos() {
+    public Vector2 fixed() {
         return fixedPos;
     }
 
@@ -192,9 +195,7 @@ public class Cell {
         return x;
     }
 
-    public int getMonsterIndex() {
-        return monsterIndex;
-    }
+
 
     public int getGold() {
         return gold;
@@ -222,7 +223,7 @@ public class Cell {
     //SETTERS---------------------------------------------------------------------------------
     public void setMonster(Monster m) {
         monster = m;
-//        monster.setCords(x,y);
+        monsterList.add(monster);
         setMon(true);
     }
 
@@ -283,10 +284,13 @@ public class Cell {
         hasCrate = set;
     }
 
-    public void setWater() {
+    public void setWater(boolean b) {
         tile = ImageLoader.w[0];
         color = colors[0];
+        if(b)
         state = State.WATER;
+        else
+            state = State.CLEAR;
     }
 
     public void setColor(Color c) {
@@ -300,8 +304,17 @@ public class Cell {
         }
     }
 
-    public void setMonsterIndex(int set) {
-        monsterIndex = set;
+
+    public boolean isNearPlayer() {
+        return EMath.pathag(player.pos(), pos) < 10;
+    }
+
+    public boolean canPlaceMon(){
+        return !isNearPlayer() && isClear();
+    }
+
+    public boolean canPlacePlayer(){
+        return (!isWater());
     }
 
     public void setItem(Item item) {
@@ -311,6 +324,7 @@ public class Cell {
             this.item.setTexturePos(new Vector2(absPos.x, GridManager.fixY(absPos)));
             this.item.setHitBox(new Rectangle(absPos.x, GridManager.fixY(absPos), item.getIcon().getWidth(), item.getIcon().getHeight()));
         }
+        setHasLoot(true);
     }
 
     //OTHER----------------------------------------------------------------------------------
@@ -334,8 +348,8 @@ public class Cell {
             hasItem = true;
             if (!effectLoaded && isClear()) {
                 if (item.hasEffect()) {
-                    float x=getAbsPos().x - (item.getIcon().getWidth() / 2);
-                    float y=getAbsPos().y;
+                    float x= abs().x - (item.getIcon().getWidth() / 2);
+                    float y= abs().y;
                     effect = ParticleHandler.loadParticles("ptItem", x, y, item.getPtColor(), ParticleHandler.EffectType.FIELD);
                     effectLoaded = true;
                    // if(effect!=null)
@@ -371,6 +385,18 @@ public class Cell {
 
     public boolean canPlaceItem() {
         return !(hasCrate() || !isClear() || hasLoot() || isWarp() || isWater() || hasItem());
+    }
+
+    public void generateSpecial() {
+    }
+
+    public Monster removeMon() {
+        if(hasMon) {
+            hasMon=false;
+            return monster;
+        }
+        else
+            return null;
     }
 
     enum State {

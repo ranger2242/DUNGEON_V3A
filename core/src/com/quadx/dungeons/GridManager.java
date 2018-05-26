@@ -4,22 +4,25 @@ package com.quadx.dungeons;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.items.*;
-import com.quadx.dungeons.items.equipment.Equipment;
+import com.quadx.dungeons.items.Gold;
+import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.items.modItems.ModItem;
 import com.quadx.dungeons.monsters.Monster;
+import com.quadx.dungeons.shapes1_5.EMath;
+import com.quadx.dungeons.shapes1_5.Ngon;
 import com.quadx.dungeons.states.State;
 import com.quadx.dungeons.states.mapstate.Map2State;
-import com.quadx.dungeons.tools.timers.Delta;
 import com.quadx.dungeons.tools.Tests;
-import com.quadx.dungeons.tools.timers.Timer;
 import com.quadx.dungeons.tools.WallPattern;
 import com.quadx.dungeons.tools.heightmap.HeightMap;
 import com.quadx.dungeons.tools.heightmap.Matrix;
+import com.quadx.dungeons.tools.timers.Delta;
+import com.quadx.dungeons.tools.timers.Timer;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.quadx.dungeons.Game.ft;
+import static com.quadx.dungeons.tools.timers.Time.ft;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.states.mapstate.MapState.*;
 import static com.quadx.dungeons.tools.ImageLoader.a;
@@ -41,8 +44,34 @@ public class GridManager {
     static Delta dRotate = new Delta(10*ft);
 
     public GridManager(){
+        mapLoadTime=new Timer("MapLoadTime");
         initializeGrid();
     }
+
+    public void initializeGrid(){
+        mapLoadTime.start();
+
+        dispArray = Map2State.generateMap2();
+        loadLiveCells();
+        hm=new HeightMap(dispArray);
+        dispArray=hm.getCells();
+        plotLoot();
+        plotItems();
+        plotShop();
+        plotWarps();
+        plotPlayer();
+        plotMonsters();
+        if(Tests.clearmap)
+            Tests.loadEmptyMap();
+        //nothing below here
+        mapLoadTime.end();
+        Tests.mapLoadTimes.add(mapLoadTime.getElapsedD());
+        String s=GridManager.mapLoadTime.runtime();
+        System.out.println(s);
+        out(s);
+    }
+
+
 
     public static void update(float dt){
         dRotate.update(dt);
@@ -72,8 +101,8 @@ public class GridManager {
             shop.set(rotateCords(left, shop));
             player.setAbsPos(new Vector2(player.pos().x * cellW, player.pos().y * cellW));
             for (Monster m : monsterList) {
-                m.setPos(rotateCords(left, m.getPos()));
-                m.setAbsPos(new Vector2(m.getPos().x * cellW, m.getPos().y * cellW));
+                m.setPos(rotateCords(left, m.pos()));
+                m.setAbsPos(new Vector2(m.pos().x * cellW, m.pos().y * cellW));
             }
             hm.calcCorners(dispArray);
             hm.getCells();
@@ -148,59 +177,23 @@ public class GridManager {
             }
         }
     }
-    private static void plotMonsters() {
-        if (player.getFloor() == 1)
-            splitMapDataToList();
-        int temp = rn.nextInt(40)+20;//calculate number of monsters
-        while (temp > 0 && Tests.spawn) {
-            int listSize = monsterList.size();
-            int point = rn.nextInt(liveCellList.size());
-            Cell c = liveCellList.get(point);
-            if(!Monster.isNearPlayer(c.getPos())) {
-                if (c.isClear()) {
-                    Monster m = Monster.getNew();
-                    m.setAbsPos(c.getAbsPos());
-                    m.setPos(c.getPos());
-                    m.setLiveCellIndex(point);
-                    monsterList.add(m);
-                    c.setMonsterIndex(listSize + 1);
-                    liveCellList.set(point, c);
-                    temp--;
-                }
-            }
 
-        }
-        Monster.reindexMons=true;
+    public static boolean isNearPlayer(Vector2 pos, int gridUnits) {
+        return EMath.pathag(player.pos(), pos) <= gridUnits;
     }
 
-    public static Vector2 fixYv(Vector2 v){//get vector in absolute pos
-        return new Vector2(v.x, fixY(v));
-    }
-
-    public static float fixY(Vector2 v){//get vector in absolute pos
-        int gx=Math.round(v.x/cellW);//find grid pos
-        int gy=Math.round(v.y/cellW);
-        float pery=(v.y-(gy*cellW))/cellW;
-        try {
-            float y= (dispArray[gx][gy].getHeight()*cell.y)+(gy*cell.y)+(pery*cell.y);
-            return y;
-        }catch (NullPointerException| ArrayIndexOutOfBoundsException e) {
-            return v.y;
-        }
-    }
     private void clearMonsterList() {
         monsterList.clear();
     }
-    private void createMap() {
-/*        for(ParticleEffect e :MapStateExt.effects){
-            e.dispose();
-        }
-        MapStateExt.effects.clear();*/
-        dispArray = Map2State.generateMap2();
-        //splitMapDataToList();
-        loadLiveCells();
-    }
 
+    Vector2[] seeds(int base, int var){
+        int seeds= base+rn.nextInt(var);
+        Vector2[] points = new Vector2[seeds];
+        for(int i=0;i<seeds;i++){
+            points[i]=new Vector2(resInt(),resInt());
+        }
+        return points;
+    }
     private void plotWarps() {
         int index = rn.nextInt(liveCellList.size());
         Cell c = liveCellList.get(index);
@@ -212,108 +205,161 @@ public class GridManager {
     }
     private void plotShop() {
         int index = rn.nextInt(liveCellList.size());
-        Vector2 v=liveCellList.get(index).getPos();
+        Cell c=liveCellList.get(index);
+        Vector2 v=c.pos();
         shop.set(v);
-        liveCellList.get(index).setCleared();
-        liveCellList.get(index).setShop(true);
+        c.setCleared();
+        c.setShop(true);
     }
     private void plotLoot() {
-        int seeds= 20+rn.nextInt(10);
-        ArrayList<Vector2> points= new ArrayList<>();
-        for(int i=0;i<seeds;i++){
-            points.add(new Vector2(rn.nextInt(res),rn.nextInt(res)));
+        Vector2[] points =seeds(10,20);
+        for(int i=0;i<10;i++) {
+            int cluster= rn.nextInt(13);
+            for(int j=0;j<cluster;j++) {
+                points[i].add(spreadv(4));
+                dispArray(points[i]).setItem(new Gold());
+            }
         }
-        for(int i=0;i<seeds;i++) {
-            int seeds2= rn.nextInt(13);
-            for(int j=0;j<seeds2;j++) {
-                int x = (int) (points.get(i).x + (4*rn.nextGaussian()));
-                int y = (int) (points.get(i).y + (4*rn.nextGaussian()));
-                x=setInBounds(x);
-                y=setInBounds(y);
-                dispArray[x][y].setHasLoot(true);
-                dispArray[x][y].setItem(new Gold());
+    }
+    private void plotItems() {
+        Vector2[] points =seeds(10,20);
+        for (int i = 0; i < 10; i++) {
+            Item item = Item.generate();
+            if (item instanceof ModItem) {
+                int cluster = rn.nextInt(8);
+                for (int j = 0; j < cluster; j++) {
+                    points[i].add(spreadv(4));
+                    dispArray(points[i]).setItem(item);
+                }
+            }
+        }
+        int crates = (int) (liveCellList.size() * .005f);
+        for (int a = 0; a < crates; a++) {
+            dispArray[resInt()][resInt()].setItem(Item.generateSpecial());
+        }
+
+    }
+    private static void plotMonsters() {
+        monsterList.clear();
+        int mtotal = rn.nextInt(20) + 10;
+        for (int i = 0; i < mtotal && Tests.spawn;i++) {
+            Cell cell = dispArray[resInt()][resInt()];
+                Vector2 v=new Vector2(cell.abs());
+
+
+            int r=8*cellW;
+            int n=rn.nextInt(6)+2;
+            Ngon pts= new Ngon(v,r,n,0);
+            float[] p= pts.getVerticies();
+            for(int j=0;j<p.length;j+=2){
+                Vector2 a= new Vector2(p[j],p[j+1]);
+                dispArray(a).setMonster(Monster.getNew(a));
+            }
+        }
+    }
+    private void plotPlayer() {
+        Cell c = dispArray[resInt()][resInt()];
+        for(Cell cell:  getSurroundingCells(c.abs(),2)){
+            cell.setWater(false);
+        }
+        player.setAbsPos(new Vector2(c.abs()));
+        for(Cell cell: getSurroundingCells(player.abs(),8)){
+            if(cell.hasMon()) {
+                monsterList.remove(cell.removeMon());
             }
         }
     }
 
-    public static int setInBoundsW(int ind, int bound) {
+    public static Vector2 fixYv(Vector2 v){//get vector in absolute pos
+        return new Vector2(v.x, fixY(v));
+    }
+    public static float fixY(Vector2 v){//get vector in absolute pos
+        int gx=Math.round(v.x/cellW);//find grid pos
+        int gy=Math.round(v.y/cellW);
+        float pery=(v.y-(gy*cellW))/cellW;
+        try {
+            float y= (dispArray[gx][gy].getHeight()*cell.y)+(gy*cell.y)+(pery*cell.y);
+            return y;
+        }catch (NullPointerException| ArrayIndexOutOfBoundsException e) {
+            return v.y;
+        }
+    }
+
+    float spreadf(double scl){//normal distributed number with mean 0
+        return (float) (scl*rn.nextGaussian());
+    }
+    public Vector2 spreadv(double scl){
+        return new Vector2(spreadf(scl),spreadf(scl));
+    }
+
+    public static float boundW(float ind){
+        return boundW((int)ind,res);
+    }
+    public static int boundW(int ind, int bound) {
         if (ind < 0) return bound - 1;
         else if (ind > bound - 1) return 0;
         else return ind;
     }
-
-    public static int setInBounds(int ind) {
-        return setInBounds(ind, res);
+    public static float boundW(float ind, float bound, float sep) {
+        if (ind < 0) return bound - sep;
+        else if (ind > bound - sep) return sep;
+        else return ind;
     }
+   /* public static float boundW(float ind, float min, float max) {
+        if (ind < min) return max - 1;
+        else if (ind > max) return min;
+        else return ind;
 
-    public static int setInBounds(int ind, int bound) {
-        if (ind < 0) return 0;
-        else if (ind > bound - 1) return (bound - 1);
-        else return  ind;
+    }*/
+    public static int bound(int ind, int bound) {
+        return bound(ind,0,bound);
     }
+    public static int bound(int ind, int min, int max) {
+        if (ind < min)
+            return min;
+        else if (ind >= max)
+            return max-1;
+        else
+            return  ind;
+    }
+    public static float bound(float ind, float min, float max) {
+        if (ind < min)
+            return min;
+        else if (ind >= max)
+            return max-Float.MIN_VALUE;
+        else
+            return  ind;
 
+    }
+    public static float bound(float ind){
+        return bound(ind,(float)res);
+    }
+    public static float bound(float ind, float bound){
+        return bound(ind,0f,bound);
+    }
+    public static Vector2 boundI(Vector2 p) {
+        Vector2 t= new Vector2(p);
+        t.x= bound((int) t.x);
+        t.y= bound((int)t.y);
+        return t;
+    }
+    public static Vector2 bound(Vector2 p) {
+        return new Vector2(bound(p.x),bound(p.y));
+
+    }
+   /* public static Vector2 boundW(Vector2 p, float min, float max){
+
+
+    }*/
+    public static int bound(int ind) {
+        return bound(ind, res);
+    }
     public static boolean isInBounds(Vector2 v){
         return (int)v.x>=0 &&(int)v.y>=0 && (int)v.x<res &&(int)v.y<res;
     }
-    private void plotItems() {
-        int seeds =10 + rn.nextInt(20);
-        ArrayList<Vector2> points = new ArrayList<>();
-        for (int i = 0; i < seeds; i++) {
-            points.add(new Vector2(rn.nextInt(res), rn.nextInt(res)));
-        }
-        for (int i = 0; i < seeds; i++) {
-            Item item = Item.generate();
-            Class c =item.getClass();
-            boolean useItem = c.equals(Potion.class)
-                    || c.equals(ManaPlus.class)
-                    || c.equals(EnergyPlus.class);
-            if (!(item.isEquip || (c.equals(SpellBook.class) || c.equals(Gold.class)))) {
-                int seeds2 = rn.nextInt(8);
-                for (int j = 0; j < seeds2; j++) {
-                    int x = (int) (points.get(i).x + (4 * rn.nextGaussian()));
-                    int y = (int) (points.get(i).y + (4 * rn.nextGaussian()));
-                    x = setInBounds(x);
-                    y = setInBounds(y);
-                    dispArray[x][y].setItem(item);
-                }
-            }
 
-
-        }
-
-        float fillPercent = .005f;
-        int crates = (int) (liveCellList.size() * fillPercent);
-        for (int a = 0; a < crates; a++) {
-            int x=rn.nextInt(res);
-            int y=rn.nextInt(res);
-
-            if(rn.nextInt(8)<7){
-                dispArray[x][y].setBoosterItem(rn.nextInt(3));
-            }
-            else{
-                Item item = Equipment.generate();
-                dispArray[x][y].setItem(item);
-            }
-        }
-
-    }
-    private void plotPlayer() {
-        int index = rn.nextInt(liveCellList.size());
-        Cell c = liveCellList.get(index);
-        while (!(!c.isWater() && c.isClear())) {
-            index = rn.nextInt(liveCellList.size());
-            c = liveCellList.get(index);
-        }
-        player.setPos(c.getPos());
-        player.setAbsPos(new Vector2(c.getAbsPos()));
-        int range = 100;
-        Rectangle rect = new Rectangle(player.getAbsPos().x - (cell.x * (range / 2)), player.getAbsPos().y - (cell.y * (range / 2)), range * cell.x, range * cell.y);
-        for (int p = monsterList.size() - 1; p >= 0; p--) {
-            Monster m = monsterList.get(p);
-            if (m.getHitBox().overlaps(rect)) {
-                monsterList.remove(p);
-            }
-        }
+    public static int resInt(){
+        return rn.nextInt(res);
     }
     private void clearDigPlusCells(int ii, int jj, int x, int y) {
         for (int i = 0; i < ii; i++) {
@@ -361,27 +407,6 @@ public class GridManager {
             }
         }
     }
-    public void initializeGrid(){
-        mapLoadTime=new Timer("MapLoadTime");
-        mapLoadTime.start();
-        player.fullHeal();
-        clearMonsterList();
-        createMap();
-        hm=new HeightMap(dispArray);
-        dispArray=hm.getCells();
-        plotLoot();
-        plotItems();
-        plotShop();
-        plotWarps();
-        plotPlayer();
-        plotMonsters();
-        if(Tests.clearmap)
-            Tests.loadEmptyMap();
-        //nothing below here
-        mapLoadTime.end();
-        Tests.mapLoadTimes.add(mapLoadTime.getElapsedD());
-        out(GridManager.mapLoadTime.runtime());
-    }
     public void clearArea(float x, float y, boolean isPlayer) {
         try {
             int r;
@@ -408,6 +433,9 @@ public class GridManager {
             out("clearArea()");
 
         }
+    }
+    public void clearArea(Vector2 pos, boolean b) {
+        clearArea(pos.x,pos.y,b);
     }
     static Cell loadTiles(Cell c){
         int x1 = c.getX();
@@ -445,8 +473,12 @@ public class GridManager {
         }
         return c;
     }
-
-    public void clearArea(Vector2 pos, boolean b) {
-        clearArea(pos.x,pos.y,b);
+    public Cell getAnyCell() {
+        return dispArray[resInt()][resInt()];
     }
+    public static Cell dispArray(Vector2 p){
+        p= boundI(p);
+        return dispArray[(int) p.x][(int) p.y];
+    }
+
 }

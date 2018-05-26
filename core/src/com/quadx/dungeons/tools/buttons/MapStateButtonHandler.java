@@ -2,10 +2,10 @@ package com.quadx.dungeons.tools.buttons;
 
 import com.badlogic.gdx.Input;
 import com.quadx.dungeons.Game;
-import com.quadx.dungeons.Inventory;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.timers.Delta;
+import com.quadx.dungeons.tools.timers.Time;
 
 import static com.quadx.dungeons.GridManager.rotateMap;
 
@@ -13,12 +13,12 @@ import static com.quadx.dungeons.GridManager.rotateMap;
  * Created by Chris Cavazos on 5/23/2018.
  */
 public class MapStateButtonHandler extends ButtonHandler {
-    private static Delta dDebugKey = new Delta(10 * Game.ft);
+    private static Delta dDebugKey = new Delta(10 * Time.ft);
 
 
     private void numButtonFunctions(int x) {
-        if (prsd(Input.Keys.MINUS) && Inventory.dtItem > .15) {
-            Inventory.unequip(x);
+        if (prsd(Input.Keys.MINUS)) {
+            Game.player.unequip(x);
         } else if (prsd(Input.Keys.EQUALS)) {
             Attack.showDescription(x);
         } else

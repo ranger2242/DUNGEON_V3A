@@ -16,21 +16,21 @@ import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.SpellBook;
 import com.quadx.dungeons.items.equipment.Equipment;
+import com.quadx.dungeons.items.modItems.ModItem;
 import com.quadx.dungeons.monsters.Monster;
-import com.quadx.dungeons.physics.Body;
+import com.quadx.dungeons.shapes1_5.*;
 import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.ParticleHandler;
-import com.quadx.dungeons.tools.*;
+import com.quadx.dungeons.tools.Direction;
+import com.quadx.dungeons.tools.Score;
+import com.quadx.dungeons.tools.StatManager;
+import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.gui.HUD;
 import com.quadx.dungeons.tools.gui.HoverText;
-import com.quadx.dungeons.tools.shapes.Circle;
-import com.quadx.dungeons.tools.shapes.Line;
-import com.quadx.dungeons.tools.shapes.Triangle;
 import com.quadx.dungeons.tools.timers.Delta;
-import javafx.util.Pair;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -45,41 +45,43 @@ import static com.quadx.dungeons.tools.ImageLoader.statIcons;
 import static com.quadx.dungeons.tools.Tests.fastreg;
 import static com.quadx.dungeons.tools.Tests.infiniteRegen;
 import static com.quadx.dungeons.tools.gui.HUD.out;
+import static com.quadx.dungeons.tools.timers.Time.SECOND;
+import static com.quadx.dungeons.tools.timers.Time.ft;
 
 /**
  * Created by Tom on 11/9/2015.
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class Player {
-    private static Delta dWater = new Delta(10 * ft);
-    private Delta dShopInvScroll = new Delta(10 * ft);
-    DecimalFormat df = new DecimalFormat("0.00");
+
 
 
     private final ArrayList<String> statsList = new ArrayList<>();
     public final ArrayList<Attack> attackList = new ArrayList<>();
-    public final ArrayList<ArrayList<Item>> invList = new ArrayList<>();
-    public final ArrayList<Equipment> equipedList = new ArrayList<>();
     public final ArrayList<Ability> secondaryAbilityList = new ArrayList<>();
+    private ArrayList<Line> attackChain = new ArrayList<>();
 
+    public Vector2 kba = new Vector2();
+    private final Vector2 pos = new Vector2(0,0);
     private final Vector2 absPos = new Vector2(0, 0);
     private final Vector2 texturePos = new Vector2();
-
     private Texture[] icons = new Texture[4];
-
     private ParticleEffect lvlupEffect;
-
-    private ArrayList<Line> attackChain = new ArrayList<>();
     private Rectangle attackBox = new Rectangle();
     private Circle attackCircle = new Circle();
     private Triangle attackTri = new Triangle();
-
     private Ability ability = null;
     public Direction.Facing facing = Direction.Facing.North;
     public Item lastItem = null;
+    DecimalFormat df = new DecimalFormat("0.00");
+    public Inventory inv = new Inventory();
 
-    private int x;
-    private int y;
+    private static Delta dWater = new Delta(10 * ft);
+    private Delta dShopInvScroll = new Delta(10 * ft);
+    private Delta dJump = new Delta(2 / 3 * SECOND);
+    private Delta dClearHitBox= new Delta(5*ft);
+    private Delta dInvincibility= new Delta(.2f*SECOND);
+
     private int hpMod = 0;
     private int strMod = 0;
     private int defMod = 0;
@@ -104,7 +106,7 @@ public class Player {
 
     public boolean canMove = false;
     public boolean wasHit = false;
-    public boolean safe = false;
+    public boolean protect = false;
     public boolean jumping = false;
     private boolean simpleStats = true;
     boolean overrideControls = false;
@@ -123,21 +125,16 @@ public class Player {
     private float defMult = 1;
     private float intMult = 1;
     private float spdMult = 1;
-    private float dtClearHit = 0;
     private float gold = 0;
     private float velocity = 10;
-    private float dtSafe = 0;
-    private float dtHitInvincibility = 0;
     private float hpRegenMod = 1;
-    private float dtJump = 0;
-    public float dtMove = 0;
-    private float lastDt = 0;
-
     private double mRegenMod = 1;
     private double moveSpeed = .1f;
 
     private String name = "DEMO";
-    public Vector2 kba = new Vector2();
+    private String[] statNames= new String[]{
+            "HP","M","E","STR","DEF","INT","SPD"
+    };
 
 
     public Player() {
@@ -161,15 +158,18 @@ public class Player {
     }
 
     public void setAbsPos(Vector2 a) {
+        float max = res * cellW;
+        a.x = boundW(a.x, max, getIconDim().x);
+        a.y = boundW(a.y, max, getIconDim().y);
         absPos.set(a);
-        float x = (float) EMath.round(absPos.x / cellW);
-        float y = (float) EMath.round(absPos.y / cellW);
+        float x = boundW((float) EMath.round(absPos.x / cellW));
+        float y = boundW((float) EMath.round(absPos.y / cellW));
         setPos(new Vector2(x, y));
     }
 
+
     public void setPos(Vector2 v) {
-        x = (int) v.x;
-        y = (int) v.y;
+        pos.set(v);
     }
 
     public void setAim(Direction.Facing f) {
@@ -243,7 +243,7 @@ public class Player {
         double a = 50.9055;
         double b = 1.0015;
         int gain = (int) (a * Math.pow(b, lvl) * factor);
-        new HoverText(gain + " EXP", .8f, Color.GREEN, player.getAbsPos().x, player.getAbsPos().y + 10, false);
+        new HoverText(gain + " EXP", Color.GREEN, fixed(), false);
         this.exp += gain;
         out(name + " gained " + gain + " EXP");
     }
@@ -325,8 +325,8 @@ public class Player {
         addGold(g.getValue());
         out(g.getValue() + " added to stash");
         StatManager.totalGold += g.getValue();
-        new HoverText(g.getValue() + "G", 1, Color.GOLD, player.getAbsPos().x, player.getAbsPos().y, false);
-        lastItem=g;
+        new HoverText(g.getValue() + "G",  Color.GOLD, player.fixed(), false);
+        lastItem = g;
         HUD.setLootPopup(g.getIcon());
 
     }
@@ -349,13 +349,30 @@ public class Player {
     }
 
     public boolean isInvEmpty() {
-        return invList.isEmpty();
+        return inv.getList().isEmpty();
     }
+
     public boolean attackOverlaps(Rectangle hitBox) {
-        Attack.fixSelectorPos();
-        Attack.HitBoxShape hbs =getAttack().getHitBoxShape();
-        return hbs.overlaps(hitBox);
+        Attack.HitBoxShape hbs = getAttack().getHitBoxShape();
+        switch (hbs) {
+            case Circle:
+                if (getAttackCircle().overlaps(hitBox))
+                    return true;
+            case Rect:
+                if (getAttackBox().overlaps(hitBox))
+                    return true;
+            case Chain:
+                break;
+            case Triangle:
+                if (getAttackTriangle().overlaps(hitBox))
+                    return true;
+            case None:
+                break;
+        }
+
+        return false;
     }
+
     public boolean isDead(GameStateManager gsm) {
         boolean dead = false;
         if (hp < 1 && !Tests.nodeath) {
@@ -382,6 +399,21 @@ public class Player {
         return getAbilityPoints() != 0;
     }
 
+    public boolean canUseAttack() {
+        Attack a = getAttack();
+        switch (a.getType()){
+            case Energy:
+                return player.getEnergy() >= a.getCost();
+            case Mana:
+                return player.getMana() >= a.getCost();
+        }
+        return false;
+    }
+    public boolean canBuy(Item item) {
+        return Game.player.getGold() >=item.getCost();
+    }
+
+
     //====INTS------------------------------------------------------------------
 
     public int getLevel() {
@@ -392,9 +424,6 @@ public class Player {
         return (int) gold;
     }
 
-    public int getY() {
-        return y;
-    }
 
     public int getPoints() {
         return (int) ((int) (
@@ -480,6 +509,9 @@ public class Player {
         return (int) (45 * Math.pow(Math.E, .25 * (level - 1) / 2) + 100);
     }
 
+    public int invSize(){
+        return inv.getList().size();
+    }
     //====FLOATS------------------------------------------------------------------
     private float regenGrowthFunction(int level, int stat) {
 
@@ -528,22 +560,21 @@ public class Player {
         return moveSpeed;
     }
 
-
     //====OTHER------------------------------------------------------------------
     public String getName() {
         return name;
     }
 
-    public Rectangle getAttackBox() {
+    private Rectangle getAttackBox() {
         //return new Rectangle(attackBox.x,,attackBox.width,attackBox.height);
         return attackBox;
     }
 
-    public Triangle getAttackTriangle() {
+    private Triangle getAttackTriangle() {
         return attackTri;
     }
 
-    public Circle getAttackCircle() {
+    private Circle getAttackCircle() {
         return attackCircle;
     }
 
@@ -552,34 +583,36 @@ public class Player {
     }
 
     public Attack getAttack() {
-        if (Attack.pos > attackList.size())
-            Attack.changePos(attackList.size() - 1);
         return attackList.get(Attack.pos);
     }
 
     public Illusion.Dummy getDummy() {
-        return new Illusion.Dummy((int) getHpMax() * 2, pos(), getAbsPos(), getHitBox());
+        return new Illusion.Dummy((int) getHpMax() * 2, pos(), abs(), getHitBox());
     }
 
     public Rectangle getHitBox() {
         return new Rectangle(absPos.x, GridManager.fixY(absPos), getIcon().getWidth(), getIcon().getHeight());
     }
 
-    public Vector2 getAbsPos() {
-        if (absPos.y + jump() > absPos.y)
+    public Vector2 abs() {
+        /*if (absPos.y + jump() > absPos.y)
             return new Vector2(absPos.x, absPos.y + jump());
-        else
+        else*/
             return new Vector2(absPos.x, absPos.y);
     }
 
     public Vector2 getTexturePos() {
-        texturePos.set(getAbsPos().x, GridManager.fixY(getAbsPos()));
+        texturePos.set(abs().x, GridManager.fixY(abs()));
         return texturePos;
     }
 
     public Vector2 pos() {
-        return new Vector2(x, y);
+        return pos;
     }
+    public Vector2 fixed() {
+        return getFixPos();
+    }
+
 
     public ArrayList<Ability> getSecondaryAbilityList() {
         return secondaryAbilityList;
@@ -707,22 +740,63 @@ public class Player {
         else return new Cell();
     }
 
-    public Item getSelectedItem() {
-        if (invList.size() > 0)
-            return invList.get(Inventory.pos).get(0);
-        else
-            return null;
-    }
+
+
+
+
     //-----------------------------------------------MISC------------------------------------------------------------------
+    public void discard() {
+        inv.discard(pos(),true,null);
+    }
+
+    public void useAttack(Attack a) {
+        int c=a.getCost();
+        switch (a.getType()){
+            case Energy:
+                addEnergy(-c);
+                break;
+            case Mana:
+                addMana(-c);
+                break;
+        }
+        setHitBoxShape(a);
+    }
+
+    private void setHitBoxShape(Attack a){
+        Attack.HitBoxShape hbs=a.getHitBoxShape();
+        switch (hbs) {
+            case Rect:
+                setAttackBox(a.getHitBox());
+                break;
+            case Chain:
+                setAttackChain(a.getHitChainList());
+                break;
+            case Triangle:
+                setAttackTriangle(a.getHitTri());
+                break;
+            case None:
+                a.runAttackMod();
+                break;
+        }
+
+    }
+
+    public void unequip(int x){
+        if(inv.ready())
+            pickupItem(inv.unequipSlot(x));
+    }
+
+    public void scrollItems(boolean b){
+        inv.scroll(b);
+    }
+
+
 
     private void calcVeloctiy() {
         float v = (float) (6 + .0136 * getSpdComp() + .000005 * Math.pow(getSpdComp(), 2));
-        if (Dash.active) {
+        if (Dash.active)
             v *= 6;
-        }
-
-        if (v < 5) v = 5;//min
-        if (v > 18) v = 18;//max
+        v=bound((int) v,5,18);
         velocity = v;
     }
 
@@ -741,59 +815,31 @@ public class Player {
         }
     }
 
-    private void regenPlayer(float dt) {
-        if (!infiniteRegen) {
-            if (safe) dtSafe += dt;
-            regenModifiers();
-            if (getAbility().getClass().equals(Investor.class))
-                attackList.stream().filter(a -> a.getMod() == 6 && (dtSafe > a.getLevel())).forEach(a -> {
-                    safe = false;
-                    dtSafe = 0;
-                });
-
-        } else {
+    private void regenPlayer() {
+        if (infiniteRegen) {
             fullHeal();
+        } else {
+            regenModifiers();
         }
     }
 
     private void calculateArmorBuff() {
-        int sum1 = 0;
-        int sum2 = 0;
-        int sum3 = 0;
-        int sum4 = 0;
-        int sum5 = 0;
-        int sum6 = 0;
-        for (Equipment eq : equipedList) {
+        int sum1 = 0,sum2 = 0,sum3 = 0
+        ,sum4 = 0,sum5 = 0,sum6 = 0;
+        for (Equipment eq : inv.getEquiped()) {
             sum1 += eq.getStrmod();
-        }
-        strMod = sum1;
-        for (Equipment eq : equipedList) {
             sum2 += eq.getDefensemod();
-        }
-        defMod = sum2;
-        for (Equipment eq : equipedList) {
             sum3 += eq.getIntelmod();
-        }
-        intMod = sum3;
-        for (Equipment eq : equipedList) {
             sum4 += eq.getSpeedmod();
-        }
-        spdMod = sum4;
-        for (Equipment eq : equipedList) {
             sum5 += eq.getHpmod();
-        }
-        hpMod = sum5;
-        for (Equipment eq : equipedList) {
             sum6 += eq.getManamod();
         }
+        strMod = sum1;
+        defMod = sum2;
+        intMod = sum3;
+        spdMod = sum4;
+        hpMod = sum5;
         manaMod = sum6;
-    }
-
-    public void fixPosition() {
-        Vector2 iconDim = new Vector2(getIcon().getWidth() / 2, getIcon().getHeight() / 2);
-        Pair<Vector2, Vector2> pos = Body.wrapPos(iconDim, absPos);
-        setAbsPos(pos.getKey());
-        setPos(pos.getValue());
     }
 
     public void fullHeal() {
@@ -802,134 +848,88 @@ public class Player {
         setEnergy(getEnergyMax());
     }
 
-    public void resetBars() {
-        if (hp > hpMax) hp = hpMax;
-        else if (hp < 0) hp = 0;
-
-        if (mana > manaMax) mana = manaMax;
-        else if (mana < 0) mana = 0;
-
-        if (energy > energyMax) energy = energyMax;
-        else if (energy < 0) energy = 0;
+    public void boundStatBars() {
+        hp=bound(hp,hpMax);
+        mana=bound(mana,manaMax);
+        energy=bound(energy,energyMax);
     }
 
-    public void useItem(int i) {
-        if (i >= 0 && i < invList.size()) {
-            Item item = invList.get(i).get(0);
-            if (item.isEquip) {
-                Equipment temp = null;
-                for (Equipment eq : equipedList) {
-                    if (eq.getType().equals(item.getType())) {
-                        temp = eq;
-                    }
-                }
-                invList.get(i).remove(0);
-                invList.remove(i);
-                if (Inventory.pos >= invList.size() - 1) {
-                    Inventory.pos = 0;
-                }
-                if (temp != null) {
-                    equipedList.remove(temp);
-                    pickupItem(temp);
-                }
 
-                equipedList.add((Equipment) item);
-            } else if (item.isSpell) {
-                SpellBook temp = (SpellBook) invList.get(i).get(0);
-                invList.get(i).remove(0);
-                player.attackList.add(temp.getAttack());
-            } else {
-                try {
-                    try {
-                        invList.get(i).remove(0);
-                    } catch (IndexOutOfBoundsException ignored) {
-                    }
-                    useItem(item);
-                } catch (NullPointerException ignored) {
-                }
+
+    public void equipSpell(Item item){
+        player.attackList.add(((SpellBook) item).getAttack());
+    }
+
+    public void addItemMods(int[] arr) {
+        hp += arr[0];
+        mana += arr[1];
+        energy += arr[2];
+        str += arr[3];
+        def += arr[4];
+        intel += arr[5];
+        spd += arr[6];
+        for(int i=0;i<7;i++){
+            if (arr[i] != 0) {
+                String s = "+" + arr[i] + " "+statNames[i];
+                new HoverText(s,  Color.GREEN, fixed(),false);
+
             }
         }
     }
 
+    //#####MOVE TO INVENTORY
+    public void useItem(){
+       if(inv.ready()){
+           inv.useItem(this);
+       }
+    }
+
+
     public void useItem(Item item) {
-        String s = "";
+        int[] mods = ((ModItem) item).runMod();
+        addItemMods(mods);
         if (item.getClass().equals(Gold.class)) {
             player.setGold(player.getGold() + item.getValue());
             StatManager.totalGold += item.getValue();
             out(name + " recieved " + item.getValue() + "G");
-            new HoverText(item.getValue() + "G", .5f, Color.GOLD, player.getAbsPos().x, player.getAbsPos().y, false);
+            new HoverText(item.getValue() + "G", Color.GOLD, fixed(), false);
         }
-        if (item.getHpmod() != 0) {
-            hp += item.getHpmod();
-            s = "+" + item.getHpmod() + " HP";
-        }
-        if (item.getEmod() != 0) {
-            energy += item.getEmod();
-            s = "+" + item.getEmod() + " E";
-        }
-        //Mana
-        if (item.getManamod() != 0) {
-            mana += item.getManamod();
-            s = "+" + item.getManamod() + " M";
-        }
-        //str
-        if (item.getStrmod() != 0) {
-            str += item.getStrmod();
-            s = "+" + item.getStrmod() + " STR";
-        }
-        //def
-        if (item.getDefensemod() != 0) {
-            def += item.getDefensemod();
-            s = "+" + item.getDefensemod() + " DEF";
-        }
-        //intel
-        if (item.getIntelmod() != 0) {
-            intel += item.getIntelmod();
-            s = "+" + item.getIntelmod() + " INT";
-        }
-        //spd
-        if (item.getSpeedmod() != 0) {
-            spd += item.getSpeedmod();
-            s = "+" + item.getSpeedmod() + " SPD";
-        }
-        new HoverText(s, .5f, Color.GREEN, absPos.x, absPos.y, false);
     }
 
     public void pickupItem(Item item) {
         item.loadIcon();
-        if(isInvEmpty()){
-            Inventory.pos=0;
+        if (isInvEmpty()) {
+            Inventory.pos = 0;
         }
-        if (item != null) {
-            if (item.isGold()) {
-                addGold((Gold) item);
-            }else {
-                lastItem = item;
-                boolean added = false;
-                for (ArrayList<Item> al : invList) {
-                    if (!al.isEmpty()) {
-                        try {
-                            if (al.get(0).getName().equals(item.getName())) {
-                                al.add(item);
-                                added = true;
-                            }
-                        } catch (NullPointerException ignored) {
+        if (item.isGold()) {
+            addGold((Gold) item);
+        } else {
+            lastItem = item;
+            boolean added = false;
+            for (ArrayList<Item> al : inv.getList()) {
+                if (!al.isEmpty()) {
+                    try {
+                        if (al.get(0).getName().equals(item.getName())) {
+                            al.add(item);
+                            added = true;
                         }
+                    } catch (NullPointerException ignored) {
                     }
                 }
-                if (!added) {
-                    ArrayList<Item> al = new ArrayList<>();
-                    al.add(item);
-                    invList.add(al);
-                }
-                out(item.getName() + " added to inventory");
-                new HoverText(item.getName(), 1, Color.WHITE, getAbsPos().x, getAbsPos().y, false);
-                StatManager.totalItems++;
-                HUD.setLootPopup(item.getIcon());
             }
-        }
-    }
 
+            if (!added) {
+                inv.addItem(item);
+            }
+
+            out(item.getName() + " added to inventory");
+            new HoverText(item.getName(), Color.WHITE, fixed(), false);
+            StatManager.totalItems++;
+            HUD.setLootPopup(item.getIcon());
+        }
+
+    }
+    //#######
     public void initPlayer() {
         //load icons
         icons = new Texture[]{pl[0], pl[1], pl[2], pl[3]};
@@ -944,21 +944,27 @@ public class Player {
 
     public void checkLvlUp() {
         if (exp >= expLimit) {
-            new HoverText("--LVL UP--", .8f, Color.GREEN, player.getAbsPos().x, player.getAbsPos().y - 20, true);
+            Vector2 p=new Vector2(fixed());
+            p.add(0,-40);
+            new HoverText("--LVL UP--", Color.GREEN, p, true);
             exp = 0;
             level++;
             hpMax = barStatGrowthFunction(level) * 2;
             manaMax = barStatGrowthFunction(level);
             energyMax = barStatGrowthFunction(level);
-            str = str + rn.nextInt(15);
-            def = def + rn.nextInt(15);
-            intel = intel + rn.nextInt(15);
-            spd = spd + rn.nextInt(15);
+            str += rn.nextInt(15);
+            def += rn.nextInt(15);
+            intel +=rn.nextInt(15);
+            spd +=rn.nextInt(15);
+            expLimit = (int) ((((Math.pow(1.2, level)) * 1000) / 2) - 300);
+
             abilityPoints++;
-            new HoverText("+1 Ability Point", .7f, Color.GREEN, absPos.x, absPos.y - 40, true);
+            p.add(0,-40);
+            new HoverText("+1 Ability Point", Color.GREEN,p, true);
             lvlupEffect = ParticleHandler.loadParticles("ptFlame", absPos);
             renderEffect = true;
             lvlupEffect.start();
+            fullHeal();
         }
     }
 
@@ -990,15 +996,17 @@ public class Player {
         }
     }
 
-    public void removeFromInv(int ind) {
-        invList.get(ind).remove(0);
-        if (invList.get(ind).isEmpty()) {
-            invList.remove(ind);
-            Inventory.pos = setInBounds(ind, invList.size());
+    private void clearHitBox(){
+        if (dClearHitBox.isDone()) {
+            attackBox =new Rectangle(0, 0, 0, 0);
+            attackCircle = new Circle();
+            attackChain = new ArrayList<>();
+            attackTri = new Triangle();
+            dClearHitBox.reset();
         }
     }
 
-    public void attackCollision(){
+    private void attackCollision() {
         try {
             for (Monster m : monsterList) {
                 if (attackOverlaps(m.getHitBox())) {
@@ -1008,73 +1016,48 @@ public class Player {
         } catch (ConcurrentModificationException ignored) {
         }
     }
+    private void invincibilityFrames(float dt) {
+        if(wasHit){
+            if(dInvincibility.isDone()){
+                wasHit = false;
+                dInvincibility.reset();
+            }else
+                dInvincibility.update(dt);
+        }
+    }
 
     //UPDATE METHODS------------------------------------------------
-    public void update(float dt, Class cls){
-        if(cls.equals(MapState.class)){
+    public void update(float dt, Class cls) {
+        if (cls.equals(MapState.class)) {
             updateMapState(dt);
         }
     }
+
     public void updateMapState(float dt) {
-        dWater.update(dt);
-        lastDt = dt;
+        inv.update(dt);
+        dClearHitBox.update(dt);
         if (renderEffect)
             lvlupEffect.update(dt);
-        swim(dWater);
+
+        swim(dt);
         dig();
-        updateVariables(dt);
+        jump(dt);
+        clearHitBox();
+        invincibilityFrames(dt);
+        calculateArmorBuff();
+        calcVeloctiy();
+        attackCollision();
+        worldCollision();
+        regenPlayer();
+        boundStatBars();
+
+        Investor.generatePlayerGold();
         isDead(MapState.gsm);
     }
 
     public void updateShopState(float dt) {
         dShopInvScroll.update(dt);
 
-    }
-
-    public void updateVariables(float dt) {
-        lastDt = dt;
-        float n = .8f;
-        if (jumping) {
-            dtJump += dt;
-        }
-        if (dtJump >= n) {
-            jumping = false;
-            dtJump = 0;
-        }
-        //dtEnergyRe += dt;
-        dtMove += dt;
-        dtClearHit += dt;
-        if (dtClearHit > .1f) {
-            setAttackBox(new Rectangle(0, 0, 0, 0));
-            attackCircle = new Circle();
-            attackChain = new ArrayList<>();
-            attackTri = new Triangle();
-            dtClearHit = 0;
-        }
-
-        if (wasHit && dtHitInvincibility <= .2f)
-            dtHitInvincibility += dt;
-        else {
-            dtHitInvincibility = 0;
-            wasHit = false;
-        }
-
-        if (Dash.active)
-            player.setAttackBox(getAttack().getHitBox());
-
-        calculateArmorBuff();
-        expLimit = (int) ((((Math.pow(1.2, level)) * 1000) / 2) - 300);
-        calcVeloctiy();
-
-        Investor.generatePlayerGold();
-        regenPlayer(dt);
-        resetBars();
-
-
-        fixPosition();
-        Inventory.fixPos();
-        attackCollision();
-        worldCollision();
     }
 
     private void worldCollision() {
@@ -1085,7 +1068,7 @@ public class Player {
                 out("ITEM");
                 Item item = c.getItem();
                 if (item != null)
-                    item.colliion(c.getPos());
+                    item.colliion(c.pos());
             }
             if (c.isWarp()) {
                 MapState.warpToNext(true);
@@ -1096,7 +1079,6 @@ public class Player {
             }
         }
     }
-
 
 
     //RENDER METHODS------------------------------------------------
@@ -1157,7 +1139,7 @@ public class Player {
 
     public void renderShopInventory(SpriteBatch sb) {
         BitmapFont font = Game.getFont();
-        float size = invList.size();
+        float size = invSize();
         float end = size >= 8 ? 8 : size;
         for (int i = 0; i < end; i++) {
             float x = scrx(2f / 3f);
@@ -1172,7 +1154,7 @@ public class Player {
                 ind %= size;
                 shopInvPos %= size;
             }
-            ArrayList<Item> itemStack = invList.get((int) ind);
+            ArrayList<Item> itemStack = inv.getStack((int) ind);
             Item item = itemStack.get(0);
             String qty = "x" + itemStack.size();
             String name = (i + 1) + ". " + item.getName();
@@ -1210,18 +1192,23 @@ public class Player {
                 case Triangle:
                     sr.triangle(getAttackTriangle());
                     break;
-            }    }
+            }
+    }
 
     //MOVEMENT------------------------------------------------------
     private float jump() {
-        return (float) ((625 * dtJump) - (927.5 * Math.pow(dtJump, 2)));
+        return 10; //(float) ((625 * dtJump) - (927.5 * Math.pow(dtJump, 2)));
+    }
+
+    private void jump(float dt) {
+        //jumping=dJump.triggerUpdate(dt,jumping);
     }
 
     public void move(Vector2 vel) {
         if (!overrideControls) {
             try {
                 float dt = Gdx.graphics.getDeltaTime();
-                Vector2 abs = getAbsPos();
+                Vector2 abs = abs();
                 Vector2 end = new Vector2(abs.x + (vel.x * dt), abs.y + (vel.y * dt));//endpoint of direction vector
                 int gridW = cellW * (res + 1);
                 float iw = getIcon().getWidth(),
@@ -1248,10 +1235,9 @@ public class Player {
                 Vector2 comp = Physics.getVector(velocity, absPos, end);//get movement vector
 
                 if (canMove) {
-                    player.setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
-                    int x = (int) (EMath.round(absPos.x / cell.x));
-                    int y = (int) (EMath.round(absPos.y / cell.x));
-                    player.setPos(new Vector2(x, y));
+                    Vector2 start = new Vector2(abs());
+                    start.add(comp);
+                    player.setAbsPos(start);
 
                 }
             } catch (ArrayIndexOutOfBoundsException ignored) {
@@ -1262,25 +1248,30 @@ public class Player {
 
     public void dig() {
         if (getStandingTile().isWall()) {
-            int e = (int) Math.round((6.5 + level * 5));
-            if (energy > e) {
-                gm.clearArea(x, y, true);
-                addEnergy(-e);
+            int digCost=20;
+            if (energy > digCost) {
+                gm.clearArea(pos, true);
+                addEnergy(-digCost);
             } else {
                 canMove = false;
-                new HoverText("-!-", .5f, Color.YELLOW, player.getAbsPos().x + (player.getIcon().getWidth() / 2), player.getAbsPos().y + player.getIcon().getHeight() + 10, true);
+                new HoverText("-!-", SECOND, Color.YELLOW, player.abs(),true);
             }
         } else
             canMove = true;
 
     }
 
-    private void swim(Delta dWater) {
-        if (getStandingTile().isWater() && notHaveAbility(WaterBreath.class) && dWater.isDone()) {
+    private void swim(float dt) {
+        dWater.update(dt);
+        if (getStandingTile().isWater() &&
+                notHaveAbility(WaterBreath.class) && dWater.isDone()) {
             player.addHp(-40);
             dWater.reset();
         }
     }
+
+
+
 
 
 }

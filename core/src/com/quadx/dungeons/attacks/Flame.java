@@ -14,7 +14,7 @@ public class Flame extends Attack {
         ptSpawnH=0;
         ptSpawnW=50;
         costGold=100;
-        type=2;
+        type=CostType.Mana;
         powerA = new int[]{100,70,85,100,120};
         costA =new int[]{10,20,30,50,70};
         name="Flame";
@@ -24,9 +24,15 @@ public class Flame extends Attack {
         description="Player creates a burst of fire.";
         spread=3;
         range=6;
+        loadArray();
         setIcon(ImageLoader.attacks.get(2));
     }
 
+
+    @Override
+    public void runAttackMod() {
+
+    }
 
     public Rectangle getHitBox() {
         return new ForwardRectHitBox().getShape(this);

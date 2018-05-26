@@ -8,12 +8,13 @@ import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Inventory;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.State;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.tools.timers.Delta;
 import com.quadx.dungeons.tools.ImageLoader;
-import com.quadx.dungeons.tools.ShapeRendererExt;
+import com.quadx.dungeons.tools.timers.Delta;
+import com.quadx.dungeons.tools.timers.Time;
 
 import java.util.ArrayList;
 
@@ -43,7 +44,7 @@ public class HUD {
     public static float dtLootPopup=0;
     public static Texture lootPopup;
 
-    public static Delta dPopup = new Delta(20*ft);
+    public static Delta dPopup = new Delta(20* Time.ft);
 
     public static ArrayList<Rectangle> equipBoxes= new ArrayList<>();
     public static Rectangle[] playerStatBars=new Rectangle[3];
@@ -103,7 +104,7 @@ public class HUD {
         }
     }
 
-    public static void titleLine(ShapeRendererExt shapeR,Title t){
+    public static void titleLine(ShapeRendererExt shapeR, Title t){
         Vector2 view = State.getView();
 
         float[] s = fitLineToWord(t.text);
@@ -118,11 +119,11 @@ public class HUD {
         for (int i = 0; i < player.attackList.size(); i++) {
             Attack a = player.attackList.get(i);
             InfoOverlay io=new InfoOverlay();
-            int type = a.getType();
+            Attack.CostType type = a.getType();
             int xoff = (i * 52);
             int x= (int) (pos.x+xoff);
             try {
-                if (type == 3 || type == 2 || type==4) {
+                if (type == Attack.CostType.Mana) {
                     if (player.getMana() >= a.getCost()) {
                         io.textures.add(a.getIcon());
                         io.texturePos.add(new Vector2( x, pos.y+18));
@@ -133,7 +134,7 @@ public class HUD {
                         io.texts.add(new Text( rem + "", new Vector2(x + 52 / 2, pos.y + 40),Color.WHITE,1));
                     }
                     io.texts.add(new Text("M" + a.getCost(), new Vector2(x, pos.y),Color.WHITE,1));
-                } else if (type == 1) {
+                } else if (type == Attack.CostType.Energy) {
                     if (player.getEnergy() >= a.getCost()) {
                         io.textures.add(a.getIcon());
                         io.texturePos.add(new Vector2( x, pos.y+18));
@@ -153,9 +154,9 @@ public class HUD {
     }
     static void generateInventoryUI(Vector2 pos) {
         //add selected item
-        if (!player.invList.isEmpty() && Inventory.pos > -1) {
+        if (!player.isInvEmpty()) {
             try {
-                Item item = player.invList.get(Inventory.pos).get(0);
+                Item item = player.inv.getSelectedItem();
                 invOverlay = new InfoOverlay();
                 //if (prevItem != item) {
                 String name = (Inventory.pos) + ":" + item.getName();
@@ -185,9 +186,9 @@ public class HUD {
                 for (int i = 0; i < outList.size(); i++) {
                     invOverlay.texts.add(new Text(outList.get(i), new Vector2(pos.x, pos.y-((i + 1) * 20)), Color.WHITE, 1));
                 }
-                invOverlay.texts.add(new Text("x" + player.invList.get(Inventory.pos).size(),pos, Color.WHITE, 1));
+                invOverlay.texts.add(new Text("x" + player.inv.getSelectedStack().size(),pos, Color.WHITE, 1));
                 try {
-                    invOverlay.textures.add(player.invList.get(Inventory.pos).get(0).getIcon());
+                    invOverlay.textures.add(player.inv.getSelectedItem().getIcon());
                     invOverlay.texturePos.add(pos);
 
                 } catch (Exception e) {
@@ -198,7 +199,7 @@ public class HUD {
             } catch (IndexOutOfBoundsException ignored) {
             }
         }
-        if(player.invList.isEmpty()){
+        if(player.isInvEmpty()){
             invOverlay= new InfoOverlay();
         }
 
@@ -215,11 +216,11 @@ public class HUD {
         int count = 0;
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 4; j++) {
-                if(count<player.equipedList.size()) {
+                if(count<player.inv.getEquiped().size()) {
                     int nx= (int) (pos.x + (j * 36));
                     int ny= (int) (pos.y + (i * 36) - 20);
                     try {
-                        equipOverlay.textures.add(player.equipedList.get(count).getIcon());
+                        equipOverlay.textures.add(player.inv.getEquiped().get(count).getIcon());
                     }catch (Exception e){
                         equipOverlay.textures.add(ImageLoader.crate);
                     }

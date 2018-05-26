@@ -1,8 +1,6 @@
 package com.quadx.dungeons.attacks;
 
-import com.badlogic.gdx.graphics.Color;
 import com.quadx.dungeons.tools.ImageLoader;
-import com.quadx.dungeons.tools.gui.HoverText;
 
 import static com.quadx.dungeons.Game.player;
 
@@ -13,7 +11,7 @@ import static com.quadx.dungeons.Game.player;
 public class Torment extends Attack {
     public Torment()  {
         costGold=6000;
-        type=3;
+        type=CostType.Mana;
         powerA= new int[]{0,0,0,0,0};
         costA= new int[]{50,50,50,50,50};
         name="Torment";
@@ -37,11 +35,11 @@ public class Torment extends Attack {
             }
         }
         //MapStateUpdater.shakeScreen(.2f,1);
-        new HoverText("--TORMENT--",2, Color.MAGENTA,player.getAbsPos().x,player.getAbsPos().y+100,false);
-        new HoverText("DEF x1.5",2, Color.GREEN,player.getAbsPos().x,player.getAbsPos().y+80,false);
-        new HoverText("SPD x1.5",2, Color.GREEN,player.getAbsPos().x,player.getAbsPos().y+60,false);
-        new HoverText("E x0.5",2, Color.RED,player.getAbsPos().x,player.getAbsPos().y+40,false);
-
+        /*new HoverText("--TORMENT--",2, Color.MAGENTA,player.abs().x,player.abs().y+100,false);
+        new HoverText("DEF x1.5",2, Color.GREEN,player.abs().x,player.abs().y+80,false);
+        new HoverText("SPD x1.5",2, Color.GREEN,player.abs().x,player.abs().y+60,false);
+        new HoverText("E x0.5",2, Color.RED,player.abs().x,player.abs().y+40,false);
+*/
 
         if(index!=-1){
             player.attackList.remove(index);

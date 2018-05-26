@@ -13,7 +13,7 @@ public class Protect extends Attack {
     public static float protEnd=1f;
     public Protect()  {
         costGold=14000;
-        type=3;
+        type=CostType.Mana;
         powerA = new int[]{0,0,0,0,0};
         costA =new int[]{80,85,90,95,100};
         name="Protect";
@@ -25,9 +25,7 @@ public class Protect extends Attack {
         description="Protects the user from damage.";
         setIcon(ImageLoader.attacks.get(6));
         hitBoxShape=HitBoxShape.None;
-    }
-    public int getLevel(){
-        return level;
+        loadArray();
     }
     public void runAttackMod() {
         active =true;

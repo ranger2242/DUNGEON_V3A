@@ -1,10 +1,8 @@
 package com.quadx.dungeons.abilities;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.attacks.Stab;
 import com.quadx.dungeons.tools.ImageLoader;
-import com.quadx.dungeons.tools.gui.HoverText;
 
 import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
@@ -27,7 +25,7 @@ public class Tank extends Ability {
     public void onActivate() {
         player.setAbilityMod(0);
         l1();
-        new HoverText("Tank!!",1.5f, Color.WHITE, player.getAbsPos().x,player.getAbsPos().y,false);
+        hoverName();
 
     }
 

@@ -1,8 +1,6 @@
 package com.quadx.dungeons;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.commands.cellcommands.AddItemToCellComm;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
@@ -10,137 +8,163 @@ import com.quadx.dungeons.tools.timers.Delta;
 
 import java.util.ArrayList;
 
-import static com.quadx.dungeons.Game.ft;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.*;
+import static com.quadx.dungeons.tools.timers.Time.ft;
 
 /**
  * Created by Chris Cavazos on 2/2/2017.
  */
 public class Inventory {
-    public static float dtItem = 0;
-    static Delta dUseTime= new Delta(10*ft);
-    static Delta dInvSwitch = new Delta(20*ft);
+    public static Delta dUseTime= new Delta(10*ft);
+    private static Delta dInvSwitch = new Delta(20*ft);
     public static int pos =0;
     public static int[] statCompare=null;
+    private final ArrayList<ArrayList<Item>> invList = new ArrayList<>();
+    private final ArrayList<Equipment> equipedList = new ArrayList<>();
 
-    public static void update(float dt){
-        dUseTime.update(dt);
-        dInvSwitch.update(dt);
+    public void discard(Vector2 p, boolean isPlayer, Monster m) {
+        Item item = isPlayer ? getSelectedItem() : Item.generate();
 
-        compareItemToEquipment();
-    }
+        if (dUseTime.isDone() && item != null) {
+            Cell c= chooseDiscardCell(p);
+            Vector2 start = new Vector2(isPlayer ? player.fixed() : m.fixed());
+            Anim a = new Anim(item.getIcon(), start, c.fixed(), 10, Anim.Type.Drop);
+            a.setCell(c, item);
+            Anim.anims.add(a);
+            if (isPlayer)
+                remove(pos);
 
-    public static void selectItemFromInventory() {
-        if (dUseTime.isDone() && player.invList.size() > 0) {            //check if cooldown is over
-            player.useItem(pos);                    //actually use the item
-            dtItem = 0;                                                     //reset cooldown
-
-            int remove=-1;
-            for(ArrayList<Item> arr : player.invList){                      //search for empty list just created
-                if(arr.isEmpty()){
-                    remove=player.invList.indexOf(arr);                     //get index if any
-                }
-            }
-            if(remove>-1) {                                                 //if empty list is found
-                player.invList.remove(remove);                              //remove at index
-                if(pos >=player.invList.size()-1){   //reset inventory postion if out of bounds
-                    pos =player.invList.size()-1;
-                }
-            }
             dUseTime.reset();
         }
     }
-
-    public static void scrollItems(boolean right) {
+    public void update(float dt){
+        dUseTime.update(dt);
+        dInvSwitch.update(dt);
+        fix();
+        compareItemToEquipment();
+    }
+    public void scroll(boolean right) {
         if (dInvSwitch.isDone()) {
-            if (right) {
-                pos++;
-            } else {
-                pos--;
-            }
+            pos+= right? 1:-1;
             dInvSwitch.reset();
-            pos=setInBoundsW(pos,player.invList.size());
+            fix();
         }
     }
-
-
-    static int discardPos(float ref){
-        return (int) (ref + (rn.nextGaussian() * 6));
-    }
-
-
-    public static void discard(Vector2 pos, boolean isPlayer, Monster m) {
-        Item item = isPlayer ?
-                player.getSelectedItem() : Item.generate();
-
-        if (!isPlayer || dUseTime.isDone()) {
-            try {
-                Cell cell;
-                boolean samePos;
-                do {
-                    int x = setInBounds(discardPos(pos.x));
-                    int y = setInBounds(discardPos(pos.y));
-                    cell = dispArray[x][y];
-                    samePos=false;
-                    ArrayList<Cell> cells= getSurroundingCells(x,y,1);
-                    for(Cell c : cells){
-                        if(c.getPos().equals(pos))
-                            samePos=true;
-                    }
-                } while (!cell.canPlaceItem() || samePos);
-
-                Vector2 start = new Vector2(isPlayer ? player.getAbsPos() : m.getAbsPos());
-                if(item!=null) {
-                    Anim a=new Anim(item.getIcon(), start, cell.getAbsPos(),10, Anim.Type.Drop);
-                    a.setCell(cell);
-                    Anim.anims.add(a);
-                    cell.addCommand(new AddItemToCellComm(item, cell));
-                }
-                if (isPlayer) {
-                    player.removeFromInv(Inventory.pos);
-                }
-                dUseTime.reset();
-            } catch (IndexOutOfBoundsException ignored) { }
-        }
-    }
-
-    public static void compareItemToEquipment(){
-        try {
-            if (!player.invList.isEmpty()) {
-                if (player.invList.get(Inventory.pos).get(0).isEquip) {
-                    boolean found = false;
-                    Equipment eq = (Equipment) player.invList.get(Inventory.pos).get(0);
-
-                    for (Equipment e : player.equipedList) {
-                        if (e.getType().equals(player.invList.get(Inventory.pos).get(0).getType())) {
-                            statCompare = eq.compare(e);
-                            found = true;
-                        }
-                    }
-                    if (!found) statCompare = eq.compare();
-                } else {
-                    statCompare=null;
-                }
+    public void useItem(Player p) {
+        if (pos >= 0 && pos < invList.size()) {
+            Item item = getSelectedItem();
+            if (item.isEquip) {
+                Equipment e = equipItem(item);
+                if (e != null)
+                    p.pickupItem(e);
+            } else if (item.isSpell) {
+                p.equipSpell(item);
+            } else {
+                p.useItem(item);
             }
-            else{
-                statCompare=null;
+            remove(pos);
+        }
+    }
+    public void addItem(Item i){
+        ArrayList<Item> al = new ArrayList<>();
+        al.add(i);
+        invList.add(al);
+    }
+    public Equipment equipItem(Item item){
+        Equipment temp = getEquipedByType(item.getType());
+        if (temp != null) {
+            equipedList.remove(temp);
+            return temp;
+        }
+        equipedList.add((Equipment) item);
+        return null;
+    }
+    public void remove(int ind) {
+        invList.get(ind).remove(0);
+        if (invList.get(ind).isEmpty()) {
+            removeItemStack(ind);
+            pos = GridManager.bound(ind, invList.size());
+        }
+    }
+    public boolean ready() {
+        if (dUseTime.isDone()) {
+            dUseTime.reset();
+            fix();
+            return true;
+        }
+        return false;
+    }
+    public Item getSelectedItem() {
+        if (invList.size() > 0)
+            return invList.get(pos).get(0);
+        else
+            return null;
+    }
+    public Equipment unequipSlot(int x) {
+        x = bound(x, equipedList.size());
+        Equipment e = equipedList.get(x);
+        equipedList.remove(x);
+        return e;
+    }
+    public ArrayList<ArrayList<Item>> getList() {
+        return invList;
+    }
+    public ArrayList<Equipment> getEquiped() {
+        return equipedList;
+    }
+    public ArrayList<Item> getStack(int i){
+        if (!invList.isEmpty()) {
+            i=bound(i,invList.size());
+            return invList.get(i);
+        }
+        else
+            return null;
+    }
+    public ArrayList<Item> getSelectedStack() {
+        return getStack(pos);
+    }
+
+    private void removeItemStack(int i) {
+        invList.remove(i);
+    }
+    private void compareItemToEquipment() {
+        Item item = getSelectedItem();
+        if (item != null && item.isEquip) {
+            Equipment it = (Equipment) item;
+            Equipment eq= getEquipedByType(item.getType());
+            statCompare = eq ==null? it.compare(): it.compare(eq);
+        } else {
+            statCompare = null;
+        }
+    }
+    private void fix(){
+        pos= boundW(pos,player.invSize());
+
+    }
+    private int f(float spread) {
+        return rn.nextInt((int) spread) * (rn.nextBoolean() ? -1 : 1);
+    }
+    private Cell chooseDiscardCell(Vector2 p){
+        Cell cell;
+        boolean samePos;
+        do {
+            Vector2 n = new Vector2(cluster(p, 6));
+            cell = dispArray(n);
+            samePos = isNearPlayer(n, 2);
+        } while (!cell.canPlaceItem() || samePos);
+        return cell;
+    }
+    private Vector2 cluster(Vector2 ref, float spread) {
+        ref.add(f(spread), f(spread));
+        return bound(ref);
+    }
+    private Equipment getEquipedByType(String type) {
+        for (Equipment e : equipedList) {
+            if (e.getType().equals(type)) {
+                return e;
             }
-        }catch (IndexOutOfBoundsException e){
-            Game.getFont().setColor(Color.WHITE);
         }
-    }
-    public static void unequip(int x){
-        if(x<player.equipedList.size()) {
-            Equipment e = player.equipedList.get(x);
-            player.equipedList.remove(x);
-            player.pickupItem(e);
-            dtItem =0;
-        }
-    }
-    public static void fixPos(){
-        if(pos <0 || pos >player.invList.size()-1){
-            pos =0;
-        }
+        return null;
     }
 }

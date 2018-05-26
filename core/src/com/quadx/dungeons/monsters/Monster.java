@@ -14,14 +14,16 @@ import com.quadx.dungeons.attacks.Blind;
 import com.quadx.dungeons.attacks.Illusion;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.physics.Body;
+import com.quadx.dungeons.shapes1_5.EMath;
 import com.quadx.dungeons.states.State;
-import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.tools.*;
+import com.quadx.dungeons.tools.Direction;
+import com.quadx.dungeons.tools.Elapsed;
+import com.quadx.dungeons.tools.StatManager;
+import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.gui.InfoOverlay;
 import com.quadx.dungeons.tools.gui.Text;
 import com.quadx.dungeons.tools.timers.Delta;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -30,9 +32,11 @@ import java.util.stream.Collectors;
 
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.*;
-import static com.quadx.dungeons.states.mapstate.MapState.cell;
-import static com.quadx.dungeons.states.mapstate.MapState.cellW;
+import static com.quadx.dungeons.GridManager.rn;
+import static com.quadx.dungeons.states.mapstate.MapState.*;
 import static com.quadx.dungeons.tools.gui.HUD.out;
+import static com.quadx.dungeons.tools.timers.Time.SECOND;
+import static com.quadx.dungeons.tools.timers.Time.ft;
 import static javax.swing.JSplitPane.DIVIDER;
 
 /**
@@ -47,6 +51,7 @@ public class Monster {
     protected TextureAtlas textureAtlas = null;
     protected Animation anim = null;
     public Direction.Facing facing = Direction.Facing.North;
+    Inventory inv = new Inventory();
     Rectangle hbar = new Rectangle();
     Rectangle hbar2 = new Rectangle();
     Vector2 pos = new Vector2();
@@ -60,7 +65,6 @@ public class Monster {
     protected String name = "monster";
     protected String status = "0";
 
-    public static boolean reindexMons = false;
     protected boolean caller = true;
     protected boolean clockwise = rn.nextBoolean();
     protected boolean willCircle = rn.nextBoolean();
@@ -104,9 +108,9 @@ public class Monster {
     protected int circleAngle = 0;
     protected int[] maxes = new int[4];
 
-    protected static Delta dRespawn = new Delta(10);
+    protected static Delta dRespawn = new Delta(7.5f* SECOND);
     protected Delta dChangeDirection = new Delta(.5f);
-    protected Delta dInvincibility = new Delta(Game.ft * 3);
+    protected Delta dInvincibility = new Delta(ft * 3);
     protected Delta dAgro = new Delta(rn.nextInt(200) + 15);
 
     protected Elapsed eAgroTime = new Elapsed();
@@ -141,7 +145,7 @@ public class Monster {
         return stats;
     }
 
-    public static Monster getNew() {
+    public static Monster getNew(Vector2 absPos) {
         Monster m;
         int total = player.getStrength() + player.getIntel() + player.getSpeed() + player.getDefense();
         if (total > 300 && rn.nextBoolean()) {
@@ -167,6 +171,7 @@ public class Monster {
             else
                 m = new Anortih();
         }
+        m.setAbsPos(absPos);
         return m;
     }
 
@@ -183,8 +188,8 @@ public class Monster {
     }
 
     public Rectangle getHitBox() {
-        float x = getAbsPos().x,
-                y = getAbsPos().y,
+        float x = abs().x,
+                y = abs().y,
                 w = getIcon().getWidth(),
                 h = getIcon().getHeight();
 
@@ -192,27 +197,26 @@ public class Monster {
     }
 
     public Rectangle getAgroBox() {
-        float rx = (getSight() * cell.x);
-        float ry = (getSight() * cell.y);
-        return new Rectangle(absPos.x - rx, fixY(new Vector2(absPos.x - rx, absPos.y - ry)), rx * 2, ry * 2);
-
-//        return new Rectangle(absPos.x-r,absPos.y-r,r*2,r*2);
+        Vector2 r=new Vector2(cell).scl(getSight());
+        Vector2 p = new Vector2(absPos).add(r);
+        r.scl(2);
+        return new Rectangle(p.x, fixY(p),  r.x,r.y);
     }
 
-    public Vector2 getPos() {
+    public Vector2 pos() {
         return pos;
     }
 
-    public Vector2 getAbsPos() {
+    public Vector2 abs() {
         return absPos;
     }
 
-    public Vector2 getFixPos() {
+    public Vector2 fixed() {
         return new Vector2(absPos.x, fixY(absPos));
     }
 
     public Vector2 getTexturePos() {
-        texturePos.set(getAbsPos().x - (getIcon().getWidth()) / 2, GridManager.fixY(getAbsPos()) - (getIcon().getHeight()) / 2);
+        texturePos.set(abs().x - (getIcon().getWidth()) / 2, GridManager.fixY(abs()) - (getIcon().getHeight()) / 2);
 
         return texturePos;
     }
@@ -255,7 +259,7 @@ public class Monster {
             player.setKnockBackDest(absPos);
             State.shake();
             Color c = new Color(1f, .2f, .2f, 1f);
-            new HoverText("-" + d, 1, c, player.getAbsPos(), true);
+            new HoverText("-" + d, 1, c, player.abs(), true);
 
             hit = true;
             StatManager.killer = this;
@@ -357,19 +361,11 @@ public class Monster {
         return sight;
     }
 
-    public int getLiveCellIndex() {
-        return liveCellIndex;
-    }
-
     public int getMonListIndex() {
         return monListIndex;
     }
 
     //SETTERS---------------------------------------------------------------------------------
-    public void setLiveCellIndex(int i) {
-        liveCellIndex = i;
-    }
-
     public void setMonListIndex(int i) {
         monListIndex = i;
     }
@@ -426,10 +422,13 @@ public class Monster {
     }
 
     public void setAbsPos(Vector2 a) {
-        this.absPos.set(a);
-        px = (int) EMath.round(a.x);
-        py = (int) EMath.round(a.y);
-        setPos(new Vector2((int) (EMath.round(absPos.x / cellW)), (int) (EMath.round(absPos.y / cellW))));
+        float max = res * cellW;
+        a.x = boundW(a.x, max, getIconDim().x);
+        a.y = boundW(a.y, max, getIconDim().y);
+        absPos.set(a);
+        float x = boundW((float) EMath.round(absPos.x / cellW));
+        float y = boundW((float) EMath.round(absPos.y / cellW));
+        setPos(new Vector2(x, y));
     }
 
     public void setDrawable(boolean s) {
@@ -465,7 +464,7 @@ public class Monster {
         int r = rn.nextInt(4);
         if (rn.nextBoolean())
             for (int i = 0; i < r; i++) {
-                Inventory.discard(getPos(), false, this);
+                inv.discard(pos(), false, this);
             }
     }
 
@@ -572,7 +571,8 @@ public class Monster {
                 damage = Damage.monsterMagicDamage(this);
                 d.hp += -damage;
                 if (d.hp <= 0) d.dead = true;
-                new HoverText("-" + damage, 1, new Color(1f, .2f, .2f, 1f), d.absPos.x, d.absPos.y, true);
+                Color c=new Color(1f, .2f, .2f, 1f);
+                new HoverText("-" + damage,  c, d.fixed(), true);
             }
         }
         for (int i = Illusion.dummies.size() - 1; i >= 0; i--) {
@@ -594,55 +594,42 @@ public class Monster {
         checkIfDead();
     }
 
-    public static boolean isNearPlayer(Vector2 pos) {
-        return EMath.pathag(player.pos(), pos) < 10;
+
+
+    static boolean isListMaxed(){
+        return  monsterList.size() >= 120;
+    }
+    static boolean canSpawn(){
+        boolean b= Tests.spawn && !isListMaxed();
+        out("Spawn:"+b+" "+monsterList.size());//ALWAYS FALSE UNLESS OBSERVED
+       return b;
     }
 
-    public static void spawn() {
-        if (Tests.spawn && dRespawn.isDone() && monsterList.size() < 120) {
-            Monster m = Monster.getNew();
-            int index = rn.nextInt(liveCellList.size());
-            if (!liveCellList.get(index).isWater() && liveCellList.get(index).isClear()) {
-                Cell c = liveCellList.get(index);
-                m.setCords(c.getX(), c.getY());
-
-                if (!isNearPlayer(c.getPos())) {
-                    monsterList.add(m);
-                    c.setMon(true);
-                    c.setMonsterIndex(monsterList.indexOf(m));
-                    liveCellList.set(index, c);
-                    //Game.console();
-                    out("MList:" + monsterList.indexOf(m));
-                    new HoverText("!", .5f, Color.RED, player.getAbsPos().x, player.getAbsPos().y, true);
-                    reindexMons = true;
-                    GridManager.loadLiveCells();
-                    dRespawn.reset();
+    public static void spawn(float dt) {
+        dRespawn.update(dt);
+        if(dRespawn.isDone()) {
+            if (canSpawn()) {
+                Monster m = Monster.getNew();
+                Cell c = gm.getAnyCell();
+                m.setAbsPos(c.abs());
+                if (!isNearPlayer(c.pos(), 10)) {
+                    c.setMonster(m);
+                    out("Monsters:" + monsterList.size());
+                    new HoverText("!!!", .5f, Color.RED, player.fixed(), true);
                 }
             }
+            dRespawn.reset();
         }
+    }
+
+    public static Monster getNew() {
+        return getNew(GridManager.boundI(gm.spreadv(res)));
     }
 
     public void fixPosition() {
-/*        int x= (int) absPos.x;
-        int y= (int) absPos.y;
-        if(absPos.x<2){
-            x=2;
-        }
-        else if(absPos.x+getIcon().getWidth()>(res*cellW)-2){
-            x=(res*cellW)-(getIcon().getWidth()-2);
-        }
-        if(absPos.y<2){
-            y=2;
-        }
-        else if(absPos.y+getIcon().getHeight()>(res*cellW)-2){
-            y=(res*cellW)-(getIcon().getHeight()-2);
-        }
-        setAbsPos(new Vector2(x,y));//terminal test*/
-
-        Vector2 iconDim = new Vector2(getIcon().getWidth() / 2, getIcon().getHeight() / 2);
-        Pair<Vector2, Vector2> pos = Body.wrapPos(iconDim, absPos);
-        setAbsPos(pos.getKey());
-        setPos(pos.getValue());
+        Vector2 iconDim = new Vector2(getIconDim()).scl(.5f);
+        Vector2 pos = Body.wrapPos(abs());
+        setAbsPos(pos);
     }
 
     public void stattest() {
@@ -658,7 +645,8 @@ public class Monster {
                 hp = 0;
             }
             setHit();
-            new HoverText("-" + (int) i, .8f, new Color(1f, .2f, .2f, 1f), absPos.x, absPos.y + 20, true);
+            Color c=new Color(1f, .2f, .2f, 1f);
+            new HoverText("-" + (int) i,  c, fixed(), true);
             out("Hit " + name + " for " + (int) i + " damage.");
             invincable = true;
         } else {
@@ -671,20 +659,18 @@ public class Monster {
     }
 
     public void collisionWithMonsters() {
-        List<Monster> list = mdrawList.stream().filter(m -> !m.equals(this) && m.getHitBox().overlaps(getHitBox())).collect(Collectors.toList());
+        List<Monster> list = mdrawList.stream().filter(m ->standingOnMon(m)).collect(Collectors.toList());
         for (Monster m : list) {
-            float ang = (float) Math.toRadians(EMath.angle(getAbsPos(), m.getAbsPos())),
-                    x = 10 * (float) Math.cos(ang),
-                    y = 10 * (float) Math.sin(ang);
-            move2(x, y);
-            m.move2(-x, -y);
+            Vector2 v= Physics.getVector(2*cellW,abs(), m.abs());
+            move2(v);
+            m.move2(v.scl(-1));
         }
     }
 
-
-    public void move2(float x, float y) {
-        setAbsPos(getAbsPos().add(x, y));
+    private boolean standingOnMon(Monster m) {
+        return  !m.equals(this) && m.getHitBox().overlaps(getHitBox());
     }
+
 
     double calcMoveSpeed() {
         float max = 20f;
@@ -699,6 +685,54 @@ public class Monster {
         s /= 5;
         return s;
     }
+
+
+
+    boolean hasMoved() {
+        return prevPos.x != pos.x || prevPos.y != pos.y;
+    }
+
+    public double getPower() {
+        return power;
+    }
+
+    public void setState(AI.State state) {
+        this.state = state;
+    }
+
+    //AI ACTIONS-------------------------------------------------------------------------------------------
+    void changeDirection() {
+
+        float dst = player.pos().dst(pos());
+        if (dChangeDirection.isDone()) {
+            facing = Direction.Facing.getRandom();
+            dChangeDirection.reset();
+        }
+        try {
+            move(Direction.getVector(facing));
+        } catch (ArrayIndexOutOfBoundsException e) {
+        }
+    }
+
+    private void chasePlayer() {
+        float angle;
+        boolean dir = player.pos().dst(pos()) > res / 2;
+        if (!Illusion.dummies.isEmpty()) {
+            angle = (float) Math.toRadians(EMath.angle(absPos, Illusion.dummies.get(rn.nextInt(Illusion.dummies.size())).absPos) + 180);
+        } else
+            angle = (float) Math.toRadians(EMath.angle(absPos, player.abs()) + 180);
+        if (dir)
+            angle += Math.PI;
+        facing = Direction.getDirection(angle);
+        try {
+            move(Direction.getVector(facing));
+        } catch (ArrayIndexOutOfBoundsException e) {
+        }
+    }
+    private void move2(Vector2 v) {
+        setAbsPos(abs().add(v));
+    }
+
 
     public void move(Vector2 vel) {//actually moves the thing
         Vector2 end = new Vector2(absPos.x + vel.x, absPos.y + vel.y);
@@ -725,7 +759,7 @@ public class Monster {
             setAbsPos(new Vector2(absPos.x + comp.x, absPos.y + comp.y));
         } else {
             if (rn.nextFloat() < .05)
-                MapState.gm.clearArea(x, y, false);
+                gm.clearArea(x, y, false);
         }
 
     }
@@ -755,53 +789,9 @@ public class Monster {
         }
 
     }
-
-    boolean hasMoved() {
-        return prevPos.x != pos.x || prevPos.y != pos.y;
-    }
-
-    public double getPower() {
-        return power;
-    }
-
-    public void setState(AI.State state) {
-        this.state = state;
-    }
-
-    //AI ACTIONS-------------------------------------------------------------------------------------------
-    void changeDirection() {
-
-        float dst = player.pos().dst(getPos());
-        if (dChangeDirection.isDone()) {
-            facing = Direction.Facing.getRandom();
-            dChangeDirection.reset();
-        }
-        try {
-            move(Direction.getVector(facing));
-        } catch (ArrayIndexOutOfBoundsException e) {
-        }
-    }
-
-    private void chasePlayer() {
-        float angle;
-        boolean dir = player.pos().dst(getPos()) > res / 2;
-        if (!Illusion.dummies.isEmpty()) {
-            angle = (float) Math.toRadians(EMath.angle(absPos, Illusion.dummies.get(rn.nextInt(Illusion.dummies.size())).absPos) + 180);
-        } else
-            angle = (float) Math.toRadians(EMath.angle(absPos, player.getAbsPos()) + 180);
-        if (dir)
-            angle += Math.PI;
-        facing = Direction.getDirection(angle);
-        try {
-            move(Direction.getVector(facing));
-        } catch (ArrayIndexOutOfBoundsException e) {
-        }
-    }
-
     //UPDATE------------------------------------------------------
     public static void update(float dt) {
-        dRespawn.update(dt);
-        spawn();
+        spawn(dt);
         try {
             for (Monster m : monsterList) {
                 m.updateVariables(dt);
@@ -832,6 +822,10 @@ public class Monster {
         }
         loadIcon();
 
+    }
+
+    public Vector2 getIconDim() {
+        return new Vector2(icon.getWidth(),icon.getHeight());
     }
     //------------------------------------------------------------
 

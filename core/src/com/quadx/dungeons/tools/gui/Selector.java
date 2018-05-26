@@ -4,10 +4,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
 import com.quadx.dungeons.states.ControlState;
-import com.quadx.dungeons.tools.ShapeRendererExt;
 
-import static com.quadx.dungeons.Game.ft;
+import static com.quadx.dungeons.tools.timers.Time.ft;
 
 /**
  * Created by Chris Cavazos on 7/10/2017.

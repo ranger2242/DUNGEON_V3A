@@ -10,15 +10,14 @@ import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Anim;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.GridManager;
-import com.quadx.dungeons.Inventory;
 import com.quadx.dungeons.abilities.Ability;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.monsters.Monster;
+import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
 import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.ShopState;
 import com.quadx.dungeons.states.State;
-import com.quadx.dungeons.tools.ShapeRendererExt;
 import com.quadx.dungeons.tools.StatManager;
 import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.buttons.ButtonHandler;
@@ -26,13 +25,13 @@ import com.quadx.dungeons.tools.buttons.MapStateButtonHandler;
 import com.quadx.dungeons.tools.controllers.Controllers;
 import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 import com.quadx.dungeons.tools.gui.HUD;
+import com.quadx.dungeons.tools.gui.HoverText;
 
 import java.util.Random;
 
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.renderLayers;
-import static com.quadx.dungeons.states.mapstate.MapStateRender.updateHoverTextTime;
 
 
 @SuppressWarnings("DefaultFileTemplate")
@@ -105,15 +104,14 @@ public class MapState extends State implements ControllerListener {
         Anim.update(dt);
         Attack.update(dt);
         Ability.update(dt);
-        Inventory.update(dt);
         ParticleHandler.update(dt);
-        Monster.update(dt);
-        player.update(dt,getClass());
+        Monster.update(dt);// <<------come back to this
+        player.update(dt,getClass());// <<------
+        HoverText.update(dt);
         camController.update(dt, cam);
         GridManager.update(dt);
         HUD.update();
         MapStateRender.updateVariables(dt);
-        updateHoverTextTime();
 
     }
     public void render(SpriteBatch sb) {

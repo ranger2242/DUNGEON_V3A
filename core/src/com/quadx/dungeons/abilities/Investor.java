@@ -1,12 +1,10 @@
 package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.attacks.Blind;
 import com.quadx.dungeons.tools.ImageLoader;
-import com.quadx.dungeons.tools.gui.HoverText;
 
 import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
@@ -32,7 +30,7 @@ public class Investor extends Ability {
     public void onActivate() {
         player.setAbilityMod(1);
         l1();
-        new HoverText("INVESTOR!",1.5f, Color.WHITE, player.getAbsPos().x,player.getAbsPos().y,false);
+        hoverName();
     }
 
     @Override

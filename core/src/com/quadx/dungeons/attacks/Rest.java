@@ -13,7 +13,7 @@ import static com.quadx.dungeons.Game.player;
 public class Rest extends Attack {
     public Rest(){
         costGold = 3000;
-        type = 2;
+        type = CostType.Mana;
         powerA = new int[]{0, 0, 0, 0, 0};
         costA = new int[]{10, 20, 30, 40, 50};
         name = "Rest";
@@ -29,6 +29,6 @@ public class Rest extends Attack {
     public void runAttackMod() {
         int d=(cost*3)/4;
         player.addEnergy(d);
-        new HoverText("+"+d,1, Color.YELLOW,player.getAbsPos().x,player.getAbsPos().y+50,false);
+        new HoverText("+"+d,Color.YELLOW ,player.fixed(),false);
     }
 }

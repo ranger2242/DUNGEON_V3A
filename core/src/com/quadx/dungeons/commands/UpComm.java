@@ -36,9 +36,7 @@ public class UpComm extends Command {
             if (cls.equals(MapState.class)) {
                 if (player.canMove) {
                     player.setAim(Direction.Facing.North);
-
                     player.move(new Vector2(0, 1));
-                    player.dtMove = 0;
                 }
             }
             if(cls.equals(ControlState.class)){

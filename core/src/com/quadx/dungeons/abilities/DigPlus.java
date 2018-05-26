@@ -1,9 +1,7 @@
 package com.quadx.dungeons.abilities;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Game;
-import com.quadx.dungeons.tools.gui.HoverText;
 
 import java.util.ArrayList;
 
@@ -28,8 +26,7 @@ public class DigPlus extends Ability {
         out("----------------------------------");
         out(Game.player.getName()+" activated the Dig+ ability!");
         out("DIG!");
-        new HoverText("DIG+!",1.5f, Color.WHITE, Game.player.getAbsPos().x,Game.player.getAbsPos().y,false);
-
+        hoverName();
         //super.onActivate();
     }
 

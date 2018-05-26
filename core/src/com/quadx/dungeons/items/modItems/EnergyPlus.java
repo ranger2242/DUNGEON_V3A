@@ -1,4 +1,4 @@
-package com.quadx.dungeons.items;
+package com.quadx.dungeons.items.modItems;
 
 import com.quadx.dungeons.tools.ImageLoader;
 
@@ -7,7 +7,7 @@ import static com.quadx.dungeons.Game.player;
 /**
  * Created by Chris Cavazos on 7/2/2016.
  */
-public class EnergyPlus extends Item {
+public class EnergyPlus extends ModItem {
     public EnergyPlus(){
         name="Energy+";
         int size= (int) (3*((double)player.getEnergyMax()/(double)500));
@@ -26,5 +26,11 @@ public class EnergyPlus extends Item {
             emod=1000;
             cost=2250;
         }
+    }
+
+    @Override
+    public int[] runMod() {
+
+        return new int[]{0,0,emod,0,0,0,0};
     }
 }

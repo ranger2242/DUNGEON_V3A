@@ -12,7 +12,7 @@ import static com.quadx.dungeons.Game.player;
 public class Focus extends Attack {
     public Focus()  {
         costGold=2510;
-        type=1;
+        type=CostType.Energy;
         powerA = new int[]{0,0,0,0,0};
         costA =new int[]{20,30,60,100,120};
         name="Focus";
@@ -23,11 +23,13 @@ public class Focus extends Attack {
         spread=0;
         range=0;
         hitBoxShape =HitBoxShape.None;
+        loadArray();
         setIcon(ImageLoader.attacks.get(3));
     }
     public void runAttackMod(){
         int d=(cost*3)/4;
         player.addMana(d);
-        new HoverText("+"+d,1, new Color(.2f,.2f,1,1),player.getAbsPos().x,player.getAbsPos().y+50,false);
+        Color c=new Color(.2f,.2f,1,1);
+        new HoverText("+"+d,c ,player.fixed(),false);
     }
 }

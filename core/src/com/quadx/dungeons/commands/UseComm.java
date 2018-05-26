@@ -1,7 +1,7 @@
 package com.quadx.dungeons.commands;
 
 import com.badlogic.gdx.Input;
-import com.quadx.dungeons.Inventory;
+import com.quadx.dungeons.Game;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 
@@ -18,7 +18,7 @@ public class UseComm extends Command{
     public void execute() {
         if(pressed()) {
             if(cls.equals(MapState.class)){
-                Inventory.selectItemFromInventory();
+                Game.player.useItem();
             }
         }
     }

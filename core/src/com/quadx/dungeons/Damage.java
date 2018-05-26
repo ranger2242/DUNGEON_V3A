@@ -5,7 +5,7 @@ import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.Dash;
 import com.quadx.dungeons.attacks.Protect;
 import com.quadx.dungeons.monsters.Monster;
-import com.quadx.dungeons.tools.EMath;
+import com.quadx.dungeons.shapes1_5.EMath;
 import com.quadx.dungeons.tools.gui.HoverText;
 
 import java.util.Random;
@@ -35,7 +35,7 @@ public class Damage {
             damage = defaultDamage;
         if (rn.nextFloat() < .1) {
             damage *= 1.15;
-            new HoverText("-CRITICAL-", .2f, Color.BLUE, m.getPX(), m.getPY(), true);
+            new HoverText("-CRITICAL-",  Color.BLUE, m.fixed(), true);
         }
         return damage;
     }
@@ -52,7 +52,7 @@ public class Damage {
             damage = defaultDamage;
         if (rn.nextFloat() < .1) {
             damage *= 1.15;
-            new HoverText("-CRITICAL-", .2f, Color.BLUE, player.getAbsPos().x,player.getAbsPos().y, true);
+            new HoverText("-CRITICAL-", Color.BLUE, player.fixed(), true);
         }
         if(Protect.active || Dash.active)
             return 0;

@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.equipment.Equipment;
+import com.quadx.dungeons.items.modItems.*;
 import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.gui.HUD;
 
@@ -35,7 +36,7 @@ public class Item
     public boolean isSpell=false;
     Rectangle hitbox=new Rectangle();
     protected Vector2 texturePos=new Vector2();
-    Texture icon=null;
+    protected Texture icon=null;
     int gold;
     Attack attack;
 
@@ -155,7 +156,7 @@ public class Item
             player.pickupItem(this);
 
 
-        player.resetBars();
+        player.boundStatBars();
         dispArray[x][y].setBoosterItem(-1);
         dispArray[x][y].setCrate(false);
         dispArray[x][y].setItem(null);
@@ -177,8 +178,31 @@ public class Item
 
     public void loadIcon() {
         if(isEquip)
+            loadIcon(getType());
+        else
             loadIcon(name);
         if(icon==null)
             loadIcon(name);
     }
+
+
+    public static Item generateSpecial() {
+        Item item=null;
+        if(rn.nextInt(8)<7){
+            int i = rn.nextInt(3);
+            if (i == 1) {
+                item = new Potion();
+            }
+            if (i == 2) {
+                item = new ManaPlus();
+            }
+            if (i == 0) {
+                item = new EnergyPlus();
+            }
+        }else{
+            item = Equipment.generate();
+        }
+        return item;
+    }
+
 }

@@ -1,27 +1,33 @@
 COMPLETE===========================================================
-BUILD 2018.0000005
--added F7 as clear Monsters in MapState
--fixed knockback angle and velocity
--refactored buttonhandler in MapstateUpdater and added DebugKeys class
--refactored MapStateExt into ParticleHandler
--refactor dissolved MapStateUpdater
--Added Oscillator class as sub of Delta
+BUILD 2018.0000006
+-player now full heals on level up
+-refactoring GridManager
+-merged shapes1_5 into the project
+-optimized map loading algorithms
+-optimizing update thread
+-full refactor of HoverText
+-optimize attack class
+-screen wrapping breaks occasionally
+-Refactoring Inventory from static class to object
+-optimized player update
 
 WORKING ON==========================================================
--fixing compiler warnings
-
+-running out of mana crashes game
+-optimizing monster class
+-monster update
 --corrupted player stats in highscorestate
-
 -equipment icons not loading on pickup
 
 LOW PRIORITY=======================================================
+-fixing compiler warnings
+
 -drop spellbook when max attack bar is exceed
 -fix controller support
+-canSpawn() ALWAYS FALSE UNLESS OBSERVED
 
 BUGS============================================================
 -shooting the left edge breaks hitbox placement
 -hitbox doesnt always show on screen
--screen wrapping breaks occasionally
 -items in shop inventory default to boxes after sell
 
 

@@ -13,7 +13,7 @@ import static com.quadx.dungeons.Game.player;
 public class Heal extends Attack {
     public Heal() {
         costGold =20000;
-        type = 3;
+        type = CostType.Mana;
         powerA = new int[]{0, 0, 0, 0, 0};
         costA = new int[]{30, 50, 70, 90, 110};
         name = "Heal";
@@ -23,12 +23,13 @@ public class Heal extends Attack {
         spread = 0;
         range = 0;
         description = "Drain ALL M and E for HP";
-        setIcon(ImageLoader.attacks.get(4));
         hitBoxShape=HitBoxShape.None;
+        loadArray();
+        setIcon(ImageLoader.attacks.get(4));
     }
     public void runAttackMod() {
         int d=(cost*3)/4;
         player.addHp(d);
-        new HoverText("+"+d,1, Color.GREEN,player.getAbsPos().x,player.getAbsPos().y+50,false);
+        new HoverText("+"+d,Color.GREEN ,player.fixed(),false);
     }
 }

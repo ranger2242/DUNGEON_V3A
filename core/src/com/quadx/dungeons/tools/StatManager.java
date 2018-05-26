@@ -56,7 +56,6 @@ public class StatManager {
             StatManager.shotsMissed++;
     }
     public static void shotFired(Attack a){
-        if (a.getType() != 3)
             StatManager.shotsFired++;
     }
     public static ArrayList<Double> getFinalStats(){

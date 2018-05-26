@@ -16,7 +16,7 @@ public class Dash extends Attack {
 
     public Dash(){
         costGold=48035;
-        type=1;
+        type=CostType.Energy;
         powerA = new int[]{70,85,95,115,145};
         costA =new int[]{32,64,100,120,140};
         //costA =new int[]{0,0,0,0,0};
@@ -34,7 +34,7 @@ public class Dash extends Attack {
     public static void updateSelf(float dt){
         if(active){
             dtDash+=dt;
-            //player.setAttackBox(calculateHitBox());
+            player.setAttackBox(player.getAttack().getHitBox());
             if(dtDash>dashEnd){
                 active =false;
                 dtDash=0;

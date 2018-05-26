@@ -1,4 +1,4 @@
-package com.quadx.dungeons.items;
+package com.quadx.dungeons.items.modItems;
 
 import com.quadx.dungeons.tools.ImageLoader;
 
@@ -8,7 +8,7 @@ import static com.quadx.dungeons.Game.player;
  * Created by Tom on 11/23/2015.
  */
 @SuppressWarnings("DefaultFileTemplate")
-public class ManaPlus extends Item {
+public class ManaPlus extends ModItem {
     public ManaPlus(){
         name="Mana+";
         int size= (int) (3*((double)player.getManaMax()/(double)500));
@@ -27,5 +27,11 @@ public class ManaPlus extends Item {
             manamod=1000;
             cost=2250;
         }
+    }
+
+    @Override
+    public int[] runMod() {
+
+        return new int[]{0,manamod,0,0,0,0,0};
     }
 }

@@ -7,6 +7,7 @@ import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.gui.HoverText;
 
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.tools.timers.Time.SECOND;
 
 /**
  * Created by Chris Cavazos on 8/8/2016.
@@ -25,7 +26,7 @@ public class JumpComm extends Command{
                     player.jumping = true;
                     player.setEnergy(player.getEnergy()-30);
                 }else if(player.getEnergy() < 30) {
-                    new HoverText("-!-",.5f, Color.YELLOW,player.getAbsPos().x+(player.getIcon().getWidth()/2),player.getAbsPos().y+player.getIcon().getHeight()+10,true);
+                    new HoverText("-!-",SECOND, Color.YELLOW,player.abs(),true);
                 }
             }
     }

@@ -36,3 +36,11 @@ BUILD 2018.0000004
 --make file that inputs all the Ability detail text
 -complete refactor of Anim class
 -fix drop animation on hold key
+
+BUILD 2018.0000005
+-added F7 as clear Monsters in MapState
+-fixed knockback angle and velocity
+-refactored buttonhandler in MapstateUpdater and added DebugKeys class
+-refactored MapStateExt into ParticleHandler
+-refactor dissolved MapStateUpdater
+-Added Oscillator class as sub of Delta

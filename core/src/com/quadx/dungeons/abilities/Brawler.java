@@ -1,9 +1,7 @@
 package com.quadx.dungeons.abilities;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.tools.ImageLoader;
-import com.quadx.dungeons.tools.gui.HoverText;
 
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.tools.gui.HUD.out;
@@ -38,8 +36,7 @@ public class Brawler extends Ability {
         out("E Regen doubled!");
         out("M Max was halved!");
         out("1.2x DMG for E Attacks");
-        new HoverText("BRAWLER!",1.5f, Color.WHITE, player.getAbsPos().x, player.getAbsPos().y,false);
-
+        hoverName();
         //super.onActivate();
     }
 
