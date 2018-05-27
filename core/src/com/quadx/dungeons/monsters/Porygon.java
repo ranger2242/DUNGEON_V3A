@@ -7,22 +7,13 @@ import com.quadx.dungeons.tools.ImageLoader;
  */
 public class Porygon extends Monster {
     public Porygon(){
-        power=50;
-        hpBase =95;
-        strBase =75;
-        defBase =90;
-        intBase =60;
-        spdBase =100;
         sight=6;
         moveSpeedMin=.11f;
         moveSpeed=.11f;
         moveSpeedMax =.08f;
-        name= "Porygon";
-        icons= ImageLoader.en1;
-        icon=icons[0];
-        iconSet=1;
-        genLevel();
-        genStats();
-        loadIcon();
+        body.setIcons(ImageLoader.en1);
+        load("Porygon", new int[]{50,95,75,90,60,100});
+        //load("", new int[]{,,,,,});
+
     }
 }

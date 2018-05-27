@@ -11,7 +11,7 @@ import static com.quadx.dungeons.Game.player;
 public class Potion extends ModItem {
     public Potion  (){
         name="Potion+";
-        int size= (int) (3*((double)player.getHpMax()/(double)500));
+        int size= (int) (3*((double)player.st.getHpMax()/(double)500));
         if(size==0){
             icon= ImageLoader.potion[0];
             hpmod=60;

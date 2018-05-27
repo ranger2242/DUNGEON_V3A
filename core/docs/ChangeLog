@@ -1,22 +1,21 @@
 COMPLETE===========================================================
-BUILD 2018.0000006
--player now full heals on level up
--refactoring GridManager
--merged shapes1_5 into the project
--optimized map loading algorithms
--optimizing update thread
--full refactor of HoverText
--optimize attack class
--screen wrapping breaks occasionally
--Refactoring Inventory from static class to object
--optimized player update
-
+BUILD 2018.0000007
+-(fixed)running out of mana crashes game
+-refactored out Body variables from Player and Monster for reuse
+-refactoring Stats out of Player and Monster to remove duplicate code
 WORKING ON==========================================================
--running out of mana crashes game
+
+-refactor HUD class
 -optimizing monster class
 -monster update
---corrupted player stats in highscorestate
+-corrupted player stats in highscorestate
 -equipment icons not loading on pickup
+-shooting the left edge breaks hitbox placement
+-hitbox doesnt always show on screen
+-items in shop inventory default to boxes after sell
+
+
+
 
 LOW PRIORITY=======================================================
 -fixing compiler warnings
@@ -26,8 +25,4 @@ LOW PRIORITY=======================================================
 -canSpawn() ALWAYS FALSE UNLESS OBSERVED
 
 BUGS============================================================
--shooting the left edge breaks hitbox placement
--hitbox doesnt always show on screen
--items in shop inventory default to boxes after sell
-
 

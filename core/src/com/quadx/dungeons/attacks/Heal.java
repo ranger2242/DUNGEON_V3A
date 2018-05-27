@@ -29,7 +29,7 @@ public class Heal extends Attack {
     }
     public void runAttackMod() {
         int d=(cost*3)/4;
-        player.addHp(d);
+        player.st.addHp(d);
         new HoverText("+"+d,Color.GREEN ,player.fixed(),false);
     }
 }

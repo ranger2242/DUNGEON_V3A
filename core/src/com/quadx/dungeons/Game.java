@@ -42,7 +42,6 @@ public class Game extends ApplicationAdapter implements ControllerListener {
     private static final BitmapFont[] fonts = new BitmapFont[6];
     public static BitmapFont font;
 
-    public static Player player = new Player();
 
     public static final int WIDTH = 1366;
     public static final int HEIGHT = 724;
@@ -56,6 +55,9 @@ public class Game extends ApplicationAdapter implements ControllerListener {
     public static EquipSets equipSets;
     public static Random rn = new Random();
     private SpriteBatch spriteBatch;
+
+
+    public static Player player = new Player();
 
 
     private static void addCommand() {

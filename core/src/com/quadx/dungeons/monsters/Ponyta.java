@@ -7,22 +7,11 @@ import com.quadx.dungeons.tools.ImageLoader;
  */
 public class Ponyta extends Monster {
     public Ponyta(){
-        power=90;
-        hpBase =50;
-        strBase =30;
-        defBase =10;
-        intBase =20;
-        spdBase =100;
         sight=9;
         moveSpeedMin=.11f;
         moveSpeed=.09f;
         moveSpeedMax =.05f;
-        name= "Ponyta";
-        icons= ImageLoader.en3;
-        icon=icons[0];
-        //iconSet=1;
-        genLevel();
-        genStats();
-        loadIcon();
+        body.setIcons(ImageLoader.en3);
+        load("Ponyta", new int[]{90,50,30,10,20,100});
     }
 }

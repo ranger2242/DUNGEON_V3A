@@ -156,7 +156,6 @@ public class Item
             player.pickupItem(this);
 
 
-        player.boundStatBars();
         dispArray[x][y].setBoosterItem(-1);
         dispArray[x][y].setCrate(false);
         dispArray[x][y].setItem(null);

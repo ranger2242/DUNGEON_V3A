@@ -7,21 +7,11 @@ import com.quadx.dungeons.tools.ImageLoader;
  */
 public class Muk extends Monster {
     public Muk(){
-        power=70;
-        hpBase =200;
-        strBase =30;
-        defBase =40;
-        intBase =40;
-        spdBase =30;
         sight=8;
         moveSpeedMin=.18f;
         moveSpeed=.12f;
         moveSpeedMax =.1f;
-        name= "Muk";
-        icons= ImageLoader.en8;
-        icon=icons[0];
-        genLevel();
-        genStats();
-        loadIcon();
+        body.setIcons(ImageLoader.en8);
+        load("Muk",new int[]{70,200,30,40,40,30});
     }
 }

@@ -44,3 +44,15 @@ BUILD 2018.0000005
 -refactored MapStateExt into ParticleHandler
 -refactor dissolved MapStateUpdater
 -Added Oscillator class as sub of Delta
+
+BUILD 2018.0000006
+-player now full heals on level up
+-refactoring GridManager
+-merged shapes1_5 into the project
+-optimized map loading algorithms
+-optimizing update thread
+-full refactor of HoverText
+-optimize attack class
+-screen wrapping breaks occasionally
+-Refactoring Inventory from static class to object
+-optimized player update

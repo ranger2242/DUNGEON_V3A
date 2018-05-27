@@ -25,10 +25,10 @@ public class Damage {
     public static int calcPlayerDamage(Attack att, Monster m){
         float a, b, c, d, e;
         a = 0.24f;
-        b = player.getIntComp();
-        c = (float) m.getIntel();
+        b = player.st.getIntComp();
+        c = (float) m.st.getIntel();
         d = att.getPower();
-        e = player.getLevel();
+        e = player.st.getLevel();
 
         damage = Math.round(a*(b/c)*d*e);
         if (damage < 0) //checks for negative damage
@@ -42,10 +42,10 @@ public class Damage {
     static float rate=10;
     public static int monsterMagicDamage(Monster m){
         float a, b, c, d;
-        a = (float) EMath.randomGaussianAverage(player.getIntComp(),player.getDefComp());
-        b = (float) EMath.randomGaussianAverage(m.getIntel(),m.getStrength());
-        c = (float) m.getPower();
-        d = (float) m.getLevel();
+        a =(float) EMath.randomGaussianAverage(player.st.getIntComp(),player.st.getDefComp());
+        b =(float) EMath.randomGaussianAverage(m.st.getIntel(),m.st.getStrength());
+        c =(float) m.st.getPower();
+        d = (float) m.st.getLevel();
 
         damage =(Math.round(((c*d)+(b*8))/(a)));
         if (damage < 0) //checks for negative damage

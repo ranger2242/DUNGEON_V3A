@@ -33,7 +33,7 @@ public class Drain extends Attack {
     }
     public void runAttackMod(){
         int d=power/4;
-        player.addHp(d);
+        player.st.addHp(d);
         new HoverText("+"+d,Color.GREEN ,player.fixed(),false);
 
     }
@@ -42,48 +42,46 @@ public class Drain extends Attack {
         float[] p = new float[6];
         float base = 4;
         float height = 7;
-        float h = player.getIcon().getHeight() / 2;
-        float w = player.getIcon().getWidth() / 2;
-
+        Vector2 v= new Vector2(player.body.getIconDim()).scl(.5f);
         float cx = player.abs().x,
                 cy = player.abs().y;
-        switch (player.facing) {
+        switch (player.body.getFacing()) {
             case North:
             case Northwest:
             case Northeast:
-                p[0] = cx + w;
-                p[1] = cy + (h * 2);
-                p[2] = cx + w - (base * cell.x) / 2;
-                p[3] = cy + (h * 2) + (height * cell.y);
-                p[4] = cx + w + (base * cell.x) / 2;
-                p[5] = cy + (h * 2) + (height * cell.y);
+                p[0] = cx + v.x;
+                p[1] = cy + (v.y * 2);
+                p[2] = cx + v.x - (base * cell.x) / 2;
+                p[3] = cy + (v.y * 2) + (height * cell.y);
+                p[4] = cx + v.x + (base * cell.x) / 2;
+                p[5] = cy + (v.y * 2) + (height * cell.y);
 
                 break;
             case Southwest:
             case South:
             case Southeast:
-                p[0] = cx + w;
+                p[0] = cx + v.x;
                 p[1] = cy;
-                p[2] = cx + w - (base * cell.x) / 2;
+                p[2] = cx + v.x - (base * cell.x) / 2;
                 p[3] = cy - (height * cell.y);
-                p[4] = cx + w + (base * cell.x) / 2;
+                p[4] = cx + v.x+ (base * cell.x) / 2;
                 p[5] = cy - (height * cell.y);
                 break;
             case West:
                 p[0] = cx;
-                p[1] = cy + h;
+                p[1] = cy + v.y;
                 p[2] = cx - (height * cell.x);
-                p[3] = cy + h - (base * cell.y) / 2;
+                p[3] = cy + v.y - (base * cell.y) / 2;
                 p[4] = cx - (height * cell.x);
-                p[5] = cy + h + (base * cell.y) / 2;
+                p[5] = cy + v.y + (base * cell.y) / 2;
                 break;
             case East:
-                p[0] = cx + (w * 2);
-                p[1] = cy + h;
-                p[2] = cx + (w * 2) + (height * cell.x);
-                p[3] = cy + h - (base * cell.y) / 2;
-                p[4] = cx + (w * 2) + (height * cell.x);
-                p[5] = cy + h + (base * cell.y) / 2;
+                p[0] = cx + (v.x * 2);
+                p[1] = cy + v.y;
+                p[2] = cx + (v.x * 2) + (height * cell.x);
+                p[3] = cy + v.y - (base * cell.y) / 2;
+                p[4] = cx + (v.x * 2) + (height * cell.x);
+                p[5] = cy + v.y + (base * cell.y) / 2;
 
                 break;
         }

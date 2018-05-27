@@ -26,7 +26,7 @@ public class LeftComm extends Command {
         if(pressed()){
             if (cls.equals(MapState.class)) {
                 if (player.canMove) {
-                    player.setAim(Direction.Facing.West);
+                    player.body.setFacing(Direction.Facing.West);
                     player.move(new Vector2(-1, 0));
                 }
             }

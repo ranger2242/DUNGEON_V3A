@@ -28,7 +28,7 @@ public class Focus extends Attack {
     }
     public void runAttackMod(){
         int d=(cost*3)/4;
-        player.addMana(d);
+        player.st.addMana(d);
         Color c=new Color(.2f,.2f,1,1);
         new HoverText("+"+d,c ,player.fixed(),false);
     }

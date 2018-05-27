@@ -21,7 +21,7 @@ public class AimDownComm extends Command {
     public void execute() {
         if(pressed()){
             if(cls.equals(MapState.class)){
-                player.setAim(Direction.Facing.South);
+                player.body.setFacing(Direction.Facing.South);
             }
         }
     }

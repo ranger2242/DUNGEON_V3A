@@ -7,21 +7,11 @@ import com.quadx.dungeons.tools.ImageLoader;
  */
 public class Dragonair extends Monster {
     public Dragonair(){
-        power=80;
-        hpBase =130;
-        strBase =110;
-        defBase =40;
-        intBase =80;
-        spdBase =150;
         sight=8;
         moveSpeedMin=.9f;
         moveSpeed=.08f;
         moveSpeedMax =.07f;
-        name= "Dragonair";
-        icons= ImageLoader.en9;
-        icon=icons[0];
-        genLevel();
-        genStats();
-        loadIcon();
+        body.setIcons(ImageLoader.en9);
+        load("Dragonair", new int[]{80,130,110,40,80,150});
     }
 }

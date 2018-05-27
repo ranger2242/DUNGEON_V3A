@@ -70,7 +70,7 @@ public class ParticleHandler {
             int sh = 0;
             Attack a = player.attackList.get(Attack.pos);
             Vector2 v = a.getSpawnBox();
-            switch (player.facing) {
+            switch (player.body.getFacing()) {
 
                 case North:
                     ang = 90;

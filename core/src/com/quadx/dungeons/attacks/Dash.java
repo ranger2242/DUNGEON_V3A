@@ -1,6 +1,7 @@
 package com.quadx.dungeons.attacks;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.tools.ImageLoader;
 
 import static com.quadx.dungeons.Game.player;
@@ -44,37 +45,37 @@ public class Dash extends Attack {
 
     public Rectangle getHitBox() {
         active=true;
-        Rectangle rect=player.getHitBox();
-        int h=player.getIcon().getHeight()/2;
-        int w=player.getIcon().getWidth()/2;
-        switch (player.facing) {
+        Rectangle rect=player.body.getHitBox();
+        Vector2 v=new Vector2(player.body.getIconDim()).scl(.5f);
+
+        switch (player.body.getFacing()) {
             case North:
-                rect.y+=h;
+                rect.y+=v.y;
                 break;
             case Northwest:
-                rect.x-=w;
-                rect.y+=h;
+                rect.x-=v.x;
+                rect.y+=v.y;
                 break;
             case West:
-                rect.x-=w;
+                rect.x-=v.x;
                 break;
             case Southwest:
-                rect.x-=w;
-                rect.y-=h;
+                rect.x-=v.x;
+                rect.y-=v.y;
                 break;
             case South:
-                rect.y-=h;
+                rect.y-=v.y;
                 break;
             case Southeast:
-                rect.y-=h;
-                rect.x+=w;
+                rect.y-=v.y;
+                rect.x+=v.x;
                 break;
             case East:
-                rect.x+=w;
+                rect.x+=v.x;
                 break;
             case Northeast:
-                rect.x+=w;
-                rect.y+=h;
+                rect.x+=v.x;
+                rect.y+=v.y;
                 break;
         }
 /*

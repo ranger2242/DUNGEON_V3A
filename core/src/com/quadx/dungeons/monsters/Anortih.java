@@ -7,22 +7,11 @@ import com.quadx.dungeons.tools.ImageLoader;
  */
 public class Anortih extends Monster {
     public Anortih(){
-        power=40;
-        hpBase =50;
-        strBase =20;
-        defBase =20;
-        intBase =20;
-        spdBase =40;
         sight=6;
         moveSpeedMin=.18f;
         moveSpeed=.18f;
         moveSpeedMax =.14f;
-        name= "Anorith";
-        icons= ImageLoader.en4;
-        icon=icons[0];
-        //iconSet=0;
-        genLevel();
-        genStats();
-        loadIcon();
+        body.setIcons(ImageLoader.en4);
+        load("Anorith",new int[]{40,50,20,20,20,40});
     }
 }

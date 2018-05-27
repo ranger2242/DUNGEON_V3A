@@ -32,7 +32,7 @@ public class DownComm extends Command {
             }
             if (cls.equals(MapState.class)) {
                 if (player.canMove) {
-                    player.setAim(Direction.Facing.South);
+                    player.body.setFacing(Direction.Facing.South);
                     player.move(new Vector2(0, -1));
                 }
             }

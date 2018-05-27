@@ -28,7 +28,7 @@ public class Illusion extends Attack {
         this.pos=pos;
         this.absPos=absPos;
         hitbox=h;
-        icon=player.getIcon();
+        icon=player.body.getIcon();
         }
         public Vector2 fixed(){
             return new Vector2(absPos.x,fixY(absPos));

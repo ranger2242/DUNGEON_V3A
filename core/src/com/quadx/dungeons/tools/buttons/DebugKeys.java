@@ -81,7 +81,7 @@ public class DebugKeys {
     }
 
     private void toggleSimpleStats(){
-        player.toggleSimpleStats();
+        player.st.toggleSimpleStats();
     }
 
     private void toggleStats(){

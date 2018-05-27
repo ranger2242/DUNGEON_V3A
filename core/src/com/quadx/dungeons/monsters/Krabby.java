@@ -7,22 +7,11 @@ import com.quadx.dungeons.tools.ImageLoader;
  */
 public class Krabby extends  Monster {
     public Krabby(){
-        power=40;
-        hpBase =20;
-        strBase =90;
-        defBase =30;
-        intBase =30;
-        spdBase =70;
         sight=4;
         moveSpeedMin=.15f;
         moveSpeed=.12f;
         moveSpeedMax =.10f;
-        name= "Krabby";
-        icons= ImageLoader.en5;
-        icon=icons[0];
-        //iconSet=1;
-        genLevel();
-        genStats();
-        loadIcon();
+        body.setIcons(ImageLoader.en5);
+        load("Krabby",new int[]{40,20,90,30,30,70});
     }
 }

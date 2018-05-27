@@ -22,7 +22,7 @@ public class AimRightComm extends Command {
     public void execute() {
         if(pressed()){
             if(cls.equals(MapState.class)){
-                player.setAim(Direction.Facing.East);
+                player.body.setFacing(Direction.Facing.East);
 
             }
         }

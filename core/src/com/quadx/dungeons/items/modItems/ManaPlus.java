@@ -11,7 +11,7 @@ import static com.quadx.dungeons.Game.player;
 public class ManaPlus extends ModItem {
     public ManaPlus(){
         name="Mana+";
-        int size= (int) (3*((double)player.getManaMax()/(double)500));
+        int size= (int) (3*((double)player.st.getManaMax()/(double)500));
         if(size==0){
             icon= ImageLoader.mana[0];
             manamod=60;

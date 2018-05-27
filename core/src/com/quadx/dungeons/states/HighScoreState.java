@@ -203,7 +203,7 @@ public class HighScoreState extends State {
         try {
 
             StatManager.killer.setFront(2);
-            ArrayList<String> list = StatManager.killer.getStatsList();
+            ArrayList<String> list = StatManager.killer.st.getStatsList();
             drawPlayerStats = true;
 
             sb.draw(StatManager.killer.getIcon(), killerx, viewY + 100);

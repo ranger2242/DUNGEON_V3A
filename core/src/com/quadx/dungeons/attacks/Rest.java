@@ -28,7 +28,7 @@ public class Rest extends Attack {
     }
     public void runAttackMod() {
         int d=(cost*3)/4;
-        player.addEnergy(d);
+       // player.addEnergy(d);
         new HoverText("+"+d,Color.YELLOW ,player.fixed(),false);
     }
 }

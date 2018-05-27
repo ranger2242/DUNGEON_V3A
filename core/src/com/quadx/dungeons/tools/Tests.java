@@ -8,7 +8,7 @@ import com.quadx.dungeons.Game;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
-import com.quadx.dungeons.monsters.*;
+import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
 import com.quadx.dungeons.states.mapstate.Map2State;
 import com.quadx.dungeons.tools.timers.Delta;
@@ -145,7 +145,7 @@ public class Tests {
     }
 
     public static void testsMonsterStats(){
-        ArrayList<Monster> mons=new  ArrayList<>();
+       /* ArrayList<Monster> mons=new  ArrayList<>();
         mons.add(new Anortih());
         mons.add(new Dodrio());
         mons.add(new Dragonair());
@@ -197,7 +197,7 @@ public class Tests {
                 console(out);
             }
         }
-
+*/
     }
 
     public static void testEquipmentRates() {
@@ -291,17 +291,8 @@ public class Tests {
 
         if(comm.get(0).equals("p")){
             if (comm.get(1).equals("maxstat")) {
-                int a=10000;
-                player.setHp(a);
-                player.setHpMax(a);
-                player.setMana(a);
-                player.setManaMax(a);
-                player.setEnergy(a);
-                player.setEnergyMax(a);
-                player.setStrength(a);
-                player.setDefense(a);
-                player.setIntel(a);
-                player.setSpeed(a);
+                player.st.maxStat();
+
                 outText="Stats Maxed.";
             }
             if(comm.get(1).equals("item")){
@@ -334,40 +325,40 @@ public class Tests {
             }
             if(comm.get(1).equals("hp")){
                 int a=Integer.parseInt(comm.get(2));
-                player.setHpMax(a);
-                player.setHp(a);
+                player.st.setHpMax(a);
+                player.st.setHp(a);
                 outText="Hp set to "+a;
             }
             if(comm.get(1).equals("mana")){
                 int a=Integer.parseInt(comm.get(2));
-                player.setManaMax(a);
-                player.setMana(a);
+                player.st.setManaMax(a);
+                player.st.setMana(a);
                 outText="M set to "+a;
             }
             if(comm.get(1).equals("e")){
                 int a=Integer.parseInt(comm.get(2));
-                player.setHpMax(a);
-                player.setHp(a);
+                player.st.setHpMax(a);
+                player.st.setHp(a);
                 outText="E set to "+a;
             }
             if(comm.get(1).equals("att")){
                 int a=Integer.parseInt(comm.get(2));
-                player.setStrength(a);
+                player.st.setStrength(a);
                 outText="ATT set to "+a;
             }
             if(comm.get(1).equals("int")){
                 int a=Integer.parseInt(comm.get(2));
-                player.setIntel(a);
+                player.st.setIntel(a);
                 outText="INT set to "+a;
             }
             if(comm.get(1).equals("def")){
                 int a=Integer.parseInt(comm.get(2));
-                player.setDefense(a);
+                player.st.setDefense(a);
                 outText="DEF set to "+a;
             }
             if(comm.get(1).equals("spd")){
                 int a=Integer.parseInt(comm.get(2));
-                player.setSpeed(a);
+                player.st.setSpeed(a);
                 outText="SPD set to "+a;
             }
         }

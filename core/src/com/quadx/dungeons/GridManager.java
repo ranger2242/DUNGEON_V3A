@@ -22,11 +22,11 @@ import com.quadx.dungeons.tools.timers.Timer;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.quadx.dungeons.tools.timers.Time.ft;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.states.mapstate.MapState.*;
 import static com.quadx.dungeons.tools.ImageLoader.a;
 import static com.quadx.dungeons.tools.gui.HUD.out;
+import static com.quadx.dungeons.tools.timers.Time.ft;
 
 public class GridManager {
     public static final Random rn = new Random();
@@ -96,13 +96,13 @@ public class GridManager {
             State.camController.setSnapCam(true);
             Matrix<Integer> rotator = new Matrix<>(Integer.class);
             dispArray = rotator.rotateMatrix(dispArray, res, left);
-            player.setPos(rotateCords(left, player.pos()));
+            player.body.setPos(rotateCords(left, player.pos()));
             warp.set(rotateCords(left, warp));
             shop.set(rotateCords(left, shop));
-            player.setAbsPos(new Vector2(player.pos().x * cellW, player.pos().y * cellW));
+            player.body.setAbs(new Vector2(player.pos().x * cellW, player.pos().y * cellW));
             for (Monster m : monsterList) {
-                m.setPos(rotateCords(left, m.pos()));
-                m.setAbsPos(new Vector2(m.pos().x * cellW, m.pos().y * cellW));
+                m.body.setPos(rotateCords(left, m.pos()));
+                m.body.setPos(new Vector2(m.pos().x * cellW, m.pos().y * cellW));
             }
             hm.calcCorners(dispArray);
             hm.getCells();
@@ -262,7 +262,7 @@ public class GridManager {
         for(Cell cell:  getSurroundingCells(c.abs(),2)){
             cell.setWater(false);
         }
-        player.setAbsPos(new Vector2(c.abs()));
+        player.body.setAbs(new Vector2(c.abs()));
         for(Cell cell: getSurroundingCells(player.abs(),8)){
             if(cell.hasMon()) {
                 monsterList.remove(cell.removeMon());
@@ -366,7 +366,7 @@ public class GridManager {
             for (int j = 0; j < jj; j++) {
                 int nx = 0;
                 int ny = 0;
-                switch (player.facing) {
+                switch (player.body.getFacing()) {
                     case North:
                     case Northwest:
                     case Northeast: {

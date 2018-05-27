@@ -28,7 +28,7 @@ public abstract class Attack {
     public static int pos = 0;
 
     private static Delta dShowInfo = new Delta(10 * ft);
-    private static Delta dUse = new Delta(20 * ft);
+    private static Delta dUse = new Delta(10 * ft);
     protected HitBoxShape hitBoxShape = null;
     protected CostType type;
     private Texture icon;
@@ -109,7 +109,7 @@ public abstract class Attack {
                 checkLvlUp();
                 dUse.reset();
             } else
-                new HoverText("-!-", SECOND, Color.MAGENTA, player.abs(), true);
+                new HoverText("-!-", SECOND, Color.MAGENTA, player.fixed(), true);
         }
     }
 

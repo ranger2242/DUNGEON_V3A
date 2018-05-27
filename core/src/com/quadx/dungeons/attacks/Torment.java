@@ -25,9 +25,9 @@ public class Torment extends Attack {
         setIcon(ImageLoader.attacks.get(11));
     }
     public void runAttackMod() {
-        player.setEnergyMax((int) (player.getEnergyMax()/2));
+        /*player.setEnergyMax((int) (player.getEnergyMax()/2));
         player.setDefense((int) (player.getDefense()*1.5f));
-        player.setSpeed((int) (player.getSpeed()*1.5f));
+        player.setSpeed((int) (player.getSpeed()*1.5f));*/
         int index=-1;
         for(Attack a: player.attackList){
             if(a.getClass().equals(Torment.class)){

@@ -7,21 +7,11 @@ import com.quadx.dungeons.tools.ImageLoader;
  */
 public class Gengar extends Monster {
     public Gengar(){
-        power=100;
-        hpBase =100;
-        strBase =10;
-        defBase =100;
-        intBase =100;
-        spdBase =60;
         sight=4;
         moveSpeedMin=.15f;
         moveSpeed=.12f;
         moveSpeedMax =.08f;
-        name= "Gengar";
-        icons= ImageLoader.en7;
-        icon=icons[0];
-        genLevel();
-        genStats();
-        loadIcon();
+        body.setIcons(ImageLoader.en7);
+        load("Gengar", new int[]{100,100,10,100,100,60});
     }
 }

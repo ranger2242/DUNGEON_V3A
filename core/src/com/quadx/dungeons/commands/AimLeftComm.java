@@ -21,7 +21,7 @@ public class AimLeftComm extends Command {
     public void execute() {
         if(pressed()){
             if(cls.equals(MapState.class)){
-                player.setAim(Direction.Facing.West);//fuck
+                player.body.setFacing(Direction.Facing.West);//fuck
             }
         }
     }

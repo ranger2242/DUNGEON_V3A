@@ -34,6 +34,24 @@ public abstract class Ability {
         if (Warp.isEnabled())
             Warp.updateTimeCounter();
     }
+    void apply(){
+        String[] sp=details.get(level+1).split(",");
+        int size=sp.length;
+        float[] mu=new float[size];
+        for(int i=0;i<size;i++){
+            mu[i]=Float.parseFloat(sp[i]);
+        }
+        player.st.setxHpMax(mu[0]);
+        player.st.setxHpRegen(mu[1]);
+        player.st.setxManaMax(mu[2]);
+        player.st.setxManaRegen(mu[3]);
+        player.st.setxEnergyMax(mu[4]);
+        player.st.setxEnergyRegen(mu[5]);
+        player.st.setxStrength(mu[6]);
+        player.st.setxDefense(mu[7]);
+        player.st.setxIntel(mu[8]);
+        player.st.setxSpeed(mu[9]);
+    }
 
     public void setDetails(ArrayList<String> d) {
         details.clear();

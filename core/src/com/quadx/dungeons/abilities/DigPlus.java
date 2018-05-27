@@ -1,7 +1,6 @@
 package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.quadx.dungeons.Game;
 
 import java.util.ArrayList;
 
@@ -24,7 +23,7 @@ public class DigPlus extends Ability {
     public void onActivate() {
         enabled=true;
         out("----------------------------------");
-        out(Game.player.getName()+" activated the Dig+ ability!");
+        //out(Game.player.getName()+" activated the Dig+ ability!");
         out("DIG!");
         hoverName();
         //super.onActivate();

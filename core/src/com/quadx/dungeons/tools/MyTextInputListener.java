@@ -6,7 +6,7 @@ import com.quadx.dungeons.Game;
 public class MyTextInputListener implements Input.TextInputListener {
     @Override
     public void input (String text) {
-        Game.player.setName(text);
+        Game.player.st.setName(text);
     }
 
     @Override

@@ -75,7 +75,7 @@ public class Anim {
         pos.x = dx < vel ? dest.x : pos.x + velcomp.x;
         pos.y = dy < vel ? dest.y : pos.y + velcomp.y;
         if(!end && flag == Type.MovePlayer) {
-            player.setAbsPos(pos);
+            player.body.setAbs(pos);
         }
     }
 

@@ -37,11 +37,11 @@ public class AttackMod {
                 break;
             }
             case 2:{//Heal
-                int total= (int) (player.getMana()+player.getEnergy()+player.getHp());
+               /* int total= (int) (player.getMana()+player.getEnergy()+player.getHp());
                 if(total>player.getHpMax())total= (int) player.getHpMax();
                 player.setHp(total);
                 player.setMana(0);
-                player.setEnergy(0);
+                player.setEnergy(0);*/
                 break;
             }
             case 3:{//BLIND
@@ -63,29 +63,29 @@ public class AttackMod {
             }
             case 6: {//PROTECT
                 player.protect =true;
-                out(player.getName()+" is protected from damage!");
+                out(player.st.getName()+" is protected from damage!");
                 break;
             }
             case 7:{//SACRIFICE
                 if(dtSacrifice>1) {
-                    player.setHp(player.getHp() - player.getHpMax());
+                    //player.setHp(player.getHp() - player.getHpMax());
                     sacrifice = true;
                     dtSacrifice=0;
                 }
                 break;
             }
             case 8: {//REST
-                if(player.getEnergy()< player.getEnergyMax()) {
+                /*if(player.getEnergy()< player.getEnergyMax()) {
                     player.setEnergy(player.getEnergy() + a.getCost()/2);
                     if(player.getEnergy()> player.getEnergyMax())
                         player.setEnergy(player.getEnergyMax());
-                }
+                }*/
                 break;
             }
             case 9:{//FOCUS;
-                    player.setMana(player.getMana() + a.getCost()/2);
+              /*      player.setMana(player.getMana() + a.getCost()/2);
                     if(player.getMana()> player.getManaMax())
-                        player.setMana(player.getManaMax());
+                        player.setMana(player.getManaMax());*/
                 break;
 
             }

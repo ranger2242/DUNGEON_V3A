@@ -106,28 +106,14 @@ public class MapStateRender extends MapState {
         if(Protect.active)
         sr.setColor(0,0,1,1/3f);
         else
-            sr.setColor(1,0,0,(1-(player.getHp() / player.getHpMax()))/2.8f);
+            sr.setColor(player.getDeathShade());
 
         sr.rect(view.x,viewY,WIDTH,HEIGHT);
         sr.end();
         Gdx.gl.glDisable(GL_BLEND);
         // end transparency------------------------------------------------------------
         sr.begin(ShapeRenderer.ShapeType.Filled);
-        //draw player stat bars
-        sr.setColor(0f, 1f, 0f, 1);
-        try {
-            Rectangle[] bars = HUD.playerStatBars;
-            if (player.getHp() < player.getHpMax() / 2) {
-                sr.setColor(1f, 0f, 0f, 1);
-            }
-            sr.rect(bars[0]);
-            sr.setColor(0f, 0f, 1f, 1);
-            sr.rect(bars[1]);
-            sr.setColor(1f, 1f, 0, 1);
-            sr.rect(bars[2]);
-        }catch (NullPointerException ignored){}
-        sr.end();
-
+        player.renderStatBars(sr);
 
         //line draw functions---------------------------------------------------
         sr.begin(ShapeRenderer.ShapeType.Line);
@@ -192,8 +178,9 @@ public class MapStateRender extends MapState {
         try {
         if (HUD.dPopup.isDone()) {
                 Vector2 v=new Vector2(player.abs());
-                v.y+=40+player.getIcon().getHeight();
-                v.x+=(player.getIcon().getWidth()/2);
+                Vector2 ic= player.body.getIconDim();
+                v.y+=40+ic.y;
+                v.x+=ic.x/2;
                 sb.draw(HUD.lootPopup,  v.x, GridManager.fixY(v));
             }
         } catch (NullPointerException ignored) {}
@@ -294,7 +281,7 @@ public class MapStateRender extends MapState {
             //draw player hitbox
             if (Tests.showhitbox) {
                 sr.setColor(Color.BLUE);
-                sr.rect(player.getHitBox());
+                sr.rect(player.body.getHitBox());
             }
         }
         try {
@@ -307,7 +294,7 @@ public class MapStateRender extends MapState {
                         monAgroBoxes.add(m.getAgroBox());
                         //draw monster hitbox
                         sr.setColor(Color.RED);
-                        sr.rect(m.getHitBox());
+                        sr.rect(m.body.getHitBox());
                     }
                     //draw healthbars
                     sr.setColor(Color.DARK_GRAY);
@@ -378,8 +365,7 @@ public class MapStateRender extends MapState {
         sbDrawParticleEffects(sb);
         //draw player
         player.render(sb);
-        Vector2 v = player.getTexturePos();
-        sb.draw(player.getIcon(), v.x, v.y);
+
         for(Illusion.Dummy d:Illusion.dummies){
             sb.draw(d.icon,d.absPos.x, fixY(d.absPos));
         }
@@ -389,7 +375,7 @@ public class MapStateRender extends MapState {
             for (Monster m : Monster.mdrawList) { // TODO fix this loop to run only monsters on screen
                 if (m != null) {
                     //draw icon
-                    sb.draw(m.getIcon(), m.getTexturePos().x,m.getTexturePos().y);
+                    sb.draw(m.getIcon(), m.fixed().x,m.fixed().y);
                     //draw monster textQueue
                     for(Text t: m.getInfoOverlay().texts) {
                         Game.setFontSize(t.size);

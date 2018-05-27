@@ -52,6 +52,12 @@ public class EMath {
             return Math.ceil(d);
         }
     }
+    public static Vector2 round(Vector2 v){
+        Vector2 pos=new Vector2(v);
+        double x =EMath.round(pos.x);
+        double y =EMath.round(pos.y);
+        return new Vector2((float)x,(float)y);
+    }
 
     public static int roundToNearest45(int ang){
         int[] arr= new int[]{0,45,90,135,180,225,270,315,360};
@@ -92,7 +98,7 @@ public class EMath {
             min=a/mid;
             max=b/mid;
         }
-        while(r<min ||r>max)
+        for(int i=0;i<10 && !(r<min ||r>max);i++)
             r=rn.nextGaussian();
 
         return (int)mid*r;

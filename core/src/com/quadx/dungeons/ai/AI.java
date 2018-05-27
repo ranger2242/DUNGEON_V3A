@@ -13,7 +13,7 @@ public class AI {
 
         public static State determine(Monster m) {
             State s = INVALID;
-            if (m.getAgroBox().overlaps(player.getHitBox()))
+            if (m.getAgroBox().overlaps(player.body.getHitBox()))
                 s = AGRO;
             if (m.isHit())
                 s = AGRO;

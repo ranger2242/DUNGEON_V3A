@@ -7,21 +7,11 @@ import com.quadx.dungeons.tools.ImageLoader;
  */
 public class Dodrio extends Monster {
     public Dodrio(){
-        power=90;
-        hpBase =100;
-        strBase =120;
-        defBase =60;
-        intBase =80;
-        spdBase =90;
         sight=8;
         moveSpeedMin=.10f;
         moveSpeed=.08f;
         moveSpeedMax =.07f;
-        name= "Dodrio";
-        icons= ImageLoader.en6;
-        icon=icons[0];
-        genLevel();
-        genStats();
-        loadIcon();
+        body.setIcons(ImageLoader.en6);
+        load("Dodrio",new int[]{90,100,120,60,80,90});
     }
 }

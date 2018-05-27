@@ -46,7 +46,7 @@ public class Lightning extends Attack {
         for(Monster m:monsterList){
             if(player.pos().dst(m.pos())<10){
                 hit.add(m);
-                edges.add(new Line(player.getFixPos(), m.fixed()));
+                edges.add(new Line(player.fixed(), m.fixed()));
                 m.takeDamage();
             }
         }}catch (ConcurrentModificationException ignored){}

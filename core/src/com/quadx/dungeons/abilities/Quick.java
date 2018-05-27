@@ -1,8 +1,6 @@
 package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.quadx.dungeons.Game;
-import com.quadx.dungeons.attacks.Drain;
 import com.quadx.dungeons.tools.ImageLoader;
 
 import static com.quadx.dungeons.Game.equipSets;
@@ -37,50 +35,31 @@ public class Quick extends Ability {
     @Override
     public void l1() {
         level=1;
-        Game.player.setxMoveSpeed(.3);
-        Game.player.setxSpeed(2);
-        //Game.player.setxEnergyRegen(1.5);
-        Game.player.setxManaRegen(1.5);
-        Game.player.setxDefense(.75);
-        Game.player.setxIntel(.75);
-        player.attackList.add(new Drain());
+        apply();
     }
 
     @Override
     public void l2() {
-        player.setxMoveSpeed(.8);
-        player.setxSpeed(1.3);
-        player.setxManaRegen(1.1);
+        apply();
         player.pickupItem(equipSets.ref[3].get(0));
-
     }
 
     @Override
     public void l3() {
-        player.setxMoveSpeed(.7);
-        player.setxSpeed(1.5);
-        player.setxHpRegen(1.2);
-        //player.setxEnergyRegen(1.2);
-        player.pickupItem(equipSets.ref[3].get(3));
+        apply();
+        player.pickupItem(equipSets.ref[3].get(1));
     }
 
     @Override
     public void l4() {
-        player.setxHpRegen(1.4);
-        player.setxManaRegen(1.3);
-        player.setxMoveSpeed(.5);
-        player.setxSpeed(1.6);
+        apply();
         player.pickupItem(equipSets.ref[3].get(2));
     }
 
     @Override
     public void l5() {
-        player.setxSpeed(2);
-        player.setxMoveSpeed(.4);
-        player.setxHpMax(1.6);
-        player.setxManaRegen(1.4);
-        //player.setxEnergyRegen(1.4);
-        player.pickupItem(equipSets.ref[3].get(1));
+        apply();
+        player.pickupItem(equipSets.ref[3].get(3));
         player.maxSec=3;
     }
 

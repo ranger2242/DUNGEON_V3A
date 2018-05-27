@@ -10,7 +10,7 @@ import static com.quadx.dungeons.Game.player;
 public class EnergyPlus extends ModItem {
     public EnergyPlus(){
         name="Energy+";
-        int size= (int) (3*((double)player.getEnergyMax()/(double)500));
+        int size= (int) (3*((double)player.st.getEnergyMax()/(double)500));
         if(size==0){
             icon= ImageLoader.energy[0];
             emod=60;

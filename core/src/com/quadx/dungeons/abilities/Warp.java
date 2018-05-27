@@ -22,7 +22,7 @@ public class Warp extends Ability {
         cooldown = 2f;
         enabled = true;
         out("----------------------------------");
-        out(player.getName() + " activated the WARP ability!");
+        //out(player.getName() + " activated the WARP ability!");
         out("Warp 10 spaces forward on demand.");
         out("Cost 10E");
         out("Cooldown 4s");

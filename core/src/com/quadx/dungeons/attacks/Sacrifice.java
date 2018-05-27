@@ -29,9 +29,9 @@ public class Sacrifice extends Attack {
     }
 
     public void runAttackMod() {
-        player.setHpMax((int) (player.getHpMax()/2));
+        /*player.setHpMax((int) (player.getHpMax()/2));
         player.setIntel((int) (player.getIntel()*1.5f));
-        player.setStrength((int) (player.getStrength()*1.5f));
+        player.setStrength((int) (player.getStrength()*1.5f));*/
         int index=-1;
         for(Attack a: player.attackList){
             if(a.getClass().equals(Sacrifice.class)){

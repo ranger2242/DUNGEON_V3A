@@ -66,7 +66,7 @@ public class HUD {
         hud.rects.add(new Rectangle(view.x, view.y, WIDTH, 207));
         //player score
         int x= (int) ((view.x +20));
-        String score="SCORE: " + player.getPoints() + "";
+        String score="SCORE: " + player.st.getPoints(player) + "";
         hud.texts.add(new Text(score, new Vector2(x, (view.y + 200)), Color.GRAY, 1));
         String scoreH;
         try {
@@ -124,24 +124,27 @@ public class HUD {
             int x= (int) (pos.x+xoff);
             try {
                 if (type == Attack.CostType.Mana) {
-                    if (player.getMana() >= a.getCost()) {
+                    float m = player.st.getMana();
+                    if (m >= a.getCost()) {
                         io.textures.add(a.getIcon());
                         io.texturePos.add(new Vector2( x, pos.y+18));
                         if (i <= 7)
                             io.texts.add(new Text( (i + 1) + "", new Vector2( x, pos.y+28),Color.WHITE,1));
                     } else {
-                        int rem = (int) (a.getCost() - player.getMana());
+                        int rem = (int) (a.getCost() - m);
                         io.texts.add(new Text( rem + "", new Vector2(x + 52 / 2, pos.y + 40),Color.WHITE,1));
                     }
                     io.texts.add(new Text("M" + a.getCost(), new Vector2(x, pos.y),Color.WHITE,1));
                 } else if (type == Attack.CostType.Energy) {
-                    if (player.getEnergy() >= a.getCost()) {
+                    float e = player.st.getEnergy();
+
+                    if (e >= a.getCost()) {
                         io.textures.add(a.getIcon());
                         io.texturePos.add(new Vector2( x, pos.y+18));
                         if (i <= 7)
                             io.texts.add(new Text( (i + 1) + "", new Vector2( x, pos.y + 28),Color.WHITE,1));
                     } else {
-                        int rem = (int) (a.getCost() - player.getEnergy());
+                        int rem = (int) (a.getCost() - e);
                         io.texts.add(new Text( rem + "", new Vector2(x + 52 / 2, pos.y + 40),Color.WHITE,1));
                     }
                     io.texts.add(new Text("E" + a.getCost(), new Vector2(x, pos.y),Color.WHITE,1));
@@ -236,18 +239,19 @@ public class HUD {
     static void generatePlayerStatBars(Vector2 pos) {
         float h = 10;
         float barMax = (WIDTH / 3) - 10;
-        float pHPBar = ( player.getHp() /  player.getHpMax()) * barMax;
-        float pManaBar = ( player.getMana() /  player.getManaMax()) * barMax;
-        float pEnergyBar = ( player.getEnergy() /  player.getEnergyMax()) * barMax;
+        float pHPBar = player.st.getPercentHP() * barMax;
+        float pManaBar = player.st.getPercentMana() * barMax;
+        float pEnergyBar =  player.st.getPercentEnergy()* barMax;
         playerStatBars[0] = new Rectangle(pos.x, pos.y + 30, pHPBar, h);
         playerStatBars[1] = new Rectangle(pos.x, pos.y + 15, pManaBar, h);
         playerStatBars[2] = new Rectangle(pos.x, pos.y, pEnergyBar, h);
     }
     static public Vector2[] generateStatListPos(Vector2 pos){
         //updateMapState player stat list pos
-        statsPos= new Vector2[player.getStatsList().size()];
+        ArrayList<String> list =new ArrayList<>(player.st.getStatsList(player));
+        statsPos= new Vector2[list.size()];
         int last=0;
-        for(int i=0;i<player.getStatsList().size();i++){
+        for(int i=0;i<list.size();i++){
             int space= 20;
             if(i<2 || i>9)
                 space=10;
