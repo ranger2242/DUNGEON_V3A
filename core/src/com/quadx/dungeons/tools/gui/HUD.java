@@ -160,6 +160,7 @@ public class HUD {
         if (!player.isInvEmpty()) {
             try {
                 Item item = player.inv.getSelectedItem();
+                item.loadIcon();
                 invOverlay = new InfoOverlay();
                 //if (prevItem != item) {
                 String name = (Inventory.pos) + ":" + item.getName();

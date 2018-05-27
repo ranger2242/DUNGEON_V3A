@@ -56,3 +56,8 @@ BUILD 2018.0000006
 -screen wrapping breaks occasionally
 -Refactoring Inventory from static class to object
 -optimized player update
+
+BUILD 2018.0000007
+-(fixed)running out of mana crashes game
+-refactored out Body variables from Player and Monster for reuse
+-refactoring Stats out of Player and Monster to remove duplicate code

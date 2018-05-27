@@ -38,7 +38,7 @@ public class Body {
         }else{
             v=
                     (float) (6 + .0136 * monster.st.getSpeed()
-                            + .000005 * Math.pow(monster.st.getSpeed(), 2)) * (3f / 4f);
+                            + .000005 * Math.pow(monster.st.getSpeed(), 2)) * (3f / 4f) ;
         }
         velocity = v;
     }
@@ -66,8 +66,8 @@ public class Body {
         a.x = boundW(a.x, max, getIconDim().x);
         a.y = boundW(a.y, max, getIconDim().y);
         absPos.set(a);
-        float x = boundW((float) EMath.round(absPos.x / cellW));
-        float y = boundW((float) EMath.round(absPos.y / cellW));
+        float y = (float) EMath.round(absPos.y / cellW);
+        float x = (float) EMath.round(absPos.x / cellW);
         setPos(new Vector2(x, y));
     }
     public void update(float dt) {

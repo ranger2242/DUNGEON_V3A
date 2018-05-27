@@ -14,7 +14,7 @@ public class SpeedPlus extends ModItem {
         ptColor= Color.GREEN;
         speedmod+=1;
         cost=3500 ;
-        setIcon(new Texture(FilePaths.getPath("images\\icons\\items\\icSpd+.png")));
+        setIcon(new Texture(FilePaths.getPath("images\\icons\\items\\icSpeed+.png")));
         canCluster=true;
 
     }

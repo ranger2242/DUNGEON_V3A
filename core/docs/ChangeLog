@@ -1,18 +1,22 @@
 COMPLETE===========================================================
-BUILD 2018.0000007
--(fixed)running out of mana crashes game
--refactored out Body variables from Player and Monster for reuse
--refactoring Stats out of Player and Monster to remove duplicate code
+BUILD 2018.0000008
+-monster digging fixed with random fatigue
+-monster aggro fixed
+-corrupted player stats in highscorestate
+-added spawn limits
+-fixed stat item icons
+
 WORKING ON==========================================================
 
 -refactor HUD class
 -optimizing monster class
 -monster update
--corrupted player stats in highscorestate
 -equipment icons not loading on pickup
 -shooting the left edge breaks hitbox placement
 -hitbox doesnt always show on screen
 -items in shop inventory default to boxes after sell
+-pack all textures into texture atlas
+-pool all particle effects
 
 
 
@@ -23,6 +27,7 @@ LOW PRIORITY=======================================================
 -drop spellbook when max attack bar is exceed
 -fix controller support
 -canSpawn() ALWAYS FALSE UNLESS OBSERVED
+-strength does nothing in damage calculation
 
 BUGS============================================================
 

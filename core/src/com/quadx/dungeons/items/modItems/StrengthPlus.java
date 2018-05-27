@@ -14,7 +14,7 @@ public class StrengthPlus extends ModItem {
         name="Strength+";
         strmod =1;
         cost=3500;
-        setIcon(new Texture(FilePaths.getPath("images\\icons\\items\\icAtt+.png")));
+        setIcon(new Texture(FilePaths.getPath("images\\icons\\items\\icStrength+.png")));
         canCluster=true;
 
     }

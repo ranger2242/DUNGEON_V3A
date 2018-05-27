@@ -14,7 +14,7 @@ public class IntPlus extends ModItem {
         ptColor= Color.PURPLE;
         intelmod+=1;
         cost=3500;
-        setIcon(new Texture(FilePaths.getPath("images\\icons\\items\\icInt+.png")));
+        setIcon(new Texture(FilePaths.getPath("images\\icons\\items\\icIntel+.png")));
         canCluster=true;
     }
 

@@ -405,11 +405,11 @@ public class Monster {
         checkIfDead();
     }
 
-    static boolean isListMaxed() {
-        return monsterList.size() >= 120;
+    public static boolean isListMaxed() {
+        return monsterList.size() >= Tests.spawnLimit;
     }
 
-    static boolean canSpawn() {
+    public static boolean canSpawn() {
         boolean b = Tests.spawn && !isListMaxed();
         out("Spawn:" + b + " " + monsterList.size());//ALWAYS FALSE UNLESS OBSERVED
         return b;
@@ -523,6 +523,7 @@ public class Monster {
             angle = (float) Math.toRadians(EMath.angle(abs(), player.abs()) + 180);
         if (dir)
             angle += Math.PI;
+        angle += Math.PI;
         facing = Direction.getDirection(angle);
         try {
             move(Direction.getVector(facing));
@@ -551,17 +552,14 @@ public class Monster {
         Vector2 comp = Physics.getVector(body.getVelMag(), abs(), end);
         comp.scl((float) calcMoveSpeed());
 
-        Vector2 pos = new Vector2(abs()).scl(1 / cellW);
-        pos.set(EMath.round(pos));
-        Cell c = dispArray(pos);
-        if (c.isWater() || c.isClear() && (!c.hasMon() || (prevPos.x == x && prevPos.y == y))) {
+        //pos.set(EMath.round(pos));
+        Cell c = dispArray(pos());
+        if ((c.isWater() || c.isClear()) && (!c.hasMon() || (prevPos.x == pos().x && prevPos.y == pos().y))) {
             Vector2 v = new Vector2(abs()).add(comp);
             body.setAbs(v);
-        } else {
-            if (rn.nextFloat() < .05)
-                gm.clearArea(x, y, false);
         }
-
+        if (c.isWall() && rn.nextBoolean())
+            gm.clearArea(pos().x, pos().y, false);
     }
 
     public void move() {//calculates move direction
@@ -609,6 +607,7 @@ public class Monster {
         if (invincable)
             dInvincibility.update(dt);
 
+        body.update(dt);
         checkAgro();
         setSights();
         setHUDOverlay();

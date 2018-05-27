@@ -487,6 +487,7 @@ public class Player {
         attackList.add(new Dash());
 
         st.fullHeal();
+        pickupItem(new SpellBook());
     }
 
     public void checkLvlUp() {
