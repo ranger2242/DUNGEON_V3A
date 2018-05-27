@@ -14,7 +14,7 @@ public class DefPlus extends ModItem {
         ptColor= Color.BLUE;
         defensemod+=1;
         cost=3500;
-        setIcon(new Texture(FilePaths.getPath("images\\icons\\items\\icDef+.png")));
+        setIcon(new Texture(FilePaths.getPath("images\\icons\\items\\icDefense+.png")));
         canCluster=true;
     }
 

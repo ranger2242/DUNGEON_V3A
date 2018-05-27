@@ -91,7 +91,7 @@ public class GridManager {
         return v;
     }
 
-    public static void rotateMap(boolean left) {
+    public static void rotateMap(boolean left) { // refactor this
         if (dRotate.isDone()) {
             State.camController.setSnapCam(true);
             Matrix<Integer> rotator = new Matrix<>(Integer.class);
@@ -242,7 +242,7 @@ public class GridManager {
     private static void plotMonsters() {
         monsterList.clear();
         int mtotal = rn.nextInt(20) + 10;
-        for (int i = 0; i < mtotal && Tests.spawn;i++) {
+        for (int i = 0; i < mtotal && Tests.spawn; i++) {
             Cell cell = dispArray[resInt()][resInt()];
                 Vector2 v=new Vector2(cell.abs());
 
@@ -253,7 +253,12 @@ public class GridManager {
             float[] p= pts.getVerticies();
             for(int j=0;j<p.length;j+=2){
                 Vector2 a= new Vector2(p[j],p[j+1]);
-                dispArray(a).setMonster(Monster.getNew(a));
+                Monster m = Monster.getNew(a);
+
+                if (!Monster.canSpawn()) {
+                    dispArray(a).setMonster(Monster.getNew(a));
+                    monsterList.add(m);
+                }
             }
         }
     }

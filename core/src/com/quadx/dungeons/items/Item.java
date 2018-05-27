@@ -178,6 +178,8 @@ public class Item
     public void loadIcon() {
         if(isEquip)
             loadIcon(getType());
+        else if (isSpell)
+            loadIcon("SpellBook");
         else
             loadIcon(name);
         if(icon==null)
