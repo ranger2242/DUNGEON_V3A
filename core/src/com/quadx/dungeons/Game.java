@@ -122,8 +122,15 @@ public class Game extends ApplicationAdapter implements ControllerListener {
         return font;
     }
 
-
-
+    public float getHpMax(){
+        return 0;
+    }
+    public float  getEnergyMax(){
+        return 0;
+    }
+    public float getManaMax(){
+        return 0;
+    }
     public static void console(String s) {
         System.out.println(s);
     }

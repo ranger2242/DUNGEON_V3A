@@ -42,7 +42,7 @@ public class Drain extends Attack {
         float[] p = new float[6];
         float base = 4;
         float height = 7;
-        Vector2 v= new Vector2(player.body.getIconDim()).scl(.5f);
+        Vector2 v= new Vector2(player.body.getIconsDim()).scl(.5f);
         float cx = player.abs().x,
                 cy = player.abs().y;
         switch (player.body.getFacing()) {

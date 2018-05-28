@@ -14,6 +14,7 @@ import com.quadx.dungeons.attacks.Blind;
 import com.quadx.dungeons.attacks.Illusion;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.physics.Body;
+import com.quadx.dungeons.physics.Physics;
 import com.quadx.dungeons.shapes1_5.EMath;
 import com.quadx.dungeons.states.State;
 import com.quadx.dungeons.tools.Direction;
@@ -152,6 +153,7 @@ public class Monster {
         m.body.init();
         m.body.setMonster(m);
         m.body.setAbs(absPos);
+        m.dChangeDirection.finish();
         return m;
     }
 
@@ -206,7 +208,7 @@ public class Monster {
     }
 
     public Texture getIcon() {
-        return body.getIcon();
+        return body.getIcons();
     }
 
     public boolean isHit() {
@@ -558,8 +560,9 @@ public class Monster {
             Vector2 v = new Vector2(abs()).add(comp);
             body.setAbs(v);
         }
-        if (c.isWall() && rn.nextBoolean())
+        if (c.isWall() && rn.nextBoolean()) {
             gm.clearArea(pos().x, pos().y, false);
+        }
     }
 
     public void move() {//calculates move direction

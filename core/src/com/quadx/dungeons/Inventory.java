@@ -142,10 +142,10 @@ public class Inventory {
         pos= boundW(pos,player.invSize());
 
     }
-    private int f(float spread) {
+    private static int f(float spread) {
         return rn.nextInt((int) spread) * (rn.nextBoolean() ? -1 : 1);
     }
-    private Cell chooseDiscardCell(Vector2 p){
+    public static Cell chooseDiscardCell(Vector2 p){
         Cell cell;
         boolean samePos;
         do {
@@ -155,7 +155,7 @@ public class Inventory {
         } while (!cell.canPlaceItem() || samePos);
         return cell;
     }
-    private Vector2 cluster(Vector2 ref, float spread) {
+    private static Vector2 cluster(Vector2 ref, float spread) {
         ref.add(f(spread), f(spread));
         return bound(ref);
     }

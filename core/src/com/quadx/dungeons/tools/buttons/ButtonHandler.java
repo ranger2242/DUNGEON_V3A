@@ -1,6 +1,7 @@
 package com.quadx.dungeons.tools.buttons;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.commands.Command;
 
 import static com.quadx.dungeons.Game.commandList;
@@ -11,7 +12,7 @@ import static com.quadx.dungeons.Game.commandList;
 public abstract class ButtonHandler {
     static DebugKeys db=new DebugKeys();
 
-
+    Vector2 mpos=new Vector2();
 
     boolean prsd(int i){
         return Gdx.input.isKeyPressed(i);

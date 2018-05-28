@@ -1,12 +1,22 @@
 COMPLETE===========================================================
-BUILD 2018.0000008
--monster digging fixed with random fatigue
--monster aggro fixed
--corrupted player stats in highscorestate
--added spawn limits
--fixed stat item icons
+-add mine and object
+-made icons for mine, ore
+-mines can be vein specific to a stat item and
+    drop a random amount of items when hit
+
 
 WORKING ON==========================================================
+-create crafting state with inventory, build,and deconstruct view
+-add state parameters to appropriate command files
+-players shoot mines for gold, ore, stat items, and hypergem
+-hypergem makes all player stats x3 for short time RARE
+-ore is used to build armor or sell
+-crafting armor uses statboosting items and ore
+-1x statitem gives 2x armor stat improvement
+-requires different ore count per type of armor
+-deconstruct item for random loss
+-need icons for  hypergem, and vein USE TEXTURE ATLAS
+
 
 -refactor HUD class
 -optimizing monster class

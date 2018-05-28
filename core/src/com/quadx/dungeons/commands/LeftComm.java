@@ -2,10 +2,9 @@ package com.quadx.dungeons.commands;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.tools.Direction;
+import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 
 import static com.quadx.dungeons.Game.player;
 
@@ -26,7 +25,6 @@ public class LeftComm extends Command {
         if(pressed()){
             if (cls.equals(MapState.class)) {
                 if (player.canMove) {
-                    player.body.setFacing(Direction.Facing.West);
                     player.move(new Vector2(-1, 0));
                 }
             }

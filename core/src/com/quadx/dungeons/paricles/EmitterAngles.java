@@ -1,4 +1,4 @@
-package com.quadx.dungeons;
+package com.quadx.dungeons.paricles;
 
 /**
  * Created by Tom on 12/17/2015.

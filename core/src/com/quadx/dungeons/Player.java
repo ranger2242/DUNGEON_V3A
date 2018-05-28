@@ -14,11 +14,13 @@ import com.quadx.dungeons.abilities.WaterBreath;
 import com.quadx.dungeons.attacks.*;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.items.Mine;
 import com.quadx.dungeons.items.SpellBook;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.items.modItems.ModItem;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.physics.Body;
+import com.quadx.dungeons.physics.Physics;
 import com.quadx.dungeons.shapes1_5.Circle;
 import com.quadx.dungeons.shapes1_5.Line;
 import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
@@ -27,7 +29,7 @@ import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.states.mapstate.ParticleHandler;
+import com.quadx.dungeons.tools.Direction;
 import com.quadx.dungeons.tools.StatManager;
 import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.gui.HUD;
@@ -39,6 +41,7 @@ import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.Game.scr;
 import static com.quadx.dungeons.GridManager.*;
 import static com.quadx.dungeons.states.mapstate.MapState.*;
 import static com.quadx.dungeons.tools.ImageLoader.pl;
@@ -164,7 +167,15 @@ public class Player {
     public void setAbilityPoints(int abilityPoints) {
         this.abilityPoints += abilityPoints;
     }
+    public void setAimVector(Vector2 end, boolean overrideMouse) {
+        Vector2 start =new Vector2();
+        if(!overrideMouse) {
+            start=new Vector2(scr).scl(.5f);
+        }
+        double aim= Physics.getAngleRad(start,end);
+        body.setFacing(Direction.getDirection(aim));
 
+    }
     //ADDERS------------------------------------------------------------------
     public void addGold(int g) {
         gold += g;
@@ -311,7 +322,10 @@ public class Player {
     }
 
     public Attack getAttack() {
+        if(!attackList.isEmpty())
         return attackList.get(Attack.pos);
+        else
+            return new Flame();
     }
 
     public Illusion.Dummy getDummy() {
@@ -430,18 +444,20 @@ public class Player {
     }
 
     public void useItem(Item item) {
-        int[] mods = ((ModItem) item).runMod();
-        st.addItemMods(mods,fixed());
-        if (item.getClass().equals(Gold.class)) {
-            player.setGold(player.getGold() + item.getValue());
-            StatManager.totalGold += item.getValue();
-            out(st.getName() + " recieved " + item.getValue() + "G");
-            new HoverText(item.getValue() + "G", Color.GOLD, fixed(), false);
+        if(item instanceof ModItem) {
+            int[] mods = ((ModItem) item).runMod();
+            st.addItemMods(mods, fixed());
+            if (item.getClass().equals(Gold.class)) {
+                player.setGold(player.getGold() + item.getValue());
+                StatManager.totalGold += item.getValue();
+                out(st.getName() + " recieved " + item.getValue() + "G");
+                new HoverText(item.getValue() + "G", Color.GOLD, fixed(), false);
+             }
         }
     }
 
     public void pickupItem(Item item) {
-        item.loadIcon();
+//        item.loadIcon();
         if (isInvEmpty()) {
             Inventory.pos = 0;
         }
@@ -503,9 +519,9 @@ public class Player {
             abilityPoints++;
             p.add(0, -40);
             new HoverText("+1 Ability Point", Color.GREEN, p, true);
-            lvlupEffect = ParticleHandler.loadParticles("ptFlame", abs());
-            renderEffect = true;
-            lvlupEffect.start();
+            //lvlupEffect = ParticleHandler.loadParticles("ptFlame", abs());
+            //renderEffect = true;
+//            lvlupEffect.start();
             st.fullHeal();
         }
     }
@@ -604,10 +620,10 @@ public class Player {
         list.removeIf(x -> !(x.hasItem() || x.isWarp() || x.isShop()));
         for (Cell c : list) {
             if (c.hasItem()) {
-                out("ITEM");
-                Item item = c.getItem();
-                if (item != null)
-                    item.colliion(c.pos());
+                if(c.getItem() instanceof Mine){
+                    move(Physics.getVector(3,c.abs(),abs()));
+                }else
+                    c.removeItem();
             }
             if (c.isWarp()) {
                 MapState.warpToNext(true);
@@ -622,7 +638,7 @@ public class Player {
     //RENDER METHODS------------------------------------------------
     public void render(SpriteBatch sb) {
         renderEffect(sb);
-        sb.draw(body.getIcon(), fixed().x, fixed().y);
+        sb.draw(body.getIcons(), fixed().x, fixed().y);
     }
 
     private void renderEffect(SpriteBatch sb) {
@@ -750,7 +766,7 @@ public class Player {
                 Vector2 abs = abs();
                 Vector2 end = new Vector2(abs.x + (vel.x * dt), abs.y + (vel.y * dt));//endpoint of direction vector
                 int gridW = cellW * (res + 1);
-                Vector2 ic = body.getIconDim();
+                Vector2 ic = body.getIconsDim();
                 float c1 = end.x,
                         c2 = end.x + ic.x,
                         c3 = end.y,

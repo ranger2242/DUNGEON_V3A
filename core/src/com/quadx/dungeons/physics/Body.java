@@ -23,9 +23,10 @@ public class Body {
     private float velocity = 10;
     private boolean isPlayer=false;
     private Player player;
-    private Texture[] icons = new Texture[4];
-    private float max;//grid width
     private Monster monster;
+    private Texture[] icons = new Texture[4];
+    private Texture icon;
+
 
     private void calcVeloctiy() {
         float v;
@@ -43,13 +44,16 @@ public class Body {
         velocity = v;
     }
     public void init(){
-        max = res * cell.x;//grid width
+        facing= Direction.Facing.values()[rn.nextInt(Direction.Facing.values().length)];
     }
-    public void setPos(Vector2 v) {
+    private void setPos(Vector2 v) {
         pos.set(v);
     }
     public void setIcons(Texture[] a){
         icons=a;
+    }
+    public void setIcon(Texture a){
+        icon=a;
     }
     public void setFacing(Direction.Facing f){
         facing = f;
@@ -62,9 +66,10 @@ public class Body {
         this.monster=m;
     }
     public void setAbs(Vector2 a) {
+        Vector2 v = icon ==null? getIconsDim():getIconDim();
         float max = res * cellW;
-        a.x = boundW(a.x, max, getIconDim().x);
-        a.y = boundW(a.y, max, getIconDim().y);
+        a.x = boundW(a.x, max, v.x);
+        a.y = boundW(a.y, max, v.y);
         absPos.set(a);
         float y = (float) EMath.round(absPos.y / cellW);
         float x = (float) EMath.round(absPos.x / cellW);
@@ -76,6 +81,8 @@ public class Body {
     }
 
     public Vector2 wrapPos(Vector2 absPos) {//outputs (absolutePos, gridPos)
+        float max = res * cell.x;//grid width
+
         Vector2 p = new Vector2(absPos);
         p.x=bound(p.x,max);
         p.y=bound(p.y,max);
@@ -90,11 +97,15 @@ public class Body {
     public Vector2 getFixedPos(){
         return new Vector2(absPos.x, fixY(absPos));
     }
+    public Vector2 getIconsDim() {
+        Texture ic = getIcons();
+        return new Vector2(ic.getWidth(), ic.getHeight());
+    }
     public Vector2 getIconDim() {
         Texture ic = getIcon();
         return new Vector2(ic.getWidth(), ic.getHeight());
     }
-    public Texture getIcon() {
+    public Texture getIcons() {
         int u;
 
         switch (facing) {
@@ -118,19 +129,27 @@ public class Body {
                 u = 0;
                 break;
         }
+            return icons[u];
 
-        return icons[u];
     }
+    public Texture getIcon(){
+        return icon;
+    }
+
     public Direction.Facing getFacing() {
         return facing;
     }
     public Rectangle getHitBox() {
-        Vector2 v = getIconDim();
+        Vector2 v = icon ==null? getIconsDim():getIconDim();
         Vector2 p = getFixedPos();
         return new Rectangle(p.x, p.y, v.x, v.y);
     }
 
     public double getVelMag() {
         return velocity;
+    }
+
+    public void setVelMag(float i) {
+        velocity=i;
     }
 }

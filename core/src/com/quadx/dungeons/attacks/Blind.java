@@ -37,6 +37,6 @@ public class Blind extends Attack {
     }
 
     public Circle getHitCircle(){
-        return new Circle(new Vector2(player.abs().x+(player.body.getIcon().getWidth()/2), GridManager.fixY(player.abs())) ,200);
+        return new Circle(new Vector2(player.abs().x+(player.body.getIcons().getWidth()/2), GridManager.fixY(player.abs())) ,200);
     }
 }

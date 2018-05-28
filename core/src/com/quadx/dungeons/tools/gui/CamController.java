@@ -3,14 +3,13 @@ package com.quadx.dungeons.tools.gui;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.states.State;
 import com.quadx.dungeons.tools.timers.Delta;
 
-import static com.quadx.dungeons.tools.timers.Time.ft;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.states.mapstate.MapState.rn;
+import static com.quadx.dungeons.tools.timers.Time.ft;
 
 /**
  * Created by Chris Cavazos on 5/13/2018.
@@ -46,10 +45,11 @@ public class CamController {
 
     private void updateCamPos(OrthographicCamera cam) {
         Vector3 position = cam.position;
-        float[] f = dispArray[(int) player.pos().x][(int) player.pos().y].getCorners().getVertices();
+        float[] f = dispArray(player.pos()).getCorners().getVertices();
         Vector3 disp = new Vector3(f[8], f[9], 0);
         if (snapCam) {
-            position.set(player.abs().x, GridManager.fixY(player.abs()), 0);
+            Vector2 p=player.fixed();
+            position.set(p.x,p.y, 0);
             snapCam = false;
         } else {
             disp.add(camDisplacement());

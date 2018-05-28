@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.commands.Command;
 import com.quadx.dungeons.commands.cellcommands.AddItemToCellComm;
 import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.physics.Physics;
 import com.quadx.dungeons.shapes1_5.EMath;
 import com.quadx.dungeons.tools.timers.Delta;
 
@@ -50,12 +51,12 @@ public class Anim {
         }
     }
 
-    enum Type{
+    public enum Type{
         Drop,MovePlayer
     }
 
 
-    Anim(Texture t, Vector2 fixedStart, Vector2 fixedEnd, float v, Type f) {
+    public Anim(Texture t, Vector2 fixedStart, Vector2 fixedEnd, float v, Type f) {
         texture = t;
         pos = new Vector2(fixedStart);
         vel = v;

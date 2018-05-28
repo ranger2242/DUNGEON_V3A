@@ -54,18 +54,16 @@ public class ShopState extends State {
         for(Command c: commandList){
             c.execute();
         }
+        boolean p=false;
         //keyboard functions--------------------------------------------------------
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) numberButtonHandler(0);
-        else if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) numberButtonHandler(1);
-        else if (Gdx.input.isKeyPressed(Input.Keys.NUM_3)) numberButtonHandler(2);
-        else if (Gdx.input.isKeyPressed(Input.Keys.NUM_4)) numberButtonHandler(3);
-        else if (Gdx.input.isKeyPressed(Input.Keys.NUM_5)) numberButtonHandler(4);
-        else if (Gdx.input.isKeyPressed(Input.Keys.NUM_6)) numberButtonHandler(5);
-        else if (Gdx.input.isKeyPressed(Input.Keys.NUM_7)) numberButtonHandler(6);
-        else if (Gdx.input.isKeyPressed(Input.Keys.NUM_8)) numberButtonHandler(7);
-        else if (Gdx.input.isKeyPressed(Input.Keys.NUM_9)) numberButtonHandler(8);
-        else if(Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)
-                && !(Gdx.input.isKeyPressed(Input.Keys.MINUS)
+        for(int i=0;i<9;i++){
+            if (Gdx.input.isKeyPressed(Input.Keys.NUM_1+i)){
+                numberButtonHandler(i);
+                p=true;
+            }
+
+        }
+        if(!p&&Gdx.input.isKeyPressed(Input.Keys.ANY_KEY) && !(Gdx.input.isKeyPressed(Input.Keys.MINUS)
                     ||Gdx.input.isKeyPressed(commandList.get(0).getButtonK())
                 ||Gdx.input.isKeyPressed(commandList.get(1).getButtonK()))) {
             camController.shakeScreen(5, 25);

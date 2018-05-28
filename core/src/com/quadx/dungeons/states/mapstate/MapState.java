@@ -13,6 +13,7 @@ import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.abilities.Ability;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.monsters.Monster;
+import com.quadx.dungeons.paricles.ParticleHandler;
 import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
 import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
@@ -55,6 +56,7 @@ public class MapState extends State implements ControllerListener {
     public static GridManager gm;
     public static final Random rn = new Random();
     static ButtonHandler buttons=new MapStateButtonHandler();
+    public static ParticleHandler particleHandler = new ParticleHandler();
 
     public MapState(GameStateManager gsm) {
         super(gsm);
@@ -104,7 +106,7 @@ public class MapState extends State implements ControllerListener {
         Anim.update(dt);
         Attack.update(dt);
         Ability.update(dt);
-        ParticleHandler.update(dt);
+        particleHandler.update(dt);
         Monster.update(dt);// <<------come back to this
         player.update(dt,getClass());// <<------
         HoverText.update(dt);

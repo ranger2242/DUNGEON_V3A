@@ -57,6 +57,7 @@ public class Equipment extends Item {
         speedmod=buffs[6];
         setCost(2);
         setIcon(ic);
+        fileName="ic"+getType()+".png";
     }
         public String getName(){
 

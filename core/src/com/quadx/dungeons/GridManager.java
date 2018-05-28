@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
-import com.quadx.dungeons.items.modItems.ModItem;
+import com.quadx.dungeons.items.Mine;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.shapes1_5.EMath;
 import com.quadx.dungeons.shapes1_5.Ngon;
@@ -96,13 +96,13 @@ public class GridManager {
             State.camController.setSnapCam(true);
             Matrix<Integer> rotator = new Matrix<>(Integer.class);
             dispArray = rotator.rotateMatrix(dispArray, res, left);
-            player.body.setPos(rotateCords(left, player.pos()));
+            //player.body.setPos(rotateCords(left, player.pos()));
             warp.set(rotateCords(left, warp));
             shop.set(rotateCords(left, shop));
             player.body.setAbs(new Vector2(player.pos().x * cellW, player.pos().y * cellW));
             for (Monster m : monsterList) {
-                m.body.setPos(rotateCords(left, m.pos()));
-                m.body.setPos(new Vector2(m.pos().x * cellW, m.pos().y * cellW));
+               /* m.body.setPos(rotateCords(left, m.pos()));
+                m.body.setPos(new Vector2(m.pos().x * cellW, m.pos().y * cellW));*/
             }
             hm.calcCorners(dispArray);
             hm.getCells();
@@ -221,43 +221,39 @@ public class GridManager {
             }
         }
     }
+
     private void plotItems() {
-        Vector2[] points =seeds(10,20);
-        for (int i = 0; i < 10; i++) {
-            Item item = Item.generate();
-            if (item instanceof ModItem) {
-                int cluster = rn.nextInt(8);
-                for (int j = 0; j < cluster; j++) {
-                    points[i].add(spreadv(4));
-                    dispArray(points[i]).setItem(item);
-                }
-            }
+        Vector2[] points = seeds(20, 20);
+        for (int i = 0; i < points.length; i++) {
+            Cell c = dispArray(points[i]);
+            Mine m= new Mine(c.abs());
+            m.genItems();
+            c.setItem(m);
         }
-        int crates = (int) (liveCellList.size() * .005f);
+        int crates = (int) (liveCellList.size() * .0025f);
         for (int a = 0; a < crates; a++) {
             dispArray[resInt()][resInt()].setItem(Item.generateSpecial());
         }
 
     }
+
     private static void plotMonsters() {
         monsterList.clear();
         int mtotal = rn.nextInt(20) + 10;
         for (int i = 0; i < mtotal && Tests.spawn; i++) {
             Cell cell = dispArray[resInt()][resInt()];
-                Vector2 v=new Vector2(cell.abs());
+            Vector2 v = new Vector2(cell.abs());
 
 
-            int r=8*cellW;
-            int n=rn.nextInt(6)+2;
-            Ngon pts= new Ngon(v,r,n,0);
-            float[] p= pts.getVerticies();
-            for(int j=0;j<p.length;j+=2){
-                Vector2 a= new Vector2(p[j],p[j+1]);
-                Monster m = Monster.getNew(a);
-
-                if (!Monster.canSpawn()) {
-                    dispArray(a).setMonster(Monster.getNew(a));
-                    monsterList.add(m);
+            int r = 8 * cellW;
+            int n = rn.nextInt(6) + 2;
+            Ngon pts = new Ngon(v, r, n, 0);
+            float[] p = pts.getVerticies();
+            for (int j = 0; j < p.length; j += 2) {
+                if(Monster.canSpawn()) {
+                    Vector2 a = new Vector2(p[j], p[j + 1]);
+                    Monster m = Monster.getNew(a);
+                    dispArray(a).setMonster(m);
                 }
             }
         }

@@ -42,7 +42,7 @@ public class ForwardRectHitBox {
         int spread = a.getSpread();
         int range = a.getRange();
         Vector2 abs = player.abs();
-        Vector2 ic = player.body.getIconDim();
+        Vector2 ic = player.body.getIconsDim();
         Orientation o=getOrientation();
 
         if (o == Orientation.VerticalU ||o == Orientation.VerticalD  ) {

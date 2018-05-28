@@ -1,31 +1,54 @@
-package com.quadx.dungeons.states.mapstate;
+package com.quadx.dungeons.paricles;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.GridManager;
-import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.tools.FilePaths;
 
 import java.util.ArrayList;
 
-import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.GridManager.fixY;
-import static com.quadx.dungeons.states.mapstate.MapState.cellW;
+import static com.quadx.dungeons.tools.gui.HUD.out;
 
 /**
  * Created by Tom on 1/29/2016.
  */
 @SuppressWarnings("DefaultFileTemplate")
 public class ParticleHandler {
-    public static ArrayList<ParticleEffect> effects = new ArrayList<>();
+    public static ArrayList<ParticleEffectPool.PooledEffect> itemEffects = new ArrayList<>();
+    ParticleEffectPool itemEffectPool;
+    ArrayList<Integer> rmQueue = new ArrayList<>();
+    ParticleEffect itemEffect=  new ParticleEffect();
+    public ParticleHandler(){
+        TextureAtlas part= new TextureAtlas(Gdx.files.internal("particles/itemParticlePack.atlas"));
+        itemEffect.load(Gdx.files.internal(FilePaths.getPath("particles/ptItem")),part);
+        itemEffectPool = new ParticleEffectPool(itemEffect,0,100);
+    }
 
-    static void update(float dt) {
-        for (ParticleEffect e : effects) {
-            e.update(dt);
+    public void update(float dt) {
+
+    }
+
+    public void render(SpriteBatch sb){
+        for (int i = itemEffects.size() - 1; i >= 0; i--) {
+            ParticleEffectPool.PooledEffect effect = itemEffects.get(i);
+            effect.draw(sb, Gdx.graphics.getDeltaTime());
+            try {
+                if (rmQueue.get(0) == i) {
+                    ParticleEmitter em = effect.getEmitters().get(0);
+                    out("Remove: " + em.getX() + " " + em.getY());
+                    em.setContinuous(false);
+                    em.setMaxParticleCount(0);
+                    em.reset();
+                    effect.setDuration(0);
+                    effect.free();
+                    effect.dispose();
+                    itemEffects.remove(effect);
+                    rmQueue.remove(i);
+                }
+            }catch (Exception e){
+
+            }
         }
     }
 
@@ -33,27 +56,11 @@ public class ParticleHandler {
         ATTACK, FIELD
     }
 
-    public static ParticleEffect loadParticles(String fname, float x, float y, Color c, EffectType type) {
-        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("particles\\itemParticlePack.atlas"));
-        ParticleEffect e = loadParticles(fname, x, y, type,atlas);
-        e.getEmitters().first().getTint().setColors(new float[]{c.r, c.g, c.b});
-        return e;
-    }
 
-    public static ParticleEffect loadParticles(String name, Vector2 pos) {
-        ParticleEffect effect = new ParticleEffect();
-        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("particles\\particlesPack.atlas"));
-        effect.load(Gdx.files.internal("particles\\" + name), atlas);
-        float y = fixY(pos);
-        effect.setPosition(pos.x, y);
-        effect.getEmitters().get(0).setPosition(pos.x, y);
-        return effect;
-
-    }
 
     public static ParticleEffect loadParticles(String fname, float x, float y, EffectType type, TextureAtlas texture) {
-        //type 1 for attacks
-        //type 2 for field effects
+/*        //type 1 for attacks
+        //type 2 for field itemEffects
         ParticleEffect effect;
         effect = new ParticleEffect();
         ParticleEmitter emitter;
@@ -118,20 +125,33 @@ public class ParticleHandler {
         effect.setPosition(x + (cellW / 2), GridManager.fixY(new Vector2(x, y)) + r);
 
         return effect;
+        */
+        return new ParticleEffect();
     }
 
-    public ParticleHandler() {
+    public ParticleEffectPool.PooledEffect addEffect(Vector2 p, Color c) {
+        ParticleEffectPool.PooledEffect effect = itemEffectPool.obtain();
+        Vector2 a=new Vector2(p);
+        effect.setPosition(a.x,a.y);
+        float[] f= effect.getEmitters().get(0).getTint().getColors();
+        f[0]=c.r;
+        f[1]=c.g;
+        f[2]=c.b;
+        out("EFFECT ADDED:"+p.toString());
+        effect.start();
+        itemEffects.add(effect);
+        return effect;
     }
 
-    public static void addEffect(ParticleEffect e) {
-        e.start();
-        effects.add(e);
+    public void remove(ParticleEffectPool.PooledEffect i){
+        rmQueue.add(itemEffects.indexOf(i));
     }
 
-    static void removeParticles(){
-        for(ParticleEffect e : effects){
-            e.dispose();
-        }
-        effects.clear();
+    public static void removeParticles(){
+        // Reset all itemEffects:
+        for (int i = itemEffects.size() - 1; i >= 0; i--)
+            itemEffects.get(i).free(); //free all the itemEffects back to the pool
+        itemEffects.clear(); //clear the current itemEffects array
+
     }
 }

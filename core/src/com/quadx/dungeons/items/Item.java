@@ -3,26 +3,24 @@ package com.quadx.dungeons.items;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.items.modItems.*;
-import com.quadx.dungeons.tools.ImageLoader;
+import com.quadx.dungeons.physics.Body;
 import com.quadx.dungeons.tools.gui.HUD;
 
 import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.GridManager.rn;
-import static com.quadx.dungeons.tools.gui.HUD.out;
 
 public class Item
 {
     protected String name="ITEM";
     protected int value=0;
-
+    protected String fileName="";
     protected int cost;
     protected int hpmod;
     protected int manamod;
@@ -39,6 +37,8 @@ public class Item
     protected Texture icon=null;
     int gold;
     Attack attack;
+    ParticleEffectPool.PooledEffect effect= null;
+    public Body body = new Body();
 
     public Item() {
     }
@@ -86,6 +86,8 @@ public class Item
         return null;
     }
     public Texture getIcon() {
+        if(icon==null)
+            loadIcon();
         return icon;
     }
     public int getDefensemod()
@@ -129,15 +131,15 @@ public class Item
         texturePos.set(v);
     }
     public void loadIcon(String s){
-        try {
-            icon = new Texture(Gdx.files.internal("images\\icons\\items\\ic" + s + ".png"));
-        }catch (GdxRuntimeException e){
+      //  try {
+            icon = new Texture(Gdx.files.internal("images\\icons\\items\\"+s));
+    /*    }catch (GdxRuntimeException e){
             if(this.isEquip){
                 out(this.getClass().getName());
 
             }
-            icon= ImageLoader.crate;
-        }
+            //icon= ImageLoader.crate;
+        }*/
     }
 
     public void colliion(Vector2 v) {
@@ -156,10 +158,7 @@ public class Item
             player.pickupItem(this);
 
 
-        dispArray[x][y].setBoosterItem(-1);
-        dispArray[x][y].setCrate(false);
-        dispArray[x][y].setItem(null);
-        dispArray[x][y].setHasLoot(false);
+
 
     }
     public boolean isGold(){
@@ -176,14 +175,15 @@ public class Item
     }
 
     public void loadIcon() {
-        if(isEquip)
-            loadIcon(getType());
+        loadIcon(fileName);
+        /*if(isEquip)
+            loadIcon("ic"+getType()+".png");
         else if (isSpell)
-            loadIcon("SpellBook");
+            loadIcon("icSpellBook.png");
         else
-            loadIcon(name);
-        if(icon==null)
-            loadIcon(name);
+            loadIcon(name);*/
+//        if(icon==null)
+//            loadIcon("Crate");
     }
 
 
@@ -206,4 +206,15 @@ public class Item
         return item;
     }
 
+    public Vector2 getIconDim() {
+        if(icon !=null){
+            return new Vector2(icon.getWidth(),icon.getHeight());
+        }else
+            return new Vector2();
+    }
+
+
+    public void setParticle(ParticleEffectPool.PooledEffect effect) {
+        this.effect=effect;
+    }
 }

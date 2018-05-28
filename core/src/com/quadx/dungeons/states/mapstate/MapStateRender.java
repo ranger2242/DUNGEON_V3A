@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
@@ -19,6 +18,7 @@ import com.quadx.dungeons.attacks.Illusion;
 import com.quadx.dungeons.attacks.Protect;
 import com.quadx.dungeons.items.Gold;
 import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.items.Mine;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.shapes1_5.Line;
 import com.quadx.dungeons.shapes1_5.Triangle;
@@ -38,7 +38,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.ConcurrentModificationException;
 
 import static com.badlogic.gdx.graphics.Color.BLACK;
@@ -178,7 +177,7 @@ public class MapStateRender extends MapState {
         try {
         if (HUD.dPopup.isDone()) {
                 Vector2 v=new Vector2(player.abs());
-                Vector2 ic= player.body.getIconDim();
+                Vector2 ic= player.body.getIconsDim();
                 v.y+=40+ic.y;
                 v.x+=ic.x/2;
                 sb.draw(HUD.lootPopup,  v.x, GridManager.fixY(v));
@@ -352,8 +351,14 @@ public class MapStateRender extends MapState {
         for (Cell c : drawList) {
             //draw items
             Item item = c.getItem();
-            if (item != null && c.isClear())
-                sb.draw(item.getIcon(),c.abs().x, fixY(c.abs()));
+            if (item != null && c.isClear()) {
+                if(item instanceof Mine){
+                    ((Mine)item).render(sb);
+                }else {
+                    Vector2 p = c.fixed();
+                    sb.draw(item.getIcon(), p.x, p.y);
+                }
+            }
             //draw warpToNext
             if(c.isWarp())
                 sb.draw(ImageLoader.warp,c.fixed().x,c.fixed().y);
@@ -426,22 +431,23 @@ public class MapStateRender extends MapState {
         sb.end();
     }
     static void sbDrawParticleEffects(SpriteBatch sb){
-        ArrayList<Integer> remove= new ArrayList<>();
-        for(ParticleEffect p: ParticleHandler.effects){
+        particleHandler.render(sb);
+/*        ArrayList<Integer> remove= new ArrayList<>();
+        for(ParticleEffect p: ParticleHandler.itemEffects){
             p.draw(sb);
             if(p.isComplete()){
-                remove.add(ParticleHandler.effects.indexOf(p));
+                remove.add(ParticleHandler.itemEffects.indexOf(p));
             }
         }
         Collections.sort(remove);
        Collections.reverse(remove);
-        for(int i = ParticleHandler.effects.size()-1; i>=0; i--){
+        for(int i = ParticleHandler.itemEffects.size()-1; i>=0; i--){
             for(Integer r:remove){
                 if(r==i){
-                   ParticleHandler.effects.remove(i);
+                   ParticleHandler.itemEffects.remove(i);
                 }
             }
-        }
+        }*/
     }
     private static void srDrawAttackSelectors(){
         sr.begin(ShapeRenderer.ShapeType.Filled);

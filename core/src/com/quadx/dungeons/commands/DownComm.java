@@ -7,7 +7,6 @@ import com.quadx.dungeons.states.ControlState;
 import com.quadx.dungeons.states.MainMenuState;
 import com.quadx.dungeons.states.ShopState;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.tools.Direction;
 import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 
 import static com.quadx.dungeons.Game.player;
@@ -32,7 +31,6 @@ public class DownComm extends Command {
             }
             if (cls.equals(MapState.class)) {
                 if (player.canMove) {
-                    player.body.setFacing(Direction.Facing.South);
                     player.move(new Vector2(0, -1));
                 }
             }

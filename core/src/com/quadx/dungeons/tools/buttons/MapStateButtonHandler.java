@@ -1,13 +1,18 @@
 package com.quadx.dungeons.tools.buttons;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.timers.Delta;
 import com.quadx.dungeons.tools.timers.Time;
 
+import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.Game.scr;
 import static com.quadx.dungeons.GridManager.rotateMap;
+import static com.quadx.dungeons.tools.Tests.mouseAim;
 
 /**
  * Created by Chris Cavazos on 5/23/2018.
@@ -26,9 +31,25 @@ public class MapStateButtonHandler extends ButtonHandler {
 
     }
 
+    void mouseAim(float dt){
+        if(mouseAim==true){
+           mpos= new Vector2(Gdx.input.getX(),scr.y-Gdx.input.getY());
+           player.setAimVector(getAimVector(), false);
+
+        }
+    }
+    public Vector2 getAimVector(){
+        return new Vector2(mpos);
+    }
+
     @Override
     public void update(float dt) {
+        mouseAim(dt);//needs to be before commands
         runCommands();
+        if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
+            player.getAttack().use();
+
+        }
 
         dDebugKey.update(dt);
         for (int i = 0; i < 8; i++) {//number keys

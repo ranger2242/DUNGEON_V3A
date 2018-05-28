@@ -3,19 +3,20 @@ package com.quadx.dungeons;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.commands.Command;
-import com.quadx.dungeons.items.modItems.EnergyPlus;
 import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.items.Mine;
+import com.quadx.dungeons.items.modItems.EnergyPlus;
 import com.quadx.dungeons.items.modItems.ManaPlus;
 import com.quadx.dungeons.items.modItems.Potion;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.shapes1_5.EMath;
 import com.quadx.dungeons.shapes1_5.Triangle;
-import com.quadx.dungeons.states.mapstate.ParticleHandler;
+import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ import static com.quadx.dungeons.GridManager.fixY;
 import static com.quadx.dungeons.GridManager.monsterList;
 import static com.quadx.dungeons.states.mapstate.MapState.cell;
 import static com.quadx.dungeons.states.mapstate.MapState.cellW;
-import static com.quadx.dungeons.states.mapstate.ParticleHandler.effects;
+import static com.quadx.dungeons.tools.gui.HUD.out;
 
 /**
  * Created by Tom isClear 11/7/2015.
@@ -46,7 +47,7 @@ public class Cell {
     private Texture tile;
     private Color color = null;
     private Item item;
-    ParticleEffect effect = null;
+    ParticleEffectPool.PooledEffect effect = null;
     Rectangle bounds = null;
     Polygon corners = new Polygon();
 
@@ -182,29 +183,22 @@ public class Cell {
     public boolean hasItem() {
         return hasItem;
     }
-
     public int getBoosterItem() {
         return boosterItem;
     }
-
     public int getY() {
         return y;
     }
-
     public int getX() {
         return x;
     }
-
-
-
     public int getGold() {
         return gold;
     }
-
     public int getHeight() {
         return height;
     }
-
+    //SETTERS---------------------------------------------------------------------------------
     public void setCorners(Polygon c) {
         corners = c;
         float[] f = c.getVertices();
@@ -218,9 +212,6 @@ public class Cell {
     public void setHeight(int h) {
         height = h;
     }
-
-
-    //SETTERS---------------------------------------------------------------------------------
     public void setMonster(Monster m) {
         monster = m;
         monsterList.add(monster);
@@ -318,13 +309,16 @@ public class Cell {
     }
 
     public void setItem(Item item) {
-        this.item = item;
-        hasItem=true;
+
         if (item != null) {
-            this.item.setTexturePos(new Vector2(absPos.x, GridManager.fixY(absPos)));
-            this.item.setHitBox(new Rectangle(absPos.x, GridManager.fixY(absPos), item.getIcon().getWidth(), item.getIcon().getHeight()));
+            Vector2 p=new Vector2(fixed());
+            Vector2 ic = new Vector2(item.getIconDim());
+            item.setTexturePos(p);
+            item.setHitBox(new Rectangle(p.x,p.y, ic.x,ic.y));
+            this.item = item;
+            hasItem=true;
+            setHasLoot(true);
         }
-        setHasLoot(true);
     }
 
     //OTHER----------------------------------------------------------------------------------
@@ -350,23 +344,22 @@ public class Cell {
                 if (item.hasEffect()) {
                     float x= abs().x - (item.getIcon().getWidth() / 2);
                     float y= abs().y;
-                    effect = ParticleHandler.loadParticles("ptItem", x, y, item.getPtColor(), ParticleHandler.EffectType.FIELD);
+                   // effect = ParticleHandler.loadParticles("ptItem", x, y, item.getPtColor(), ParticleHandler.EffectType.FIELD);
                     effectLoaded = true;
-                   // if(effect!=null)
-                    ParticleHandler.addEffect(effect);
+                    item.setParticle(MapState.particleHandler.addEffect(fixed(),item.getPtColor()));
                 }
            }
         } else {
             hasItem = false;
-            if (effectLoaded) {
+/*            if (effectLoaded) {
                 try {
-                    effects.remove(effect);
+                    itemEffects.remove(effect);
                     effect.dispose();
                     effect = null;
                 } catch (Exception e) {
 
                 }
-            }
+            }*/
         }
     }
 
@@ -375,6 +368,13 @@ public class Cell {
         fixedPos.set(new Vector2(absPos.x, fixY(absPos)));
         if (isWater()) {
             dtwater += dt;
+        }
+        if(item instanceof Mine){
+            Mine m=((Mine) item);
+            if(m.kill)
+                removeItem();
+            else
+                m.update(dt);
         }
     }
 
@@ -397,6 +397,26 @@ public class Cell {
         }
         else
             return null;
+    }
+
+    public void removeItem() {
+        out("ITEM");
+        if (item != null) {
+            item.colliion(pos());
+            destroyEffect();
+            boosterItem=-1;
+            hasItem=false;
+            item=null;
+            hasLoot=false;
+        }
+    }
+    private void destroyEffect(){
+        if(effect != null) {
+            effect.dispose();
+            MapState.particleHandler.remove(effect);
+            effect = null;
+            effectLoaded = false;
+        }
     }
 
     enum State {
