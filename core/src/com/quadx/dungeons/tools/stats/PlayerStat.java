@@ -97,15 +97,20 @@ public class PlayerStat extends Stats {
         strMod=m;
     }
     public void setDefMod(int m) {
+        defMod=m;
 
     }
     public void setIntMod(int m) {
+        intMod=m;
     }
     public void setSpdMod(int m) {
+        spdMod=m;
     }
     public void setHpMod(int m) {
+        hpMod=m;
     }
     public void setManaMod(int m) {
+        manaMod=m;
     }
     //getters
     private float getHpRegen() {
@@ -243,11 +248,13 @@ public class PlayerStat extends Stats {
         statsList.add(name);
         statsList.add("Level " + level);
         statsList.addAll(simpleStats? getSimpleStats(): getExpandedStats());
-        statsList.add("AP:    " + p.getAbilityPoints());
-        statsList.add("KILLS: " + p.getKillCount());
-        statsList.add("GOLD:  " + p.getGold());
-        statsList.add("EXP:   " + p.getExp() + "/" + p.getExpLimit());
-        statsList.add("FLOOR: " + p.getFloor());
+        statsList.add("AP:     " + p.getAbilityPoints());
+        statsList.add("FLOOR:  " + p.getFloor());
+        statsList.add("KILLS:  " + p.getKillCount());
+        statsList.add("EXP:    " + p.getExp() + "/" + p.getExpLimit());
+        statsList.add("ORE:    "+ p.getOreCnt());
+        statsList.add("LEATHER:"+p.getLeatherCnt());
+        statsList.add("GOLD:   " + p.getGold());
         return statsList;
     }
     public Score getScore(Player p) {

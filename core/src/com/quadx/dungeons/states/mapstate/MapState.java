@@ -1,5 +1,6 @@
 package com.quadx.dungeons.states.mapstate;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
@@ -15,10 +16,7 @@ import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.paricles.ParticleHandler;
 import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
-import com.quadx.dungeons.states.AbilitySelectState;
-import com.quadx.dungeons.states.GameStateManager;
-import com.quadx.dungeons.states.ShopState;
-import com.quadx.dungeons.states.State;
+import com.quadx.dungeons.states.*;
 import com.quadx.dungeons.tools.StatManager;
 import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.buttons.ButtonHandler;
@@ -87,6 +85,12 @@ public class MapState extends State implements ControllerListener {
         pause = true;
         cam.position.set(0, 0, 0);
         gsm.push(new ShopState(gsm));
+    }
+
+    public static void loadCraftState() {
+        camController.setSnapCam(true);
+        camController.update(Gdx.graphics.getDeltaTime(),cam);
+        gsm.push(new CraftState(gsm));
     }
 
     private void debug() {

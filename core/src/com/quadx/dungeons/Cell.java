@@ -3,7 +3,6 @@ package com.quadx.dungeons;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -47,7 +46,7 @@ public class Cell {
     private Texture tile;
     private Color color = null;
     private Item item;
-    ParticleEffectPool.PooledEffect effect = null;
+    private int effect = -1;
     Rectangle bounds = null;
     Polygon corners = new Polygon();
 
@@ -390,13 +389,12 @@ public class Cell {
     public void generateSpecial() {
     }
 
-    public Monster removeMon() {
+    public void removeMon() {
         if(hasMon) {
             hasMon=false;
-            return monster;
+            monsterList.remove(monster);
+            monster=null;
         }
-        else
-            return null;
     }
 
     public void removeItem() {
@@ -411,10 +409,8 @@ public class Cell {
         }
     }
     private void destroyEffect(){
-        if(effect != null) {
-            effect.dispose();
+        if(effect != -1) {
             MapState.particleHandler.remove(effect);
-            effect = null;
             effectLoaded = false;
         }
     }

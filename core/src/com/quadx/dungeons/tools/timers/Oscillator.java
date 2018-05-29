@@ -5,6 +5,7 @@ package com.quadx.dungeons.tools.timers;
  */
 public class Oscillator extends Delta {
     boolean val=false;
+
     public Oscillator(float lim) {
         super(lim);
     }

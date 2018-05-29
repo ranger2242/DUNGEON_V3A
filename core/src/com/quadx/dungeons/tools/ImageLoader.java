@@ -97,14 +97,14 @@ public class ImageLoader {
     }
 
     private void loadEquip(){
-        equipBasic[0]=new Texture(FilePaths.getPath("images\\icons\\items\\icArms.png"));
-        equipBasic[1]=new Texture(FilePaths.getPath("images\\icons\\items\\icBoots.png"));
-        equipBasic[2]=new Texture(FilePaths.getPath("images\\icons\\items\\icCape.png"));
-        equipBasic[3]=new Texture(FilePaths.getPath("images\\icons\\items\\icChest.png"));
-        equipBasic[4]=new Texture(FilePaths.getPath("images\\icons\\items\\icGloves.png"));
-        equipBasic[5]=new Texture(FilePaths.getPath("images\\icons\\items\\icHelmet.png"));
-        equipBasic[6]=new Texture(FilePaths.getPath("images\\icons\\items\\icLegs.png"));
-        equipBasic[7]=new Texture(FilePaths.getPath("images\\icons\\items\\icRing.png"));
+        equipBasic[0]=new Texture(FilePaths.getPath("images\\icons\\items\\equip\\icArms.png"));
+        equipBasic[1]=new Texture(FilePaths.getPath("images\\icons\\items\\equip\\icBoots.png"));
+        equipBasic[2]=new Texture(FilePaths.getPath("images\\icons\\items\\equip\\icCape.png"));
+        equipBasic[3]=new Texture(FilePaths.getPath("images\\icons\\items\\equip\\icChest.png"));
+        equipBasic[4]=new Texture(FilePaths.getPath("images\\icons\\items\\equip\\icGloves.png"));
+        equipBasic[5]=new Texture(FilePaths.getPath("images\\icons\\items\\equip\\icHelmet.png"));
+        equipBasic[6]=new Texture(FilePaths.getPath("images\\icons\\items\\equip\\icLegs.png"));
+        equipBasic[7]=new Texture(FilePaths.getPath("images\\icons\\items\\equip\\icRing.png"));
 
     }
     private void loadAbilities(){

@@ -19,6 +19,7 @@ public class InfoOverlay {
     public void draw(SpriteBatch sb){
             for (int i = 0; i < textures.size(); i++) {
                 Vector2 v=texturePos.get(i);
+                if(textures.get(i)!=null)
                 sb.draw(textures.get(i), v.x, v.y);
             }
 

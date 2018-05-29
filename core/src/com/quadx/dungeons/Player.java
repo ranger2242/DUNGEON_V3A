@@ -12,12 +12,10 @@ import com.quadx.dungeons.abilities.Ability;
 import com.quadx.dungeons.abilities.Investor;
 import com.quadx.dungeons.abilities.WaterBreath;
 import com.quadx.dungeons.attacks.*;
-import com.quadx.dungeons.items.Gold;
-import com.quadx.dungeons.items.Item;
-import com.quadx.dungeons.items.Mine;
-import com.quadx.dungeons.items.SpellBook;
+import com.quadx.dungeons.items.*;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.items.modItems.ModItem;
+import com.quadx.dungeons.items.recipes.*;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.physics.Body;
 import com.quadx.dungeons.physics.Physics;
@@ -62,6 +60,16 @@ public class Player {
     public final ArrayList<Ability> secondaryAbilityList = new ArrayList<>();
     private ArrayList<Line> attackChain = new ArrayList<>();
 
+    public ArrayList<Recipe> getCraftable() {
+        return craftable;
+    }
+
+    public void setCraftable(ArrayList<Recipe> craftable) {
+        this.craftable = craftable;
+    }
+
+    private ArrayList<Recipe> craftable = new ArrayList<>();
+
     public Vector2 kba = new Vector2();
     private ParticleEffect lvlupEffect;
     private Rectangle attackBox = new Rectangle();
@@ -100,8 +108,8 @@ public class Player {
 
 
     private double moveSpeed = .1f;
-
-
+    private int oreCnt=0;
+    private int leatherCnt=0;
 
 
     public Player() {
@@ -457,30 +465,18 @@ public class Player {
     }
 
     public void pickupItem(Item item) {
-//        item.loadIcon();
         if (isInvEmpty()) {
             Inventory.pos = 0;
         }
         if (item.isGold()) {
             addGold((Gold) item);
-        } else {
+        } else if (item instanceof Ore) {
+            oreCnt++;
+        } else if (item instanceof Leather) {
+            leatherCnt++;
+        } else if (!(item instanceof Mine)) {
             lastItem = item;
-            boolean added = false;
-            for (ArrayList<Item> al : inv.getList()) {
-                if (!al.isEmpty()) {
-                    try {
-                        if (al.get(0).getName().equals(item.getName())) {
-                            al.add(item);
-                            added = true;
-                        }
-                    } catch (NullPointerException ignored) {
-                    }
-                }
-            }
-
-            if (!added) {
-                inv.addItem(item);
-            }
+            inv.addToInv(item);
 
             out(item.getName() + " added to inventory");
             new HoverText(item.getName(), Color.WHITE, fixed(), false);
@@ -497,13 +493,22 @@ public class Player {
         body.setPlayer(this);
         body.setIcons(new Texture[]{pl[0], pl[1], pl[2], pl[3]});
         //load attacks
+        craftable.add(new ArmRe());
+        craftable.add(new BootsRe());
+        craftable.add(new CapeRe());
+        craftable.add(new ChestRe());
+        craftable.add(new GlovesRe());
+        craftable.add(new HelmetRe());
+        craftable.add(new LegsRe());
+        craftable.add(new RingRe());
+
         attackList.clear();
         out(st.getDefComp()+"");
         ability.onActivate();
         attackList.add(new Dash());
 
         st.fullHeal();
-        pickupItem(new SpellBook());
+        //pickupItem(new SpellBook());
     }
 
     public void checkLvlUp() {
@@ -697,8 +702,8 @@ public class Player {
         float size = invSize();
         float end = size >= 8 ? 8 : size;
         for (int i = 0; i < end; i++) {
-            float x = scrx(2f / 3f);
-            float y = scry(.85f - (i * .1f));
+            float x = scrVx(2f / 3f);
+            float y = scrVy(.85f - (i * .1f));
 
 
             float ind = (i + shopInvPos);
@@ -717,7 +722,7 @@ public class Player {
 
 
             font.draw(sb, name, x, y);
-            font.draw(sb, qty, scrx(9f / 10f), y);
+            font.draw(sb, qty, scrVx(9f / 10f), y);
             font.draw(sb, debug, x, y - 20);
             //font.draw(sb, "_________________________________", x, y - 22);
 
@@ -725,10 +730,10 @@ public class Player {
             sb.draw(item.getIcon(), x, y + 10);
         }
         float per = shopInvPos / size;
-        font.draw(sb, "_", scrx(.95f), scry(.86f));
+        font.draw(sb, "_", scrVx(.95f), scrVy(.86f));
 
-        font.draw(sb, "|", scrx(.95f), scry(.85f - (.79f * per)));
-        font.draw(sb, "_", scrx(.95f), scry(.85f - (.79f * ((size - 1) / size))));
+        font.draw(sb, "|", scrVx(.95f), scrVy(.85f - (.79f * per)));
+        font.draw(sb, "_", scrVx(.95f), scrVy(.85f - (.79f * ((size - 1) / size))));
 
     }
 
@@ -846,6 +851,21 @@ public class Player {
             sr.rect(bars[2]);
         }catch (NullPointerException ignored){}
         sr.end();
+    }
+
+    public int getOreCnt() {
+        return oreCnt;
+    }
+    public int getLeatherCnt(){
+        return leatherCnt;
+    }
+
+    public void addOre() {
+        oreCnt++;
+    }
+
+    public void addLeather() {
+        leatherCnt++;
     }
 }
 

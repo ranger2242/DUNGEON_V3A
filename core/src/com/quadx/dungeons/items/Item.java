@@ -3,12 +3,12 @@ package com.quadx.dungeons.items;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.items.modItems.*;
+import com.quadx.dungeons.items.recipes.Recipe;
 import com.quadx.dungeons.physics.Body;
 import com.quadx.dungeons.tools.gui.HUD;
 
@@ -18,6 +18,7 @@ import static com.quadx.dungeons.GridManager.rn;
 
 public class Item
 {
+    public boolean isUsable=false;
     protected String name="ITEM";
     protected int value=0;
     protected String fileName="";
@@ -37,29 +38,31 @@ public class Item
     protected Texture icon=null;
     int gold;
     Attack attack;
-    ParticleEffectPool.PooledEffect effect= null;
+    int effect= -1;
     public Body body = new Body();
 
     public Item() {
     }
     public static Item generateNoGold() {
         Item a;
-        int q = rn.nextInt(10) + 1;
+        int q = rn.nextInt(11) + 1;
         a = new Item();
         if (q == 1 || q == 2) a = new StrengthPlus();
         else if (q == 3 || q == 4) a = new DefPlus();
         else if (q == 5 || q == 6) a = new IntPlus();
         else if (q == 7 || q == 8) a = new SpeedPlus();
-        else if (q == 9 && rn.nextFloat()<.7) {
+        else if (q == 9 && rn.nextFloat() < .7) {
             if (rn.nextFloat() < .1) {
                 a = new SpellBook();
             }
-        } else if (q == 10 && rn.nextFloat()<.7) {
+        } else if (q == 10 && rn.nextFloat() < .7) {
             if (rn.nextFloat() < .9)
                 a = Equipment.generateEquipment();
             else {
                 a = equipSets.ref[rn.nextInt(5)].get(rn.nextInt(8));
             }
+        } else if (q == 11 && rn.nextFloat() < .7) {
+            a=new Recipe();
         }
         if(a.getClass().equals(Item.class)){
             a=new Gold();
@@ -73,6 +76,16 @@ public class Item
             a = new Gold();
         } else {
             a =Item.generateNoGold();
+        }
+        return a;
+    }
+    public static Item generateMonsterDrop() {
+        Item a;
+        int q = rn.nextInt(10) + 1;
+        if (q <= 2) {
+            a = new Leather();
+        } else {
+            a = Item.generateNoGold();
         }
         return a;
     }
@@ -131,15 +144,8 @@ public class Item
         texturePos.set(v);
     }
     public void loadIcon(String s){
-      //  try {
+        if(!s.isEmpty())
             icon = new Texture(Gdx.files.internal("images\\icons\\items\\"+s));
-    /*    }catch (GdxRuntimeException e){
-            if(this.isEquip){
-                out(this.getClass().getName());
-
-            }
-            //icon= ImageLoader.crate;
-        }*/
     }
 
     public void colliion(Vector2 v) {
@@ -176,14 +182,6 @@ public class Item
 
     public void loadIcon() {
         loadIcon(fileName);
-        /*if(isEquip)
-            loadIcon("ic"+getType()+".png");
-        else if (isSpell)
-            loadIcon("icSpellBook.png");
-        else
-            loadIcon(name);*/
-//        if(icon==null)
-//            loadIcon("Crate");
     }
 
 
@@ -214,7 +212,7 @@ public class Item
     }
 
 
-    public void setParticle(ParticleEffectPool.PooledEffect effect) {
+    public void setParticle(int effect) {
         this.effect=effect;
     }
 }

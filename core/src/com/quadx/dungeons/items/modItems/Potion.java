@@ -14,6 +14,7 @@ public class Potion extends ModItem {
         name="Potion+";
         PlayerStat s= player.st;
         double m = s.getHpMax();
+        isUsable=true;
 
         double hpm = player.st.getHpMax();
         int size= (int) (3*(m/(double)500));

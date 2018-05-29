@@ -14,6 +14,7 @@ public class SpeedPlus extends ModItem {
         cost=3500 ;
         canCluster=true;
         fileName="mods/icSpeed+.png";
+        isUsable=true;
 
     }
 

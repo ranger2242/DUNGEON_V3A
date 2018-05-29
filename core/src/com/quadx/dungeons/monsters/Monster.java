@@ -366,7 +366,6 @@ public class Monster {
     //OTHER----------------------------------------------------------------------------------
     void dropItems() {
         int r = rn.nextInt(4);
-        if (rn.nextBoolean())
             for (int i = 0; i < r; i++) {
                 inv.discard(pos(), false, this);
             }

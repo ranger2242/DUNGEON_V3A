@@ -15,6 +15,7 @@ public class DefPlus extends ModItem {
         cost=3500;
         canCluster=true;
         fileName="mods/icDefense+.png";
+        isUsable=true;
 
     }
 

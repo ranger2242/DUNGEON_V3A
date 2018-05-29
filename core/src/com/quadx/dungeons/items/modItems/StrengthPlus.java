@@ -14,7 +14,7 @@ public class StrengthPlus extends ModItem {
         cost=3500;
         canCluster=true;
         fileName="mods/icStrength+.png";
-
+        isUsable=true;
     }
 
     @Override

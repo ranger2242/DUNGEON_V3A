@@ -6,6 +6,6 @@ package com.quadx.dungeons.items;
 public class Ore extends Item {
     public Ore(){
         fileName="mods/icOre.png";
-
+        name="Ore";
     }
 }

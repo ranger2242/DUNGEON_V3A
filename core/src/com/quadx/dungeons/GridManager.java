@@ -259,15 +259,13 @@ public class GridManager {
         }
     }
     private void plotPlayer() {
-        Cell c = dispArray[resInt()][resInt()];
-        for(Cell cell:  getSurroundingCells(c.abs(),2)){
+        Cell c = getAnyCell();
+        for(Cell cell:  getSurroundingCells(c.pos(),5)){
             cell.setWater(false);
         }
         player.body.setAbs(new Vector2(c.abs()));
-        for(Cell cell: getSurroundingCells(player.abs(),8)){
-            if(cell.hasMon()) {
-                monsterList.remove(cell.removeMon());
-            }
+        for(Cell cell: getSurroundingCells(player.pos(),15)){
+            cell.removeMon();
         }
     }
 

@@ -10,7 +10,6 @@ import com.quadx.dungeons.tools.timers.Delta;
 import com.quadx.dungeons.tools.timers.Time;
 
 import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.Game.scr;
 import static com.quadx.dungeons.GridManager.rotateMap;
 import static com.quadx.dungeons.tools.Tests.mouseAim;
 
@@ -32,8 +31,8 @@ public class MapStateButtonHandler extends ButtonHandler {
     }
 
     void mouseAim(float dt){
+        updateMousePos();
         if(mouseAim==true){
-           mpos= new Vector2(Gdx.input.getX(),scr.y-Gdx.input.getY());
            player.setAimVector(getAimVector(), false);
 
         }

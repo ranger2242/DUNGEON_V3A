@@ -55,7 +55,7 @@ public class HoverText {
                 remove(i);
         }
 
-        while (size > 10)// remove excess
+        while (size > 25)// remove excess
             remove(0);
 
     }
@@ -79,7 +79,7 @@ public class HoverText {
 
     private void updateSelf(float dt) {
         dHover.update(dt);
-        pos.add(0, ymod += .15f);
+        pos.add(0, ymod += .08f);
         if (flash)
             blink.update(dt);
         active = !dHover.isDone();

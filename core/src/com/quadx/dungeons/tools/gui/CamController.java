@@ -18,6 +18,7 @@ public class CamController {
     private float force = 0;
     private boolean shakeCam = false;
     private boolean snapCam = false;
+    Class state;
 
     private Delta dLockTime = new Delta( 15*60*ft);
 
@@ -46,7 +47,7 @@ public class CamController {
     private void updateCamPos(OrthographicCamera cam) {
         Vector3 position = cam.position;
         float[] f = dispArray(player.pos()).getCorners().getVertices();
-        Vector3 disp = new Vector3(f[8], f[9], 0);
+        Vector3 disp = new Vector3(f[8],f[9], 0);
         if (snapCam) {
             Vector2 p=player.fixed();
             position.set(p.x,p.y, 0);
@@ -59,9 +60,9 @@ public class CamController {
 
         cam.position.set(position);
         cam.update();
-        float x = cam.position.x - cam.viewportWidth / 2;
-        float y = cam.position.y - cam.viewportHeight / 2;
-        State.setView(new Vector2(x, y));
+        float x1 = cam.position.x - cam.viewportWidth / 2;
+        float y1 = cam.position.y - cam.viewportHeight / 2;
+        State.setView(new Vector2(x1, y1));
     }
 
     public void update(float dt, OrthographicCamera cam) {
@@ -77,7 +78,6 @@ public class CamController {
             snapCam=true;
             dLockTime.reset();
         }
-
         updateCamPos(cam);
     }
 
@@ -87,5 +87,9 @@ public class CamController {
 
     public void setSnapCam(boolean snapCam) {
         this.snapCam = snapCam;
+    }
+
+    public void setClass(Class<? extends State> aClass) {
+        state=aClass;
     }
 }

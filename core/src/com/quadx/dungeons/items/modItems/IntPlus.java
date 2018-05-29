@@ -15,6 +15,8 @@ public class IntPlus extends ModItem {
         cost=3500;
         canCluster=true;
         fileName="mods/icIntel+.png";
+        isUsable=true;
+
     }
 
     @Override

@@ -22,32 +22,23 @@ public class ParticleHandler {
     public ParticleHandler(){
         TextureAtlas part= new TextureAtlas(Gdx.files.internal("particles/itemParticlePack.atlas"));
         itemEffect.load(Gdx.files.internal(FilePaths.getPath("particles/ptItem")),part);
-        itemEffectPool = new ParticleEffectPool(itemEffect,0,100);
+        itemEffectPool = new ParticleEffectPool(itemEffect,0,10);
     }
 
     public void update(float dt) {
 
     }
 
-    public void render(SpriteBatch sb){
+    public void render(SpriteBatch sb) {
         for (int i = itemEffects.size() - 1; i >= 0; i--) {
             ParticleEffectPool.PooledEffect effect = itemEffects.get(i);
             effect.draw(sb, Gdx.graphics.getDeltaTime());
-            try {
-                if (rmQueue.get(0) == i) {
-                    ParticleEmitter em = effect.getEmitters().get(0);
-                    out("Remove: " + em.getX() + " " + em.getY());
-                    em.setContinuous(false);
-                    em.setMaxParticleCount(0);
-                    em.reset();
-                    effect.setDuration(0);
-                    effect.free();
-                    effect.dispose();
-                    itemEffects.remove(effect);
-                    rmQueue.remove(i);
-                }
-            }catch (Exception e){
-
+            ParticleEmitter em = effect.getEmitters().get(0);
+            if(effect.isComplete()) {
+                out("Remove: " + em.getX() + " " + em.getY());
+                effect.free();
+                effect.dispose();
+                itemEffects.remove(effect);
             }
         }
     }
@@ -129,7 +120,7 @@ public class ParticleHandler {
         return new ParticleEffect();
     }
 
-    public ParticleEffectPool.PooledEffect addEffect(Vector2 p, Color c) {
+    public int addEffect(Vector2 p, Color c) {
         ParticleEffectPool.PooledEffect effect = itemEffectPool.obtain();
         Vector2 a=new Vector2(p);
         effect.setPosition(a.x,a.y);
@@ -140,11 +131,11 @@ public class ParticleHandler {
         out("EFFECT ADDED:"+p.toString());
         effect.start();
         itemEffects.add(effect);
-        return effect;
+        return itemEffects.size();
     }
 
-    public void remove(ParticleEffectPool.PooledEffect i){
-        rmQueue.add(itemEffects.indexOf(i));
+    public void remove(int i){
+        itemEffects.get(i).allowCompletion();
     }
 
     public static void removeParticles(){

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.commands.Command;
 import com.quadx.dungeons.items.Item;
@@ -41,6 +42,7 @@ public class ShopState extends State {
     public ShopState(GameStateManager gsm){
         super(gsm);
         cam.setToOrtho(false, WIDTH, HEIGHT);
+        setView(new Vector2());
         cam.position.set(view.x+ WIDTH/2,viewY+ HEIGHT/2,0);
         if(!MapState.pause)
         shop= new Shop(player);
@@ -112,7 +114,7 @@ public class ShopState extends State {
         gl.setText(font,cs);
         float f= gl.width/scr.x;
         if(drawError) {
-            font.draw(sb, cs, scrx(.5f-(f/2)), scry(.5f));
+            font.draw(sb, cs, scrVx(.5f-(f/2)), scrVy(.5f));
         }
         sb.end();
         if(!MapState.pause)

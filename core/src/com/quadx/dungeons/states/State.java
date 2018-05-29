@@ -48,11 +48,14 @@ public abstract class State {
     public abstract void update(float dt);
     public abstract void render(SpriteBatch sb);
     public abstract void dispose();
-    public static float scrx(float percent){
+    public static float scrVx(float percent){
         return view.x+(scr.x*percent);
     }
-    public static float scry(float percent){
+    public static float scrVy(float percent){
         return view.y+(scr.y*percent);
+    }
+    public static Vector2 scrV(float px, float py){
+        return new Vector2(scrVx(px),scrVy(py));
     }
 
     public static void shake() {

@@ -1,6 +1,7 @@
 package com.quadx.dungeons.tools.buttons;
 
 import com.badlogic.gdx.Gdx;
+import com.quadx.dungeons.states.CraftState;
 import com.quadx.dungeons.states.ShopState;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
@@ -8,8 +9,11 @@ import com.quadx.dungeons.tools.DebugTextInputListener;
 import com.quadx.dungeons.tools.FilePaths;
 import com.quadx.dungeons.tools.Tests;
 
+import java.util.Map;
+
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.monsterList;
+import static com.quadx.dungeons.states.State.gsm;
 import static com.quadx.dungeons.tools.Tests.displayFPS;
 import static com.quadx.dungeons.tools.gui.HUD.out;
 
@@ -46,6 +50,7 @@ public class DebugKeys {
             case 8:
                 break;
             case 9:
+                loadCraftState();
                 break;
             case 10:
                 toggleStats();
@@ -54,6 +59,10 @@ public class DebugKeys {
                 loadInputDiag();
                 break;
         }
+    }
+
+    private void loadCraftState() {
+        MapState.loadCraftState();
     }
 
     private void loadInputDiag() {
@@ -77,7 +86,7 @@ public class DebugKeys {
     }
 
     private void loadShop(){
-        MapState.gsm.push(new ShopState(MapState.gsm));
+        gsm.push(new ShopState(gsm));
     }
 
     private void toggleSimpleStats(){

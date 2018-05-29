@@ -28,6 +28,9 @@ public class BackComm extends Command {
             if(cls.equals(ShopState.class)){
                 ShopState.exit();
             }
+            if(cls.equals(CraftState.class)){
+                CraftState.exit();
+            }
         }
     }
 }

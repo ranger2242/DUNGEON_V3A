@@ -13,6 +13,7 @@ public class ManaPlus extends ModItem {
     public ManaPlus(){
         name="Mana+";
         PlayerStat s= player.st;
+        isUsable=true;
 
         double m = s.getManaMax();
 

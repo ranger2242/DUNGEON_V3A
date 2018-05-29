@@ -19,6 +19,7 @@ public class GameStateManager {
 
     public void push(State state){
         Command.cls=state.getClass();
+        State.camController.setClass(state.getClass());
                 states.push(state);
     }
     public void clear(){
@@ -27,6 +28,8 @@ public class GameStateManager {
     public void pop(){
         states.pop().dispose();
         Command.cls=states.peek().getClass();
+        State.camController.setClass(states.peek().getClass());
+
     }
 
     public void set(State state){

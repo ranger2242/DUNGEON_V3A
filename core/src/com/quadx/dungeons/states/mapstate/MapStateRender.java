@@ -168,7 +168,7 @@ public class MapStateRender extends MapState {
             Game.font.setColor(Color.WHITE);
             for (int i = 0; i < 10; i++) {
                 try {
-                    Game.getFont().draw(sb, HUD.output.get(i), scrx(2f/3f), viewY + HEIGHT - (i * 20)-30);
+                    Game.getFont().draw(sb, HUD.output.get(i), scrVx(2f/3f), viewY + HEIGHT - (i * 20)-30);
                 } catch (IndexOutOfBoundsException|NullPointerException ignored) {
                 }
             }
