@@ -3,7 +3,7 @@ package com.quadx.dungeons.items;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Player;
 import com.quadx.dungeons.items.equipment.Equipment;
-import com.quadx.dungeons.items.modItems.*;
+import com.quadx.dungeons.items.resources.*;
 
 import java.util.ArrayList;
 
@@ -45,12 +45,9 @@ public class Shop {
         inv.add(new DefPlus());
         inv.add(new IntPlus());
         inv.add(new SpeedPlus());
-        Equipment e=Equipment.generateEquipment();
-        inv.add(e);
-        e=Equipment.generateEquipment();
-        inv.add(e);
-        SpellBook s = new SpellBook();
-        inv.add(s);
+        inv.add(Equipment.generateEquipment());
+        inv.add(Equipment.generateEquipment());
+        inv.add(new SpellBook());
 
     }
     public void buyItem(int i) {

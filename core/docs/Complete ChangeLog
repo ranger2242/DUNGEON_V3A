@@ -61,3 +61,37 @@ BUILD 2018.0000007
 -(fixed)running out of mana crashes game
 -refactored out Body variables from Player and Monster for reuse
 -refactoring Stats out of Player and Monster to remove duplicate code
+
+BUILD 2018.0000008
+-monster digging fixed with random fatigue
+-monster aggro fixed
+-corrupted player stats in highscorestate
+-added spawn limits
+-fixed stat item icons
+
+BUILD 2018.0000010 -CRAFT UPDATE
+-add mine and object
+-made icons for mine, ore,hypergem
+-mines can be vein specific to a stat item and
+    drop a random amount of items when hit
+ore:leather:gold
+-chest: 30:20:5000
+-arms: 15:5:1250
+-legs: 20:7:3500
+-cape: 0:30:1500
+-ring: 5:0:6000
+-boots: 10:10:1000
+-helmet: 12:8:2000
+-gloves: 10:10:1500
+-make leather object
+-make monsters drop leather
+-players shoot mines for gold, ore, stat items, and gold
+-add hypergym to mine drops
+-created crafting state with inventory, build
+-added CraftState parameters to appropriate command files
+-ore is used to build armor or sell
+-crafting armor uses statboosting items and ore
+-requires different ore count per type of armor
+-1x statitem gives 2x armor stat improvement
+-crafting recipe object findable in world for rare crafts
+-recipe menu

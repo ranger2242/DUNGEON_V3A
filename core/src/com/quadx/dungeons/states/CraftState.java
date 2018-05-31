@@ -13,11 +13,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Inventory;
 import com.quadx.dungeons.items.Item;
-import com.quadx.dungeons.items.Leather;
-import com.quadx.dungeons.items.Ore;
 import com.quadx.dungeons.items.equipment.Equipment;
-import com.quadx.dungeons.items.modItems.*;
 import com.quadx.dungeons.items.recipes.Recipe;
+import com.quadx.dungeons.items.resources.*;
 import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
 import com.quadx.dungeons.tools.buttons.ButtonHandler;
 import com.quadx.dungeons.tools.buttons.CraftStateButtonHandler;
@@ -26,7 +24,6 @@ import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.gui.InfoOverlay;
 import com.quadx.dungeons.tools.gui.Text;
 import com.quadx.dungeons.tools.timers.Delta;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,14 +39,14 @@ import static com.quadx.dungeons.tools.timers.Time.ft;
  */
 public class CraftState extends State {
     int[] craftStacks;
-    Item[] resources = new Item[7];
+    Item[] resources;
     ShapeRendererExt sr = new ShapeRendererExt();
     private Text resTitle;
     private Text slotTitle;
     static Inventory slots = new Inventory();
     Delta dClick = new Delta(10*ft);
-    static Equipment currentCraft = null;
-    Rectangle[] resRegions = new Rectangle[resources.length];
+    static Item currentCraft = null;
+    Rectangle[] resRegions;
     Rectangle[] slotRegions = new Rectangle[5];
     InfoOverlay crafted= new InfoOverlay();
     ButtonHandler buttons = new CraftStateButtonHandler();
@@ -58,19 +55,51 @@ public class CraftState extends State {
     public CraftState(GameStateManager gsm) {
         super(gsm);
         craftStacks = player.inv.getCraftStacks();
+        resources= new Item[32];
+        resRegions = new Rectangle[resources.length];
         resources[0] = new Ore();
-        resources[1] = new Leather();
+        resources[1] = new Gold();
         resources[2] = new StrengthPlus();
         resources[3] = new DefPlus();
         resources[4] = new IntPlus();
         resources[5] = new SpeedPlus();
         resources[6] = new Hypergem();
+        resources[7] = new ChargeStone();
+        resources[8] = new Crystal(1);
+        resources[9] = new Crystal(2);
+        resources[10] = new Crystal(3);
+        resources[11] = new Meat(1);
+        resources[12] = new Meat(2);
+        resources[13] = new Meat(3);
+        resources[14] = new Claw();
+        resources[15] = new Tooth();
+        resources[16] = new Water();
+        resources[17] = new Blood();
+        resources[18] = new Venom();
+        resources[19] = new Wing();
+        resources[20] = new Tail();
+        resources[21] = new Brain();
+        resources[22] = new Heart();
+        resources[23] = new Leather();
+        resources[24] = new Bone();
+        resources[25] = new Flower();
+        resources[26] = new Mushroom(
+
+        );
+        resources[27] = new Leaf();
+        resources[28] = new Grass();
+        resources[29] = new Beetle();
+        resources[30] = new Spider();
+        resources[31] = new Fish();
+
+
+
         cam = new OrthographicCamera();
         cam.setToOrtho(false, WIDTH, HEIGHT);
         slotTitle = new Text("SLOTS", new Vector2(scrV(.1f, .25f)), WHITE, 2);
 
         //click regions
-        for (int i = 0; i < craftStacks.length; i++) {
+        for (int i = 0; i < resRegions.length; i++) {
             Vector2 v = scrV(.1f + (.05f * i), .9f);
             resRegions[i] = new Rectangle(v.x, v.y, 32, 32);
         }
@@ -89,16 +118,6 @@ public class CraftState extends State {
         if (currentCraft != null) {
             player.pickupItem(currentCraft);
             slots.clear();
-/*            int[] cost = currentCraft.getCraftCost();
-            if (cost[0] == slots.getStackSize(Ore.class)) {
-                for (int i = 0; i < cost[0]; i++) {
-                    slots.getStackByType(Ore.class).remove(0);
-                }
-            }
-            if (cost[0] == slots.getStackSize(Leather.class))
-                for (int i = 0; i < cost[1]; i++) {
-                    slots.getStackByType(Leather.class).remove(0);
-                }*/
         }
     }
 
@@ -140,8 +159,8 @@ public class CraftState extends State {
                         slots.remove(i);
                         dClick.reset();
                         new HoverText("-1", Color.RED, new Vector2(r.x, r.y), false);
-                    }catch (NullPointerException e){
-
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
                 }
             }
@@ -150,9 +169,16 @@ public class CraftState extends State {
             slots.removeStack(5);
         }
 
-        for (int i = 0; i < craftStacks.length; i++) {
-            Vector2 v = scrV(.1f + (.05f * i), 5f / 6f);
-            resRegions[i] = new Rectangle(v.x, v.y, 32, 32);
+        int ycnt=0;
+        int m=0;
+        for (int i = 0; i < resRegions.length; i++) {
+            if(i% 8==0){
+                ycnt++;
+                m=0;
+            }
+            Vector2 v = scrV(.1f , .9f);
+            resRegions[i] = new Rectangle(v.x+(50 * m), v.y-(ycnt*50), 32, 32);
+            m++;
         }
         checkOutputItem();
         HoverText.update(dt);
@@ -161,34 +187,39 @@ public class CraftState extends State {
     }
 
     private void checkOutputItem() {
-        int o= slots.getStackSize(Ore.class);
-        int l= slots.getStackSize(Leather.class);
-        int st = slots.getStackSize(StrengthPlus.class);
-        int de = slots.getStackSize(DefPlus.class);
-        int in = slots.getStackSize(IntPlus.class);
-        int sp = slots.getStackSize(SpeedPlus.class);
-
-        out(o + " " + l);
-
-        Equipment e = null;
+        Item e = null;
         for (Recipe r : player.getCraftable()) {
-            Pair<Integer, Item>[] ar = r.getCosts();
-            if (ar[0].getKey() == o && ar[1].getKey() == l) {//add gold cost here
-                e = r.getEquip();
-                out("___________________");
+            if(r.isEquipRecipe()) {
+                if (r.meetsCost(slots,false)) {//add gold cost here
+                    e = r.getOutput();
+                    out("___________________");
+                    int st = slots.getStackSize(StrengthPlus.class);
+                    int de = slots.getStackSize(DefPlus.class);
+                    int in = slots.getStackSize(IntPlus.class);
+                    int sp = slots.getStackSize(SpeedPlus.class);
+
+                    int s = 2;
+                        int[] buffs = new int[]{0, 0, 0, s * st, s * de, s * in, s * sp};
+                        currentCraft = new Equipment(((Equipment)e).getTypeEnum(), "Custom " + e.getName(), buffs);
+                        out(currentCraft.getName());
+                        out(Arrays.toString(((Equipment)currentCraft).getBuffs()));
+
+                }
+            }
+            if(r.isPotionRecipe()){
+                if(r.meetsCost(slots,true)){
+                    e= currentCraft = r.getOutput();
+                    out(currentCraft.getName());
+                }
             }
         }
-        int s = 2;
-        Vector2 v = scrV(.4f, .15f);
         if(e!=null) {
-            int[] buffs = new int[]{0, 0, 0, s * st, s * de, s * in, s * sp};
-            currentCraft = new Equipment(e.getTypeEnum(), "Custom " + e.getName(), buffs);
-            out(currentCraft.getName());
-            out(Arrays.toString(currentCraft.getBuffs()));
+            Vector2 v = scrV(.4f, .15f);
             crafted = HUD.generateItemDetailUI(v, currentCraft,false);
         }else{
             crafted=new InfoOverlay();
         }
+
     }
 
 
@@ -203,9 +234,10 @@ public class CraftState extends State {
 
         font.draw(sb, resTitle.text, tv.x, tv.y);
         font.draw(sb, slotTitle.text, t2.x, t2.y);
-        for (int i = 0; i < craftStacks.length; i++) {
+        for (int i = 0; i < resRegions.length; i++) {
             Rectangle r = resRegions[i];
             Vector2 v = new Vector2(r.x, r.y);
+            if(i<craftStacks.length)
             font.draw(sb, craftStacks[i] + "", v.x, v.y);
             sb.draw(resources[i].getIcon(), v.x, v.y);
         }

@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Anim;
 import com.quadx.dungeons.Cell;
 import com.quadx.dungeons.Inventory;
-import com.quadx.dungeons.items.modItems.*;
+import com.quadx.dungeons.items.resources.*;
 import com.quadx.dungeons.tools.timers.Delta;
 
 import java.util.ArrayList;
@@ -44,6 +44,9 @@ public class Mine extends Item {
         int n2=rn.nextInt(4);
         int n3=rn.nextInt(3)+1;
 
+        if(rn.nextFloat()<1f/3f){
+            items.add(new Crystal());
+        }
         if(rn.nextFloat()<.025f){
             items.add(new Hypergem());
         }
@@ -69,9 +72,9 @@ public class Mine extends Item {
             }
             items.add(item);
         }
-        for(int i=0;i<n2;i++){
+  /*      for(int i=0;i<n2;i++){
             items.add(new Gold());
-        }
+        }*/
         for(int i=0;i<n3;i++){
             items.add(new Ore());
         }

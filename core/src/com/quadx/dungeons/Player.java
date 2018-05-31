@@ -14,8 +14,10 @@ import com.quadx.dungeons.abilities.WaterBreath;
 import com.quadx.dungeons.attacks.*;
 import com.quadx.dungeons.items.*;
 import com.quadx.dungeons.items.equipment.Equipment;
-import com.quadx.dungeons.items.modItems.ModItem;
+import com.quadx.dungeons.items.resources.*;
 import com.quadx.dungeons.items.recipes.*;
+import com.quadx.dungeons.items.recipes.equipRecipes.*;
+import com.quadx.dungeons.items.recipes.potionRecipes.HealthPotionRe;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.physics.Body;
 import com.quadx.dungeons.physics.Physics;
@@ -150,7 +152,7 @@ public class Player {
     public void setExp(int lvl, float factor) {
         double a = 50.9055;
         double b = 1.0015;
-        int gain = (int) (a * Math.pow(b, lvl) * factor);
+        int gain = (int) (a * Math.pow(b, lvl) * factor)/2;
         new HoverText(gain + " EXP", Color.GREEN, fixed(), false);
         this.exp += gain;
         out(st.getName() + " gained " + gain + " EXP");
@@ -452,8 +454,8 @@ public class Player {
     }
 
     public void useItem(Item item) {
-        if(item instanceof ModItem) {
-            int[] mods = ((ModItem) item).runMod();
+        if(item instanceof Resource) {
+            int[] mods = ((Resource) item).runMod();
             st.addItemMods(mods, fixed());
             if (item.getClass().equals(Gold.class)) {
                 player.setGold(player.getGold() + item.getValue());
@@ -493,6 +495,7 @@ public class Player {
         body.setPlayer(this);
         body.setIcons(new Texture[]{pl[0], pl[1], pl[2], pl[3]});
         //load attacks
+        craftable.add(new HealthPotionRe());
         craftable.add(new ArmRe());
         craftable.add(new BootsRe());
         craftable.add(new CapeRe());
@@ -627,7 +630,10 @@ public class Player {
             if (c.hasItem()) {
                 if(c.getItem() instanceof Mine){
                     move(Physics.getVector(3,c.abs(),abs()));
-                }else
+                }else if(c.getItem() instanceof Grass){
+
+                }
+                else
                     c.removeItem();
             }
             if (c.isWarp()) {
@@ -807,7 +813,7 @@ public class Player {
 
     public void dig() {
         if (getStandingTile().isWall()) {
-            int digCost = 20;
+            int digCost = 10;
             if (st.getEnergy() > digCost) {
                 gm.clearArea(pos(), true);
                 st.addEnergy(-digCost);

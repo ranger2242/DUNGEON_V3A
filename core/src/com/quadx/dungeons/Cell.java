@@ -9,9 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.commands.Command;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.Mine;
-import com.quadx.dungeons.items.modItems.EnergyPlus;
-import com.quadx.dungeons.items.modItems.ManaPlus;
-import com.quadx.dungeons.items.modItems.Potion;
+import com.quadx.dungeons.items.resources.Grass;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.shapes1_5.EMath;
 import com.quadx.dungeons.shapes1_5.Triangle;
@@ -217,7 +215,7 @@ public class Cell {
         setMon(true);
     }
 
-    public void setBoosterItem(int i) {
+/*    public void setBoosterItem(int i) {
         boosterItem = i;
         if (boosterItem == 1) {
             item = new Potion();
@@ -226,10 +224,10 @@ public class Cell {
             item = new ManaPlus();
         }
         if (boosterItem == 0) {
-            item = new EnergyPlus();
+            item =new Gold(); // new EnergyPlus();
         }
         hasItem=true;
-    }
+    }*/
 
     public void setAttArea(boolean a) {
         attArea = a;
@@ -413,6 +411,10 @@ public class Cell {
             MapState.particleHandler.remove(effect);
             effectLoaded = false;
         }
+    }
+
+    public boolean hasGrass() {
+        return item instanceof Grass;
     }
 
     enum State {

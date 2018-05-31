@@ -14,7 +14,6 @@ import com.quadx.dungeons.tools.timers.Timer;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.quadx.dungeons.GridManager.bound;
 import static com.quadx.dungeons.tools.gui.HUD.out;
 
 
@@ -190,18 +189,27 @@ Map2State extends State {
                 for (int y = 0; y < res; y++) {
                     if (buffArray[x][y].isWater()) {
                         try {
-                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y - 1].setWater(true);
-                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y].setWater(true);
-                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x - 1][y + 1].setWater(true);
-                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x][y + 1].setWater(true);
-                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x + 1][y + 1].setWater(true);
-                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x + 1][y].setWater(true);
-                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x + 1][y - 1].setWater(true);
-                            if (rn.nextBoolean() && rn.nextBoolean()) buffArray[x][y - 1].setWater(true);
+                            if (rn.nextBoolean() && rn.nextBoolean())
+                                buffArray[x - 1][y - 1].setWater(true);
+                            if (rn.nextBoolean() && rn.nextBoolean())
+                                buffArray[x - 1][y].setWater(true);
+                            if (rn.nextBoolean() && rn.nextBoolean())
+                                buffArray[x - 1][y + 1].setWater(true);
+                            if (rn.nextBoolean() && rn.nextBoolean())
+                                buffArray[x][y + 1].setWater(true);
+                            if (rn.nextBoolean() && rn.nextBoolean())
+                                buffArray[x + 1][y + 1].setWater(true);
+                            if (rn.nextBoolean() && rn.nextBoolean())
+                                buffArray[x + 1][y].setWater(true);
+                            if (rn.nextBoolean() && rn.nextBoolean())
+                                buffArray[x + 1][y - 1].setWater(true);
+                            if (rn.nextBoolean() && rn.nextBoolean())
+                                buffArray[x][y - 1].setWater(true);
                         } catch (ArrayIndexOutOfBoundsException ignored) {
                         }
 
                     }
+
                 }
             }
         }

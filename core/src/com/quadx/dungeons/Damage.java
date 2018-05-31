@@ -37,7 +37,7 @@ public class Damage {
             damage *= 1.15;
             new HoverText("-CRITICAL-",  Color.BLUE, m.fixed(), true);
         }
-        return damage;
+        return damage/8;
     }
     static float rate=10;
     public static int monsterMagicDamage(Monster m){

@@ -3,7 +3,7 @@ package com.quadx.dungeons;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
-import com.quadx.dungeons.items.modItems.*;
+import com.quadx.dungeons.items.resources.*;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.tools.timers.Delta;
 
@@ -227,6 +227,13 @@ public class Inventory {
         }
         return 0;
     }
+    private int stackCountByType(String name) {
+        for (ArrayList<Item> list : invList) {
+            if (list.get(0).getName().equals(name))
+                return list.size();
+        }
+        return 0;
+    }
 
     public int[] getCraftStacks() {
         int[] arr = new int[]{
@@ -236,7 +243,17 @@ public class Inventory {
                 stackCountByType(DefPlus.class),
                 stackCountByType(IntPlus.class),
                 stackCountByType(SpeedPlus.class),
-                stackCountByType(Hypergem.class)
+                stackCountByType(Hypergem.class),
+                stackCountByType(Heart.class),
+                stackCountByType("SMALL CRYSTAL" ),
+                stackCountByType("MEDIUM CRYSTAL"),
+                stackCountByType("LARGE CRYSTAL" ),
+                stackCountByType("SMALL MEAT" ),
+                stackCountByType("MEDIUM MEAT"),
+                stackCountByType("LARGE MEAT" ),
+                stackCountByType(Blood.class),
+
+
         };
         return arr;
     }

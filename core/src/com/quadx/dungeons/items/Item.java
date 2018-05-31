@@ -7,10 +7,9 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.equipment.Equipment;
-import com.quadx.dungeons.items.modItems.*;
+import com.quadx.dungeons.items.resources.*;
 import com.quadx.dungeons.items.recipes.Recipe;
 import com.quadx.dungeons.physics.Body;
-import com.quadx.dungeons.tools.gui.HUD;
 
 import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
@@ -30,13 +29,15 @@ public class Item
     protected int intelmod;
     protected int speedmod;
     protected int emod;
+    protected String description = "";
     protected Color ptColor=Color.WHITE;
     public boolean isEquip=false;
     public boolean isSpell=false;
+    public boolean hasEffect=false;
     Rectangle hitbox=new Rectangle();
     protected Vector2 texturePos=new Vector2();
     protected Texture icon=null;
-    int gold;
+    protected int gold;
     Attack attack;
     int effect= -1;
     public Body body = new Body();
@@ -84,7 +85,14 @@ public class Item
         int q = rn.nextInt(10) + 1;
         if (q <= 2) {
             a = new Leather();
-        } else {
+        } else if (q <= 4) {
+            a = new Heart();
+        } else if (q <= 6) {
+            a= new Meat();
+        } else if(q<=8){
+            a=new Blood();
+        }
+        else {
             a = Item.generateNoGold();
         }
         return a;
@@ -143,38 +151,20 @@ public class Item
     public void setTexturePos(Vector2 v) {
         texturePos.set(v);
     }
-    public void loadIcon(String s){
+    public Texture loadIcon(String s){
         if(!s.isEmpty())
             icon = new Texture(Gdx.files.internal("images\\icons\\items\\"+s));
+    return icon;
     }
 
     public void colliion(Vector2 v) {
-        int x = (int) v.x,
-                y = (int) v.y;
-
-        Class c = this.getClass();
-        boolean a= c.equals(EnergyPlus.class) ||
-                c.equals(Potion.class) ||
-                c.equals(ManaPlus.class);
-        if(a){
-            HUD.out("USE ITEM");
-            player.useItem(this);
-        }
-        else
             player.pickupItem(this);
-
-
-
-
     }
     public boolean isGold(){
         return getClass().equals(Gold.class);
     }
     public boolean hasEffect() {
-        if(!this.getClass().equals(Gold.class) &&!this.getClass().equals(EnergyPlus.class)&&
-                !this.getClass().equals(Potion.class))
-        return true;
-        else return false;
+       return hasEffect;
     }
     public int getSellPrice(){
         return (int) (cost*.75f);
@@ -184,25 +174,6 @@ public class Item
         loadIcon(fileName);
     }
 
-
-    public static Item generateSpecial() {
-        Item item=null;
-        if(rn.nextInt(8)<7){
-            int i = rn.nextInt(3);
-            if (i == 1) {
-                item = new Potion();
-            }
-            if (i == 2) {
-                item = new ManaPlus();
-            }
-            if (i == 0) {
-                item = new EnergyPlus();
-            }
-        }else{
-            item = Equipment.generate();
-        }
-        return item;
-    }
 
     public Vector2 getIconDim() {
         if(icon !=null){
@@ -214,5 +185,13 @@ public class Item
 
     public void setParticle(int effect) {
         this.effect=effect;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

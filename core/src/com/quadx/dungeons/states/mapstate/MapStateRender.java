@@ -16,7 +16,7 @@ import com.quadx.dungeons.abilities.Ability;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.Illusion;
 import com.quadx.dungeons.attacks.Protect;
-import com.quadx.dungeons.items.Gold;
+import com.quadx.dungeons.items.resources.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.Mine;
 import com.quadx.dungeons.monsters.Monster;

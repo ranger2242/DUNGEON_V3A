@@ -4,9 +4,8 @@ package com.quadx.dungeons;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.items.Gold;
-import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.Mine;
+import com.quadx.dungeons.items.resources.*;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.shapes1_5.EMath;
 import com.quadx.dungeons.shapes1_5.Ngon;
@@ -56,7 +55,9 @@ public class GridManager {
         hm=new HeightMap(dispArray);
         dispArray=hm.getCells();
         plotLoot();
-        plotItems();
+        plotMines();
+        plotGrass();
+        plotShrooms();
         plotShop();
         plotWarps();
         plotPlayer();
@@ -71,6 +72,30 @@ public class GridManager {
         out(s);
     }
 
+    private void plotGrass() {
+        for(int x=0;x<res;x++){
+            for(int y=0;y<res;y++){
+                try {
+                    int c=0;
+                    ArrayList<Cell> cells= getSurroundingCells(x,y,2);
+                    for(int i=0;i< cells.size();i++){
+                        if(cells.get(i).isWater()){
+                            c++;
+                        }
+                    }
+                    if(c>0 && !dispArray[x][y].isWater())
+                        dispArray[x][y].setItem(new Grass());
+                    if(c==16 && !dispArray[x][y].isWater() )
+                        dispArray[x][y].setItem(new Leaf());
+                    if(c==18 && !dispArray[x][y].isWater())
+                        dispArray[x][y].setItem(new Flower());
+                    if(rn.nextFloat()< 1f/3000f && !dispArray[x][y].isWater() )
+                        dispArray[x][y].setItem(new Bone());
+                } catch (ArrayIndexOutOfBoundsException ignored) {
+                }
+            }
+        }
+    }
 
 
     public static void update(float dt){
@@ -212,9 +237,9 @@ public class GridManager {
         c.setShop(true);
     }
     private void plotLoot() {
-        Vector2[] points =seeds(10,20);
+        Vector2[] points =seeds(35,20);
         for(int i=0;i<10;i++) {
-            int cluster= rn.nextInt(13);
+            int cluster= rn.nextInt(10)+10;
             for(int j=0;j<cluster;j++) {
                 points[i].add(spreadv(4));
                 dispArray(points[i]).setItem(new Gold());
@@ -222,7 +247,18 @@ public class GridManager {
         }
     }
 
-    private void plotItems() {
+    private void plotShrooms() {
+        Vector2[] points =seeds(2,4);
+        for(int i=0;i<points.length;i++) {
+            int cluster= rn.nextInt(5)+3;
+            for(int j=0;j<cluster;j++) {
+                points[i].add(spreadv(2));
+                dispArray(points[i]).setItem(new Mushroom());
+            }
+        }
+    }
+
+    private void plotMines() {
         Vector2[] points = seeds(20, 20);
         for (int i = 0; i < points.length; i++) {
             Cell c = dispArray(points[i]);
@@ -230,10 +266,10 @@ public class GridManager {
             m.genItems();
             c.setItem(m);
         }
-        int crates = (int) (liveCellList.size() * .0025f);
+      /*  int crates = (int) (liveCellList.size() * .0025f);
         for (int a = 0; a < crates; a++) {
             dispArray[resInt()][resInt()].setItem(Item.generateSpecial());
-        }
+        }*/
 
     }
 

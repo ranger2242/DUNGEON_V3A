@@ -8,6 +8,7 @@ import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Inventory;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.items.potions.Potion;
 import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.State;
@@ -197,6 +198,10 @@ public class HUD {
         if (item.getSpeedmod() != 0) {
             outList.add("SPD :" + item.getSpeedmod());
         }//speed
+
+        if(item instanceof Potion){
+            outList.addAll(((Potion)item).getEffects());
+        }
         invOverlay.texts.add(new Text(name, new Vector2(pos.x, pos.y + 50), Color.WHITE, 1));
         for (int i = 0; i < outList.size(); i++) {
             invOverlay.texts.add(new Text(outList.get(i), new Vector2(pos.x, pos.y - ((i + 1) * 20)), Color.WHITE, 1));

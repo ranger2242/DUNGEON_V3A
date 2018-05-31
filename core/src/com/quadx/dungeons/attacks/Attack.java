@@ -33,7 +33,7 @@ public abstract class Attack {
     protected CostType type;
     private Texture icon;
 
-    private final int[] usesCheck = {80, 300, 550, 750, 1000};
+    private final int[] usesCheck = {400, 500, 600, 750, 850};
     protected int[] powerA = new int[5];
     protected int[] costA = new int[5];
     protected int power = 0;

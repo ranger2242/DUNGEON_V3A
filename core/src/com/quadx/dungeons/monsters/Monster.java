@@ -12,7 +12,7 @@ import com.quadx.dungeons.ai.AI;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.Blind;
 import com.quadx.dungeons.attacks.Illusion;
-import com.quadx.dungeons.items.Gold;
+import com.quadx.dungeons.items.resources.Gold;
 import com.quadx.dungeons.physics.Body;
 import com.quadx.dungeons.physics.Physics;
 import com.quadx.dungeons.shapes1_5.EMath;

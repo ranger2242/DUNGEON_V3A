@@ -1,39 +1,28 @@
 COMPLETE===========================================================
-BUILD 2018.00000010 -CRAFT UPDATE
--add mine and object
--made icons for mine, ore,hypergem
--mines can be vein specific to a stat item and
-    drop a random amount of items when hit
-ore:leather:gold
--chest: 30:20:5000
--arms: 15:5:1250
--legs: 20:7:3500
--cape: 0:30:1500
--ring: 5:0:6000
--boots: 10:10:1000
--helmet: 12:8:2000
--gloves: 10:10:1500
--make leather object
--make monsters drop leather
--players shoot mines for gold, ore, stat items, and gold
--add hypergym to mine drops
--created crafting state with inventory, build
--added CraftState parameters to appropriate command files
--ore is used to build armor or sell
--crafting armor uses statboosting items and ore
--requires different ore count per type of armor
--1x statitem gives 2x armor stat improvement
--crafting recipe object findable in world for rare crafts
--recipe menu
+BUILD 2018.0000011
+
+-monsters now drop hearts and all meats
+-energy+ no longer spawns randomly
+-new Craft items Heart, Meat, Crystal, Blood,
+-teeth, tail,  claw,brain, wing, water,  gold,
+ venom, chargestone, bone,flower,mushroom,, leaf,
+  grass,   beetle, spider,  fish
+-added grass, mushroom, leaf, blood, bone, and flowers to the map
+-adjusted player damage down by 1/8
+-scaled down the exp gain by 1/2
+-increased the uses needed to level up attacks
+
 
 WORKING ON==========================================================
+
+
+-chargestone adds electric effects to armor
 -add deconstruct item for random loss
 -hypergem makes all player stats x3 for short time RARE
 -need icons for vein
 -USE TEXTURE ATLAS
 -leather and ore armor types
 -100x gold per 1% Quality in Equipment
--make craft resource for HP M and E
 
 -refactor away Title class to Text
 -recipes unlockable by achievements
