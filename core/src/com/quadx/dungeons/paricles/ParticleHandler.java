@@ -17,12 +17,18 @@ import static com.quadx.dungeons.tools.gui.HUD.out;
 public class ParticleHandler {
     public static ArrayList<ParticleEffectPool.PooledEffect> itemEffects = new ArrayList<>();
     ParticleEffectPool itemEffectPool;
+    ParticleEffectPool fireEffectPool;
+
     ArrayList<Integer> rmQueue = new ArrayList<>();
     ParticleEffect itemEffect=  new ParticleEffect();
     public ParticleHandler(){
         TextureAtlas part= new TextureAtlas(Gdx.files.internal("particles/itemParticlePack.atlas"));
         itemEffect.load(Gdx.files.internal(FilePaths.getPath("particles/ptItem")),part);
+        ParticleEffect e = new ParticleEffect();
+        e.load(Gdx.files.internal("particles/ptFlame"),Gdx.files.internal("particles"));
         itemEffectPool = new ParticleEffectPool(itemEffect,0,10);
+        fireEffectPool = new ParticleEffectPool(e,0,10);
+
     }
 
     public void update(float dt) {
@@ -131,6 +137,14 @@ public class ParticleHandler {
         out("EFFECT ADDED:"+p.toString());
         effect.start();
         itemEffects.add(effect);
+        return itemEffects.size();
+    }
+    public int addFireEffect(Vector2 p) {
+        ParticleEffectPool.PooledEffect er= fireEffectPool.obtain();
+        er.setPosition(p.x,p.y);
+        out("EFFECT ADDED:"+p.toString());
+        er.start();
+        itemEffects.add(er);
         return itemEffects.size();
     }
 

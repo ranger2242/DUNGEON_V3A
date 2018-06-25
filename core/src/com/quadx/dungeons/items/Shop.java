@@ -39,7 +39,7 @@ public class Shop {
    }
     private void genInventory(){
         inv.clear();
-        inv.add(new Potion());
+        //inv.add(new Potion());
         inv.add(new ManaPlus());
         inv.add(new StrengthPlus());
         inv.add(new DefPlus());

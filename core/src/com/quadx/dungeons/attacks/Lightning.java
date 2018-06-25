@@ -14,7 +14,8 @@ import static com.quadx.dungeons.GridManager.monsterList;
  * Created by Chris Cavazos on 6/25/2016.
  */
 public class Lightning extends Attack {
-    public Lightning(){
+    boolean small=false;
+    public Lightning(boolean small){
         costGold=30000;
         type=CostType.Mana;
         hitBoxShape =HitBoxShape.Chain;
@@ -32,6 +33,7 @@ public class Lightning extends Attack {
         range=0;
         loadArray();
         setIcon(ImageLoader.attacks.get(12));
+        this.small=small;
     }
 
     @Override
@@ -42,9 +44,10 @@ public class Lightning extends Attack {
     public ArrayList<Line> getHitChainList(){
         ArrayList<Line> edges=new ArrayList<>();
         ArrayList<Monster> hit=new ArrayList<>();
+        int range= small? 8: 10;
         try{
         for(Monster m:monsterList){
-            if(player.pos().dst(m.pos())<10){
+            if(player.pos().dst(m.pos())<range){
                 hit.add(m);
                 edges.add(new Line(player.fixed(), m.fixed()));
                 m.takeDamage();
@@ -53,7 +56,7 @@ public class Lightning extends Attack {
         try{
         for(Monster m:hit){
             for(Monster m1:monsterList) {
-                if (!m.equals(m1) && m.pos().dst(m1.pos()) < 10) {
+                if (!m.equals(m1) && m.pos().dst(m1.pos()) < range) {
                     edges.add(new Line(m.fixed(),m1.fixed()));
                     m1.takeDamage();
                 }

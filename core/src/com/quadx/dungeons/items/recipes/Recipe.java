@@ -1,8 +1,10 @@
 package com.quadx.dungeons.items.recipes;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Inventory;
@@ -29,7 +31,7 @@ public class Recipe extends Item {
     protected boolean isPotionRecipe = false;
     protected String craftFileName = "";
     protected Item output = null;
-    protected int itemLimit=5;
+    protected int itemLimit = 5;
 
     public void setCosts(Pair<Integer, Item>[] costs) {
         this.costs = costs;
@@ -69,11 +71,16 @@ public class Recipe extends Item {
         Game.setFontSize(1);
         BitmapFont font = Game.getFont();
         font.setColor(Color.WHITE);
-        font.draw(sb, name, pos.x, pos.y);
+        font.draw(sb, name, pos.x, pos.y+36);
         sb.draw(output.getIcon(), pos.x - 34, pos.y);
-        for (int i = 0; i < cost.size(); i++) {
-            font.draw(sb, cost.get(i), pos.x + 200, pos.y - (i * 14));
+        for (int i = 0; i < costs.length; i++) {
+            if (costs[i] != null) {
+                Texture t = costs[i].getValue().getIcon();
+                Vector2 v= new Vector2(pos.x + (48 * i), pos.y-24);
+                sb.draw(t,v.x,v.y);
+                font.draw(sb,"x"+costs[i].getKey(),v.x,v.y);
 
+            }
         }
     }
 
@@ -97,23 +104,46 @@ public class Recipe extends Item {
         return itemLimit;
     }
 
-    public boolean meetsCost(Inventory slots, boolean exactly){
-        boolean[] met = new boolean[]{false,false,false,false,false};
-        Pair<Integer, Item>[] costs=getCosts();
-        for(int i=0;i<5;i++){
-            if(costs[i]==null){
-                met[i]=true;
-            }else{
-                met[i]= costs[i].getKey()== slots.getStackSize(costs[i].getValue().getClass());
+    public boolean meetsCost(Inventory slots, boolean exactly) {
+        boolean[] met = new boolean[]{false, false, false, false, false};
+        Pair<Integer, Item>[] costs = getCosts();
+        int lm=0;
+        for (int i = 0; i < 5; i++) {
+            if (costs[i] == null) {
+                met[i] = true;
+            } else {
+                int lim = costs[i].getKey();
+                try {
+                    int size = slots.getStackSize(costs[i].getValue().getClass());
+                    if (size != 0)
+                        met[i] = 0 == size % lim;
+                } catch (ArithmeticException e) {
+                    met[i] = false;
+                }
             }
         }
-        boolean craftable=true;
-        for(int i=0;i<5;i++) {
-            craftable= craftable&&met[i];
+        boolean craftable = true;
+        for (int i = 0; i < 5; i++) {
+            craftable = craftable && met[i];
         }
-        if(exactly) {
+        if(craftable){
+            for(int i=0;i<5;i++){
+                if(costs[i]!=null) {
+                    int size = slots.getStackSize(costs[i].getValue().getClass());
+                }
+                // costs[i].getKey()
+            }
+        }
+
+        if (exactly) {
             return craftable && slots.getList().size() == getItemLimit();
-        }else
+        } else
             return craftable;
+    }
+
+    public Rectangle getRect(Vector2 p) {
+       Vector2 v= new Vector2(p.x-34,p.y);
+       Vector2 d= getIconDim();
+       return new Rectangle(v.x,v.y,d.x,d.y);
     }
 }

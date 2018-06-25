@@ -9,28 +9,26 @@ import static com.quadx.dungeons.tools.timers.Time.SECOND;
 /**
  * Created by Chris Cavazos on 5/31/2018.
  */
-public class HealthPotion extends Potion {
-    public HealthPotion() {
-        dEffectTime = new Delta(10 * SECOND);
-
-        name = "Health Potion";
-        fileName = "potions\\pRed.png";
+public class GoldBoostPotion extends Potion {
+    public GoldBoostPotion() {
+        dEffectTime = new Delta(30 * SECOND);
+        name = "Gold Boost Potion";
+        fileName = "potions\\pGold.png";
         loadIcon();
-        effects.add("MAX HP");
-        effects.add("2x HP REGEN");
+        effects.add("DOUBLES ALL GOLD");
+        effects.add("FOR 30 SECONDS");
     }
 
     @Override
     void onStart() {
         PlayerStat st = Game.player.st;
-        st.setHp(st.getHpMax());
-        st.scaleHpRegen(2f);
+        st.scaleGoldMult(2f);
     }
 
     @Override
     void onEnd() {
         PlayerStat st = Game.player.st;
-        st.scaleHpRegen(.5f);
+        st.scaleGoldMult(.5f);
     }
 
     @Override

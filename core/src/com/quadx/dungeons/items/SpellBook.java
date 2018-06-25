@@ -33,7 +33,7 @@ public class SpellBook extends Item {
                 break;
             }
             case(2):{
-                attack=new Flame();
+                attack=new Flame(false);
                 break;
             }
             case(3):{
@@ -65,7 +65,7 @@ public class SpellBook extends Item {
                 break;
             }
             case(10):{
-                attack=new Lightning();
+                attack=new Lightning(false);
                 break;
             }
             case(11):{

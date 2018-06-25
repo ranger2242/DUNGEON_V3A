@@ -46,7 +46,7 @@ public class Tests {
     public static boolean clearmap=         false;
     public static boolean infiniteRegen =   false;
     public static boolean displayFPS =      true;
-    public static boolean mouseAim=         false;
+    public static boolean mouseAim=         true;
     public static int spawnLimit = 60;
 
     static float fps = 0;

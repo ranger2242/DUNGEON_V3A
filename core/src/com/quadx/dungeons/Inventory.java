@@ -3,6 +3,7 @@ package com.quadx.dungeons;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
+import com.quadx.dungeons.items.potions.Potion;
 import com.quadx.dungeons.items.resources.*;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.tools.timers.Delta;
@@ -67,7 +68,11 @@ public class Inventory {
             } else if (item.isSpell) {
                 p.equipSpell(item);
                 remove(pos);
-            } else if (item.isUsable) {
+            }else if(item instanceof Potion){
+                p.activatePotion((Potion) item);
+                remove(pos);
+            }
+            else if (item.isUsable) {
                 p.useItem(item);
                 remove(pos);
             }
@@ -198,11 +203,13 @@ public class Inventory {
     public static Cell chooseDiscardCell(Vector2 p) {
         Cell cell;
         boolean samePos;
+        int i=0;
         do {
-            Vector2 n = new Vector2(cluster(p, 6));
+            Vector2 n = new Vector2(cluster(p, 2));
             cell = dispArray(n);
             samePos = isNearPlayer(n, 2);
-        } while (!cell.canPlaceItem() || samePos);
+            i++;
+        } while ((!cell.canPlaceItem() || samePos) && i<5);
         return cell;
     }
 

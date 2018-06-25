@@ -15,6 +15,7 @@ import com.quadx.dungeons.shapes1_5.EMath;
 import com.quadx.dungeons.shapes1_5.Triangle;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.ImageLoader;
+import com.quadx.dungeons.tools.heightmap.HeightMap;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -51,8 +52,6 @@ public class Cell {
     Vector2 pos = new Vector2();    //<- position relative to grid
     Vector2 absPos = new Vector2(); //<- for use with cellw shift
     Vector2 fixedPos = new Vector2();
-
-    private boolean hasCrate = false;
     private boolean hasLoot = false;
     private boolean hasMon = false;
     private boolean attArea = false;
@@ -87,26 +86,24 @@ public class Cell {
 
     public Color getColor() {
         if (isClear()) {
-            color = new Color(.235f, .235f, .196f, 1);
-            if (hasLoot()) color = new Color(1f, .647f, 0f, 1);
-            if (hasCrate() && boosterItem == 0) color = new Color(.627f, .322f, .176f, 1);
+            color = HeightMap.getColors().get(height);// new Color(.235f, .235f, .196f, 1);
+            if (isWater()) {
+                if (dtwater > .5) {
+                    int r = rn.nextInt(3);
+                    color = colors[r];
+                    dtwater = 0;
+                } else {
+                    color = colors[0];
+                }
+            }
             if (isShop()) color = new Color(1f, 0f, 1f, 1);
             if (isWarp()) color = new Color(0f, 1f, 0f, 1);
-            // if(hasMon()) color=new Color(1f, .2f, .2f, 1);
             if (getAttArea()) color = new Color(.7f, 0, 0f, 1);
             if (hasMon()) color = new Color(1, 0, 0, 1);
+            if (hasItem() && item != null) color = item.getTileColor();
         }
-        // else color=new Color(0f, 0f, 0f, 1);
 
-        if (isWater()) {
-            if (dtwater > .5) {
-                int r = rn.nextInt(3);
-                color = colors[r];
-                dtwater = 0;
-            } else {
-                color = colors[0];
-            }
-        }
+
         return color;
     }
 
@@ -173,9 +170,7 @@ public class Cell {
         return hasLoot;
     }
 
-    public boolean hasCrate() {
-        return hasCrate;
-    }
+
 
     public boolean hasItem() {
         return hasItem;
@@ -268,9 +263,6 @@ public class Cell {
         tile = t;
     }
 
-    public void setCrate(boolean set) {
-        hasCrate = set;
-    }
 
     public void setWater(boolean b) {
         tile = ImageLoader.w[0];
@@ -315,6 +307,8 @@ public class Cell {
             this.item = item;
             hasItem=true;
             setHasLoot(true);
+        }else{
+            hasItem=false;
         }
     }
 
@@ -336,27 +330,15 @@ public class Cell {
 
     public void updateParticles() {
         if (this.item != null) {
-            hasItem = true;
             if (!effectLoaded && isClear()) {
                 if (item.hasEffect()) {
-                    float x= abs().x - (item.getIcon().getWidth() / 2);
-                    float y= abs().y;
-                   // effect = ParticleHandler.loadParticles("ptItem", x, y, item.getPtColor(), ParticleHandler.EffectType.FIELD);
+                    float x = abs().x - (item.getIcon().getWidth() / 2);
+                    float y = abs().y;
+                    // effect = ParticleHandler.loadParticles("ptItem", x, y, item.getPtColor(), ParticleHandler.EffectType.FIELD);
                     effectLoaded = true;
-                    item.setParticle(MapState.particleHandler.addEffect(fixed(),item.getPtColor()));
+                    item.setParticle(MapState.particleHandler.addEffect(fixed(), item.getPtColor()));
                 }
-           }
-        } else {
-            hasItem = false;
-/*            if (effectLoaded) {
-                try {
-                    itemEffects.remove(effect);
-                    effect.dispose();
-                    effect = null;
-                } catch (Exception e) {
-
-                }
-            }*/
+            }
         }
     }
 
@@ -381,7 +363,7 @@ public class Cell {
     }
 
     public boolean canPlaceItem() {
-        return !(hasCrate() || !isClear() || hasLoot() || isWarp() || isWater() || hasItem());
+        return  !(isClear() || hasLoot() || isWarp() || isWater() || hasItem());
     }
 
     public void generateSpecial() {
@@ -396,12 +378,12 @@ public class Cell {
     }
 
     public void removeItem() {
-        out("ITEM");
-        if (item != null) {
+        if (hasItem()) {
+            out("ITEM");
             item.colliion(pos());
             destroyEffect();
             boosterItem=-1;
-            hasItem=false;
+            setItem(null);
             item=null;
             hasLoot=false;
         }

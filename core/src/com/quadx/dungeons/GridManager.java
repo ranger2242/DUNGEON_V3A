@@ -308,14 +308,15 @@ public class GridManager {
     public static Vector2 fixYv(Vector2 v){//get vector in absolute pos
         return new Vector2(v.x, fixY(v));
     }
-    public static float fixY(Vector2 v){//get vector in absolute pos
-        int gx=Math.round(v.x/cellW);//find grid pos
-        int gy=Math.round(v.y/cellW);
-        float pery=(v.y-(gy*cellW))/cellW;
+
+    public static float fixY(Vector2 v) {//get vector in absolute pos
+        int gx = Math.round(v.x / cellW);//find grid pos
+        int gy = Math.round(v.y / cellW);
+        float pery = (v.y - (gy * cellW)) / cellW;
         try {
-            float y= (dispArray[gx][gy].getHeight()*cell.y)+(gy*cell.y)+(pery*cell.y);
+            float y = (dispArray[gx][gy].getHeight() * cell.y) + (gy * cell.y) + (pery * cell.y);
             return y;
-        }catch (NullPointerException| ArrayIndexOutOfBoundsException e) {
+        } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
             return v.y;
         }
     }

@@ -36,7 +36,7 @@ public class Mage extends Ability {
 
     @Override
     public void l1() {
-        player.attackList.add(new Flame());
+        player.attackList.add(new Flame(false));
         level=1;
         apply();
     }

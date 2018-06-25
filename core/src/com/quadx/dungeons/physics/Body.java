@@ -8,10 +8,13 @@ import com.quadx.dungeons.attacks.Dash;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.shapes1_5.EMath;
 import com.quadx.dungeons.tools.Direction;
+import com.quadx.dungeons.tools.timers.Delta;
 
 import static com.quadx.dungeons.GridManager.*;
 import static com.quadx.dungeons.states.mapstate.MapState.cell;
 import static com.quadx.dungeons.states.mapstate.MapState.cellW;
+import static com.quadx.dungeons.states.mapstate.MapState.gm;
+import static com.quadx.dungeons.tools.timers.Time.ft;
 
 /**
  * Created by Chris Cavazos on 4/28/2018.
@@ -26,8 +29,30 @@ public class Body {
     private Monster monster;
     private Texture[] icons = new Texture[4];
     private Texture icon;
+    boolean bumped=false;
+    Vector2 knockBackVel=new Vector2();
+    Delta dKb = new Delta(5*ft);
 
+    public void setKnockBackDest(Vector2 initPos) {
+        Vector2 vel = Physics.getVector(15*cellW , initPos, getAbs());
+        knockBackVel=vel;
+        bumped=true;
+    }
+    public void update(float dt) {
+        calcVeloctiy();
+        if(bumped){
+            dKb.update(dt);
+            Vector2 v= new Vector2(knockBackVel).scl(2* dt);
+            setAbs(getAbs().add(v));
+            if(dKb.isDone()){
+                dKb.reset();
+                gm.clearArea(getPos(), true);
+                bumped=false;
+            }
+        }
 
+        setAbs(wrapPos(absPos));
+    }
     private void calcVeloctiy() {
         float v;
         if(isPlayer) {
@@ -75,10 +100,7 @@ public class Body {
         float x = (float) EMath.round(absPos.x / cellW);
         setPos(new Vector2(x, y));
     }
-    public void update(float dt) {
-        calcVeloctiy();
-        setAbs(wrapPos(absPos));
-    }
+
 
     public Vector2 wrapPos(Vector2 absPos) {//outputs (absolutePos, gridPos)
         float max = res * cell.x;//grid width

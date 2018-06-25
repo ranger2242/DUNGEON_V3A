@@ -1,5 +1,6 @@
 package com.quadx.dungeons.items.resources;
 
+import com.badlogic.gdx.graphics.Color;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.tools.ImageLoader;
 
@@ -13,6 +14,7 @@ public class Gold extends Item {
 
     public Gold(int lvl){
         this.lvl=lvl;
+        name="GOLD";
         genValue();
     }
     public Gold(){
@@ -28,6 +30,7 @@ public class Gold extends Item {
         if (gold < 0) gold = 1;
         icon= ImageLoader.gold[0];
         value= (gold);
+        tileColor= new Color(1f, .647f, 0f, 1);
 
     }
     public int getValue(){

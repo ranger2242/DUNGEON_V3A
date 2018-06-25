@@ -1,19 +1,23 @@
 COMPLETE===========================================================
-BUILD 2018.0000011
-
--monsters now drop hearts and all meats
--energy+ no longer spawns randomly
--new Craft items Heart, Meat, Crystal, Blood,
--teeth, tail,  claw,brain, wing, water,  gold,
- venom, chargestone, bone,flower,mushroom,, leaf,
-  grass,   beetle, spider,  fish
--added grass, mushroom, leaf, blood, bone, and flowers to the map
--adjusted player damage down by 1/8
--scaled down the exp gain by 1/2
--increased the uses needed to level up attacks
+-made more grass
+-added height to minimap
+-Added More Potions invisibility, fire and lightning shield
+stat boosting, invincibility, rough skin
+-Refactored Knockback to Body and added to Monster
 
 
 WORKING ON==========================================================
+----QUICK Craft recipe by clicking item icon in cookbook
+-clear stacks button in craft
+-craft stack of items at once
+
+-potion ideas
+warp, uses two potions, one for destination setting and the second for warping
+phasing
+
+sell price boost in shop
+item cost reduced in shop
+double resources on disassemblke
 
 
 -chargestone adds electric effects to armor

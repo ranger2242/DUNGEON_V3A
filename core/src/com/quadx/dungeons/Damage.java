@@ -11,6 +11,7 @@ import com.quadx.dungeons.tools.gui.HoverText;
 import java.util.Random;
 
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.tools.gui.HUD.out;
 
 /**
  * Created by Tom on 11/24/2015.
@@ -39,24 +40,28 @@ public class Damage {
         }
         return damage/8;
     }
-    static float rate=10;
-    public static int monsterMagicDamage(Monster m){
+    static float rate=2;
+    public static int monsterMagicDamage(Monster m) {
         float a, b, c, d;
-        a =(float) EMath.randomGaussianAverage(player.st.getIntComp(),player.st.getDefComp());
-        b =(float) EMath.randomGaussianAverage(m.st.getIntel(),m.st.getStrength());
-        c =(float) m.st.getPower();
+        a = (float) EMath.randomGaussianAverage(player.st.getIntComp(), player.st.getDefComp());
+        b = (float) EMath.randomGaussianAverage(m.st.getIntel(), m.st.getStrength());
+        c = (float) m.st.getPower();
         d = (float) m.st.getLevel();
 
-        damage =(Math.round(((c*d)+(b*8))/(a)));
+        damage = (Math.round(((c * d) + (b * 8)) / (a)));
         if (damage < 0) //checks for negative damage
             damage = defaultDamage;
         if (rn.nextFloat() < .1) {
             damage *= 1.15;
             new HoverText("-CRITICAL-", Color.BLUE, player.fixed(), true);
         }
-        if(Protect.active || Dash.active)
+        if (Protect.active || Dash.active)
             return 0;
-        else
-        return (int) (damage *rate);
+        else {
+            int i = (int) (damage * rate);
+            out(i+"");
+            return i;
+
+        }
     }
 }

@@ -104,13 +104,17 @@ public abstract class Attack {
     public void use() {
         if (dUse.isDone()) {
             if (player.canUseAttack()) {
-                player.useAttack(this);
+                player.useAttack(this,false);
                 uses++;
                 checkLvlUp();
                 dUse.reset();
             } else
                 new HoverText("-!-", SECOND, Color.MAGENTA, player.fixed(), true);
         }
+    }
+
+    public void useNoCost() {
+        player.useAttack(this, true);
     }
 
 

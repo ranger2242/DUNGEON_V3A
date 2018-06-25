@@ -24,9 +24,19 @@ public class Stats {
     public void addHp(int hp) {
         this.hp += hp;
     }
+    public void addStrength(int str) {
+        this.str += str;
+    } public void addDefense(int def) {
+        this.def += def;
+    } public void addIntel(int intel) {
+        this.intel += intel;
+    } public void addSpeed(int spd) {
+        this.spd += spd;
+    }
     public void addLevel(){
         level++;
     }
+
 
     //multipliers
     public void setxHpMax(double hpMax) {

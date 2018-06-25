@@ -30,7 +30,9 @@ public class PlayerStat extends Stats {
     private int hpMod = 0;
     private float hpMult = 1;
     private float hpRegenMod = 1;
-    private double mRegenMod = 1;
+    private float manaRegenMod = 1;
+    private float energyRegenMod = 1;
+    private float goldMult = 1;
 
 
     private float mana = barStatGrowthFunction(1);
@@ -64,17 +66,28 @@ public class PlayerStat extends Stats {
         energy += e;
     }
     //multipliers
-    public void setxHpRegen(double hpRegen) { this.hpRegenMod *= hpRegenMod; }
+    public void scaleHpRegen(float sc){
+        hpRegenMod*=sc;
+    }
+    public void scaleManaRegen(float sc){
+        manaRegenMod*=sc;
+    }
+    public void scaleEnergyRegen(float sc){
+        energyRegenMod*=sc;
+    }
+    public void setxHpRegen(float hpRegenMod) { this.hpRegenMod = hpRegenMod; }
+    public void setxManaRegen(float manaRegenMod) {
+        this.manaRegenMod = manaRegenMod;
+    }
+    public void setxEnergyRegen(float v) {
+        energyRegenMod=v;
+    }
+
     public void setxManaMax(double manaMax) {
         this.manaMax *= manaMax;
     }
-    public void setxManaRegen(double manaRegen) {
-        this.mRegenMod *= mRegenMod;
-    }
     public void setxEnergyMax(double xEnergyMax) {
         this.energyMax *= xEnergyMax;
-    }
-    public void setxEnergyRegen(float v) {
     }
 
 
@@ -114,34 +127,34 @@ public class PlayerStat extends Stats {
     }
     //getters
     private float getHpRegen() {
-        return regenGrowthFunction(level, getDefComp() / 2);
+        return regenGrowthFunction(level, getDefComp() / 2,hpRegenMod);
+    }
+    private float getManaRegen() {
+        return regenGrowthFunction(level, getIntComp(),manaRegenMod);
+    }
+    private float getEnergyRegen() {
+        return regenGrowthFunction(level, getStrComp(),energyRegenMod);
     }
     public float getMana() {
         return mana;
     }
-    public float getManaMax() {
-        return manaMax;
-    }
-    private float getManaRegen() {
-        return regenGrowthFunction(level, getIntComp());
-    }
     public float getEnergy() {
         return energy;
     }
+    public float getManaMax() {
+        return manaMax;
+    }
     public float getEnergyMax() {
         return energyMax;
-    }
-    private float getEnergyRegen() {
-        return regenGrowthFunction(level, getStrComp());
-    }
-    public boolean isSimpleStatsEnabled() {
-        return simpleStats;
     }
     public float getPercentEnergy(){
         return energy/energyMax;
     }
     public float getPercentMana(){
         return mana/manaMax;
+    }
+    public boolean isSimpleStatsEnabled() {
+        return simpleStats;
     }
     //get comp
     private int getHpComp() {
@@ -170,9 +183,8 @@ public class PlayerStat extends Stats {
 
 
     //other
-    private float regenGrowthFunction(int level, int stat) {
-
-        float rate = level * (level / 192f) + (stat / 3650f) + .25f;
+    private float regenGrowthFunction(int level, int stat , float mod) {
+        float rate = (level * (level / 192f) + (stat / 3650f) + .25f)*mod;
         float g = (60 * ft) * rate;
         return g;
     }
@@ -303,4 +315,11 @@ public class PlayerStat extends Stats {
         setSpeed(a);
     }
 
+    public float getGoldMult() {
+        return goldMult;
+    }
+
+    public void scaleGoldMult(float sc) {
+        goldMult*=sc;
+    }
 }

@@ -18,7 +18,6 @@ public class AddItemToCellComm extends Command {
     public void execute() {
         if(item !=null){
             cell.setItem(item);
-            cell.setCrate(true);
         }
     }
 }

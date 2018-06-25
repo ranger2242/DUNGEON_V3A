@@ -7,7 +7,10 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.quadx.dungeons.*;
+import com.quadx.dungeons.Cell;
+import com.quadx.dungeons.Damage;
+import com.quadx.dungeons.GridManager;
+import com.quadx.dungeons.Inventory;
 import com.quadx.dungeons.ai.AI;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.attacks.Blind;
@@ -16,7 +19,7 @@ import com.quadx.dungeons.items.resources.Gold;
 import com.quadx.dungeons.physics.Body;
 import com.quadx.dungeons.physics.Physics;
 import com.quadx.dungeons.shapes1_5.EMath;
-import com.quadx.dungeons.states.State;
+import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.Direction;
 import com.quadx.dungeons.tools.Elapsed;
 import com.quadx.dungeons.tools.StatManager;
@@ -233,12 +236,10 @@ public class Monster {
         if (body.getHitBox().overlaps(player.body.getHitBox()) && !player.wasHit && !player.jumping) {
             player.wasHit = true;
             int d =Damage.monsterMagicDamage(this);
-            player.st.addHp(-d);
-            player.setKnockBackDest(abs());
-            State.shake();
-            Color c = new Color(1f, .2f, .2f, 1f);
-            new HoverText("-" + d, 1, c, player.fixed(), true);
-
+            player.takeDamage(d,abs());
+            if(player.isRoughSkin()){
+                takeAttackDamage(st.getHpMax()/4);
+            }
             hit = true;
             StatManager.killer = this;
         }
@@ -403,6 +404,9 @@ public class Monster {
         if (attack.getClass().equals(Blind.class)) {
             hit = false;
         }
+        if(player.hasFireShield()){
+            MapState.particleHandler.addFireEffect(fixed());
+        }
         checkIfDead();
     }
 
@@ -454,7 +458,9 @@ public class Monster {
             new HoverText("-" + (int) i, c, fixed(), true);
             out("Hit " + st.getName() + " for " + (int) i + " damage.");
             invincable = true;
+            body.setKnockBackDest(player.abs());
         }
+        checkIfDead();
 
     }
 
@@ -516,20 +522,25 @@ public class Monster {
     }
 
     private void chasePlayer() {
-        float angle;
-        boolean dir = player.pos().dst(pos()) > res / 2;
-        if (!Illusion.dummies.isEmpty()) {
-            angle = (float) Math.toRadians(EMath.angle(abs(), Illusion.dummies.get(rn.nextInt(Illusion.dummies.size())).absPos) + 180);
-        } else
-            angle = (float) Math.toRadians(EMath.angle(abs(), player.abs()) + 180);
-        if (dir)
+        if (player.isInvisible()) {
+            changeDirection();
+        } else {
+            float angle;
+            boolean dir = player.pos().dst(pos()) > res / 2;
+            if (!Illusion.dummies.isEmpty()) {
+                angle = (float) Math.toRadians(EMath.angle(abs(), Illusion.dummies.get(rn.nextInt(Illusion.dummies.size())).absPos) + 180);
+            } else
+                angle = (float) Math.toRadians(EMath.angle(abs(), player.abs()) + 180);
+            if (dir)
+                angle += Math.PI;
             angle += Math.PI;
-        angle += Math.PI;
-        facing = Direction.getDirection(angle);
-        try {
-            move(Direction.getVector(facing));
-        } catch (ArrayIndexOutOfBoundsException e) {
+            facing = Direction.getDirection(angle);
+            try {
+                move(Direction.getVector(facing));
+            } catch (ArrayIndexOutOfBoundsException e) {
+            }
         }
+
     }
 
     private void move2(Vector2 v) {

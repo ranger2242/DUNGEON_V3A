@@ -31,6 +31,7 @@ public class Item
     protected int emod;
     protected String description = "";
     protected Color ptColor=Color.WHITE;
+    protected Color tileColor = new Color(.3f, .8f, .2f, 1);
     public boolean isEquip=false;
     public boolean isSpell=false;
     public boolean hasEffect=false;
@@ -174,7 +175,9 @@ public class Item
         loadIcon(fileName);
     }
 
-
+    public Color getTileColor(){
+        return tileColor;
+    }
     public Vector2 getIconDim() {
         if(icon !=null){
             return new Vector2(icon.getWidth(),icon.getHeight());

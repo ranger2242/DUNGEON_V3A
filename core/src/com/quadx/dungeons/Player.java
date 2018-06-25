@@ -12,12 +12,15 @@ import com.quadx.dungeons.abilities.Ability;
 import com.quadx.dungeons.abilities.Investor;
 import com.quadx.dungeons.abilities.WaterBreath;
 import com.quadx.dungeons.attacks.*;
-import com.quadx.dungeons.items.*;
+import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.items.Mine;
+import com.quadx.dungeons.items.SpellBook;
 import com.quadx.dungeons.items.equipment.Equipment;
-import com.quadx.dungeons.items.resources.*;
-import com.quadx.dungeons.items.recipes.*;
+import com.quadx.dungeons.items.potions.*;
+import com.quadx.dungeons.items.recipes.Recipe;
 import com.quadx.dungeons.items.recipes.equipRecipes.*;
-import com.quadx.dungeons.items.recipes.potionRecipes.HealthPotionRe;
+import com.quadx.dungeons.items.recipes.potionRecipes.*;
+import com.quadx.dungeons.items.resources.*;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.physics.Body;
 import com.quadx.dungeons.physics.Physics;
@@ -28,6 +31,7 @@ import com.quadx.dungeons.shapes1_5.Triangle;
 import com.quadx.dungeons.states.AbilitySelectState;
 import com.quadx.dungeons.states.GameStateManager;
 import com.quadx.dungeons.states.HighScoreState;
+import com.quadx.dungeons.states.State;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.tools.Direction;
 import com.quadx.dungeons.tools.StatManager;
@@ -61,6 +65,7 @@ public class Player {
     public final ArrayList<Attack> attackList = new ArrayList<>();
     public final ArrayList<Ability> secondaryAbilityList = new ArrayList<>();
     private ArrayList<Line> attackChain = new ArrayList<>();
+    public ArrayList<Potion> activePotions = new ArrayList<>();
 
     public ArrayList<Recipe> getCraftable() {
         return craftable;
@@ -101,17 +106,20 @@ public class Player {
 
 
     public boolean canMove = false;
+    private boolean fireShield=false;
     public boolean wasHit = false;
     public boolean protect = false;
     public boolean jumping = false;
     boolean overrideControls = false;
     private boolean renderEffect = false;
-
+    private boolean invisible = false;
+    private boolean invincible = false;
+    private boolean roughSkin = false;
 
 
     private double moveSpeed = .1f;
-    private int oreCnt=0;
-    private int leatherCnt=0;
+    private int oreCnt = 0;
+    private int leatherCnt = 0;
 
 
     public Player() {
@@ -120,16 +128,7 @@ public class Player {
     }
 
     //-----------------------------------------------SETTERS------------------------------------------------------------------
-    public void setKnockBackDest(Vector2 initPos) {
-        Vector2 vel = Physics.getVector(1, initPos, abs());
-        float force = cellW * 5;
 
-        kba = vel.scl(force);
-        float x = abs().x + vel.x;
-        float y = abs().y + vel.y;
-        body.setAbs(new Vector2(x, y));
-        gm.clearArea(pos(), true);
-    }
 
     public void setAttackBox(Rectangle r) {
         attackBox = r;
@@ -148,11 +147,10 @@ public class Player {
     }
 
 
-
     public void setExp(int lvl, float factor) {
         double a = 50.9055;
         double b = 1.0015;
-        int gain = (int) (a * Math.pow(b, lvl) * factor)/2;
+        int gain = (int) (a * Math.pow(b, lvl) * factor) / 2;
         new HoverText(gain + " EXP", Color.GREEN, fixed(), false);
         this.exp += gain;
         out(st.getName() + " gained " + gain + " EXP");
@@ -177,18 +175,20 @@ public class Player {
     public void setAbilityPoints(int abilityPoints) {
         this.abilityPoints += abilityPoints;
     }
+
     public void setAimVector(Vector2 end, boolean overrideMouse) {
-        Vector2 start =new Vector2();
-        if(!overrideMouse) {
-            start=new Vector2(scr).scl(.5f);
+        Vector2 start = new Vector2();
+        if (!overrideMouse) {
+            start = new Vector2(scr).scl(.5f);
         }
-        double aim= Physics.getAngleRad(start,end);
+        double aim = Physics.getAngleRad(start, end);
         body.setFacing(Direction.getDirection(aim));
 
     }
+
     //ADDERS------------------------------------------------------------------
     public void addGold(int g) {
-        gold += g;
+        gold += (g * st.getGoldMult());
     }
 
     public void addGold(Gold g) {
@@ -332,10 +332,10 @@ public class Player {
     }
 
     public Attack getAttack() {
-        if(!attackList.isEmpty())
-        return attackList.get(Attack.pos);
+        if (!attackList.isEmpty())
+            return attackList.get(Attack.pos);
         else
-            return new Flame();
+            return new Flame(false);
     }
 
     public Illusion.Dummy getDummy() {
@@ -359,7 +359,6 @@ public class Player {
     }
 
 
-
     public Ability getAbility() {
         return ability;
     }
@@ -375,15 +374,17 @@ public class Player {
         inv.discard(pos(), true, null);
     }
 
-    public void useAttack(Attack a) {
+    public void useAttack(Attack a, boolean free) {
         int c = a.getCost();
-        switch (a.getType()) {
-            case Energy:
-                st.addEnergy(-c);
-                break;
-            case Mana:
-                st.addMana(-c);
-                break;
+        if (!free) {
+            switch (a.getType()) {
+                case Energy:
+                    st.addEnergy(-c);
+                    break;
+                case Mana:
+                    st.addMana(-c);
+                    break;
+            }
         }
         setHitBoxShape(a);
     }
@@ -454,7 +455,7 @@ public class Player {
     }
 
     public void useItem(Item item) {
-        if(item instanceof Resource) {
+        if (item instanceof Resource) {
             int[] mods = ((Resource) item).runMod();
             st.addItemMods(mods, fixed());
             if (item.getClass().equals(Gold.class)) {
@@ -462,7 +463,7 @@ public class Player {
                 StatManager.totalGold += item.getValue();
                 out(st.getName() + " recieved " + item.getValue() + "G");
                 new HoverText(item.getValue() + "G", Color.GOLD, fixed(), false);
-             }
+            }
         }
     }
 
@@ -495,7 +496,17 @@ public class Player {
         body.setPlayer(this);
         body.setIcons(new Texture[]{pl[0], pl[1], pl[2], pl[3]});
         //load attacks
+        //craftable.add(new FireShieldPotionRe());
+
+        craftable.add(new StatPotionRe());
+
+        craftable.add(new InvisibilityPotionRe());
+        craftable.add(new LightningShieldPotionRe());
+
         craftable.add(new HealthPotionRe());
+        craftable.add(new ManaPotionRe());
+        craftable.add(new EnergyPotionRe());
+        craftable.add(new GoldBoostPotionRe());
         craftable.add(new ArmRe());
         craftable.add(new BootsRe());
         craftable.add(new CapeRe());
@@ -506,12 +517,18 @@ public class Player {
         craftable.add(new RingRe());
 
         attackList.clear();
-        out(st.getDefComp()+"");
+        out(st.getDefComp() + "");
         ability.onActivate();
         attackList.add(new Dash());
 
+        pickupItem(new RoughSkinPotion());
+        pickupItem(new InvincibilityPotion());
+        pickupItem(new FireShieldPotion());
+        pickupItem(new LightningShieldPotion());
+        pickupItem(new InvisibilityPotion());
+
         st.fullHeal();
-        //pickupItem(new SpellBook());
+
     }
 
     public void checkLvlUp() {
@@ -536,10 +553,10 @@ public class Player {
 
     public void addAllAttacks() {
         attackList.clear();
-        attackList.add(new Flame());
+        attackList.add(new Flame(false));
         attackList.add(new Dash());
         attackList.add(new Illusion());
-        attackList.add(new Lightning());
+        attackList.add(new Lightning(false));
         attackList.add(new Quake());
         attackList.add(new Protect());
         attackList.add(new Focus());
@@ -603,6 +620,13 @@ public class Player {
         if (renderEffect)
             lvlupEffect.update(dt);
 
+        activePotions.forEach(x -> x.update(dt));
+        for (int i = activePotions.size() - 1; i >= 0; i--) {
+            Potion p = activePotions.get(i);
+            if (p.remove) {
+                activePotions.remove(i);
+            }
+        }
         swim(dt);
         dig();
         jump(dt);
@@ -628,12 +652,11 @@ public class Player {
         list.removeIf(x -> !(x.hasItem() || x.isWarp() || x.isShop()));
         for (Cell c : list) {
             if (c.hasItem()) {
-                if(c.getItem() instanceof Mine){
-                    move(Physics.getVector(3,c.abs(),abs()));
-                }else if(c.getItem() instanceof Grass){
+                if (c.getItem() instanceof Mine) {
+                    move(Physics.getVector(3, c.abs(), abs()));
+                } else if (c.getItem() instanceof Grass) {
 
-                }
-                else
+                } else
                     c.removeItem();
             }
             if (c.isWarp()) {
@@ -649,7 +672,24 @@ public class Player {
     //RENDER METHODS------------------------------------------------
     public void render(SpriteBatch sb) {
         renderEffect(sb);
+        Color c = new Color(sb.getColor());
+        Color start = new Color(c);
+        if(invincible){
+            c=Color.BLUE;
+        }
+        if(roughSkin){
+            c=Color.RED;
+        }
+
+        if (invisible) {
+            c.a = .3f;
+        } else
+            c.a = 1;
+
+        sb.setColor(c);
         sb.draw(body.getIcons(), fixed().x, fixed().y);
+        c.a = 1;
+        sb.setColor(start);
     }
 
     private void renderEffect(SpriteBatch sb) {
@@ -699,6 +739,11 @@ public class Player {
                 Game.getFont().draw(sb, a.get(i), v[i].x, v[i].y);
             }
 
+        }
+        for (int i = 0; i < activePotions.size(); i++) {
+            Potion p = activePotions.get(i);
+            Texture t = p.getIcon();
+            sb.draw(p.getIcon(), v[0].x + (i * (t.getWidth() + 4)), viewY + (scr.y / 4) + t.getHeight() + 5);
         }
 
     }
@@ -840,7 +885,7 @@ public class Player {
     }
 
     public Color getDeathShade() {
-        return new Color(1,0,0,(1-(st.getHp() / st.getHpMax()))/2.8f);
+        return new Color(1, 0, 0, (1 - (st.getHp() / st.getHpMax())) / 2.8f);
     }
 
     public void renderStatBars(ShapeRendererExt sr) {
@@ -855,14 +900,16 @@ public class Player {
             sr.rect(bars[1]);
             sr.setColor(1f, 1f, 0, 1);
             sr.rect(bars[2]);
-        }catch (NullPointerException ignored){}
+        } catch (NullPointerException ignored) {
+        }
         sr.end();
     }
 
     public int getOreCnt() {
         return oreCnt;
     }
-    public int getLeatherCnt(){
+
+    public int getLeatherCnt() {
         return leatherCnt;
     }
 
@@ -872,6 +919,51 @@ public class Player {
 
     public void addLeather() {
         leatherCnt++;
+    }
+
+    public void activatePotion(Potion potion) {
+        potion.enabled = true;
+        activePotions.add(potion);
+
+    }
+
+    public void setInvisible(boolean b) {
+        invisible = b;
+    }
+
+    public boolean isInvisible() {
+        return invisible;
+    }
+
+    public boolean hasFireShield() {
+        return fireShield;
+    }
+
+    public void setFireShield(boolean b) {
+        fireShield=b;
+    }
+
+    public void setInvincible(boolean b) {
+        invincible=b;
+    }
+
+    public void takeDamage(int d, Vector2 abs) {
+        d = invincible ? 0 : d;
+        st.addHp(-d);
+        if (!(invincible || roughSkin))
+            body.setKnockBackDest(abs);
+        State.shake();
+        Color c = new Color(1f, .2f, .2f, 1f);
+        new HoverText("-" + d, 1, c, fixed(), true);
+
+    }
+
+    public void setRoughSkin(boolean b) {
+        roughSkin=b;
+    }
+
+    public boolean isRoughSkin() {
+        return roughSkin;
     }
 }
 
