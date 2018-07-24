@@ -8,10 +8,9 @@ import com.quadx.dungeons.items.recipes.Recipe;
  */
 public class RingRe extends Recipe {
     public RingRe(){
+        super();
         name="Ring";
         loadEquip(new Ring());
-        fileName="icRecipe.png";
-        loadIcon();
         isEquipRecipe=true;
     }
 }

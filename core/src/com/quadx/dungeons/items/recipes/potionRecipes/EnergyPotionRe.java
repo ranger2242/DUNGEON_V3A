@@ -13,13 +13,11 @@ import javafx.util.Pair;
  */
 public class EnergyPotionRe extends Recipe {
     public EnergyPotionRe(){
+        super();
         //fast regen for time and full health
         output=new EnergyPotion();
         name=output.getName();
-        fileName="icRecipe.png";
         isPotionRecipe =true;
-        craftFileName=output.getFileName();
-        loadIcon();
         Pair<Integer,Item>[] c = new Pair[5];
         c[0] = new Pair<>(2,new Water());
         c[1] = new Pair<>(2,new Mushroom());

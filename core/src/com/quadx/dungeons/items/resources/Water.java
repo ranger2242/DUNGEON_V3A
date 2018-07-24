@@ -5,9 +5,8 @@ package com.quadx.dungeons.items.resources;
  */
 public class Water extends Resource {
     public Water(){
-        fileName="mods/icWater.png";
         name="WATER";
-        loadIcon();
+        gINIT(1,"icWater");
     }
     @Override
     public int[] runMod() {

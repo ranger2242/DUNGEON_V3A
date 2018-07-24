@@ -1,21 +1,20 @@
 package com.quadx.dungeons.items;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.equipment.Equipment;
-import com.quadx.dungeons.items.resources.*;
 import com.quadx.dungeons.items.recipes.Recipe;
+import com.quadx.dungeons.items.resources.*;
 import com.quadx.dungeons.physics.Body;
+import com.quadx.dungeons.tools.gui.Drawable;
 
-import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.rn;
+import static com.quadx.dungeons.items.equipment.EquipSets.equipSets;
 
-public class Item
+public class Item extends Drawable
 {
     public boolean isUsable=false;
     protected String name="ITEM";
@@ -37,14 +36,18 @@ public class Item
     public boolean hasEffect=false;
     Rectangle hitbox=new Rectangle();
     protected Vector2 texturePos=new Vector2();
-    protected Texture icon=null;
     protected int gold;
     Attack attack;
     int effect= -1;
     public Body body = new Body();
 
+
+
     public Item() {
     }
+
+
+
     public static Item generateNoGold() {
         Item a;
         int q = rn.nextInt(11) + 1;
@@ -107,11 +110,6 @@ public class Item
     public String getType(){
         return null;
     }
-    public Texture getIcon() {
-        if(icon==null)
-            loadIcon();
-        return icon;
-    }
     public int getDefensemod()
     {
         return defensemod;
@@ -143,21 +141,13 @@ public class Item
     public int getValue() {
         return value;
     }
-    public void setIcon(Texture icon)  {
-        this.icon = icon;
-    }
+
     public void setHitBox(Rectangle r){
         hitbox=r;
     }
     public void setTexturePos(Vector2 v) {
         texturePos.set(v);
     }
-    public Texture loadIcon(String s){
-        if(!s.isEmpty())
-            icon = new Texture(Gdx.files.internal("images\\icons\\items\\"+s));
-    return icon;
-    }
-
     public void colliion(Vector2 v) {
             player.pickupItem(this);
     }
@@ -171,16 +161,14 @@ public class Item
         return (int) (cost*.75f);
     }
 
-    public void loadIcon() {
-        loadIcon(fileName);
-    }
+
 
     public Color getTileColor(){
         return tileColor;
     }
     public Vector2 getIconDim() {
         if(icon !=null){
-            return new Vector2(icon.getWidth(),icon.getHeight());
+            return new Vector2(icon.getRegionWidth(),icon.getRegionHeight());
         }else
             return new Vector2();
     }

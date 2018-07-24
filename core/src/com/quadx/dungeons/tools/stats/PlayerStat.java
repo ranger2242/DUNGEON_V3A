@@ -9,7 +9,7 @@ import com.quadx.dungeons.tools.gui.HoverText;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import static com.quadx.dungeons.Game.multiplier;
+import static com.quadx.dungeons.Player.multiplier;
 import static com.quadx.dungeons.Game.rn;
 import static com.quadx.dungeons.GridManager.bound;
 import static com.quadx.dungeons.tools.Tests.fastreg;

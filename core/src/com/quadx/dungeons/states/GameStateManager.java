@@ -16,6 +16,11 @@ public class GameStateManager {
     public GameStateManager(){
         states = new Stack<>();
     }
+    public static GameStateManager gsmInit(){
+        GameStateManager gsm=new GameStateManager();
+        gsm.push(new MainMenuState(gsm));
+        return gsm;
+    }
 
     public void push(State state){
         Command.cls=state.getClass();

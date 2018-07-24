@@ -3,7 +3,6 @@ package com.quadx.dungeons.attacks;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.shapes1_5.Triangle;
-import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.gui.HoverText;
 
 import static com.quadx.dungeons.Game.player;
@@ -28,7 +27,7 @@ public class Drain extends Attack {
         range = 10;
         description = "Heals user the same amount as damage done to opponent.";
         loadArray();
-        setIcon(ImageLoader.attacks.get(1));
+        gINIT(2,"icDrain");
 
     }
     public void runAttackMod(){
@@ -42,7 +41,7 @@ public class Drain extends Attack {
         float[] p = new float[6];
         float base = 4;
         float height = 7;
-        Vector2 v= new Vector2(player.body.getIconsDim()).scl(.5f);
+        Vector2 v= new Vector2(player.body.getIconDim()).scl(.5f);
         float cx = player.abs().x,
                 cy = player.abs().y;
         switch (player.body.getFacing()) {

@@ -1,15 +1,12 @@
 package com.quadx.dungeons.tools.buttons;
 
 import com.badlogic.gdx.Gdx;
-import com.quadx.dungeons.states.CraftState;
 import com.quadx.dungeons.states.ShopState;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
 import com.quadx.dungeons.tools.DebugTextInputListener;
-import com.quadx.dungeons.tools.FilePaths;
+import com.quadx.dungeons.tools.files.FilePaths;
 import com.quadx.dungeons.tools.Tests;
-
-import java.util.Map;
 
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.monsterList;

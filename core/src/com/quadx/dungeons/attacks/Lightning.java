@@ -2,7 +2,6 @@ package com.quadx.dungeons.attacks;
 
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.shapes1_5.Line;
-import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -32,8 +31,9 @@ public class Lightning extends Attack {
         spread=0;
         range=0;
         loadArray();
-        setIcon(ImageLoader.attacks.get(12));
         this.small=small;
+        gINIT(2,"icLightning");
+
     }
 
     @Override

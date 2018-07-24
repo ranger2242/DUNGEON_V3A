@@ -1,29 +1,30 @@
 package com.quadx.dungeons.attacks;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.shapes1_5.Circle;
 import com.quadx.dungeons.shapes1_5.Line;
 import com.quadx.dungeons.shapes1_5.Triangle;
+import com.quadx.dungeons.tools.gui.Drawable;
 import com.quadx.dungeons.tools.gui.HoverText;
 import com.quadx.dungeons.tools.timers.Delta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.GridManager.bound;
+import static com.quadx.dungeons.tools.gui.HUD.out;
 import static com.quadx.dungeons.tools.timers.Time.SECOND;
 import static com.quadx.dungeons.tools.timers.Time.ft;
-import static com.quadx.dungeons.Game.player;
-import static com.quadx.dungeons.tools.gui.HUD.out;
 
 /**
  * Created by Tom on 11/14/2015.
  */
 @SuppressWarnings("DefaultFileTemplate")
-public abstract class Attack {
+public abstract class Attack extends Drawable {
 
     public static int pos = 0;
 
@@ -31,7 +32,6 @@ public abstract class Attack {
     private static Delta dUse = new Delta(10 * ft);
     protected HitBoxShape hitBoxShape = null;
     protected CostType type;
-    private Texture icon;
 
     private final int[] usesCheck = {400, 500, 600, 750, 850};
     protected int[] powerA = new int[5];
@@ -120,7 +120,7 @@ public abstract class Attack {
 
     //SETTERS------------------------------------------------------------
 
-    void setIcon(Texture t) {
+    void setIcon(TextureRegion t) {
         icon = t;
     }
     //GETTERS------------------------------------------------------------
@@ -182,10 +182,6 @@ public abstract class Attack {
 
     public Rectangle getHitBox() {
         return new Rectangle();
-    }
-
-    public Texture getIcon() {
-        return icon;
     }
 
     public Vector2 getSpawnBox() {

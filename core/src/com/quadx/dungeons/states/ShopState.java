@@ -8,13 +8,13 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.Game;
 import com.quadx.dungeons.commands.Command;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.Shop;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
 import com.quadx.dungeons.states.mapstate.MapState;
+import com.quadx.dungeons.tools.gui.Text;
 import com.quadx.dungeons.tools.gui.Title;
 import com.quadx.dungeons.tools.timers.Delta;
 import com.quadx.dungeons.tools.timers.Time;
@@ -41,9 +41,9 @@ public class ShopState extends State {
 
     public ShopState(GameStateManager gsm){
         super(gsm);
-        cam.setToOrtho(false, WIDTH, HEIGHT);
+        cam.setToOrtho(false, scr.x, scr.y);
         setView(new Vector2());
-        cam.position.set(view.x+ WIDTH/2,viewY+ HEIGHT/2,0);
+        cam.position.set(view.x+ scr.x/2,viewY+ scr.y/2,0);
         if(!MapState.pause)
         shop= new Shop(player);
         Gdx.gl.glClearColor(0,0,0,1);
@@ -53,7 +53,7 @@ public class ShopState extends State {
         gsm.pop();
     }
     void handleInput() {
-        for(Command c: commandList){
+        for(Command c: Command.commands){
             c.execute();
         }
         boolean p=false;
@@ -66,8 +66,8 @@ public class ShopState extends State {
 
         }
         if(!p&&Gdx.input.isKeyPressed(Input.Keys.ANY_KEY) && !(Gdx.input.isKeyPressed(Input.Keys.MINUS)
-                    ||Gdx.input.isKeyPressed(commandList.get(0).getButtonK())
-                ||Gdx.input.isKeyPressed(commandList.get(1).getButtonK()))) {
+                    ||Gdx.input.isKeyPressed(Command.commands.get(0).getButtonK())
+                ||Gdx.input.isKeyPressed(Command.commands.get(1).getButtonK()))) {
             camController.shakeScreen(5, 25);
             drawError=true;
         }
@@ -107,8 +107,8 @@ public class ShopState extends State {
         shapeR.setProjectionMatrix(cam.combined);
         BitmapFont font;
         sb.begin();
-        Game.setFontSize(5);
-        font=Game.getFont();
+        Text.setFontSize(5);
+        font= Text.getFont();
         font.setColor(Color.RED);
         cs= "--INVALID INPUT--";
         gl.setText(font,cs);
@@ -122,25 +122,25 @@ public class ShopState extends State {
 
         sb.begin();
          cs="(TAB) EXIT";
-        gl.setText(Game.getFont(),cs);
-        Game.getFont().draw(sb,"(TAB) EXIT",view.x+(WIDTH/2)-gl.width/2,viewY+70);
+        gl.setText(Text.getFont(),cs);
+        Text.getFont().draw(sb,"(TAB) EXIT",view.x+(scr.x/2)-gl.width/2,viewY+70);
         sb.end();
 
         shapeR.begin(ShapeRenderer.ShapeType.Line);
         shapeR.setColor(1,0,0,1);
-        shapeR.rect(view.x+40,viewY+40, WIDTH-80, HEIGHT-80);
+        shapeR.rect(view.x+40,viewY+40, scr.x-80, scr.y-80);
         shapeR.end();
     }
     private void drawPlayerInv(SpriteBatch sb){
         sb.begin();
-        Game.setFontSize(1);
-        Game.getFont().setColor(Color.WHITE);
-        Game.getFont().draw(sb,"EQUIPMENT",view.x +(WIDTH/3)+100,view.y+ HEIGHT-50);
-        Game.getFont().draw(sb,"INVENTORY",view.x +(2*WIDTH/3),view.y+ HEIGHT-50);
+        Text.setFontSize(1);
+        Text.getFont().setColor(Color.WHITE);
+        Text.getFont().draw(sb,"EQUIPMENT",view.x +(scr.x/3)+100,view.y+ scr.y-50);
+        Text.getFont().draw(sb,"INVENTORY",view.x +(2*scr.x/3),view.y+ scr.y-50);
 
-        Game.getFont().draw(sb,"G "+ player.getGold(),view.x+(3*WIDTH/4),viewY+ HEIGHT-50);
+        Text.getFont().draw(sb,"G "+ player.getGold(),view.x+(3*scr.x/4),viewY+ scr.y-50);
         if(dtSold<.5 && dispSold){
-            Game.getFont().draw(sb,"+"+soldItemCost,view.x+ WIDTH-150,viewY+ HEIGHT-50);
+            Text.getFont().draw(sb,"+"+soldItemCost,view.x+ scr.x-150,viewY+ scr.y-50);
         }
         else{
             dtSold=0;
@@ -152,27 +152,27 @@ public class ShopState extends State {
         //equipment
         for(int i=0;i<player.inv.getEquiped().size();i++){
             Equipment e= player.inv.getEquiped().get(i);
-            Game.getFont().draw(sb, "# "+e.getName(), view.x +(WIDTH/3)+100, viewY + HEIGHT - (i * 60)+yoff);
-            sb.draw(e.getIcon(),view.x +(WIDTH/3)+100, viewY + HEIGHT - (i * 60)+yoff+10);
+            Text.getFont().draw(sb, "# "+e.getName(), view.x +(scr.x/3)+100, viewY + scr.y - (i * 60)+yoff);
+            sb.draw(e.getIcon(),view.x +(scr.x/3)+100, viewY + scr.y - (i * 60)+yoff+10);
         }
         //shop inv
-        Game.getFont().draw(sb,"SHOP",view.x+ 70,viewY+ HEIGHT-50);
+        Text.getFont().draw(sb,"SHOP",view.x+ 70,viewY+ scr.y-50);
         for(int i=0;i<shop.invSize();i++){
             Item item=shop.getItem(i);
-            Game.getFont().draw(sb,(i+1)+". "+item.getName(),view.x+70,viewY+ HEIGHT-(i*60)+yoff);
-            Game.getFont().draw(sb,item.getCost()+"G",view.x+(WIDTH/4),viewY+ HEIGHT-(i*60)+yoff-20);
-            sb.draw( item.getIcon(),view.x+70, viewY + HEIGHT- (i * 60)+yoff+10);
+            Text.getFont().draw(sb,(i+1)+". "+item.getName(),view.x+70,viewY+ scr.y-(i*60)+yoff);
+            Text.getFont().draw(sb,item.getCost()+"G",view.x+(scr.x/4),viewY+ scr.y-(i*60)+yoff-20);
+            sb.draw( item.getIcon(),view.x+70, viewY + scr.y- (i * 60)+yoff+10);
 
         }
         sb.end();
         shapeR.begin(ShapeRenderer.ShapeType.Line);
         shapeR.setColor(Color.RED);
-        titleLine(shapeR, new Title("SHOP", 70, HEIGHT-50));
-        titleLine(shapeR,new Title("INVENTORY",(2*WIDTH/3), HEIGHT-50));
-        titleLine(shapeR,new Title("EQUIPMENT",(WIDTH/3)+100, HEIGHT-50));
+        titleLine(shapeR, new Title("SHOP", 70, scr.y-50));
+        titleLine(shapeR,new Title("INVENTORY",(2*scr.x/3), scr.y-50));
+        titleLine(shapeR,new Title("EQUIPMENT",(scr.x/3)+100, scr.y-50));
         shapeR.setColor(Color.GRAY);
-        shapeR.line(view.x+(2*WIDTH/3)-20,viewY+100,view.x+(2*WIDTH/3)-20,viewY+HEIGHT-100);
-        shapeR.line(view.x+(WIDTH/3)+100-20,viewY+100,view.x+(WIDTH/3)+100-20,viewY+HEIGHT-100);
+        shapeR.line(view.x+(2*scr.x/3)-20,viewY+100,view.x+(2*scr.x/3)-20,viewY+scr.y-100);
+        shapeR.line(view.x+(scr.x/3)+100-20,viewY+100,view.x+(scr.x/3)+100-20,viewY+scr.y-100);
 
         shapeR.end();
     }

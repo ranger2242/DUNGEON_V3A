@@ -7,7 +7,7 @@ import com.quadx.dungeons.items.Item;
  */
 public class Leather extends Item {
     public Leather(){
-        fileName="mods/icLeather.png";
         name="Leather";
+        gINIT(1,"icLeather");
     }
 }

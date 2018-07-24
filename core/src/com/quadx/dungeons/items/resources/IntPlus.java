@@ -14,9 +14,9 @@ public class IntPlus extends Resource {
         intelmod+=1;
         cost=3500;
         canCluster=true;
-        fileName="mods/icIntel+.png";
         isUsable=true;
         hasEffect=true;
+        gINIT(1,"icIntel+");
     }
 
     @Override

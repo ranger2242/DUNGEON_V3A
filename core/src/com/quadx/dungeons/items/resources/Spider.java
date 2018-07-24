@@ -5,9 +5,8 @@ package com.quadx.dungeons.items.resources;
  */
 public class Spider extends Resource {
     public Spider(){
-        fileName="mods/icSpider.png";
         name="SPIDER";
-        loadIcon();
+        gINIT(1,"icSpider");
     }
     @Override
     public int[] runMod() {

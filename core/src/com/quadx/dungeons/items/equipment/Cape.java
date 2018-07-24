@@ -7,15 +7,7 @@ package com.quadx.dungeons.items.equipment;
 public class Cape extends Equipment {
     public Cape(){
         type=Type.Cape;
-        //setIcon(equipBasic[2]);
-        setGrade();
-        setBoost();
-        setMods();
-        fileName="equip\\icCape.png";
-
-        name=grade.toString()+" "+boost.toString()+" Cape";
         craftCost=new int[]{0,30,1500};
-        loadIcon();
-
+        init("icCape");
     }
 }

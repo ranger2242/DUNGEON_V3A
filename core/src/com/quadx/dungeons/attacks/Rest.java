@@ -1,7 +1,6 @@
 package com.quadx.dungeons.attacks;
 
 import com.badlogic.gdx.graphics.Color;
-import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.gui.HoverText;
 
 import static com.quadx.dungeons.Game.player;
@@ -23,8 +22,9 @@ public class Rest extends Attack {
         range = 0;
         spread = 0;
         description = "Converts M to Energy";
-        setIcon(ImageLoader.attacks.get(7));
         hitBoxShape=HitBoxShape.None;
+        gINIT(2,"icRest");
+
     }
     public void runAttackMod() {
         int d=(cost*3)/4;

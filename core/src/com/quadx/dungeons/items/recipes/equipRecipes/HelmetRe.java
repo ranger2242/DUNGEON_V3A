@@ -8,10 +8,9 @@ import com.quadx.dungeons.items.recipes.Recipe;
  */
 public class HelmetRe extends Recipe {
     public HelmetRe(){
+        super();
         name="Helmet";
         loadEquip(new Helmet());
-        fileName="icRecipe.png";
-        loadIcon();
         isEquipRecipe=true;
 
     }

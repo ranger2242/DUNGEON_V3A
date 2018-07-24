@@ -1,7 +1,7 @@
 package com.quadx.dungeons;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.commands.Command;
 import com.quadx.dungeons.commands.cellcommands.AddItemToCellComm;
@@ -22,7 +22,7 @@ public class Anim {
     public static ArrayList<Anim> anims = new ArrayList<>();
 
     private Cell cell;
-    private Texture texture;
+    private TextureRegion texture;
     private Vector2 pos;
     private Vector2 dest;
     private Delta dEnd;
@@ -56,7 +56,7 @@ public class Anim {
     }
 
 
-    public Anim(Texture t, Vector2 fixedStart, Vector2 fixedEnd, float v, Type f) {
+    public Anim(TextureRegion t, Vector2 fixedStart, Vector2 fixedEnd, float v, Type f) {
         texture = t;
         pos = new Vector2(fixedStart);
         vel = v;

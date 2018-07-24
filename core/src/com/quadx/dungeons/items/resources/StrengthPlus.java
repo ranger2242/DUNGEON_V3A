@@ -13,10 +13,9 @@ public class StrengthPlus extends Resource {
         strmod =1;
         cost=3500;
         canCluster=true;
-        fileName="mods/icStrength+.png";
         isUsable=true;
         hasEffect=true;
-
+        gINIT(1,"icStrength+");
     }
 
     @Override

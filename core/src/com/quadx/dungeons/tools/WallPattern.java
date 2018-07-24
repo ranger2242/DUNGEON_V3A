@@ -10,7 +10,8 @@ public class WallPattern{
     }
 
     public static Texture getTile(int mod){
-        Texture t=null;
+        return null;
+      /*  Texture t=null;
         boolean q=p[0][0];
         boolean w=p[0][1];
         boolean e=p[0][2];
@@ -132,6 +133,6 @@ public class WallPattern{
                 t= ImageLoader.w[17];
             }
         }
-        return t;
+        return t;*/
     }
 }

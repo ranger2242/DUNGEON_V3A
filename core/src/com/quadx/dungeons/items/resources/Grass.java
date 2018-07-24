@@ -22,9 +22,8 @@ public class Grass extends Resource {
     }
     public void init(int s){
         hasEffect=false;
-        fileName="mods\\icGrass"+s+".png";
         name="GRASS";
-        loadIcon();
+        gINIT(1,"icGrass"+s);
     }
     @Override
     public int[] runMod() {

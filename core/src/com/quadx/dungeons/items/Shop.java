@@ -23,7 +23,7 @@ public class Shop {
         int s=0;
         if (i < player.invSize()) {
             Item item = player.inv.getSelectedItem();
-            item.loadIcon();
+            //item.addIcon();
             s = item.getSellPrice();
             Game.player.addGold( s);
             player.inv.remove(i);

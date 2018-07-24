@@ -97,7 +97,6 @@ ore:leather:gold
 -recipe menu
 
 BUILD 2018.0000011
-
 -monsters now drop hearts and all meats
 -energy+ no longer spawns randomly
 -new Craft items Heart, Meat, Crystal, Blood,

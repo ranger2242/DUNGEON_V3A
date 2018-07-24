@@ -21,7 +21,7 @@ public class StatManager {
          ----overall
          total gold
          total kills
-         total items picked up
+         total itemsAt picked up
          total shots fired
          total misses
          overall accuracy

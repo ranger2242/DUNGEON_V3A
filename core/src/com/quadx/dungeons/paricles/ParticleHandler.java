@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.tools.FilePaths;
+import com.quadx.dungeons.tools.files.FilePaths;
 
 import java.util.ArrayList;
 

@@ -14,9 +14,9 @@ public class EnergyPotion extends Potion {
         dEffectTime=new Delta(30*SECOND);
         name="Energy Potion";
         fileName="potions\\pYellow.png";
-        loadIcon();
         effects.add("MAX ENERGY");
         effects.add("2x MANA REGEN");
+        gINIT(1,"pLightGreen");
     }
     @Override
     void onStart() {

@@ -1,0 +1,244 @@
+
+hudAt.png
+size: 1024,128
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+defstaticon
+  rotate: false
+  xy: 552, 52
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+energystaticon
+  rotate: false
+  xy: 20, 2
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+hpstaticon
+  rotate: false
+  xy: 2, 2
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+icAccD
+  rotate: false
+  xy: 570, 34
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+icAttD
+  rotate: false
+  xy: 620, 84
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+icBlind
+  rotate: false
+  xy: 202, 20
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icBrawler
+  rotate: false
+  xy: 202, 70
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icDash
+  rotate: false
+  xy: 102, 70
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icDigPlus
+  rotate: false
+  xy: 2, 70
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icDrain
+  rotate: false
+  xy: 502, 20
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icFlame
+  rotate: false
+  xy: 452, 20
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icFocus
+  rotate: false
+  xy: 252, 20
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icHeal
+  rotate: false
+  xy: 302, 70
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icIllusion
+  rotate: false
+  xy: 552, 70
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icIntD
+  rotate: false
+  xy: 620, 102
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+icInvestor
+  rotate: false
+  xy: 52, 70
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icLightning
+  rotate: false
+  xy: 152, 70
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icMage
+  rotate: false
+  xy: 352, 70
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icProtect
+  rotate: false
+  xy: 152, 20
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icQuake
+  rotate: false
+  xy: 252, 70
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icQuick
+  rotate: false
+  xy: 402, 20
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icRest
+  rotate: false
+  xy: 102, 20
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icSacrifice
+  rotate: false
+  xy: 452, 70
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icSlash
+  rotate: false
+  xy: 2, 20
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icStab
+  rotate: false
+  xy: 502, 70
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icTank
+  rotate: false
+  xy: 302, 20
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icTorment
+  rotate: false
+  xy: 52, 20
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icWB
+  rotate: false
+  xy: 352, 20
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+icWarp
+  rotate: false
+  xy: 402, 70
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+intstaticon
+  rotate: false
+  xy: 552, 34
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+manastaticon
+  rotate: false
+  xy: 602, 102
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+spdstaticon
+  rotate: false
+  xy: 38, 2
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+staticonbase
+  rotate: false
+  xy: 602, 84
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+strstaticon
+  rotate: false
+  xy: 570, 52
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1

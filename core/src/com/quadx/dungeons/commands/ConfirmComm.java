@@ -6,8 +6,6 @@ import com.quadx.dungeons.states.ControlState;
 import com.quadx.dungeons.states.MainMenuState;
 import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 
-import static com.quadx.dungeons.Game.commandList;
-
 /**
  * Created by Chris Cavazos on 8/8/2016.
  */
@@ -27,7 +25,7 @@ public class ConfirmComm extends Command {
                 AbilitySelectState.selectAbiltiy();
             }
             if(cls.equals(ControlState.class)){
-                if(!commandList.get(ControlState.selector.getPos()).getClass().equals(PauseComm.class)){
+                if(!commands.get(ControlState.selector.getPos()).getClass().equals(PauseComm.class)){
                     ControlState.selector.flipState(cls);
                 }
             }

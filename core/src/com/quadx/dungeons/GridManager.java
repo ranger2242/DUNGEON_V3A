@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.Game.scr;
 import static com.quadx.dungeons.states.mapstate.MapState.*;
-import static com.quadx.dungeons.tools.ImageLoader.a;
 import static com.quadx.dungeons.tools.gui.HUD.out;
 import static com.quadx.dungeons.tools.timers.Time.ft;
 
@@ -67,9 +67,8 @@ public class GridManager {
         //nothing below here
         mapLoadTime.end();
         Tests.mapLoadTimes.add(mapLoadTime.getElapsedD());
-        String s=GridManager.mapLoadTime.runtime();
-        System.out.println(s);
-        out(s);
+        GridManager.mapLoadTime.print();
+        out(GridManager.mapLoadTime.runtime());
     }
 
     private void plotGrass() {
@@ -170,10 +169,10 @@ public class GridManager {
         Vector2 view = State.getView();
         int x = (int) (view.x / cell.x);
         int y = (int) (view.y/ cell.y);
-        int endx = (int) ((view.x + Game.WIDTH) / cell.x);
-        int endy = (int) ((view.y + Game.HEIGHT) / cell.y);
+        int endx = (int) ((view.x + scr.x) / cell.x);
+        int endy = (int) ((view.y + scr.x) / cell.y);
         int scale=200;
-        Rectangle screen= new Rectangle(view.x-scale,view.y-scale,(view.x + Game.WIDTH)+scale,(view.y + Game.HEIGHT)+scale);
+        Rectangle screen= new Rectangle(view.x-scale,view.y-scale,(view.x + scr.x)+scale,(view.y + scr.y)+scale);
         Monster.mdrawList.clear();
         for(Monster m : monsterList){
                 Monster.mdrawList.add(m);
@@ -266,11 +265,6 @@ public class GridManager {
             m.genItems();
             c.setItem(m);
         }
-      /*  int crates = (int) (liveCellList.size() * .0025f);
-        for (int a = 0; a < crates; a++) {
-            dispArray[resInt()][resInt()].setItem(Item.generateSpecial());
-        }*/
-
     }
 
     private static void plotMonsters() {
@@ -504,8 +498,8 @@ public class GridManager {
                 c.setTile(t1);
             }
         } else {
-            if (!c.getTile().equals(a[0]))
-                c.setTile(a[0]);
+            /*if (!c.getTile().equals(a[0]))
+                c.setTile(a[0]);*/
         }
         return c;
     }

@@ -5,9 +5,8 @@ package com.quadx.dungeons.items.resources;
  */
 public class ChargeStone extends Resource {
     public ChargeStone(){
-        fileName="mods/icChargeStone.png";
         name="ChargeStone";
-        loadIcon();
+        gINIT(1,"icChargeStone");
     }
     @Override
     public int[] runMod() {

@@ -12,9 +12,8 @@ public class RoughSkinPotion extends Potion {
     public RoughSkinPotion(){
         dEffectTime=new Delta(15*SECOND);
         name="Rough Skin Potion";
-        fileName="potions\\pDarkGreen.png";
-        loadIcon();
         effects.add("DAMAGE ENEMIES ON TOUCH");
+        gINIT(1,"pDarkGreen");
     }
     @Override
     void onStart() {

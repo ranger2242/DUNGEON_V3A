@@ -1,12 +1,10 @@
 package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.Game;
-import com.quadx.dungeons.tools.ImageLoader;
 
-import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.items.equipment.EquipSets.equipSets;
 
 
 /**
@@ -17,13 +15,9 @@ public class Investor extends Ability {
     static float dtGold = 0;
 
     public Investor() {
-        icon = ImageLoader.abilities.get(1);
         name = "Investor";
-    }
+        gINIT(2,"icInvestor");
 
-    @Override
-    public Texture getIcon() {
-        return icon;
     }
 
     @Override

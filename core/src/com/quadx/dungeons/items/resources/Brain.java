@@ -5,9 +5,8 @@ package com.quadx.dungeons.items.resources;
  */
 public class Brain extends Resource {
     public Brain(){
-        fileName="mods/icBrain.png";
         name="BRAIN";
-        loadIcon();
+        gINIT(1,"icBrain");
     }
     @Override
     public int[] runMod() {

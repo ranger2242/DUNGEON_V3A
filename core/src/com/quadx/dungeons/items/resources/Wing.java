@@ -5,9 +5,8 @@ package com.quadx.dungeons.items.resources;
  */
 public class Wing extends Resource {
     public Wing(){
-        fileName="mods/icWing.png";
         name="WING";
-        loadIcon();
+        gINIT(1,"icWings");
     }
     @Override
     public int[] runMod() {

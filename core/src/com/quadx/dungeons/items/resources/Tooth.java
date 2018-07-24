@@ -5,9 +5,8 @@ package com.quadx.dungeons.items.resources;
  */
 public class Tooth extends Resource {
     public Tooth(){
-        fileName="mods/icTooth.png";
         name="TOOTH";
-        loadIcon();
+        gINIT(1,"icTooth");
     }
 
     @Override

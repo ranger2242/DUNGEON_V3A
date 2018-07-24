@@ -5,9 +5,8 @@ package com.quadx.dungeons.items.resources;
  */
 public class Fish extends Resource {
     public Fish(){
-        fileName="mods/icFish.png";
         name="Fish";
-        loadIcon();
+        gINIT(1,"icFish");
     }
     @Override
     public int[] runMod() {

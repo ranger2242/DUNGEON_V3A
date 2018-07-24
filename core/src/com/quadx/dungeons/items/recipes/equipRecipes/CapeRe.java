@@ -8,10 +8,9 @@ import com.quadx.dungeons.items.recipes.Recipe;
  */
 public class CapeRe extends Recipe {
     public CapeRe(){
+        super();
         name="Cape";
         loadEquip(new Cape());
-        fileName="icRecipe.png";
-        loadIcon();
         isEquipRecipe=true;
 
     }

@@ -1,4 +1,4 @@
-package com.quadx.dungeons.tools;
+package com.quadx.dungeons.tools.files;
 
 /**
  * Created by Jonas on 1/15/17.
@@ -6,7 +6,7 @@ package com.quadx.dungeons.tools;
 
 
 public class FilePaths {
-    private static int os = 1; //integer to determine os of the test environment (0 windows, 1 mac, 2 linux)
+    private static int os = 0; //integer to determine os of the test environment (0 windows, 1 mac, 2 linux)
     public static String getPath(String s) {
         char s1[]=s.toCharArray();
 
@@ -27,8 +27,8 @@ public class FilePaths {
         String n=System.getProperty("os.name");
         n = n.toUpperCase();
         if (n.contains("WINDOWS")) {os = 0;}
-        if (n.contains("OSX")) {os = 1;}
-        if (n.contains("LINUX")) {os = 2;}
+        else if (n.contains("OSX")) {os = 1;}
+        else if (n.contains("LINUX")) {os = 2;}
         return os;
     }
 }

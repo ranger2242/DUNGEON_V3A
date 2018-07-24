@@ -1,11 +1,9 @@
 package com.quadx.dungeons.abilities;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.attacks.Flame;
-import com.quadx.dungeons.tools.ImageLoader;
 
-import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.items.equipment.EquipSets.equipSets;
 
 /**
  * Created by range on 5/20/2016.
@@ -14,12 +12,9 @@ import static com.quadx.dungeons.Game.player;
 public class Mage extends Ability {
     public Mage(){
         name="Mage";
-        icon=  ImageLoader.abilities.get(3);
+        gINIT(2,"icMage");
 
-    }
-    @Override
-    public Texture getIcon(){
-        return icon;
+
     }
     @Override
 

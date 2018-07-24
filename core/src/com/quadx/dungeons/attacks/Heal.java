@@ -1,7 +1,6 @@
 package com.quadx.dungeons.attacks;
 
 import com.badlogic.gdx.graphics.Color;
-import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.gui.HoverText;
 
 import static com.quadx.dungeons.Game.player;
@@ -25,7 +24,7 @@ public class Heal extends Attack {
         description = "Drain ALL M and E for HP";
         hitBoxShape=HitBoxShape.None;
         loadArray();
-        setIcon(ImageLoader.attacks.get(4));
+        gINIT(2,"icHeal");
     }
     public void runAttackMod() {
         int d=(cost*3)/4;

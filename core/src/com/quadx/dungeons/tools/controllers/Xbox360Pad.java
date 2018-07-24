@@ -31,15 +31,19 @@ public class Xbox360Pad
     public static ArrayList<String> dnames=new ArrayList<>();
 
     public static boolean win10=false;
-    public static void addNames(){
+    public static void init(){
+        checkOS();
+        addNames();
+    }
+    private static void checkOS(){
         String os=System.getProperty("os.name");
-        if(!os.equals("Windows 10")){
-            AXIS_RIGHT_TRIGGER=4;
-            AXIS_LEFT_TRIGGER=4;
-            win10=false;
-        }else{
-            win10=true;
+        win10=os.equals("Windows 10");
+        if(!win10) {
+            AXIS_RIGHT_TRIGGER = 4;
+            AXIS_LEFT_TRIGGER = 4;
         }
+    }
+    private static void addNames(){
         bnames.add("A");
         bnames.add("B");
         bnames.add("X");
@@ -50,7 +54,6 @@ public class Xbox360Pad
         bnames.add("START");
         bnames.add("L3");
         bnames.add("R3");
-
         dnames.add("D UP");
         dnames.add("D DOWN");
         dnames.add("D RIGHT");

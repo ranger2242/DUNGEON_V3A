@@ -1,7 +1,5 @@
 package com.quadx.dungeons.attacks;
 
-import com.quadx.dungeons.tools.ImageLoader;
-
 import static com.quadx.dungeons.Game.player;
 
 /**
@@ -22,7 +20,7 @@ public class Torment extends Attack {
         spread= 0;
         mod=4;
         hitBoxShape=HitBoxShape.None;
-        setIcon(ImageLoader.attacks.get(11));
+        gINIT(2,"icTorment");
     }
     public void runAttackMod() {
         /*player.setEnergyMax((int) (player.getEnergyMax()/2));

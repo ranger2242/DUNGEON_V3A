@@ -1,17 +1,17 @@
 package com.quadx.dungeons.items.recipes;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Inventory;
 import com.quadx.dungeons.items.Item;
+import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.items.resources.Leather;
 import com.quadx.dungeons.items.resources.Ore;
-import com.quadx.dungeons.items.equipment.Equipment;
+import com.quadx.dungeons.tools.gui.Text;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
@@ -48,6 +48,8 @@ public class Recipe extends Item {
     public Recipe() {
         fileName = "icRecipe.png";
         name = "Recipe";
+
+        gINIT(1,"icRecipe");
     }
 
     public void loadEquip(Equipment e) {
@@ -68,15 +70,16 @@ public class Recipe extends Item {
             }
         }
 
-        Game.setFontSize(1);
-        BitmapFont font = Game.getFont();
+        Text.setFontSize(1);
+        BitmapFont font = Text.getFont();
         font.setColor(Color.WHITE);
         font.draw(sb, name, pos.x, pos.y+36);
         sb.draw(output.getIcon(), pos.x - 34, pos.y);
         for (int i = 0; i < costs.length; i++) {
             if (costs[i] != null) {
-                Texture t = costs[i].getValue().getIcon();
+                TextureRegion t = costs[i].getValue().getIcon();
                 Vector2 v= new Vector2(pos.x + (48 * i), pos.y-24);
+                if(t!=null)
                 sb.draw(t,v.x,v.y);
                 font.draw(sb,"x"+costs[i].getKey(),v.x,v.y);
 

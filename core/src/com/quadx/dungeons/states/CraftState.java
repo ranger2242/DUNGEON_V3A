@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Inventory;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
@@ -96,7 +95,7 @@ public class CraftState extends State {
 
 
         cam = new OrthographicCamera();
-        cam.setToOrtho(false, WIDTH, HEIGHT);
+        cam.setToOrtho(false, scr.x, scr.y);
         slotTitle = new Text("SLOTS", new Vector2(scrV(.1f, .25f)), WHITE, 2);
 
         //click regions
@@ -260,8 +259,8 @@ public class CraftState extends State {
     private void drawResourcesSb(SpriteBatch sb) {
         resTitle = new Text("RESOURCES", new Vector2(), WHITE, 2);
         resTitle.pos = new Vector2(scrV(.1f, .95f));
-        Game.setFontSize(2);
-        BitmapFont font = Game.getFont();
+        Text.setFontSize(2);
+        BitmapFont font = Text.getFont();
         font.setColor(WHITE);
         Vector2 tv = new Vector2(resTitle.pos);
         Vector2 t2 = new Vector2(slotTitle.pos);
@@ -273,6 +272,7 @@ public class CraftState extends State {
             Vector2 v = new Vector2(r.x, r.y);
             if (i < craftStacks.length)
                 font.draw(sb, craftStacks[i] + "", v.x, v.y);
+            if(resources[i].getIcon()!=null)
             sb.draw(resources[i].getIcon(), v.x, v.y);
         }
     }
@@ -291,7 +291,7 @@ public class CraftState extends State {
         drawRecipes(sb);
         if (currentCraft != null) {
             //Vector2 v = scrV(.5f,.12f);
-            //currentCraft.loadIcon();
+            //currentCraft.addIcon();
             //sb.draw(currentCraft.getIcon(),v.x,v.y);
             crafted.draw(sb);
         }
@@ -311,7 +311,7 @@ public class CraftState extends State {
     private void drawRecipes(SpriteBatch sb) {
         ArrayList<Recipe> rs = player.getCraftable();
         reTitle = new Text("RECIPES", scrV(2f / 3f, .95f), WHITE, 2);
-        Game.getFont().draw(sb, reTitle.text, reTitle.pos.x, reTitle.pos.y);
+        Text.getFont().draw(sb, reTitle.text, reTitle.pos.x, reTitle.pos.y);
         for (int i = 0; i < rs.size(); i++) {
             Vector2 p = scrV(2f / 3f, .85f - (.125f * i));
             if (i < 10)
@@ -325,7 +325,7 @@ public class CraftState extends State {
             Rectangle r = slotRegions[i];
             Vector2 v = new Vector2(r.x, r.y);
             sb.draw(slots.getStack(i).get(0).getIcon(), v.x, v.y);
-            font.draw(sb, slots.getStack(i).size() + "", v.x, v.y - 20);
+            Text.font.draw(sb, slots.getStack(i).size() + "", v.x, v.y - 20);
 
         }
     }
@@ -339,6 +339,7 @@ public class CraftState extends State {
             sr.rect(resRegion);
         }
         for (Rectangle qRegion : qRegions) {
+            if(qRegion!=null)
             sr.rect(qRegion);
         }
     }

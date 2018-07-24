@@ -12,12 +12,22 @@ import java.util.Random;
 @SuppressWarnings("DefaultFileTemplate")
 public class Equipment extends Item {
     private static final Random rn = new Random();
-    Grade grade;
-    Boost boost;
-    Type type;
+    protected Grade grade;
+    protected Boost boost;
+    protected Type type;
 
     int[] buffs;
 
+    public void init(String fname){
+        setGrade();
+        setBoost();
+        setMods();
+        name=grade.toString()+" "+boost.toString()+" "+type.toString();
+        fileName="equip\\"+fname+".png";
+        gINIT(1,fname);//0
+
+
+    }
     public int[] getCraftCost() {
         return craftCost;
     }
@@ -79,7 +89,6 @@ public class Equipment extends Item {
         intelmod = buffs[5];
         speedmod = buffs[6];
         setCost(2);
-        setIcon(ic);
         fileName = "ic" + getType() + ".png";
     }
 

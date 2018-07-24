@@ -1,9 +1,8 @@
 package com.quadx.dungeons.attacks;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.ArrayList;
 
@@ -21,14 +20,15 @@ public class Illusion extends Attack {
         public Vector2 pos;
         public Vector2 absPos;
         public Rectangle hitbox;
-        public Texture icon;
+        public TextureRegion icon;
         public boolean dead=false;
+
         public Dummy(int  v, Vector2 pos, Vector2 absPos, Rectangle h) {
         hp=v;
         this.pos=pos;
         this.absPos=absPos;
         hitbox=h;
-        icon=player.body.getIcons();
+        icon=player.getIcon();
         }
         public Vector2 fixed(){
             return new Vector2(absPos.x,fixY(absPos));
@@ -55,7 +55,7 @@ public class Illusion extends Attack {
         description = "Lowers INT by increasing amounts.";
         hitBoxShape =HitBoxShape.None;
         loadArray();
-        setIcon(ImageLoader.attacks.get(5));
+        gINIT(2,"icIllusion");
     }
 
     @Override

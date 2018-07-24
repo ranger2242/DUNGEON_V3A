@@ -5,14 +5,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Game;
+import com.quadx.dungeons.items.equipment.EquipSets;
 import com.quadx.dungeons.items.resources.Gold;
 import com.quadx.dungeons.items.Item;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.monsters.Monster;
 import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
 import com.quadx.dungeons.states.mapstate.Map2State;
+import com.quadx.dungeons.tools.gui.Text;
 import com.quadx.dungeons.tools.timers.Delta;
 import com.quadx.dungeons.tools.timers.Time;
+import com.quadx.dungeons.tools.timers.Timer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,12 +38,13 @@ public class Tests {
     public static int meterListMax = 50;
     public static int runs = 100;
     public static float dtReload = 0;
+    public static boolean controllerMode =  false;
     public static boolean allAttacks=       true;
     public static boolean allstop=          false;
     public static boolean spawn =           true;
     public static boolean nodeath=          false;
     public static boolean fastreg=          false;
-    public static boolean noLand=           false;
+    public static boolean disableLandColor =true;
     public static boolean showhitbox=       false;
     public static boolean output=           true;
     public static boolean clearmap=         false;
@@ -48,6 +52,7 @@ public class Tests {
     public static boolean displayFPS =      true;
     public static boolean mouseAim=         true;
     public static int spawnLimit = 60;
+    public static Timer gameLoadTime = new Timer("GameLoadTime");
 
     static float fps = 0;
     static int testCount = 0;
@@ -94,14 +99,14 @@ public class Tests {
             //draw fps counter
             sb.begin();
             if(displayFPS){
-                Game.setFontSize(1);
-                Game.getFont().setColor(Color.WHITE);
-                Game.getFont().draw(sb, (int) fps + " FPS", pos.x+2, pos.y + 80);
+                Text.setFontSize(1);
+                Text.getFont().setColor(Color.WHITE);
+                Text.getFont().draw(sb, (int) fps + " FPS", pos.x+2, pos.y + 80);
                 double x=0;
                 try {
                     x= Tests.memUsageList.get(Tests.memUsageList.size() - 1);
                 }catch(Exception ignored){}
-                Game.getFont().draw(sb, (int) Tests.currentMemUsage + "MB "+Math.floor(x*100)+"%" , pos.x+2, pos.y + 95);
+                Text.getFont().draw(sb, (int) Tests.currentMemUsage + "MB "+Math.floor(x*100)+"%" , pos.x+2, pos.y + 95);
             }
             sb.end();
         }
@@ -301,7 +306,7 @@ public class Tests {
                 if(comm.get(2).equals("set")){
                     int a=Integer.parseInt(comm.get(3));
                     try {
-                        for(Equipment e:equipSets.ref[a])
+                        for(Equipment e:EquipSets.equipSets.ref[a])
                         player.pickupItem(e);
                         outText="Added set "+a;
                     }catch (Exception ignored){

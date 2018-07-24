@@ -1,8 +1,5 @@
 package com.quadx.dungeons.abilities;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.quadx.dungeons.tools.ImageLoader;
-
 import java.util.ArrayList;
 
 /**
@@ -15,13 +12,7 @@ public class WaterBreath extends Ability {
     }
     @Override
     public void onActivate() {
-        loadIcon("images\\icons\\abilities\\icWB.png");
         l1();
-    }
-
-    @Override
-    public Texture getIcon() {
-        return ImageLoader.abilities2.get(0);
     }
 
     @Override

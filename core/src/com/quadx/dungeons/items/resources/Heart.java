@@ -5,9 +5,8 @@ package com.quadx.dungeons.items.resources;
  */
 public class Heart extends Resource {
     public Heart(){
-        fileName="mods\\icHeart.png";
         name="Monster Heart";
-        loadIcon();
+        gINIT(1,"icHeart");
     }
     @Override
     public int[] runMod() {

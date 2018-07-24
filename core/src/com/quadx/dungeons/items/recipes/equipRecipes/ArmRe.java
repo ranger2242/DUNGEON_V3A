@@ -9,10 +9,9 @@ import com.quadx.dungeons.items.recipes.Recipe;
  */
 public class ArmRe extends Recipe {
     public ArmRe(){
+        super();
         name="Arms";
         loadEquip(new Arms());
-        fileName="icRecipe.png";
-        loadIcon();
         isEquipRecipe=true;
 
     }

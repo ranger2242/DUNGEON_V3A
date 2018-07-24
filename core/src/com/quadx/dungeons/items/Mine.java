@@ -1,8 +1,7 @@
 package com.quadx.dungeons.items;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Anim;
 import com.quadx.dungeons.Cell;
@@ -32,10 +31,9 @@ public class Mine extends Item {
     public boolean kill=false;
 
     public Mine(Vector2 abs) {
-        body.setIcon(new Texture(Gdx.files.internal("images\\icons\\items\\icMine.png")));
+        name="Mine";
         body.setAbs(abs);
-        fileName="icMine.png";
-
+        gINIT(1,"icMine");
     }
 
     public void genItems(){
@@ -73,7 +71,7 @@ public class Mine extends Item {
             items.add(item);
         }
   /*      for(int i=0;i<n2;i++){
-            items.add(new Gold());
+            itemsAt.add(new Gold());
         }*/
         for(int i=0;i<n3;i++){
             items.add(new Ore());
@@ -114,7 +112,9 @@ public class Mine extends Item {
     public void render(SpriteBatch sb){
         if(!kill) {
             Vector2 p = body.getFixedPos();
-            sb.draw(body.getIcon(), p.x, p.y);
+            TextureRegion t=getIcon();
+            if(t!=null)
+                sb.draw(t, p.x, p.y);
         }
     }
 }

@@ -5,12 +5,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Player;
 import com.quadx.dungeons.items.equipment.Equipment;
 import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
 import com.quadx.dungeons.tools.Score;
 import com.quadx.dungeons.tools.StatManager;
+import com.quadx.dungeons.tools.gui.Text;
 import com.quadx.dungeons.tools.gui.Title;
 
 import java.io.IOException;
@@ -18,8 +18,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static com.quadx.dungeons.Game.HEIGHT;
-import static com.quadx.dungeons.Game.WIDTH;
+import static com.quadx.dungeons.Game.scr;
 import static com.quadx.dungeons.tools.StatManager.pScore;
 import static com.quadx.dungeons.tools.StatManager.stats;
 import static com.quadx.dungeons.tools.gui.HUD.titleLine;
@@ -46,11 +45,11 @@ public class HighScoreState extends State {
 
     public HighScoreState(GameStateManager gsm) {
         super(gsm);
-        hscore=new Title("HIGHSCORES",30,HEIGHT-44);
-        roundStat=new Title("ROUND STATS",30,HEIGHT/2);
-        killby=new Title("KILLED BY",WIDTH/4,HEIGHT/2);
-        plStat=new Title("PLAYER STATS",(WIDTH/2)-100,HEIGHT/2);
-        equip=new Title("EQUIPMENT",(WIDTH/3)*2,HEIGHT/2);
+        hscore=new Title("HIGHSCORES",30,scr.y-44);
+        roundStat=new Title("ROUND STATS",30,scr.y/2);
+        killby=new Title("KILLED BY",scr.x/4,scr.y/2);
+        plStat=new Title("PLAYER STATS",(scr.x/2)-100,scr.y/2);
+        equip=new Title("EQUIPMENT",(scr.x/3)*2,scr.y/2);
 
         finalStatList = StatManager.getFinalStats();
         cam.setToOrtho(false);
@@ -113,10 +112,10 @@ public class HighScoreState extends State {
 // Render
 
     private void drawLines(){
-        float w= WIDTH;
+        float w= scr.x;
         float hw=w/2;
         float qw=w/4;
-        float h=HEIGHT;
+        float h=scr.y;
         float hh=h/2;
         float qh=h/4;
         sr.begin(ShapeRenderer.ShapeType.Line);
@@ -127,15 +126,15 @@ public class HighScoreState extends State {
     }
     private void drawTitles(SpriteBatch sb){
         sb.begin();
-        Game.setFontSize(2);
-        Game.getFont().setColor(Color.WHITE);
+        Text.setFontSize(2);
+        Text.getFont().setColor(Color.WHITE);
         //Draw Titles
-        Game.getFont().draw(sb,hscore.text,view.x+hscore.x,viewY+ hscore.y);
-        Game.getFont().draw(sb,roundStat.text,view.x+roundStat.x,viewY+ roundStat.y);
+        Text.getFont().draw(sb,hscore.text,view.x+hscore.x,viewY+ hscore.y);
+        Text.getFont().draw(sb,roundStat.text,view.x+roundStat.x,viewY+ roundStat.y);
         if(drawPlayerStats){
-            Game.getFont().draw(sb,killby.text,killby.x,killby.y);
-            Game.getFont().draw(sb,plStat.text,view.x+plStat.x,viewY+plStat.y);
-            Game.getFont().draw(sb,equip.text,view.x+equip.x,viewY+equip.y);
+            Text.getFont().draw(sb,killby.text,killby.x,killby.y);
+            Text.getFont().draw(sb,plStat.text,view.x+plStat.x,viewY+plStat.y);
+            Text.getFont().draw(sb,equip.text,view.x+equip.x,viewY+equip.y);
         }
         sb.end();
         sr.begin(ShapeRenderer.ShapeType.Line);
@@ -156,8 +155,8 @@ public class HighScoreState extends State {
         sr.setProjectionMatrix(cam.combined);
         sb.setProjectionMatrix(cam.combined);
         drawLines();
-        float killerx = view.x + (WIDTH / 4);
-        float killery = viewY + (HEIGHT / 2);
+        float killerx = view.x + (scr.x / 4);
+        float killery = viewY + (scr.y / 2);
         drawTitles(sb);
         sb.begin();
         boolean in = false;
@@ -168,13 +167,13 @@ public class HighScoreState extends State {
                         in = true;
                         if (blink) {
 
-                            Game.getFont().setColor(Color.BLUE);
-                        } else Game.getFont().setColor(Color.WHITE);
+                            Text.getFont().setColor(Color.BLUE);
+                        } else Text.getFont().setColor(Color.WHITE);
                     } else {
-                        Game.getFont().setColor(Color.WHITE);
+                        Text.getFont().setColor(Color.WHITE);
                     }
                 } catch (NullPointerException e) {
-                    Game.getFont().setColor(Color.WHITE);
+                    Text.getFont().setColor(Color.WHITE);
                 }
                 String s;
                 if (i == 9) {
@@ -183,22 +182,22 @@ public class HighScoreState extends State {
                     s = (i + 1) + ":  " + highscores[i].toString();
 
                 }
-                Game.getFont().draw(sb, s, view.x + 60, viewY + HEIGHT - 80 - (i * 24));
+                Text.getFont().draw(sb, s, view.x + 60, viewY + scr.y - 80 - (i * 24));
             }
         }
 
         try {
             if (!in) {
-                Game.getFont().setColor(Color.RED);
-                Game.getFont().draw(sb, "XX: " + pScore.toString(), view.x + 60, viewY + HEIGHT - 80 - (10 * 24));
-                Game.getFont().setColor(Color.WHITE);
+                Text.getFont().setColor(Color.RED);
+                Text.getFont().draw(sb, "XX: " + pScore.toString(), view.x + 60, viewY + scr.y - 80 - (10 * 24));
+                Text.getFont().setColor(Color.WHITE);
             }
         } catch (NullPointerException e) {
-            Game.getFont().setColor(Color.WHITE);
+            Text.getFont().setColor(Color.WHITE);
         }
 
         for (int i = 0; i < stats.size(); i++) {
-            Game.getFont().draw(sb, stats.get(i) + finalStatList.get(i).toString(), view.x + 30, viewY + (HEIGHT / 2) - 30 - ((i + 1) * 24));
+            Text.getFont().draw(sb, stats.get(i) + finalStatList.get(i).toString(), view.x + 30, viewY + (scr.y / 2) - 30 - ((i + 1) * 24));
         }
         try {
 
@@ -208,9 +207,9 @@ public class HighScoreState extends State {
 
             sb.draw(StatManager.killer.getIcon(), killerx, viewY + 100);
             for (int i = 0; i < list.size(); i++) {
-                Game.getFont().draw(sb, list.get(i), killerx, killery - 30 - ((i + 1) * 20));
+                Text.getFont().draw(sb, list.get(i), killerx, killery - 30 - ((i + 1) * 20));
             }
-            pfinal.renderStatList(sb, new Vector2(view.x + (WIDTH / 2) - 100, viewY + (HEIGHT / 2) - 20));
+            pfinal.renderStatList(sb, new Vector2(view.x + (scr.x / 2) - 100, viewY + (scr.y / 2) - 20));
            /* for(int i=0;i<pfinal.getStatsList().size();i++){
                 try{
 
@@ -223,9 +222,9 @@ public class HighScoreState extends State {
             for (int i = 0; i < end; i++) {
                 try {
                     Equipment e = pfinal.inv.getEquiped().get(i);
-                    float x = view.x + ((WIDTH / 3) * 2);
-                    float y = viewY + (HEIGHT / 2) - 35 - ((i + 1) * 30);
-                    Game.getFont().draw(sb, e.getName(), x + 50, y);
+                    float x = view.x + ((scr.x / 3) * 2);
+                    float y = viewY + (scr.y / 2) - 35 - ((i + 1) * 30);
+                    Text.getFont().draw(sb, e.getName(), x + 50, y);
                     sb.draw(e.getIcon(), x, y);
                 } catch (Exception ignored) {
                 }
@@ -234,8 +233,8 @@ public class HighScoreState extends State {
         } catch (Exception ignored) {
         }
         if (blink) {
-            Game.getFont().setColor(Color.RED);
-            Game.getFont().draw(sb, "TAB : EXIT", centerString("TAB : EXIT"), viewY + 30);
+            Text.getFont().setColor(Color.RED);
+            Text.getFont().draw(sb, "TAB : EXIT", centerString("TAB : EXIT"), viewY + 30);
 
         }
         sb.end();

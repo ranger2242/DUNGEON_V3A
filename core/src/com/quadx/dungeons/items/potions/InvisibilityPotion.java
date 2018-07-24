@@ -13,9 +13,9 @@ public class InvisibilityPotion extends Potion {
         dEffectTime = new Delta(10 * SECOND);
 
         name = "Invisibility Potion";
-        fileName = "potions\\pGrey.png";
-        loadIcon();
-        effects.add("BECOME INVISIBLE"); }
+        effects.add("BECOME INVISIBLE");
+        gINIT(1,"pGrey");
+    }
 
     @Override
     void onStart() {

@@ -4,13 +4,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.Game;
 import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.tools.timers.Delta;
 import com.quadx.dungeons.tools.timers.Oscillator;
 
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 
 import static com.quadx.dungeons.tools.timers.Time.SECOND;
 import static com.quadx.dungeons.tools.timers.Time.ft;
@@ -64,12 +62,12 @@ public class HoverText {
         textQueue.remove(i);
     }
     public static void render(SpriteBatch sb) {
-        Game.setFontSize(2);
-        font = Game.getFont();
+        Text.setFontSize(2);
+        font = Text.getFont();
         try {
             for (HoverText h : textQueue)
                 h.renderSelf(sb);
-        } catch (ConcurrentModificationException ignored) {
+        } catch (Exception ignored) {
         }
     }
     public static void update(float dt) {

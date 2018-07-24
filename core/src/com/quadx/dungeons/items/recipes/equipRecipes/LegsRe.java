@@ -8,10 +8,9 @@ import com.quadx.dungeons.items.recipes.Recipe;
  */
 public class LegsRe extends Recipe {
     public LegsRe(){
+        super();
         name="Legs";
         loadEquip(new Legs());
-        fileName="icRecipe.png";
-        loadIcon();
         isEquipRecipe=true;
 
     }

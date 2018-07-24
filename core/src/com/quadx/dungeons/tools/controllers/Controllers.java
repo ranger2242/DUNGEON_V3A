@@ -3,7 +3,7 @@ package com.quadx.dungeons.tools.controllers;
 import com.quadx.dungeons.states.MainMenuState;
 import com.quadx.dungeons.states.mapstate.MapState;
 
-import static com.quadx.dungeons.Game.controllerMode;
+import static com.quadx.dungeons.tools.Tests.controllerMode;
 
 /**
  * Created by Chris Cavazos on 1/31/2017.

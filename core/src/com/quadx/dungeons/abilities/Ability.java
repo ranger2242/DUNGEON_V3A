@@ -2,14 +2,14 @@ package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
+import com.quadx.dungeons.tools.gui.Drawable;
 import com.quadx.dungeons.tools.gui.HoverText;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.items.equipment.EquipSets.equipSets;
 
 /**
  *
@@ -17,8 +17,7 @@ import static com.quadx.dungeons.Game.player;
  * Created by Chris Cavazos on 5/20/2016.
  */
 @SuppressWarnings("DefaultFileTemplate")
-public abstract class Ability {
-    protected Texture icon;
+public abstract class Ability extends Drawable {
     protected String name = "default";
     protected final ArrayList<String> details = new ArrayList<>();
 
@@ -60,14 +59,6 @@ public abstract class Ability {
         details.addAll(d);
     }
 
-    Texture loadIcon(String s) {
-        icon = new Texture(Gdx.files.internal(s));
-        return icon;
-    }
-
-    public Texture getIcon() {
-        return icon;
-    }
 
     public abstract void onActivate();
 

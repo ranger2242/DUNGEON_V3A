@@ -8,10 +8,9 @@ import com.quadx.dungeons.items.recipes.Recipe;
  */
 public class BootsRe extends Recipe {
     public BootsRe(){
+        super();
         name="Boots";
         loadEquip(new Boots());
-        fileName="icRecipe.png";
-        loadIcon();
         isEquipRecipe=true;
 
     }

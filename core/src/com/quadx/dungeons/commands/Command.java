@@ -5,13 +5,18 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.quadx.dungeons.tools.controllers.Xbox360Pad;
 
-import static com.quadx.dungeons.Game.controllerMode;
+import java.util.ArrayList;
+
+import static com.quadx.dungeons.tools.Tests.controllerMode;
 import static com.quadx.dungeons.states.MainMenuState.controller;
 
 /**
  * Created by Chris Cavazos on 8/8/2016.
  */
 public abstract class Command {
+
+
+    public static ArrayList<Command> commands = new ArrayList<>();
     protected String name;
     protected int keyboard;
     protected int contB=-1;
@@ -25,6 +30,32 @@ public abstract class Command {
         init();
     }
     public static Class cls;
+
+    public static void initComms() {
+        commands.clear();
+        commands.add(new UpComm());
+        commands.add(new DownComm());
+        commands.add(new LeftComm());
+        commands.add(new RightComm());
+        commands.add(new AimUpComm());
+        commands.add(new AimDownComm());
+        commands.add(new AimLeftComm());
+        commands.add(new AimRightComm());
+        commands.add(new AltAttackComm());
+        commands.add(new ScrollLeftComm());
+        commands.add(new ScrollRightComm());
+        commands.add(new RotLeftComm());
+        commands.add(new RotRightComm());
+        commands.add(new MainAttackComm());
+        commands.add(new ChangeAttackComm());
+        commands.add(new UseComm());
+        commands.add(new JumpComm());
+        commands.add(new DropComm());
+        commands.add(new PauseComm());
+        commands.add(new BackComm());
+        commands.add(new ConfirmComm());
+    }
+
     public abstract void execute();
     public void changeKey(int k){
         keyboard=k;

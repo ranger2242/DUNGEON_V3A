@@ -12,16 +12,16 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
-import com.quadx.dungeons.Game;
 import com.quadx.dungeons.states.mapstate.MapState;
 import com.quadx.dungeons.states.mapstate.MapStateRender;
-import com.quadx.dungeons.tools.FilePaths;
 import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.controllers.Xbox360Pad;
+import com.quadx.dungeons.tools.files.FilePaths;
+import com.quadx.dungeons.tools.gui.Text;
 
 import java.util.ArrayList;
 
-import static com.quadx.dungeons.Game.*;
+import static com.quadx.dungeons.Game.scr;
 import static com.quadx.dungeons.tools.gui.Text.centerString;
 import static com.quadx.dungeons.tools.gui.Text.strWidth;
 
@@ -45,8 +45,8 @@ public class MainMenuState extends State implements ControllerListener {
         initController();
         //loadParticles();
         addOptionsToList();
-        titlePosY=(int)(viewY+ (Game.HEIGHT/3)*2);
-        optionsPosY =(int)(viewY+ (Game.HEIGHT/3));
+        titlePosY=(int)(viewY+ (scr.y/3)*2);
+        optionsPosY =(int)(viewY+ (scr.y/3));
     }
     void loadParticles(){
         effect = new ParticleEffect();
@@ -55,13 +55,13 @@ public class MainMenuState extends State implements ControllerListener {
         effect.load(Gdx.files.internal(FilePaths.getPath("particles\\pt" + s)), Gdx.files.internal("particles"));
         emitter = effect.findEmitter("fire");
         emitter.setContinuous(true);
-        effect.setPosition(view.x+ Game.WIDTH/2,viewY+ 0);
+        effect.setPosition(view.x+ scr.x/2,viewY+ 0);
     }
     private void initController(){
         if(Controllers.getControllers().size>0) {
             controller = Controllers.getControllers().first();
             controller.addListener(this);
-            controllerMode =true;
+            Tests.controllerMode =true;
         }
     }
     private void addOptionsToList(){
@@ -136,39 +136,39 @@ public class MainMenuState extends State implements ControllerListener {
         drawTitle(sb);
         drawOptions(sb);
         sb.begin();
-        sb.draw(title,view.x+(WIDTH/2)-(title.getWidth()/2),viewY+HEIGHT- title.getHeight()-30);
+        sb.draw(title,view.x+(scr.x/2)-(title.getWidth()/2),viewY+scr.y- title.getHeight()-30);
         if(!Tests.timeKill()) {
 
             String s = "DEMO TIME EXPIRED";
-            Game.setFontSize(4);
-            Game.getFont().setColor(Color.WHITE);
-            Game.getFont().draw(sb, s, view.x + WIDTH / 2 - strWidth(s) / 2, viewY + HEIGHT / 2);
+            Text.setFontSize(4);
+            Text.getFont().setColor(Color.WHITE);
+            Text.getFont().draw(sb, s, view.x + scr.x / 2 - strWidth(s) / 2, viewY + scr.y / 2);
         }
         sb.end();
     }
     private void drawTitle(SpriteBatch sb){
         sb.begin();
-        Game.setFontSize(5);
-        Game.font.setColor(Color.WHITE);
+        Text.setFontSize(5);
+        Text.font.setColor(Color.WHITE);
         String title="-DEMO-";
-        Game.getFont().draw(sb,title, centerString(title),titlePosY-100);
+        Text.getFont().draw(sb,title, centerString(title),titlePosY-100);
       //  effect.draw(sb);
         sb.end();
     }
     private void drawOptions(SpriteBatch sb){
 
         sb.begin();
-        Game.setFontSize(5);
+        Text.setFontSize(5);
         for(int i=0;i<options.size();i++){
             if(!Tests.timeKill()) {
-                Game.getFont().setColor(Color.RED);
+                Text.getFont().setColor(Color.RED);
             }else{
                 if (selector == i)
-                    Game.getFont().setColor(Color.BLUE);
+                    Text.getFont().setColor(Color.BLUE);
                 else
-                    Game.getFont().setColor(Color.WHITE);
+                    Text.getFont().setColor(Color.WHITE);
             }
-            Game.getFont().draw(sb,options.get(i),centerString(options.get(i)),optionsPosY-(i*20));
+            Text.getFont().draw(sb,options.get(i),centerString(options.get(i)),optionsPosY-(i*20));
         }
         sb.end();
     }

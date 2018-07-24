@@ -1,10 +1,7 @@
 package com.quadx.dungeons.abilities;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.quadx.dungeons.tools.ImageLoader;
-
-import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.items.equipment.EquipSets.equipSets;
 
 /**
  * Created by range on 5/20/2016.
@@ -13,12 +10,9 @@ import static com.quadx.dungeons.Game.player;
 public class Quick extends Ability {
     public Quick(){
         name="Quick";
-        icon= ImageLoader.abilities.get(4);
+        gINIT(2,"icQuick");
     }
-    @Override
-    public Texture getIcon(){
-        return icon;
-    }
+
     @Override
 
     public  void onActivate() {

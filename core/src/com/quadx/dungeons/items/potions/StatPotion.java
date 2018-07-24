@@ -27,8 +27,7 @@ public class StatPotion extends Potion {
     public StatPotion(){
         dEffectTime=new Delta(2*ft);
         name="Stat Boost Potion";
-        fileName="potions\\pMagenta.png";
-        loadIcon();
+        gINIT(1,"pMagenta");
     }
 
 

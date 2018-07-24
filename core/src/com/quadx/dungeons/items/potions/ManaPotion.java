@@ -11,12 +11,12 @@ import static com.quadx.dungeons.tools.timers.Time.SECOND;
  */
 public class ManaPotion extends Potion {
     public ManaPotion(){
+        super();
         dEffectTime=new Delta(30*SECOND);
         name="Mana Potion";
-        fileName="potions\\pLightBlue.png";
-        loadIcon();
         effects.add("MAX MANA");
         effects.add("2x MANA REGEN");
+        gINIT(1,"pLightBlue");
     }
     @Override
     void onStart() {

@@ -8,7 +8,7 @@ public class Blood extends Resource {
     public Blood(){
         fileName="mods\\icBlood.png";
         name="Blood";
-        loadIcon();
+        gINIT(1,"icClaw");
     }
     @Override
     public int[] runMod() {

@@ -1,7 +1,5 @@
 package com.quadx.dungeons.abilities;
 
-import com.badlogic.gdx.graphics.Texture;
-
 import java.util.ArrayList;
 
 import static com.quadx.dungeons.tools.gui.HUD.out;
@@ -12,14 +10,9 @@ import static com.quadx.dungeons.tools.gui.HUD.out;
 public class DigPlus extends Ability {
     //protected static ArrayList<String> details=new ArrayList<>();
     public DigPlus() {
-        icon= loadIcon("images/icons/abilities/icDigPlus.png");
         details();
     }
-    @Override
-    public Texture getIcon(){
-        return icon;
-    }
-    @Override
+      @Override
     public void onActivate() {
         enabled=true;
         out("----------------------------------");

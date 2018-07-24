@@ -5,9 +5,8 @@ package com.quadx.dungeons.items.resources;
  */
 public class Beetle extends Resource {
     public Beetle(){
-        fileName="mods/icBeetle.png";
         name="BEETLE";
-        loadIcon();
+        gINIT(1,"icBeetle");
     }
     @Override
     public int[] runMod() {

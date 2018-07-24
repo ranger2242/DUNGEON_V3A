@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Game;
 import com.quadx.dungeons.attacks.hitboxTypes.ForwardRectHitBox;
-import com.quadx.dungeons.tools.ImageLoader;
 
 /**
  * Created by Tom on 11/17/2015.
@@ -29,8 +28,9 @@ public class Flame extends Attack {
         spread=3;
         range=6;
         loadArray();
-        setIcon(ImageLoader.attacks.get(2));
         this.shield=shield;
+        gINIT(2,"icFlame");
+
     }
 
 

@@ -7,16 +7,7 @@ package com.quadx.dungeons.items.equipment;
 public class Arms extends Equipment {
     public Arms(){
         type=Type.Arms;
-        //setIcon(equipBasic[0]);
-
-        setGrade();
-        setBoost();
-        setMods();
-        fileName="equip\\icArms.png";
-
-        name=grade.toString()+" "+boost.toString()+" Arms";
         craftCost=new int[]{15,5,1250};
-        loadIcon();
-
+        init("icArms");
     }
 }

@@ -5,9 +5,8 @@ package com.quadx.dungeons.items.resources;
  */
 public class Mushroom extends Resource {
     public Mushroom(){
-        fileName="mods/icMushroom.png";
         name="Mushroom";
-        loadIcon();
+        gINIT(1,"icMushroom");
     }
     @Override
     public int[] runMod() {

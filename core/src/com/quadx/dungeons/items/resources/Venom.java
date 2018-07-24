@@ -5,9 +5,8 @@ package com.quadx.dungeons.items.resources;
  */
 public class Venom extends Resource {
     public Venom(){
-        fileName="mods/icVenom.png";
         name="VENOM";
-        loadIcon();
+        gINIT(1,"icVenom");
     }
     @Override
     public int[] runMod() {

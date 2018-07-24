@@ -13,10 +13,9 @@ public class GoldBoostPotion extends Potion {
     public GoldBoostPotion() {
         dEffectTime = new Delta(30 * SECOND);
         name = "Gold Boost Potion";
-        fileName = "potions\\pGold.png";
-        loadIcon();
         effects.add("DOUBLES ALL GOLD");
         effects.add("FOR 30 SECONDS");
+        gINIT(1,"pGold");
     }
 
     @Override

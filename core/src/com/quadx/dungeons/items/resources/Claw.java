@@ -5,9 +5,8 @@ package com.quadx.dungeons.items.resources;
  */
 public class Claw extends Resource {
     public Claw(){
-        fileName="mods/icClaw.png";
         name="CLAW";
-        loadIcon();
+        gINIT(1,"icClaw");
     }
     @Override
     public int[] runMod() {

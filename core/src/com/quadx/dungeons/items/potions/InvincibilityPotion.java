@@ -11,11 +11,10 @@ import static com.quadx.dungeons.tools.timers.Time.SECOND;
 public class InvincibilityPotion extends Potion {
     public InvincibilityPotion() {
         dEffectTime = new Delta(10 * SECOND);
-
         name = "Invincibility Potion";
-        fileName = "potions\\pDarkBlue.png";
-        loadIcon();
-        effects.add("NO DAMAGE"); }
+        effects.add("NO DAMAGE");
+        gINIT(1,"pGrey");
+    }
 
     @Override
     void onStart() {

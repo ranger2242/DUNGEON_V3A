@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.commands.Command;
 
-import static com.quadx.dungeons.Game.commandList;
+import static com.quadx.dungeons.commands.Command.commands;
 import static com.quadx.dungeons.Game.scr;
 
 /**
@@ -22,7 +22,7 @@ public abstract class ButtonHandler {
   public abstract void update(float dt);
 
     void runCommands(){
-        for (Command c : commandList) {
+        for (Command c : commands) {
             c.execute();
         }
     }

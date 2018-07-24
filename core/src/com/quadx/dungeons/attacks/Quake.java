@@ -3,9 +3,9 @@ package com.quadx.dungeons.attacks;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.states.State;
-import com.quadx.dungeons.tools.ImageLoader;
 
-import static com.quadx.dungeons.Game.*;
+import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.Game.scr;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
 
 /**
@@ -27,7 +27,7 @@ public class Quake extends Attack {
         range=0;
         description="EARTHQUAKE.";
         hitBoxShape=HitBoxShape.Rect;
-        setIcon(ImageLoader.attacks.get(9));
+        gINIT(2,"icQuake");
     }
 
     @Override
@@ -38,6 +38,6 @@ public class Quake extends Attack {
     public Rectangle getHitBox(){
         Vector2 view = State.getView();
 
-        return new Rectangle(view.x,viewY,view.x+WIDTH,viewY+HEIGHT);
+        return new Rectangle(view.x,viewY,view.x+scr.x,viewY+scr.y);
     }
 }

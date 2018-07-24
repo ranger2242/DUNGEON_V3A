@@ -1,7 +1,6 @@
 package com.quadx.dungeons.attacks;
 
 import com.badlogic.gdx.graphics.Color;
-import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.gui.HoverText;
 
 import static com.quadx.dungeons.Game.player;
@@ -24,7 +23,7 @@ public class Focus extends Attack {
         range=0;
         hitBoxShape =HitBoxShape.None;
         loadArray();
-        setIcon(ImageLoader.attacks.get(3));
+        gINIT(2,"icFocus");
     }
     public void runAttackMod(){
         int d=(cost*3)/4;

@@ -14,6 +14,7 @@ import com.quadx.dungeons.tools.timers.Timer;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.quadx.dungeons.Game.scr;
 import static com.quadx.dungeons.tools.gui.HUD.out;
 
 
@@ -76,7 +77,7 @@ Map2State extends State {
     }
     private void drawGrid(){
         //int cellW=1;
-        int cellW= Game.HEIGHT/res;
+        int cellW= (int)(scr.y/res);
         for(int i=0;i<res;i++){
             for(int j=0;j<res;j++) {
                 if(dispArray[i][j].isClear()){

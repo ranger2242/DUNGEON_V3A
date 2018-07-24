@@ -11,19 +11,20 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Game;
-import com.quadx.dungeons.abilities.Ability;
-import com.quadx.dungeons.abilities.WaterBreath;
+import com.quadx.dungeons.abilities.*;
 import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.tools.FilePaths;
-import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.MyTextInputListener;
+import com.quadx.dungeons.tools.Tests;
 import com.quadx.dungeons.tools.controllers.Xbox360Pad;
+import com.quadx.dungeons.tools.files.FilePaths;
 import com.quadx.dungeons.tools.gui.HUD;
+import com.quadx.dungeons.tools.gui.Text;
 
 import java.util.ArrayList;
 
-import static com.quadx.dungeons.Game.*;
+import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.Game.scr;
 import static com.quadx.dungeons.states.MainMenuState.controller;
 import static com.quadx.dungeons.tools.gui.Text.centerString;
 
@@ -38,6 +39,8 @@ public class AbilitySelectState extends State implements ControllerListener {
     private static float dtSel=0;
     private static final GlyphLayout gl=new GlyphLayout();
     private static ArrayList<Ability> abilityList;
+    private static ArrayList<Ability> aList = new ArrayList<>();
+
     private final ArrayList<Ability> secondaryList= new ArrayList<>();
     private final int titlex;
     private final int titley;
@@ -49,19 +52,24 @@ public class AbilitySelectState extends State implements ControllerListener {
 
     public AbilitySelectState(GameStateManager gsm){
         super(gsm);
-        if(Game.controllerMode)
+        if(Tests.controllerMode)
         controller.addListener(this);
         //namePopupBox();
 
-        Game.setFontSize(5);
+        Text.setFontSize(5);
 
         Gdx.gl.glClearColor(0,0,0,1);
-        Game.setFontSize(4);
+        Text.setFontSize(4);
         CharSequence cs="Select Ability";
-        gl.setText(Game.getFont(),cs);
+        gl.setText(Text.getFont(),cs);
 
-        titlex=(int)((Game.WIDTH/2)-(gl.width/2));
-        titley=(Game.HEIGHT-50);
+        titlex=(int)((scr.x/2)-(gl.width/2));
+        titley=(int)(scr.y-50);
+
+        aList.add(new Tank());
+        aList.add(new Investor());
+        aList.add(new Mage());
+        aList.add(new Quick());
 
         WaterBreath wb= new WaterBreath();
         secondaryList.add(wb);
@@ -138,46 +146,46 @@ public class AbilitySelectState extends State implements ControllerListener {
 
 //RENDER FUNCTIONS
 private void drawIcons(SpriteBatch sb){
-        Game.setFontSize(4);
-        Game.getFont().setColor(Color.WHITE);
+        Text.setFontSize(4);
+        Text.getFont().setColor(Color.WHITE);
         if(!MapState.inGame) {
-            Game.getFont().draw(sb, "~~Select Ability~~", view.x + titlex, viewY + titley);
-            for(int i = 0; i<ImageLoader.abilities.size(); i++){
-                sb.draw(ImageLoader.abilities.get(i),view.x+ i*150+Game.WIDTH/2,viewY+ Game.HEIGHT*2/3);
+            Text.getFont().draw(sb, "~~Select Ability~~", view.x + titlex, viewY + titley);
+            for(int i = 0; i<aList.size(); i++){
+                sb.draw(aList.get(i).getIcon(),view.x+ i*150+scr.x/2,viewY+ scr.y*2/3);
             }
         }else{
-            Game.getFont().draw(sb, "~~Upgrade Ability~~", view.x + titlex, viewY + titley);
-            sb.draw(ImageLoader.abilities.get(player.getAbilityMod()), view.x + Game.WIDTH / 2, viewY + (Game.HEIGHT * 2 / 3));
-            for (int i = 0; i < secondaryList.size(); i++) {
-                sb.draw(ImageLoader.abilities2.get(i), view.x + i * 150 + Game.WIDTH / 2, viewY + (Game.HEIGHT * 2 / 3) - 100);
-            }
+            Text.getFont().draw(sb, "~~Upgrade Ability~~", view.x + titlex, viewY + titley);
+            sb.draw(aList.get(player.getAbilityMod()).getIcon(), view.x + scr.x / 2, viewY + (scr.y* 2 / 3));
+           /* for (int i = 0; i < secondaryList.size(); i++) {
+                sb.draw(ImageLoader.abilities2.get(i), view.x + i * 150 + scr.x / 2, viewY + (scr.y * 2 / 3) - 100);
+            }*/
         }
     }
     private void drawSelector(SpriteBatch sb){
         if(posx<0)posx=0;
         if(posy<0)posy=0;
         if(posy>4)posy=4;
-        if(posx<ImageLoader.abilities.size()) {
-            Game.getFont().draw(sb, "-", view.x + posx * 150 + Game.WIDTH / 2, viewY + Game.HEIGHT * 2 / 3 - (posy * 100));
+        if(posx<aList.size()) {
+            Text.getFont().draw(sb, "-", view.x + posx * 150 + scr.x / 2, viewY + scr.y* 2 / 3 - (posy * 100));
         }
-        else posx=ImageLoader.abilities.size()-1;
+        else posx=aList.size()-1;
 
     }
     private void drawText(SpriteBatch sb){
         sb.setProjectionMatrix(cam.combined);
         sr.setProjectionMatrix(cam.combined);
-        Game.setFontSize(2);
-        Game.getFont().setColor(Color.WHITE);
+        Text.setFontSize(2);
+        Text.getFont().setColor(Color.WHITE);
 
-        Game.getFont().draw(sb,"-PRIMARY-",view.x+titlex+100,viewY+HEIGHT-120);
-        Game.getFont().draw(sb,"-SECONDARY-",view.x+titlex+100,viewY+HEIGHT-270);
+        Text.getFont().draw(sb,"-PRIMARY-",view.x+titlex+100,viewY+scr.y-120);
+        Text.getFont().draw(sb,"-SECONDARY-",view.x+titlex+100,viewY+scr.y-270);
 
-        Game.getFont().draw(sb,"-UPGRADE AND BUY ABILITIES WITH AP-",view.x+(WIDTH/2)-(gl.width/2),viewY+Game.HEIGHT-30);
+        Text.getFont().draw(sb,"-UPGRADE AND BUY ABILITIES WITH AP-",view.x+(scr.x/2)-(gl.width/2),viewY+Game.scr.y-30);
 
         CharSequence cs="Enter:Select        Tab:Exit";
-        gl.setText(Game.getFont(),cs);
+        gl.setText(Text.getFont(),cs);
 
-        Game.getFont().draw(sb,"Enter:Select        Tab:Exit",view.x+(WIDTH/2)-(gl.width/2),viewY+30);
+        Text.getFont().draw(sb,"Enter:Select        Tab:Exit",view.x+(scr.x/2)-(gl.width/2),viewY+30);
     }
 
     private void drawAbilityScreen(SpriteBatch sb){
@@ -185,7 +193,7 @@ private void drawIcons(SpriteBatch sb){
         drawIcons(sb);
         drawText(sb);
         drawSelector(sb);
-        Vector2 stats= new Vector2(view.x + 30, viewY +HEIGHT- 70);
+        Vector2 stats= new Vector2(view.x + 30, viewY +scr.y- 70);
         player.renderStatList(sb, stats);
 
 
@@ -209,7 +217,7 @@ private void drawIcons(SpriteBatch sb){
             ArrayList<String> details= abilities.get(posx).details();
             Vector2[] pos= HUD.getStatPos();
             for (int i = 0; i < details.size() && i <pos.length; i++) {
-                Game.getFont().draw(sb, details.get(i), pos[i].x+240, pos[i].y);
+                Text.getFont().draw(sb, details.get(i), pos[i].x+240, pos[i].y);
                 hovering = abilities.get(posx);
             }
         }
@@ -217,7 +225,7 @@ private void drawIcons(SpriteBatch sb){
 
     private void drawInstructions(SpriteBatch sb) {
         sb.begin();
-        Game.getFont().draw(sb,"WIN",centerString("WIN"),HEIGHT/2);
+        Text.getFont().draw(sb,"WIN",centerString("WIN"),scr.y/2);
         sb.end();
     }
     @Override
@@ -229,7 +237,7 @@ private void drawIcons(SpriteBatch sb){
 
         sr.begin(ShapeRenderer.ShapeType.Line);
         sr.setColor(Color.RED);
-        Vector2 stats= new Vector2(30,HEIGHT- 70);
+        Vector2 stats= new Vector2(30,scr.y- 70);
         Vector2[] arr= HUD.generateStatListPos(stats);
         for(int i=0;i<7;i++){
             Vector2 v=new Vector2(arr[i+2]);

@@ -1,11 +1,9 @@
 package com.quadx.dungeons.abilities;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.attacks.Stab;
-import com.quadx.dungeons.tools.ImageLoader;
 
-import static com.quadx.dungeons.Game.equipSets;
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.items.equipment.EquipSets.equipSets;
 
 /**
  * Created by range on 5/20/2016.
@@ -14,14 +12,9 @@ import static com.quadx.dungeons.Game.player;
 public class Tank extends Ability {
     public Tank() {
         name = "Tank";
-        icon = ImageLoader.abilities.get(0);
-    }
+        gINIT(2,"icTank");
 
-    @Override
-    public Texture getIcon() {
-        return icon;
     }
-
     @Override
 
     public void onActivate() {

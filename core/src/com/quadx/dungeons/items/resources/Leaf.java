@@ -5,9 +5,8 @@ package com.quadx.dungeons.items.resources;
  */
 public class Leaf extends Resource {
     public Leaf(){
-        fileName="mods/icLeaf.png";
         name="Leaf";
-        loadIcon();
+        gINIT(1,"icLeaf");
     }
     @Override
     public int[] runMod() {

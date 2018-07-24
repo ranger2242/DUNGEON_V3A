@@ -13,10 +13,9 @@ public class SpeedPlus extends Resource {
         speedmod+=1;
         cost=3500 ;
         canCluster=true;
-        fileName="mods/icSpeed+.png";
         isUsable=true;
         hasEffect=true;
-
+        gINIT(1,"icSpeed+");
     }
 
     @Override

@@ -1,7 +1,5 @@
 package com.quadx.dungeons.attacks;
 
-import com.quadx.dungeons.tools.ImageLoader;
-
 import static com.quadx.dungeons.Game.player;
 
 /**
@@ -25,7 +23,7 @@ public class Sacrifice extends Attack {
         description = "Costs half max HP for  instakill.";
         hitBoxShape = HitBoxShape.None;
         loadArray();
-        setIcon(ImageLoader.attacks.get(8));
+        gINIT(2,"icSacrifice");
     }
 
     public void runAttackMod() {

@@ -14,8 +14,6 @@ public class SpellBook extends Item {
         Random rn = new Random();
         setAttack(rn.nextInt(13));
         name="Spell Book ("+attack.getName()+")";
-        //icon= ImageLoader.spellbook;
-        fileName="icSpellBook.png";
     }
 
     public Attack getAttack(){

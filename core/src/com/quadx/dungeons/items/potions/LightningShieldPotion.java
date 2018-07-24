@@ -14,9 +14,8 @@ public class LightningShieldPotion extends Potion {
     public LightningShieldPotion() {
         dEffectTime = new Delta(30 * SECOND);
         name = "Lighning Shield Potion";
-        fileName = "potions\\pYellow.png";
-        loadIcon();
         effects.add("LIGHTNING SHIELD");
+        gINIT(1,"pYellow");
     }
 
     @Override

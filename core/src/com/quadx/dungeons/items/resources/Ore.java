@@ -7,7 +7,7 @@ import com.quadx.dungeons.items.Item;
  */
 public class Ore extends Item {
     public Ore(){
-        fileName="mods/icOre.png";
         name="Ore";
+        gINIT(1,"icOre");
     }
 }

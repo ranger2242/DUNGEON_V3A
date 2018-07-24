@@ -22,7 +22,6 @@ public class Crystal extends Resource {
     }
     public void init(int s){
         hasEffect=true;
-        fileName="mods\\icCrystal"+s+".png";
         String m="";
         switch (s){
             case 1:{
@@ -39,7 +38,7 @@ public class Crystal extends Resource {
             }
         }
         name=m+" CRYSTAL";
-        loadIcon();
+        gINIT(1,"icCrystal"+s);
     }
     @Override
     public int[] runMod() {

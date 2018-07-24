@@ -2,7 +2,6 @@ package com.quadx.dungeons.attacks;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.quadx.dungeons.attacks.hitboxTypes.ForwardRectHitBox;
-import com.quadx.dungeons.tools.ImageLoader;
 
 /**
  * Created by Tom on 11/21/2015.
@@ -25,7 +24,7 @@ public class Stab extends Attack {
         hitBoxShape =HitBoxShape.Rect;
         description="Stabs the opponent.";
         loadArray();
-        setIcon(ImageLoader.attacks.get(10));
+        gINIT(2,"icStab");
     }
 
     @Override

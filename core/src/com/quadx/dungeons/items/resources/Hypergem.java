@@ -13,10 +13,9 @@ public class Hypergem extends Resource {
         defensemod+=1;
         cost=3500;
         canCluster=true;
-        fileName="mods/icHypergem.png";
         isUsable=true;
         hasEffect=true;
-
+        gINIT(1,"icHypergem");
     }
 
     @Override

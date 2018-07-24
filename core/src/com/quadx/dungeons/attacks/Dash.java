@@ -2,7 +2,6 @@ package com.quadx.dungeons.attacks;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.tools.ImageLoader;
 
 import static com.quadx.dungeons.Game.player;
 
@@ -27,7 +26,7 @@ public class Dash extends Attack {
         mod=-1;
         hitBoxShape =HitBoxShape.Rect;
         description="Charges in the forward direction";
-        setIcon(ImageLoader.attacks.get(13));
+        gINIT(2,"icDash");
     }
     public void runAttackMod() {
         active=true;
@@ -46,7 +45,7 @@ public class Dash extends Attack {
     public Rectangle getHitBox() {
         active=true;
         Rectangle rect=player.body.getHitBox();
-        Vector2 v=new Vector2(player.body.getIconsDim()).scl(.5f);
+        Vector2 v=new Vector2(player.body.getIconDim()).scl(.5f);
 
         switch (player.body.getFacing()) {
             case North:

@@ -1,8 +1,5 @@
 package com.quadx.dungeons.abilities;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.quadx.dungeons.tools.ImageLoader;
-
 import static com.quadx.dungeons.Game.player;
 import static com.quadx.dungeons.tools.gui.HUD.out;
 
@@ -14,14 +11,11 @@ public class Brawler extends Ability {
     //protected static ArrayList<String> details=new ArrayList<>();
 
     public Brawler(){
-        icon= ImageLoader.abilities.get(4);
         details();
+        gINIT(2,"icBrawler");
     }
-    @Override
-    public Texture getIcon(){
-        return icon;
-    }
-    @Override
+
+     @Override
     public  void onActivate() {
         player.setAbilityMod(4);
      /*   player.setEnergy(player.getEnergy()*2);

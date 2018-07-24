@@ -8,12 +8,13 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.Cell;
-import com.quadx.dungeons.Game;
 import com.quadx.dungeons.shapes1_5.EMath;
+import com.quadx.dungeons.tools.gui.Text;
 
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.quadx.dungeons.Game.scr;
 import static com.quadx.dungeons.GridManager.res;
 import static com.quadx.dungeons.states.State.cam;
 import static com.quadx.dungeons.states.mapstate.MapState.cell;
@@ -31,7 +32,7 @@ public class HeightMap{
     int[][] grid = new int[res][res];
     private ShapeRenderer shapeR = new ShapeRenderer();
     static ArrayList<Color> colors = new ArrayList<>();
-    Vector2 centerCamPos = new Vector2(Game.WIDTH / 2, Game.HEIGHT / 2);
+    Vector2 centerCamPos = new Vector2(scr.x/ 2, scr.y/ 2);
     Vector2 playerpos=new Vector2(100,100);
     Cell[][] cells;
     static int maxHeight=0;
@@ -51,7 +52,14 @@ public class HeightMap{
         }
         colors.remove(0);
     }
-    public static ArrayList<Color> getColors(){return colors;}
+    public static ArrayList<Color> getColors(){
+        return colors;
+    }
+
+    public static Color getColor(int i){
+        return colors.get(i);
+    }
+
     float[][] addToMap(float[][] f,float[][]f2) {
         float[][] f3=new float[res][res];
         for (int i = 0; i < res; i++) {
@@ -151,7 +159,7 @@ public class HeightMap{
         Gdx.gl20.glClearColor(0, .4f, 0, 1);
         shapeR.setProjectionMatrix(cam.combined);
         sb.setProjectionMatrix(cam.combined);
-        Game.setFontSize(0);
+        Text.setFontSize(0);
 
 
 

@@ -14,13 +14,11 @@ import javafx.util.Pair;
  */
 public class InvisibilityPotionRe extends Recipe {
     public InvisibilityPotionRe(){
+        super();
         //fast regen for time and full health
         output=new InvisibilityPotion();
         name=output.getName();
-        fileName="icRecipe.png";
         isPotionRecipe =true;
-        craftFileName=output.getFileName();
-        loadIcon();
         Pair<Integer,Item>[] c = new Pair[5];
         c[0] = new Pair<>(1,new Hypergem());
         c[1] = new Pair<>(3,new Water());

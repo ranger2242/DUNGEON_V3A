@@ -7,16 +7,8 @@ package com.quadx.dungeons.items.equipment;
 public class Gloves extends Equipment {
     public Gloves(){
         type=Type.Gloves;
-        //setIcon(equipBasic[4]);
-
-        setGrade();
-        setBoost();
-        setMods();
-        fileName="equip\\icGloves.png";
-
-        name=grade.toString()+" "+boost.toString()+" Gloves";
         craftCost=new int[]{10,10,1500};
-        loadIcon();
+        init("icGloves");
 
     }
 }

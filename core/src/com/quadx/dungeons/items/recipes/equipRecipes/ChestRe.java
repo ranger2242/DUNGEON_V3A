@@ -8,10 +8,9 @@ import com.quadx.dungeons.items.recipes.Recipe;
  */
 public class ChestRe extends Recipe {
     public ChestRe(){
+        super();
         name="Chest";
         loadEquip(new Chest());
-        fileName="icRecipe.png";
-        loadIcon();
         isEquipRecipe=true;
 
     }

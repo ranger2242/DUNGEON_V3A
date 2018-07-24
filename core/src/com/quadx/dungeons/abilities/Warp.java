@@ -1,7 +1,6 @@
 package com.quadx.dungeons.abilities;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.quadx.dungeons.tools.gui.HoverText;
 
 import java.util.ArrayList;
@@ -15,7 +14,6 @@ import static com.quadx.dungeons.tools.gui.HUD.out;
 public class Warp extends Ability {
 
     public Warp() {
-        icon= loadIcon("images/icons/abilities/icWarp.png");
     }
     @Override
     public void onActivate() {
@@ -77,10 +75,6 @@ public class Warp extends Ability {
         else{
             new HoverText(""+(cooldown-timeCounter),Color.GRAY, player.fixed(),false);
         }
-    }
-    @Override
-    public Texture getIcon(){
-        return icon;
     }
 
     public ArrayList<String> details() {

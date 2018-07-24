@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.Anim;
-import com.quadx.dungeons.Game;
 import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.abilities.Ability;
 import com.quadx.dungeons.attacks.Attack;
@@ -29,6 +28,7 @@ import com.quadx.dungeons.tools.gui.HoverText;
 import java.util.Random;
 
 import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.Game.scr;
 import static com.quadx.dungeons.GridManager.dispArray;
 import static com.quadx.dungeons.states.mapstate.MapStateRender.renderLayers;
 
@@ -63,7 +63,7 @@ public class MapState extends State implements ControllerListener {
         Controllers.initControllers(this);
         player.initPlayer();
         gm = new GridManager();
-        cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT);
+        cam.setToOrtho(false, scr.x, scr.y);
         debug();
     }
 

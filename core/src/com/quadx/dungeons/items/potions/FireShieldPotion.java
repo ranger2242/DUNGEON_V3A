@@ -15,9 +15,8 @@ public class FireShieldPotion extends Potion {
     public FireShieldPotion() {
         dEffectTime = new Delta(30 * SECOND);
         name = "Fire Shield Potion";
-        fileName = "potions\\pRed.png";
-        loadIcon();
         effects.add("FIRE SHIELD");
+        gINIT(1,"pOrange");
     }
 
     @Override

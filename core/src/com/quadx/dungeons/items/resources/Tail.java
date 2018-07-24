@@ -5,9 +5,8 @@ package com.quadx.dungeons.items.resources;
  */
 public class Tail extends Resource {
     public Tail(){
-        fileName="mods/icTail.png";
         name="TAIL";
-        loadIcon();
+        gINIT(1,"icTail");
     }
 
     @Override

@@ -14,10 +14,9 @@ public class HealthPotion extends Potion {
         dEffectTime = new Delta(10 * SECOND);
 
         name = "Health Potion";
-        fileName = "potions\\pRed.png";
-        loadIcon();
         effects.add("MAX HP");
         effects.add("2x HP REGEN");
+        gINIT(1,"pRed");
     }
 
     @Override

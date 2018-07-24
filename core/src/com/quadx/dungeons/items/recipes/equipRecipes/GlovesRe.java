@@ -8,10 +8,9 @@ import com.quadx.dungeons.items.recipes.Recipe;
  */
 public class GlovesRe extends Recipe {
     public GlovesRe(){
+        super();
         name="Gloves";
         loadEquip(new Gloves());
-        fileName="icRecipe.png";
-        loadIcon();
         isEquipRecipe=true;
 
     }

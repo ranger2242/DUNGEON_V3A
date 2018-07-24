@@ -1,10 +1,11 @@
 package com.quadx.dungeons.tools.gui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.Game;
 import com.quadx.dungeons.Inventory;
 import com.quadx.dungeons.attacks.Attack;
 import com.quadx.dungeons.items.Item;
@@ -13,15 +14,16 @@ import com.quadx.dungeons.shapes1_5.ShapeRendererExt;
 import com.quadx.dungeons.states.HighScoreState;
 import com.quadx.dungeons.states.State;
 import com.quadx.dungeons.states.mapstate.MapState;
-import com.quadx.dungeons.tools.ImageLoader;
 import com.quadx.dungeons.tools.timers.Delta;
 import com.quadx.dungeons.tools.timers.Time;
 
 import java.util.ArrayList;
 
-import static com.quadx.dungeons.Game.*;
+import static com.quadx.dungeons.Game.player;
+import static com.quadx.dungeons.Game.scr;
 import static com.quadx.dungeons.GridManager.res;
 import static com.quadx.dungeons.states.mapstate.MapState.viewY;
+import static com.quadx.dungeons.tools.ImageLoader.hudAt;
 import static com.quadx.dungeons.tools.gui.Text.fitLineToWord;
 
 /**
@@ -43,15 +45,40 @@ public class HUD {
     static Vector2 statListPos = new Vector2();
     static Vector2 playerStatBarPos = new Vector2();
     public static float dtLootPopup = 0;
-    public static Texture lootPopup;
+    public static TextureRegion lootPopup;
 
     public static Delta dPopup = new Delta(20 * Time.ft);
 
     public static ArrayList<Rectangle> equipBoxes = new ArrayList<>();
     public static Rectangle[] playerStatBars = new Rectangle[3];
+    public static final ArrayList<TextureRegion> statIcons = new ArrayList<>();
 
     public HUD() {
         bufferOutput();
+    }
+
+    private static void loadStatIcons() {
+
+        statIcons.add(hudAt.findRegion(("hpstaticon")));
+        statIcons.add(hudAt.findRegion("manastaticon"));
+        statIcons.add(hudAt.findRegion("energystaticon"));
+        statIcons.add(hudAt.findRegion("strstaticon"));
+        statIcons.add(hudAt.findRegion("defstaticon"));
+        statIcons.add(hudAt.findRegion("intstaticon"));
+        statIcons.add(hudAt.findRegion("spdstaticon"));
+
+
+    }
+
+    public static Vector2 dim(Texture t){
+        return new Vector2(t.getWidth(),t.getHeight());
+    }
+
+    public static Vector2 dim(TextureRegion t){
+        if(t==null)
+            return new Vector2();
+        else
+            return new Vector2(t.getRegionWidth(),t.getRegionHeight());
     }
 
     public static void create() {
@@ -63,9 +90,9 @@ public class HUD {
         Vector2 view = State.getView();
         //hud rects
         if (MapState.showStats) {
-            hud.rects.add(new Rectangle(view.x, view.y + HEIGHT - 300, 300, 300));
+            hud.rects.add(new Rectangle(view.x, view.y + scr.y - 300, 300, 300));
         }
-        hud.rects.add(new Rectangle(view.x, view.y, WIDTH, 207));
+        hud.rects.add(new Rectangle(view.x, view.y, scr.x, 207));
         //player score
         int x = (int) ((view.x + 20));
         String score = "SCORE: " + player.st.getPoints(player) + "";
@@ -76,7 +103,7 @@ public class HUD {
         } catch (IndexOutOfBoundsException | NullPointerException ex) {
             scoreH = "HIGH SCORE: 000000";
         }
-        hud.texts.add(new Text(scoreH, new Vector2(x + (Game.WIDTH / 4) - 100, (view.y + 200)), Color.GRAY, 1));
+        hud.texts.add(new Text(scoreH, new Vector2(x + (scr.x / 4) - 100, (view.y + 200)), Color.GRAY, 1));
         generateAttackBarUI(attackBarPos);
         Item item= player.inv.getSelectedItem();
         if(item!=null)
@@ -92,13 +119,13 @@ public class HUD {
         Vector2 view = State.getView();
         int x = (int) view.x;
         int y = (int) viewY;
-        int w = WIDTH;
+        int w = (int)scr.x;
         equipPos = new Vector2(new Vector2((x + (w / 3) + 35), y + 130));
         minimapPos = new Vector2(x + w - ((res * 2) + 20), y + 20);
         attackBarPos = new Vector2(x + 20, y + 30);
-        inventoryPos = new Vector2((view.x + (WIDTH / 2)), viewY + 130);
-        fpsGridPos.set((int) (view.x + (Game.WIDTH * 2 / 3)), viewY + 20);
-        statListPos = new Vector2(view.x + 30, viewY + HEIGHT - 30);
+        inventoryPos = new Vector2((view.x + (scr.x / 2)), viewY + 130);
+        fpsGridPos.set((int) (view.x + (scr.x * 2 / 3)), viewY + 20);
+        statListPos = new Vector2(view.x + 30, viewY + scr.y - 30);
         playerStatBarPos = new Vector2(view.x + 20, viewY + 145);
         create();
 
@@ -237,7 +264,7 @@ public class HUD {
                     try {
                         equipOverlay.textures.add(player.inv.getEquiped().get(count).getIcon());
                     } catch (Exception e) {
-                        equipOverlay.textures.add(ImageLoader.crate);
+                        //equipOverlay.textures.add(ImageLoader.crate);
                     }
                     equipOverlay.texturePos.add(new Vector2(nx, ny));
 
@@ -250,7 +277,7 @@ public class HUD {
 
     static void generatePlayerStatBars(Vector2 pos) {
         float h = 10;
-        float barMax = (WIDTH / 3) - 10;
+        float barMax = (scr.x / 3) - 10;
         float pHPBar = player.st.getPercentHP() * barMax;
         float pManaBar = player.st.getPercentMana() * barMax;
         float pEnergyBar = player.st.getPercentEnergy() * barMax;
@@ -292,12 +319,20 @@ public class HUD {
         return attackBarHud;
     }
 
+    public static void setRes(Vector2 res){
+        Gdx.graphics.setWindowedMode((int)res.x, (int)res.y);
+    }
+
+    public static void load() {
+        loadStatIcons();
+    }
+
     private void bufferOutput() {
         for (int i = 0; i < 10; i++)
             out("");
     }
 
-    public static void setLootPopup(Texture t) {
+    public static void setLootPopup(TextureRegion t) {
         dPopup.reset();
         lootPopup = t;
     }

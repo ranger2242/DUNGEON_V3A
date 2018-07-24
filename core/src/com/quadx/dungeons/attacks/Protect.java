@@ -1,7 +1,5 @@
 package com.quadx.dungeons.attacks;
 
-import com.quadx.dungeons.tools.ImageLoader;
-
 /**
  * Created by Tom on 11/19/2015.
  */
@@ -23,9 +21,10 @@ public class Protect extends Attack {
         spread=0;
         range=0;
         description="Protects the user from damage.";
-        setIcon(ImageLoader.attacks.get(6));
         hitBoxShape=HitBoxShape.None;
         loadArray();
+        gINIT(2,"icProtect");
+
     }
     public void runAttackMod() {
         active =true;

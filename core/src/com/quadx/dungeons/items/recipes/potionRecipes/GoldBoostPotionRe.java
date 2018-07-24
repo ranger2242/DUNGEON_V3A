@@ -11,13 +11,11 @@ import javafx.util.Pair;
  */
 public class GoldBoostPotionRe extends Recipe {
     public GoldBoostPotionRe(){
+        super();
         //fast regen for time and full health
         output=new GoldBoostPotion();
         name=output.getName();
-        fileName="icRecipe.png";
         isPotionRecipe =true;
-        craftFileName=output.getFileName();
-        loadIcon();
         Pair<Integer,Item>[] c = new Pair[5];
         c[0] = new Pair<>(500,new Gold());
         c[1] = new Pair<>(2,new Blood());

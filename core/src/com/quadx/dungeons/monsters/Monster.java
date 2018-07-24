@@ -1,9 +1,9 @@
 package com.quadx.dungeons.monsters;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -24,9 +24,7 @@ import com.quadx.dungeons.tools.Direction;
 import com.quadx.dungeons.tools.Elapsed;
 import com.quadx.dungeons.tools.StatManager;
 import com.quadx.dungeons.tools.Tests;
-import com.quadx.dungeons.tools.gui.HoverText;
-import com.quadx.dungeons.tools.gui.InfoOverlay;
-import com.quadx.dungeons.tools.gui.Text;
+import com.quadx.dungeons.tools.gui.*;
 import com.quadx.dungeons.tools.stats.MonsterStat;
 import com.quadx.dungeons.tools.timers.Delta;
 
@@ -48,14 +46,10 @@ import static javax.swing.JSplitPane.DIVIDER;
  * Created by Tom on 11/10/2015.
  */
 @SuppressWarnings("ALL")
-public class Monster {
+public class Monster extends Drawable {
     public static ArrayList<Monster> mdrawList = new ArrayList<>();
 
-    protected Texture[] icons = new Texture[4];
-
-    protected Texture icon = null;
     protected Damage d = new Damage();
-    protected TextureAtlas textureAtlas = null;
     protected Animation anim = null;
     public Direction.Facing facing = Direction.Facing.North;
     Rectangle hbar = new Rectangle();
@@ -147,9 +141,7 @@ public class Monster {
                 m = new Krabby();
         } else {
             if (rn.nextBoolean())
-                m = new Anortih();
-
-//                m = new Kabuto();
+                m = new Kabuto();
             else
                 m = new Anortih();
         }
@@ -173,10 +165,11 @@ public class Monster {
     }
 
     public Rectangle getHitBox() {
+        Vector2 d= HUD.dim(getIcon());
         float x = abs().x,
                 y = abs().y,
-                w = getIcon().getWidth(),
-                h = getIcon().getHeight();
+                w = d.x,
+                h = d.y;
 
         return new Rectangle(x - (w / 2), GridManager.fixY(new Vector2(x, y)) - (h / 2), w, h);
     }
@@ -201,7 +194,8 @@ public class Monster {
     }
 
     public Vector2 getTexturePos() {
-        texturePos.set(abs().x - (getIcon().getWidth()) / 2, GridManager.fixY(abs()) - (getIcon().getHeight()) / 2);
+        Vector2 d = HUD.dim(getIcon());
+        texturePos.set(abs().x - d.x / 2, GridManager.fixY(abs()) - d.y / 2);
 
         return texturePos;
     }
@@ -210,9 +204,6 @@ public class Monster {
         return sights;
     }
 
-    public Texture getIcon() {
-        return body.getIcons();
-    }
 
     public boolean isHit() {
         return hit;
@@ -320,7 +311,7 @@ public class Monster {
         oldFront = front;
         front = x;
       /*  if (oldFront != front) {
-            loadIcon();
+            addIcon();
         }*/
     }
 
@@ -346,14 +337,15 @@ public class Monster {
 
     void setHUDOverlay() {//<<refactor this
         float width = 80;
-        Texture icon = getIcon();
+        TextureRegion icon = getIcon();
+        Vector2 d=HUD.dim(icon);
         int x = (int) (abs().x - (width / 2));
-        int y = (int) (abs().y - (icon.getHeight() / 2));
+        int y = (int) (abs().y - (d.x / 2));
         Vector2 hbarpos = new Vector2(x - 2, y - 31);
         Vector2 hbarpos2 = new Vector2(x, y - 30);
         hbar = new Rectangle(hbarpos.x, fixY(hbarpos), width + 4, 6);
         hbar2 = new Rectangle(hbarpos2.x, fixY(hbarpos2), (float) ((double) width * st.getPercentHP()), 4);
-        texturePos.set(pos().x * cellW - icon.getWidth() / 4, pos().y * cellW - icon.getHeight() / 4);
+        texturePos.set(pos().x * cellW - d.x / 4, pos().y * cellW - d.y / 4);
         if (!st.isLowHP()) lowhp = true;
         else lowhp = false;
         overlay.texts.clear();
@@ -476,6 +468,9 @@ public class Monster {
     private boolean standingOnMon(Monster m) {
         return !m.equals(this) && m.body.getHitBox().overlaps(body.getHitBox());
     }
+    public TextureRegion getIcon(){
+        return super.getIcon(facing);
+    }
 
     double calcMoveSpeed() {
         float spd = st.getSpeed();
@@ -500,11 +495,18 @@ public class Monster {
         this.state = state;
     }
 
-    void load(String name, int[] stats) {
+
+    void load(String name,String icon, int[] stats) {
         st.setName(name);
         st.loadStats(stats);
         st.genLevel();
         st.genStats();
+        loadIcons(icon);
+    }
+
+    void loadIcons(String s){
+        for(int i=0;i<4;i++)
+            gINIT(0,s+i);
     }
 
     //AI ACTIONS-------------------------------------------------------------------------------------------
@@ -551,15 +553,16 @@ public class Monster {
         Vector2 end = new Vector2(abs()).add(vel);
         int gw = cellW * (res + 1);
 
+        Vector2 d= HUD.dim(super.getIcon());
         if (end.x < 0)
-            end.x = getIcon().getWidth();
-        else if (end.x + getIcon().getWidth() > gw)
-            end.x = (gw) - getIcon().getWidth();
+            end.x = d.x;
+        else if (end.x + d.x > gw)
+            end.x = (gw) - d.x;
 
         if (end.y < 0)
-            end.y = getIcon().getHeight();
-        else if (end.y + getIcon().getHeight() > gw)
-            end.y = (gw) - getIcon().getHeight();
+            end.y = d.y;
+        else if (end.y + d.y > gw)
+            end.y = (gw) - d.y;
 
         Vector2 comp = Physics.getVector(body.getVelMag(), abs(), end);
         comp.scl((float) calcMoveSpeed());
@@ -633,8 +636,14 @@ public class Monster {
         }
     }
 
-    public Vector2 getIconDim() {
-        return new Vector2(icon.getWidth(), icon.getHeight());
-    }
 
+    public void render(SpriteBatch sb) {
+        Vector2 f=fixed();
+        sb.draw(getIcon(), f.x, f.y);
+        for (Text tx : getInfoOverlay().texts) {
+            Text.setFontSize(tx.size);
+            Text.getFont().draw(sb, tx.text, f.x,f.y-40);
+        }
+
+    }
 }  //------------------------------------------------------------

@@ -38,7 +38,7 @@ public class Meat extends Resource {
             }
         }
         name=m+" MEAT";
-        loadIcon();
+        gINIT(1,"icMeat"+s);
     }
     @Override
     public int[] runMod() {

@@ -5,11 +5,12 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.quadx.dungeons.Game;
+import com.quadx.dungeons.tools.gui.Text;
 
 import java.util.ArrayList;
 
-import static com.quadx.dungeons.Game.HEIGHT;
+import static com.quadx.dungeons.Game.scr;
+
 
 /**
  * Created by Tom on 12/30/2015.
@@ -58,9 +59,9 @@ public class OptionState extends State{
         sb.begin();
         for(int i=0;i<options.size();i++){
             if(i!=options.size()-1) {
-                Game.getFont().draw(sb, options.get(i) + " : " + lockAim, view.x + 30, viewY + HEIGHT - 30);
+                Text.getFont().draw(sb, options.get(i) + " : " + lockAim, view.x + 30, viewY + scr.y - 30);
             }else{
-                Game.getFont().draw(sb, options.get(i), view.x + 30, viewY + HEIGHT - 30);
+                Text.getFont().draw(sb, options.get(i), view.x + 30, viewY + scr.y - 30);
             }
 
         }

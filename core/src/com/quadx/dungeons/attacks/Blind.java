@@ -4,9 +4,6 @@ package com.quadx.dungeons.attacks;
 import com.badlogic.gdx.math.Vector2;
 import com.quadx.dungeons.GridManager;
 import com.quadx.dungeons.shapes1_5.Circle;
-import com.quadx.dungeons.tools.ImageLoader;
-
-import static com.quadx.dungeons.Game.player;
 
 /**
  * Created by Tom on 11/18/2015.
@@ -27,7 +24,9 @@ public class Blind extends Attack {
         spread=10;
         description="Disables enemy vision.";
         loadArray();
-        setIcon( ImageLoader.attacks.get(0));
+        gINIT(2,"icBlind");
+
+        //    addIcon( ImageLoader.attacks.get(0));
 
     }
 
@@ -37,6 +36,6 @@ public class Blind extends Attack {
     }
 
     public Circle getHitCircle(){
-        return new Circle(new Vector2(player.abs().x+(player.body.getIcons().getWidth()/2), GridManager.fixY(player.abs())) ,200);
+        return new Circle(GridManager.fixYv(new Vector2()) ,200);
     }
 }

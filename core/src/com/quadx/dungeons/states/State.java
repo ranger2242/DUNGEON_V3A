@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.quadx.dungeons.commands.Command;
 import com.quadx.dungeons.tools.gui.CamController;
 
-import static com.quadx.dungeons.Game.commandList;
+import static com.quadx.dungeons.commands.Command.commands;
 import static com.quadx.dungeons.Game.scr;
 
 /**
@@ -36,7 +36,7 @@ public abstract class State {
     }
 
     void handleInput(){
-        for(Command c: commandList){
+        for(Command c: commands){
             c.execute();
         }
     }

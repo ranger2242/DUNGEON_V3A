@@ -2,7 +2,6 @@ package com.quadx.dungeons.items.resources;
 
 import com.badlogic.gdx.graphics.Color;
 import com.quadx.dungeons.items.Item;
-import com.quadx.dungeons.tools.ImageLoader;
 
 import java.util.Random;
 
@@ -14,13 +13,14 @@ public class Gold extends Item {
 
     public Gold(int lvl){
         this.lvl=lvl;
-        name="GOLD";
-        genValue();
+        init();
     }
     public Gold(){
-       genValue();
+       init();
     }
-    void genValue(){
+    void init(){
+        name="GOLD";
+
         Random rn = new Random();
         float f = rn.nextFloat();
         while (f < .05) {
@@ -28,10 +28,9 @@ public class Gold extends Item {
         }
         gold = (int) Math.abs((( 50) *lvl)*rn.nextGaussian());
         if (gold < 0) gold = 1;
-        icon= ImageLoader.gold[0];
         value= (gold);
         tileColor= new Color(1f, .647f, 0f, 1);
-
+        gINIT(1,"icCoinS");
     }
     public int getValue(){
         return value;

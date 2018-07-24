@@ -1,12 +1,20 @@
 COMPLETE===========================================================
--made more grass
--added height to minimap
+BUILD 2018.0000012
+-added more grass
+-added height view to minimap
 -Added More Potions invisibility, fire and lightning shield
 stat boosting, invincibility, rough skin
 -Refactored Knockback to Body and added to Monster
-
+-Refactored Equipment init
+-finished TextureAtlas transfer
 
 WORKING ON==========================================================
+-Refactoring MapstateRender
+
+-Refactor all attack initialization
+-figure out what hud equipboxes is
+
+
 ----QUICK Craft recipe by clicking item icon in cookbook
 -clear stacks button in craft
 -craft stack of items at once

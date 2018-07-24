@@ -7,7 +7,7 @@ public class Bone extends Resource {
     public Bone(){
         fileName="mods/icBone.png";
         name="BONE";
-        loadIcon();
+        gINIT(1,"icBone");
     }
     @Override
     public int[] runMod() {
